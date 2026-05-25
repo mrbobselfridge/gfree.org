@@ -1,10 +1,9 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('/concepts', function () {
     return view('concepts.index', [
@@ -107,7 +106,7 @@ Route::get('/concepts/{concept}', function (string $concept) {
         'bright' => [
             'name' => 'Floating Pill Header',
             'eyebrow' => "You're invited",
-            'headline' => "Following Jesus together.",
+            'headline' => 'Following Jesus together.',
             'subhead' => 'A clean white-first direction with strong black sections, direct Sunday information, and a guest path that is easy to follow.',
             'primaryCta' => 'Plan a Visit',
             'primaryUrl' => '/new-here',
