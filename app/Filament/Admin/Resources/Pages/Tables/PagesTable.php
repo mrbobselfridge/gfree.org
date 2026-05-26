@@ -19,6 +19,8 @@ class PagesTable
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('URL')
+                    ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('hero_image_path')
@@ -30,7 +32,7 @@ class PagesTable
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_published')
-                    ->label('Published')
+                    ->label('Live')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()

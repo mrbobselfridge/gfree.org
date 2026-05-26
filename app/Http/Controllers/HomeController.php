@@ -111,7 +111,8 @@ class HomeController extends Controller
             'type' => $announcement->is_featured ? 'Featured' : 'Announcement',
             'title' => $announcement->title,
             'summary' => $announcement->summary,
-            'url' => $announcement->cta_url ?: url('/announcements/'.$announcement->slug),
+            'image_url' => $this->imageUrl($announcement->image_path),
+            'url' => url('/announcements/'.$announcement->slug),
         ]);
     }
 

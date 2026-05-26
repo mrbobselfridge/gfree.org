@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
     'summary',
     'body',
     'image_path',
+    'background',
     'cta_label',
     'cta_url',
     'publish_at',

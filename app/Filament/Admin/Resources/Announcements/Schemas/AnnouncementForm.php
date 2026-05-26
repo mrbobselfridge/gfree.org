@@ -5,6 +5,8 @@ namespace App\Filament\Admin\Resources\Announcements\Schemas;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -29,13 +31,23 @@ class AnnouncementForm
                 Textarea::make('summary')
                     ->rows(3)
                     ->columnSpanFull(),
-                Textarea::make('body')
-                    ->rows(8)
+                RichEditor::make('body')
                     ->columnSpanFull(),
                 FileUpload::make('image_path')
                     ->image()
                     ->disk('public')
                     ->directory('announcements'),
+                Select::make('background')
+                    ->options([
+                        'white' => 'White',
+                        'black' => 'Black',
+                        'teal' => 'Teal',
+                        'gold' => 'Gold',
+                        'forest' => 'Forest',
+                        'clay' => 'Clay',
+                    ])
+                    ->default('white')
+                    ->required(),
                 TextInput::make('cta_label')
                     ->label('Button label')
                     ->maxLength(255),

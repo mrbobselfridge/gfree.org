@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Model;
     'title',
     'slug',
     'intro',
+    'hero_label',
     'body',
+    'content_blocks',
     'hero_image_path',
     'seo_title',
     'seo_description',
@@ -21,6 +23,7 @@ class Page extends Model
     protected function casts(): array
     {
         return [
+            'content_blocks' => 'array',
             'is_published' => 'boolean',
         ];
     }

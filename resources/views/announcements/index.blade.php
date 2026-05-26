@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Announcements | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
+    <meta name="description" content="Current announcements and updates from gFree Church.">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
+    @include('home.partials.header')
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero__content">
+                <h1>Announcements</h1>
+                <p>Current updates, next steps, and opportunities around gFree Church.</p>
+            </div>
+        </section>
+
+        <section class="announcement-index">
+            @if ($announcements->count())
+                <div class="announcement-grid">
+                    @foreach ($announcements as $announcement)
+                        <article class="announcement-card">
+                            @if ($announcement->image_url)
+                                <img src="{{ $announcement->image_url }}" alt="">
+                            @endif
+
+                            <div>
+                                <p>{{ $announcement->is_featured ? 'Featured' : 'Announcement' }}</p>
+                                <h2>{{ $announcement->title }}</h2>
+
+                                @if ($announcement->summary)
+                                    <span>{{ $announcement->summary }}</span>
+                                @endif
+
+                                <a href="{{ route('announcements.show', $announcement->slug) }}">Read more</a>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                {{ $announcements->links() }}
+            @else
+                <div class="page-content">
+                    <p>There are no current announcements.</p>
+                </div>
+            @endif
+        </section>
+    </main>
+
+    @include('home.partials.footer')
+</body>
+</html>

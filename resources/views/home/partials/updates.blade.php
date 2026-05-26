@@ -7,10 +7,16 @@
     <div class="concept-updates__grid">
         @foreach ($updates as $update)
             <article>
-                <p>{{ $update['type'] }}</p>
-                <h3>{{ $update['title'] }}</h3>
-                <span>{{ $update['summary'] }}</span>
-                <a href="{{ $update['url'] }}" aria-label="Open {{ $update['title'] }}"></a>
+                @if (data_get($update, 'image_url'))
+                    <img src="{{ data_get($update, 'image_url') }}" alt="">
+                @endif
+
+                <div>
+                    <p>{{ $update['type'] }}</p>
+                    <h3>{{ $update['title'] }}</h3>
+                    <span>{{ $update['summary'] }}</span>
+                    <a href="{{ $update['url'] }}" aria-label="Open {{ $update['title'] }}"></a>
+                </div>
             </article>
         @endforeach
     </div>
