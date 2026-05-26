@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Pages\Schemas;
 
+use App\Filament\Admin\Forms\RichEditorDefaults;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
@@ -63,7 +64,7 @@ class PageForm
                                 TextInput::make('heading')
                                     ->live(onBlur: true)
                                     ->maxLength(255),
-                                RichEditor::make('body')
+                                RichEditorDefaults::configure(RichEditor::make('body'))
                                     ->required()
                                     ->columnSpanFull(),
                                 Select::make('background')
@@ -91,7 +92,7 @@ class PageForm
                                 TextInput::make('heading')
                                     ->live(onBlur: true)
                                     ->maxLength(255),
-                                RichEditor::make('body')
+                                RichEditorDefaults::configure(RichEditor::make('body'))
                                     ->columnSpanFull(),
                                 TextInput::make('button_label')
                                     ->maxLength(80),

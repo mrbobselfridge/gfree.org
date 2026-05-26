@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'title',
+    'eyebrow',
     'subtitle',
     'image_path',
     'button_label',

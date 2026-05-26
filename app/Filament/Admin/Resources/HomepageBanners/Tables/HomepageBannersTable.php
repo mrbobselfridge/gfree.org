@@ -18,6 +18,10 @@ class HomepageBannersTable
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
+                TextColumn::make('eyebrow')
+                    ->label('Small label')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('image_path')
                     ->disk('public'),
                 TextColumn::make('button_label')

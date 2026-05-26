@@ -18,16 +18,15 @@ class HomeController extends Controller
         $defaults = config('gfree.homepage');
         $now = now();
 
-        $heroBanner = HomepageBanner::query()
+        $heroBanners = HomepageBanner::query()
             ->where('is_published', true)
             ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', $now))
             ->where(fn ($query) => $query->whereNull('ends_at')->orWhere('ends_at', '>=', $now))
-            ->orderBy('sort_order')
-            ->latest()
-            ->first();
+            ->inRandomOrder()
+            ->get();
 
         $navigationLinks = NavigationLink::query()
-            ->where('is_published', true)
+            ->active()
             ->where('location', 'header')
             ->whereNull('parent_id')
             ->orderBy('sort_order')
@@ -42,10 +41,12 @@ class HomeController extends Controller
 
         $announcements = Announcement::query()
             ->where('is_published', true)
+            ->where('is_featured', true)
             ->where(fn ($query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
             ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
-            ->orderByDesc('is_featured')
-            ->orderByDesc('publish_at')
+            ->where(fn ($query) => $query->whereNull('featured_at')->orWhere('featured_at', '<=', $now))
+            ->where(fn ($query) => $query->whereNull('feature_expires_at')->orWhere('feature_expires_at', '>=', $now))
+            ->orderByRaw('COALESCE(featured_at, publish_at, created_at) DESC')
             ->latest()
             ->limit(3)
             ->get();
@@ -54,7 +55,8 @@ class HomeController extends Controller
             'settings' => $settings,
             'theme' => $defaults['theme'],
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
-            'hero' => $this->hero($defaults['hero'], $heroBanner),
+            'hero' => $this->hero($defaults['hero'], $heroBanners->first()),
+            'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
             'serviceDetails' => $this->serviceDetails($defaults['service_details'], $settings),
             'intro' => $defaults['intro'],
             'nextSteps' => $ministries->isNotEmpty() ? $this->ministrySteps($ministries) : collect($defaults['next_steps']),
@@ -65,6 +67,15 @@ class HomeController extends Controller
         ]);
     }
 
+    private function heroSlides(array $defaults, $banners)
+    {
+        if ($banners->isEmpty()) {
+            return collect([$defaults]);
+        }
+
+        return $banners->map(fn (HomepageBanner $banner): array => $this->hero($defaults, $banner))->values();
+    }
+
     private function hero(array $defaults, ?HomepageBanner $banner): array
     {
         if (! $banner) {
@@ -72,9 +83,9 @@ class HomeController extends Controller
         }
 
         return [
-            'eyebrow' => $defaults['eyebrow'],
+            'eyebrow' => $banner->eyebrow ?: $defaults['eyebrow'],
             'title' => $banner->title,
-            'subtitle' => $banner->subtitle ?: $defaults['subtitle'],
+            'subtitle' => $banner->subtitle,
             'image_url' => $this->imageUrl($banner->image_path) ?: $defaults['image_url'],
             'primary_label' => $banner->button_label ?: $defaults['primary_label'],
             'primary_url' => $banner->button_url ?: $defaults['primary_url'],
@@ -136,11 +147,17 @@ class HomeController extends Controller
         ])->filter(fn (array $link) => filled($link['url']));
     }
 
-    private function imageUrl(?string $path): ?string
+    private function imageUrl(mixed $path): ?string
     {
+        if (is_array($path)) {
+            $path = collect($path)->first();
+        }
+
         if (! $path) {
             return null;
         }
+
+        $path = (string) $path;
 
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             return $path;

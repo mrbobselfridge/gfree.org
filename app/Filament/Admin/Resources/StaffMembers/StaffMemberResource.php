@@ -24,7 +24,9 @@ class StaffMemberResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $modelLabel = 'staff member';
+    protected static ?string $navigationLabel = 'Leadership';
+
+    protected static ?string $modelLabel = 'leader';
 
     protected static ?string $recordTitleAttribute = 'name';
 

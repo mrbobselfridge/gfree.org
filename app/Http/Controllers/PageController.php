@@ -21,7 +21,7 @@ class PageController extends Controller
         $defaults = config('gfree.homepage');
 
         $navigationLinks = NavigationLink::query()
-            ->where('is_published', true)
+            ->active()
             ->where('location', 'header')
             ->whereNull('parent_id')
             ->orderBy('sort_order')

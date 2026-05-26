@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Announcements | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
-    <meta name="description" content="Current announcements and updates from gFree Church.">
+    <title>Leadership | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
+    <meta name="description" content="Meet the leadership of gFree Church.">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
@@ -29,33 +29,29 @@
             </div>
         </section>
 
-        <section class="announcement-index">
-            @if ($announcements->count())
-                <div class="announcement-grid">
-                    @foreach ($announcements as $announcement)
-                        <article class="announcement-card">
-                            @if ($announcement->image_url)
-                                <img src="{{ $announcement->image_url }}" alt="">
+        <section class="leadership-index">
+            @if ($leaders->count())
+                <div class="leadership-grid">
+                    @foreach ($leaders as $leader)
+                        <article class="leadership-card">
+                            @if ($leader->photo_url)
+                                <img src="{{ $leader->photo_url }}" alt="{{ $leader->name }}">
                             @endif
 
                             <div>
-                                <p>{{ $announcement->is_featured ? 'Featured' : 'Announcement' }}</p>
-                                <h2>{{ $announcement->title }}</h2>
-
-                                @if ($announcement->summary)
-                                    <span>{{ $announcement->summary }}</span>
+                                @if ($leader->role)
+                                    <p>{{ $leader->role }}</p>
                                 @endif
 
-                                <a href="{{ route('announcements.show', $announcement->slug) }}">Read more</a>
+                                <h2>{{ $leader->name }}</h2>
+                                <a href="{{ route('leadership.show', $leader->slug) }}">View profile</a>
                             </div>
                         </article>
                     @endforeach
                 </div>
-
-                {{ $announcements->links() }}
             @else
                 <div class="page-content">
-                    <p>There are no current announcements.</p>
+                    <p>Leadership profiles are coming soon.</p>
                 </div>
             @endif
         </section>

@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         HomepageBanner::updateOrCreate([
             'title' => 'Grace for real life.',
         ], [
+            'eyebrow' => 'Welcome home',
             'subtitle' => 'A church family in central Pennsylvania learning to follow Jesus together with clarity, care, and room for real questions.',
             'button_label' => 'Plan a Visit',
             'button_url' => '/new-here',

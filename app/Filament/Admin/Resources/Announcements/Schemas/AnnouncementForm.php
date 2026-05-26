@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Announcements\Schemas;
 
+use App\Filament\Admin\Forms\RichEditorDefaults;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -31,7 +33,7 @@ class AnnouncementForm
                 Textarea::make('summary')
                     ->rows(3)
                     ->columnSpanFull(),
-                RichEditor::make('body')
+                RichEditorDefaults::configure(RichEditor::make('body'))
                     ->columnSpanFull(),
                 FileUpload::make('image_path')
                     ->image()
@@ -56,6 +58,15 @@ class AnnouncementForm
                     ->maxLength(255),
                 DateTimePicker::make('publish_at'),
                 DateTimePicker::make('expires_at'),
+                DateTimePicker::make('featured_at')
+                    ->label('Featured at')
+                    ->helperText('Optional. If empty, the homepage uses Publish at.')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+                DateTimePicker::make('feature_expires_at')
+                    ->label('Feature expires at')
+                    ->helperText('Optional. If empty, the homepage uses Expires at.')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('featured_at'))
+                    ->beforeOrEqual(fn (Get $get): ?string => $get('expires_at')),
                 Toggle::make('is_featured')
                     ->label('Featured on homepage')
                     ->default(false)

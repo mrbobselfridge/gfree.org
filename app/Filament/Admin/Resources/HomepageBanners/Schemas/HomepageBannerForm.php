@@ -7,6 +7,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class HomepageBannerForm
@@ -17,6 +18,10 @@ class HomepageBannerForm
             ->components([
                 TextInput::make('title')
                     ->required()
+                    ->maxLength(255),
+                TextInput::make('eyebrow')
+                    ->label('Small label')
+                    ->helperText('Optional. If empty, the homepage uses the default label.')
                     ->maxLength(255),
                 Textarea::make('subtitle')
                     ->rows(3)
@@ -35,8 +40,11 @@ class HomepageBannerForm
                     ->maxLength(255),
                 TextInput::make('secondary_button_url')
                     ->maxLength(255),
-                DateTimePicker::make('starts_at'),
-                DateTimePicker::make('ends_at'),
+                DateTimePicker::make('starts_at')
+                    ->label('Starts at'),
+                DateTimePicker::make('ends_at')
+                    ->label('Ends at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('starts_at')),
                 TextInput::make('sort_order')
                     ->required()
                     ->numeric()

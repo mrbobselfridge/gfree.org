@@ -2,58 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Announcement;
+use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 
-class AnnouncementController extends Controller
+class MinistryController extends Controller
 {
     public function index(): View
     {
-        $announcements = $this->activeAnnouncements()
-            ->paginate(12)
-            ->through(function (Announcement $announcement): Announcement {
-                $announcement->image_url = $this->imageUrl($announcement->image_path);
+        $ministries = Ministry::query()
+            ->where('is_published', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(function (Ministry $ministry): Ministry {
+                $ministry->image_url = $this->imageUrl($ministry->card_image_path ?: $ministry->hero_image_path);
 
-                return $announcement;
+                return $ministry;
             });
 
-        return view('announcements.index', [
+        return view('ministries.index', [
             ...$this->sharedViewData(),
-            'announcements' => $announcements,
-            'hero' => $this->listingHero('announcements', [
-                'title' => 'Announcements',
-                'subtitle' => 'Current updates, next steps, and opportunities around gFree Church.',
+            'ministries' => $ministries,
+            'hero' => $this->listingHero('ministry', [
+                'title' => 'Find your place.',
+                'subtitle' => 'Explore ministries, groups, and next steps at gFree Church.',
             ]),
         ]);
-    }
-
-    public function show(string $slug): View
-    {
-        $announcement = $this->activeAnnouncements()
-            ->where('slug', $slug)
-            ->firstOrFail();
-
-        return view('announcements.show', [
-            ...$this->sharedViewData(),
-            'announcement' => $announcement,
-            'imageUrl' => $this->imageUrl($announcement->image_path),
-        ]);
-    }
-
-    private function activeAnnouncements()
-    {
-        $now = now();
-
-        return Announcement::query()
-            ->where('is_published', true)
-            ->where(fn ($query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
-            ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
-            ->orderByDesc('is_featured')
-            ->orderByDesc('publish_at')
-            ->latest();
     }
 
     private function sharedViewData(): array

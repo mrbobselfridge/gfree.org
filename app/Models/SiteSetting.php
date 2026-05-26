@@ -19,6 +19,18 @@ use Illuminate\Database\Eloquent\Model;
     'facebook_url',
     'instagram_url',
     'youtube_url',
+    'announcements_small_label',
+    'announcements_title',
+    'announcements_subtitle',
+    'announcements_image_path',
+    'leadership_small_label',
+    'leadership_title',
+    'leadership_subtitle',
+    'leadership_image_path',
+    'ministry_small_label',
+    'ministry_title',
+    'ministry_subtitle',
+    'ministry_image_path',
 ])]
 class SiteSetting extends Model
 {

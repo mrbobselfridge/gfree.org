@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\LeadershipController;
+use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +11,11 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
 Route::get('/announcements/{slug}', [AnnouncementController::class, 'show'])->name('announcements.show');
+
+Route::get('/leadership', [LeadershipController::class, 'index'])->name('leadership.index');
+Route::get('/leadership/{slug}', [LeadershipController::class, 'show'])->name('leadership.show');
+
+Route::get('/ministries', [MinistryController::class, 'index'])->name('ministries.index');
 
 Route::get('/concepts', function () {
     return view('concepts.index', [

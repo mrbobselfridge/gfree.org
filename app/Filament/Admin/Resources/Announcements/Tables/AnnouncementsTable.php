@@ -36,6 +36,16 @@ class AnnouncementsTable
                 TextColumn::make('expires_at')
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('featured_at')
+                    ->label('Featured at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('feature_expires_at')
+                    ->label('Feature expires')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_featured')
                     ->label('Featured')
                     ->boolean(),

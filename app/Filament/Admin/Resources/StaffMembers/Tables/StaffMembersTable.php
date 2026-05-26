@@ -18,6 +18,9 @@ class StaffMembersTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('slug')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('role')
                     ->searchable(),
                 ImageColumn::make('photo_path')

@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Announcements | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
-    <meta name="description" content="Current announcements and updates from gFree Church.">
+    <title>Ministries | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
+    <meta name="description" content="{{ $hero['subtitle'] ?: 'Explore ministries at gFree Church.' }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
@@ -29,33 +29,36 @@
             </div>
         </section>
 
-        <section class="announcement-index">
-            @if ($announcements->count())
-                <div class="announcement-grid">
-                    @foreach ($announcements as $announcement)
-                        <article class="announcement-card">
-                            @if ($announcement->image_url)
-                                <img src="{{ $announcement->image_url }}" alt="">
+        <section class="ministry-index">
+            @if ($ministries->count())
+                <div class="ministry-grid">
+                    @foreach ($ministries as $ministry)
+                        <article class="ministry-card">
+                            @if ($ministry->image_url)
+                                <img src="{{ $ministry->image_url }}" alt="">
                             @endif
 
                             <div>
-                                <p>{{ $announcement->is_featured ? 'Featured' : 'Announcement' }}</p>
-                                <h2>{{ $announcement->title }}</h2>
-
-                                @if ($announcement->summary)
-                                    <span>{{ $announcement->summary }}</span>
+                                @if ($ministry->category)
+                                    <p>{{ $ministry->category }}</p>
                                 @endif
 
-                                <a href="{{ route('announcements.show', $announcement->slug) }}">Read more</a>
+                                <h2>{{ $ministry->name }}</h2>
+
+                                @if ($ministry->short_summary)
+                                    <span>{{ $ministry->short_summary }}</span>
+                                @endif
+
+                                @if ($ministry->one_church_url)
+                                    <a href="{{ $ministry->one_church_url }}">Learn more</a>
+                                @endif
                             </div>
                         </article>
                     @endforeach
                 </div>
-
-                {{ $announcements->links() }}
             @else
                 <div class="page-content">
-                    <p>There are no current announcements.</p>
+                    <p>Ministry information is coming soon.</p>
                 </div>
             @endif
         </section>

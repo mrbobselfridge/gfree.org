@@ -1,1 +1,58 @@
-//
+const updateHeroSlide = (carousel, slides, index) => {
+    const slide = slides[index];
+
+    if (! slide) {
+        return;
+    }
+
+    carousel.querySelector('[data-hero-image]').style.backgroundImage = `url("${slide.image_url}")`;
+    carousel.querySelector('[data-hero-eyebrow]').textContent = slide.eyebrow;
+    carousel.querySelector('[data-hero-title]').textContent = slide.title;
+
+    const subtitle = carousel.querySelector('[data-hero-subtitle]');
+    subtitle.textContent = slide.subtitle || '';
+    subtitle.hidden = ! slide.subtitle;
+
+    const primary = carousel.querySelector('[data-hero-primary]');
+    primary.textContent = slide.primary_label;
+    primary.href = slide.primary_url;
+
+    const secondary = carousel.querySelector('[data-hero-secondary]');
+    secondary.textContent = slide.secondary_label;
+    secondary.href = slide.secondary_url;
+
+};
+
+document.querySelectorAll('[data-hero-carousel]').forEach((carousel) => {
+    const data = carousel.querySelector('[data-hero-slides]');
+
+    if (! data) {
+        return;
+    }
+
+    let slides = [];
+
+    try {
+        slides = JSON.parse(data.textContent);
+    } catch {
+        return;
+    }
+
+    if (slides.length < 2) {
+        return;
+    }
+
+    let index = 0;
+    const previous = carousel.querySelector('[data-hero-previous]');
+    const next = carousel.querySelector('[data-hero-next]');
+
+    previous?.addEventListener('click', () => {
+        index = (index - 1 + slides.length) % slides.length;
+        updateHeroSlide(carousel, slides, index);
+    });
+
+    next?.addEventListener('click', () => {
+        index = (index + 1) % slides.length;
+        updateHeroSlide(carousel, slides, index);
+    });
+});

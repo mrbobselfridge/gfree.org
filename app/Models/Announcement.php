@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
     'cta_url',
     'publish_at',
     'expires_at',
+    'featured_at',
+    'feature_expires_at',
     'is_featured',
     'is_published',
 ])]
@@ -26,6 +28,8 @@ class Announcement extends Model
         return [
             'publish_at' => 'datetime',
             'expires_at' => 'datetime',
+            'featured_at' => 'datetime',
+            'feature_expires_at' => 'datetime',
             'is_featured' => 'boolean',
             'is_published' => 'boolean',
         ];

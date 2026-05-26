@@ -22,11 +22,19 @@ class NavigationLinksTable
                     ->searchable(),
                 TextColumn::make('url')
                     ->searchable(),
-                TextColumn::make('location')
-                    ->searchable(),
                 TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('publish_at')
+                    ->label('Publish at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('expires_at')
+                    ->label('Expires at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('opens_in_new_tab')
                     ->label('New tab')
                     ->boolean(),

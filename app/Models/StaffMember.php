@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'name',
+    'slug',
     'role',
     'bio',
     'photo_path',

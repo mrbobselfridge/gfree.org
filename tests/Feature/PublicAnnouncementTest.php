@@ -46,6 +46,24 @@ class PublicAnnouncementTest extends TestCase
         $this->get('/announcements/expired-announcement')->assertNotFound();
     }
 
+    public function test_announcement_detail_uses_publish_window_not_feature_window(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Published But No Longer Featured',
+            'slug' => 'published-but-no-longer-featured',
+            'publish_at' => now()->subDays(2),
+            'expires_at' => now()->addDay(),
+            'featured_at' => now()->subDays(2),
+            'feature_expires_at' => now()->subDay(),
+            'is_featured' => true,
+            'is_published' => true,
+        ]);
+
+        $this->get('/announcements/published-but-no-longer-featured')
+            ->assertOk()
+            ->assertSee('Published But No Longer Featured');
+    }
+
     public function test_announcement_detail_renders_image_body_and_cta(): void
     {
         Announcement::query()->create([

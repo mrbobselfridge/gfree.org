@@ -438,10 +438,29 @@
     margin-bottom: 0;
 }
 
+.page-rich-text h2,
 .page-rich-text h3,
 .page-rich-text h4 {
-    color: currentColor;
-    line-height: 1.15;
+    color: var(--page-block-fg);
+    font-weight: 900;
+    line-height: 1.16;
+    margin: 1.15em 0 0.55em;
+}
+
+.page-rich-text h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.page-rich-text h3 {
+    font-size: clamp(1.42rem, 2.2vw, 1.9rem);
+}
+
+.page-rich-text h4 {
+    font-size: clamp(1.18rem, 1.7vw, 1.45rem);
+}
+
+.page-rich-text > :is(h2, h3, h4):first-child {
+    margin-top: 0;
 }
 
 .page-rich-text ul,
@@ -452,6 +471,40 @@
 .page-rich-text a {
     color: var(--page-block-link);
     font-weight: 800;
+}
+
+.page-rich-text .lead {
+    color: var(--page-block-fg);
+    font-size: clamp(1.18rem, 1.9vw, 1.45rem);
+    font-weight: 700;
+    line-height: 1.55;
+}
+
+.page-rich-text small {
+    color: var(--page-block-muted);
+    font-size: 0.88em;
+    line-height: 1.65;
+}
+
+.page-rich-text table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.page-rich-text th,
+.page-rich-text td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid var(--page-block-border);
+}
+
+.page-rich-text th {
+    color: var(--page-block-fg);
+    font-weight: 900;
+    background: color-mix(in srgb, var(--page-block-fg) 8%, transparent);
 }
 
 .page-block__button {
@@ -557,18 +610,24 @@
     line-height: 1.6;
 }
 
-.announcement-index {
+.announcement-index,
+.leadership-index,
+.ministry-index {
     padding: 88px max(16px, calc((100vw - 1180px) / 2));
     background: white;
 }
 
-.announcement-grid {
+.announcement-grid,
+.leadership-grid,
+.ministry-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
 }
 
-.announcement-card {
+.announcement-card,
+.leadership-card,
+.ministry-card {
     display: flex;
     min-height: 100%;
     flex-direction: column;
@@ -577,21 +636,27 @@
     border: 1px solid var(--site-line);
 }
 
-.announcement-card img {
+.announcement-card img,
+.leadership-card img,
+.ministry-card img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
 }
 
-.announcement-card > div {
+.announcement-card > div,
+.leadership-card > div,
+.ministry-card > div {
     display: flex;
     flex: 1;
     flex-direction: column;
     padding: 28px;
 }
 
-.announcement-card p {
+.announcement-card p,
+.leadership-card p,
+.ministry-card p {
     margin: 0 0 18px;
     color: var(--site-accent-text);
     font-size: 1rem;
@@ -599,20 +664,25 @@
     text-transform: uppercase;
 }
 
-.announcement-card h2 {
+.announcement-card h2,
+.leadership-card h2,
+.ministry-card h2 {
     margin: 0;
     font-size: 1.7rem;
     line-height: 1.08;
 }
 
-.announcement-card span {
+.announcement-card span,
+.ministry-card span {
     display: block;
     margin: 18px 0 28px;
     color: var(--site-muted);
     line-height: 1.65;
 }
 
-.announcement-card a {
+.announcement-card a,
+.leadership-card a,
+.ministry-card a {
     display: inline-flex;
     margin-top: auto;
     color: var(--site-accent-text);
@@ -621,6 +691,10 @@
 }
 
 .announcement-detail {
+    margin: 0;
+}
+
+.leadership-detail {
     margin: 0;
 }
 
@@ -955,6 +1029,8 @@
     .site-card-row,
     .site-updates__grid,
     .announcement-grid,
+    .leadership-grid,
+    .ministry-grid,
     .page-image-text,
     .page-link-cards {
         grid-template-columns: 1fr;
@@ -1388,6 +1464,32 @@
     margin-top: 32px;
 }
 
+.concept-hero__controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    color: white;
+}
+
+.concept-hero__controls button {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+}
+
+.concept-hero__controls span {
+    font-size: 0.86rem;
+    font-weight: 900;
+}
+
 .concept-button {
     display: inline-flex;
     align-items: center;
@@ -1736,7 +1838,7 @@
     min-height: 68vh;
     display: grid;
     align-items: end;
-    padding: 96px max(24px, calc((100vw - 1180px) / 2)) 60px;
+    padding: 132px max(24px, calc((100vw - 1180px) / 2)) 60px;
 }
 
 .concept-page--editorial .concept-hero__image {
@@ -1992,7 +2094,7 @@
 
 .concept-page--editorial .concept-hero {
     min-height: 68vh;
-    padding-top: 96px;
+    padding-top: 132px;
     padding-bottom: 60px;
 }
 
@@ -2016,10 +2118,15 @@
 }
 
 .concept-page--editorial .concept-hero__content h1 {
+    grid-column: 1;
     max-width: 760px;
     font-size: clamp(3.2rem, 7vw, 5.8rem);
     line-height: 0.96;
     text-transform: uppercase;
+}
+
+.concept-page--editorial .concept-hero__content .concept-eyebrow {
+    grid-column: 1;
 }
 
 .concept-page--editorial .concept-hero__content p:not(.concept-eyebrow) {
@@ -2037,6 +2144,10 @@
 }
 
 .concept-page--editorial .concept-actions {
+    grid-column: 1;
+}
+
+.concept-page--editorial .concept-hero__controls {
     grid-column: 1;
 }
 
@@ -3124,6 +3235,10 @@
 
     .concept-button {
         width: 100%;
+    }
+
+    .concept-hero__controls {
+        justify-self: start;
     }
 
     .concept-nav__give {
