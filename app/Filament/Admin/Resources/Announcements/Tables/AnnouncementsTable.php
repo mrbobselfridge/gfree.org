@@ -2,12 +2,13 @@
 
 namespace App\Filament\Admin\Resources\Announcements\Tables;
 
+use App\Filament\Admin\Resources\Support\StandardTableActions;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 
 class AnnouncementsTable
@@ -19,6 +20,7 @@ class AnnouncementsTable
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('image_path')
@@ -30,12 +32,18 @@ class AnnouncementsTable
                     ->label('Button URL')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_published')
+                    ->label('Published')
+                    ->boolean(),
                 TextColumn::make('publish_at')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('expires_at')
                     ->dateTime()
                     ->sortable(),
+                IconColumn::make('is_featured')
+                    ->label('Featured')
+                    ->boolean(),
                 TextColumn::make('featured_at')
                     ->label('Featured at')
                     ->dateTime()
@@ -46,12 +54,6 @@ class AnnouncementsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_featured')
-                    ->label('Featured')
-                    ->boolean(),
-                IconColumn::make('is_published')
-                    ->label('Published')
-                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -65,9 +67,9 @@ class AnnouncementsTable
                 //
             ])
             ->defaultSort('publish_at', 'desc')
-            ->recordActions([
-                EditAction::make(),
-            ])
+            ->recordAction(null)
+            ->recordUrl(null)
+            ->recordActions(StandardTableActions::make(), position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

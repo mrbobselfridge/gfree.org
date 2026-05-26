@@ -2,12 +2,13 @@
 
 namespace App\Filament\Admin\Resources\Pages\Tables;
 
+use App\Filament\Admin\Resources\Support\StandardTableActions;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 
 class PagesTable
@@ -47,9 +48,9 @@ class PagesTable
                 //
             ])
             ->defaultSort('sort_order')
-            ->recordActions([
-                EditAction::make(),
-            ])
+            ->recordAction(null)
+            ->recordUrl(null)
+            ->recordActions(StandardTableActions::make(), position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

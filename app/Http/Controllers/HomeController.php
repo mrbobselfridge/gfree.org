@@ -87,9 +87,9 @@ class HomeController extends Controller
             'title' => $banner->title,
             'subtitle' => $banner->subtitle,
             'image_url' => $this->imageUrl($banner->image_path) ?: $defaults['image_url'],
-            'primary_label' => $banner->button_label ?: $defaults['primary_label'],
+            'primary_label' => $banner->button_label,
             'primary_url' => $banner->button_url ?: $defaults['primary_url'],
-            'secondary_label' => $banner->secondary_button_label ?: $defaults['secondary_label'],
+            'secondary_label' => $banner->secondary_button_label,
             'secondary_url' => $banner->secondary_button_url ?: $defaults['secondary_url'],
         ];
     }

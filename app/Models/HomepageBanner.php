@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
     'secondary_button_url',
     'starts_at',
     'ends_at',
-    'sort_order',
     'is_published',
 ])]
 class HomepageBanner extends Model

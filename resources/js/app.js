@@ -14,12 +14,17 @@ const updateHeroSlide = (carousel, slides, index) => {
     subtitle.hidden = ! slide.subtitle;
 
     const primary = carousel.querySelector('[data-hero-primary]');
-    primary.textContent = slide.primary_label;
-    primary.href = slide.primary_url;
-
     const secondary = carousel.querySelector('[data-hero-secondary]');
-    secondary.textContent = slide.secondary_label;
+    const primaryLabel = slide.primary_label || '';
+    const secondaryLabel = slide.secondary_label || '';
+
+    primary.textContent = primaryLabel;
+    primary.href = slide.primary_url;
+    primary.hidden = ! primaryLabel;
+
+    secondary.textContent = secondaryLabel;
     secondary.href = slide.secondary_url;
+    secondary.hidden = ! secondaryLabel;
 
 };
 

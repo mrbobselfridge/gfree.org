@@ -7,8 +7,28 @@
         <p data-hero-subtitle @if (blank($hero['subtitle'])) hidden @endif>{{ $hero['subtitle'] }}</p>
 
         <div class="concept-actions">
-            <a href="{{ $hero['primary_url'] }}" class="concept-button concept-button--primary" data-hero-primary>{{ $hero['primary_label'] }}</a>
-            <a href="{{ $hero['secondary_url'] }}" class="concept-button concept-button--secondary" data-hero-secondary>{{ $hero['secondary_label'] }}</a>
+            @php
+                $primaryLabel = $hero['primary_label'] ?? null;
+                $secondaryLabel = $hero['secondary_label'] ?? null;
+            @endphp
+
+            <a
+                href="{{ $hero['primary_url'] }}"
+                class="concept-button concept-button--primary"
+                data-hero-primary
+                @if (blank($primaryLabel)) hidden @endif
+            >
+                {{ $primaryLabel }}
+            </a>
+
+            <a
+                href="{{ $hero['secondary_url'] }}"
+                class="concept-button concept-button--secondary"
+                data-hero-secondary
+                @if (blank($secondaryLabel)) hidden @endif
+            >
+                {{ $secondaryLabel }}
+            </a>
         </div>
 
         @if ($heroSlides->count() > 1)

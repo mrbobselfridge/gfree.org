@@ -38,14 +38,14 @@ class HomepageBannerTest extends TestCase
             ->assertDontSee('data-hero-count', false);
     }
 
-    public function test_homepage_banner_blank_optional_fields_fall_back_except_subtitle(): void
+    public function test_homepage_banner_blank_optional_fields_hide_buttons(): void
     {
         HomepageBanner::query()->create([
             'title' => 'Special Sunday',
             'is_published' => true,
         ]);
 
-        $this->get('/')
+        $content = $this->get('/')
             ->assertOk()
             ->assertSee('Welcome home')
             ->assertSee('Special Sunday')
@@ -53,10 +53,57 @@ class HomepageBannerTest extends TestCase
             ->assertSee('data-hero-subtitle', false)
             ->assertSee('hidden', false)
             ->assertSee('images.unsplash.com')
+            ->assertDontSee('Plan a Visit')
+            ->assertDontSee('Watch Live')
+            ->content();
+
+        $this->assertMatchesRegularExpression('/data-hero-primary\s+hidden/s', $content);
+        $this->assertMatchesRegularExpression('/data-hero-secondary\s+hidden/s', $content);
+    }
+
+    public function test_secondary_homepage_banner_button_keeps_secondary_style_when_primary_is_blank(): void
+    {
+        HomepageBanner::query()->create([
+            'title' => 'Watch This Sunday',
+            'secondary_button_label' => 'Watch Live',
+            'secondary_button_url' => '/watch',
+            'is_published' => true,
+        ]);
+
+        $content = $this->get('/')
+            ->assertOk()
+            ->assertSee('Watch This Sunday')
+            ->assertDontSee('Plan a Visit')
+            ->content();
+
+        $this->assertMatchesRegularExpression('/data-hero-primary\s+hidden/s', $content);
+        $this->assertMatchesRegularExpression(
+            '/href="\/watch"\s+class="concept-button concept-button--secondary"\s+data-hero-secondary\s*>[\s\n]*Watch Live/s',
+            $content,
+        );
+    }
+
+    public function test_primary_homepage_banner_button_shows_without_secondary_button(): void
+    {
+        HomepageBanner::query()->create([
+            'title' => 'Plan Your Visit',
+            'button_label' => 'Plan a Visit',
+            'button_url' => '/visit',
+            'is_published' => true,
+        ]);
+
+        $content = $this->get('/')
+            ->assertOk()
+            ->assertSee('Plan Your Visit')
             ->assertSee('Plan a Visit')
-            ->assertSee('/new-here')
-            ->assertSee('Watch Live')
-            ->assertSee('/live');
+            ->assertDontSee('Watch Live')
+            ->content();
+
+        $this->assertMatchesRegularExpression(
+            '/href="\/visit"\s+class="concept-button concept-button--primary"\s+data-hero-primary\s*>[\s\n]*Plan a Visit/s',
+            $content,
+        );
+        $this->assertMatchesRegularExpression('/data-hero-secondary\s+hidden/s', $content);
     }
 
     public function test_homepage_uses_random_active_published_banner(): void

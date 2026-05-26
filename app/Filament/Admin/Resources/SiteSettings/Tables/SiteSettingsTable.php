@@ -2,10 +2,11 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings\Tables;
 
+use App\Filament\Admin\Resources\Support\StandardTableActions;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 
 class SiteSettingsTable
@@ -55,9 +56,9 @@ class SiteSettingsTable
                 //
             ])
             ->defaultSort('updated_at', 'desc')
-            ->recordActions([
-                EditAction::make(),
-            ])
+            ->recordAction(null)
+            ->recordUrl(null)
+            ->recordActions(StandardTableActions::make(), position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

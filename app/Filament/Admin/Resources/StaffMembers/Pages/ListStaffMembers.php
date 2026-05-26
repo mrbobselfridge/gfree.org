@@ -2,18 +2,13 @@
 
 namespace App\Filament\Admin\Resources\StaffMembers\Pages;
 
+use App\Filament\Admin\Resources\Concerns\UsesStandardListActions;
 use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListStaffMembers extends ListRecords
 {
-    protected static string $resource = StaffMemberResource::class;
+    use UsesStandardListActions;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
+    protected static string $resource = StaffMemberResource::class;
 }

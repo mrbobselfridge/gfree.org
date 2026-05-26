@@ -18,7 +18,7 @@ class NavigationLinkResource extends Resource
 {
     protected static ?string $model = NavigationLink::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Site';
 
