@@ -33,6 +33,30 @@ class MinistryController extends Controller
         ]);
     }
 
+    public function show(string $slug): View
+    {
+        $ministry = Ministry::query()
+            ->where('is_published', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        return view('ministries.show', [
+            ...$this->sharedViewData(),
+            'ministry' => $ministry,
+            'heroImageUrl' => $this->imageUrl($ministry->hero_image_path ?: $ministry->card_image_path),
+            'detailItems' => $this->detailItems($ministry),
+        ]);
+    }
+
+    private function detailItems(Ministry $ministry)
+    {
+        return collect([
+            ['label' => 'When', 'value' => $ministry->meeting_time],
+            ['label' => 'Where', 'value' => $ministry->location],
+            ['label' => 'Leader', 'value' => $ministry->leader_name],
+        ])->filter(fn (array $item) => filled($item['value']));
+    }
+
     private function sharedViewData(): array
     {
         $settings = SiteSetting::query()->first();

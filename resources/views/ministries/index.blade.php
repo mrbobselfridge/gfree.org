@@ -49,9 +49,7 @@
                                     <span>{{ $ministry->short_summary }}</span>
                                 @endif
 
-                                @if ($ministry->one_church_url)
-                                    <a href="{{ $ministry->one_church_url }}">Learn more</a>
-                                @endif
+                                <a href="{{ route('ministries.show', $ministry->slug) }}">Learn more</a>
                             </div>
                         </article>
                     @endforeach

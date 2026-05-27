@@ -9,7 +9,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -26,19 +26,31 @@ class AnnouncementForm
                     ->live(onBlur: true)
                     ->maxLength(255)
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                ToggleButtons::make('is_published')
+                    ->label('Make Announcement Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
+                Textarea::make('summary')
+                    ->rows(1),
+                ToggleButtons::make('is_featured')
+                    ->label('Featured on homepage')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
+                TextInput::make('cta_label')
+                    ->label('Button label')
+                    ->maxLength(255),
+                TextInput::make('cta_url')
+                    ->label('Button URL')
+                    ->maxLength(255),
                 TextInput::make('slug')
+                    ->prefix('/announcements/')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Textarea::make('summary')
-                    ->rows(3)
-                    ->columnSpanFull(),
-                RichEditorDefaults::configure(RichEditor::make('body'))
-                    ->columnSpanFull(),
-                FileUpload::make('image_path')
-                    ->image()
-                    ->disk('public')
-                    ->directory('announcements'),
                 Select::make('background')
                     ->options([
                         'white' => 'White',
@@ -50,12 +62,14 @@ class AnnouncementForm
                     ])
                     ->default('white')
                     ->required(),
-                TextInput::make('cta_label')
-                    ->label('Button label')
-                    ->maxLength(255),
-                TextInput::make('cta_url')
-                    ->label('Button URL')
-                    ->maxLength(255),
+                RichEditorDefaults::configure(RichEditor::make('body'))
+                    ->columnSpanFull(),
+                FileUpload::make('image_path')
+                    ->label('Announcement Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('announcements')
+                    ->columnSpanFull(),
                 DateTimePicker::make('publish_at'),
                 DateTimePicker::make('expires_at'),
                 DateTimePicker::make('featured_at')
@@ -63,17 +77,10 @@ class AnnouncementForm
                     ->helperText('Optional. If empty, the homepage uses Publish at.')
                     ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
                 DateTimePicker::make('feature_expires_at')
-                    ->label('Feature expires at')
+                    ->label('Featured expires at')
                     ->helperText('Optional. If empty, the homepage uses Expires at.')
                     ->afterOrEqual(fn (Get $get): ?string => $get('featured_at'))
                     ->beforeOrEqual(fn (Get $get): ?string => $get('expires_at')),
-                Toggle::make('is_featured')
-                    ->label('Featured on homepage')
-                    ->default(false)
-                    ->required(),
-                Toggle::make('is_published')
-                    ->default(false)
-                    ->required(),
             ]);
     }
 }

@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
         collect([
             ['label' => 'New Here', 'url' => '/new-here', 'sort_order' => 1],
             ['label' => 'Sundays', 'url' => '/sundays', 'sort_order' => 2],
-            ['label' => 'Ministries', 'url' => '/ministries', 'sort_order' => 3],
+            ['label' => 'Ministries', 'url' => '/ministry', 'sort_order' => 3],
             ['label' => 'Messages', 'url' => '/messages', 'sort_order' => 4],
         ])->each(fn (array $link) => NavigationLink::updateOrCreate([
             'label' => $link['label'],

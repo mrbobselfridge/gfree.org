@@ -69,7 +69,7 @@ class ListingHeroSettingsTest extends TestCase
             'is_published' => true,
         ]);
 
-        $this->get('/ministries')
+        $this->get('/ministry')
             ->assertOk()
             ->assertSee('Ministries')
             ->assertSee('Find a place to connect')
@@ -78,6 +78,41 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('Kids Ministry')
             ->assertSee('Helping kids know Jesus.')
             ->assertSee('/storage/ministries/card-images/kids.jpg')
+            ->assertSee('/ministry/kids-ministry');
+    }
+
+    public function test_ministry_detail_shows_ministry_content_and_actions(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Ministry::query()->create([
+            'name' => 'Kids Ministry',
+            'slug' => 'kids-ministry',
+            'short_summary' => 'Helping kids know Jesus.',
+            'description' => '<p>Kids gather during Sunday services.</p>',
+            'hero_image_path' => 'ministries/hero-images/kids.jpg',
+            'category' => 'Families',
+            'meeting_time' => 'Sundays at 10am',
+            'location' => 'Kids Wing',
+            'leader_name' => 'Jane Doe',
+            'leader_email' => 'jane@example.com',
+            'one_church_url' => 'https://example.com/kids',
+            'is_published' => true,
+        ]);
+
+        $this->get('/ministry/kids-ministry')
+            ->assertOk()
+            ->assertSee('Families')
+            ->assertSee('Kids Ministry')
+            ->assertSee('Helping kids know Jesus.')
+            ->assertSee('Kids gather during Sunday services.', false)
+            ->assertSee('/storage/ministries/hero-images/kids.jpg')
+            ->assertSee('Sundays at 10am')
+            ->assertSee('Kids Wing')
+            ->assertSee('Jane Doe')
+            ->assertSee('mailto:jane@example.com')
             ->assertSee('https://example.com/kids');
     }
 }

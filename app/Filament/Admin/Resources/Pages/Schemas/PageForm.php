@@ -41,6 +41,7 @@ class PageForm
                 Textarea::make('intro')
                     ->rows(1),
                 TextInput::make('slug')
+                    ->prefix('/')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),

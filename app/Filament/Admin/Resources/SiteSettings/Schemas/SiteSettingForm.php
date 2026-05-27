@@ -3,8 +3,8 @@
 namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class SiteSettingForm
@@ -17,14 +17,6 @@ class SiteSettingForm
                     ->required()
                     ->default('gFree Church')
                     ->maxLength(255),
-                TextInput::make('tagline')
-                    ->maxLength(255),
-                Textarea::make('sunday_service_times')
-                    ->rows(3)
-                    ->columnSpanFull(),
-                Textarea::make('address')
-                    ->rows(3)
-                    ->columnSpanFull(),
                 TextInput::make('phone')
                     ->maxLength(255)
                     ->tel(),
@@ -32,9 +24,12 @@ class SiteSettingForm
                     ->label('Email address')
                     ->email()
                     ->maxLength(255),
-                Textarea::make('office_hours')
-                    ->rows(3)
-                    ->columnSpanFull(),
+                TextInput::make('tagline')
+                    ->maxLength(255),
+                Textarea::make('sunday_service_times')
+                    ->rows(3),
+                Textarea::make('address')
+                    ->rows(3),
                 TextInput::make('livestream_url')
                     ->url()
                     ->maxLength(255),
@@ -54,6 +49,9 @@ class SiteSettingForm
                 TextInput::make('youtube_url')
                     ->url()
                     ->maxLength(255),
+                Textarea::make('office_hours')
+                    ->rows(2)
+                    ->columnSpanFull(),
                 TextInput::make('announcements_small_label')
                     ->label('Announcements small label')
                     ->maxLength(255),
@@ -65,10 +63,11 @@ class SiteSettingForm
                     ->rows(3)
                     ->columnSpanFull(),
                 FileUpload::make('announcements_image_path')
-                    ->label('Announcements image')
+                    ->label('Announcements Image')
                     ->image()
                     ->disk('public')
-                    ->directory('site-settings/announcements'),
+                    ->directory('site-settings/announcements')
+                    ->columnSpanFull(),
                 TextInput::make('leadership_small_label')
                     ->label('Leadership small label')
                     ->maxLength(255),
@@ -77,13 +76,14 @@ class SiteSettingForm
                     ->maxLength(255),
                 Textarea::make('leadership_subtitle')
                     ->label('Leadership subtitle')
-                    ->rows(3)
+                    ->rows(2)
                     ->columnSpanFull(),
                 FileUpload::make('leadership_image_path')
-                    ->label('Leadership image')
+                    ->label('Leadership Image')
                     ->image()
                     ->disk('public')
-                    ->directory('site-settings/leadership'),
+                    ->directory('site-settings/leadership')
+                    ->columnSpanFull(2),
                 TextInput::make('ministry_small_label')
                     ->label('Ministry small label')
                     ->maxLength(255),
@@ -92,13 +92,14 @@ class SiteSettingForm
                     ->maxLength(255),
                 Textarea::make('ministry_subtitle')
                     ->label('Ministry subtitle')
-                    ->rows(3)
+                    ->rows(2)
                     ->columnSpanFull(),
                 FileUpload::make('ministry_image_path')
                     ->label('Ministry image')
                     ->image()
                     ->disk('public')
-                    ->directory('site-settings/ministry'),
+                    ->directory('site-settings/ministry')
+                    ->columnSpanFull(),
             ]);
     }
 }

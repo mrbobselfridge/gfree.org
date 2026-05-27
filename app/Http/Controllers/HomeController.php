@@ -112,7 +112,7 @@ class HomeController extends Controller
             'number' => str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
             'title' => $ministry->name,
             'summary' => $ministry->short_summary ?: $ministry->description,
-            'url' => $ministry->one_church_url ?: url('/ministries/'.$ministry->slug),
+            'url' => $ministry->one_church_url ?: url('/ministry/'.$ministry->slug),
         ]);
     }
 

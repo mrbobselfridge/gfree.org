@@ -2,11 +2,13 @@
 
 namespace App\Filament\Admin\Resources\Ministries\Schemas;
 
-use Filament\Schemas\Components\Utilities\Set;
+use App\Filament\Admin\Forms\RichEditorDefaults;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -21,21 +23,29 @@ class MinistryForm
                     ->live(onBlur: true)
                     ->maxLength(255)
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                ToggleButtons::make('is_published')
+                    ->label('Make Ministry Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
+                Textarea::make('short_summary')
+                    ->rows(2),
                 TextInput::make('slug')
+                    ->prefix('/ministry/')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->dehydrateStateUsing(fn (?string $state) => Str::slug($state))
                     ->maxLength(255),
-                Textarea::make('short_summary')
-                    ->rows(3)
-                    ->columnSpanFull(),
-                Textarea::make('description')
-                    ->rows(10)
+                RichEditorDefaults::configure(RichEditor::make('description'))
                     ->columnSpanFull(),
                 FileUpload::make('hero_image_path')
+                    ->label('Hero image')
                     ->image()
                     ->disk('public')
                     ->directory('ministries/hero-images'),
                 FileUpload::make('card_image_path')
+                    ->label('Card image')
                     ->image()
                     ->disk('public')
                     ->directory('ministries/card-images'),
@@ -62,9 +72,6 @@ class MinistryForm
                     ->required()
                     ->numeric()
                     ->default(0),
-                Toggle::make('is_published')
-                    ->default(false)
-                    ->required(),
             ]);
     }
 }

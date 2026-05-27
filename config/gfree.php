@@ -10,7 +10,7 @@ return [
         'navigation' => [
             ['label' => 'New Here', 'url' => '/new-here'],
             ['label' => 'Sundays', 'url' => '/sundays'],
-            ['label' => 'Ministries', 'url' => '/ministries'],
+            ['label' => 'Ministries', 'url' => '/ministry'],
             ['label' => 'Messages', 'url' => '/messages'],
         ],
 
@@ -48,7 +48,7 @@ return [
                 'number' => '02',
                 'title' => 'Find Community',
                 'summary' => 'Groups, kids, students, and ways to belong beyond Sunday.',
-                'url' => '/ministries',
+                'url' => '/ministry',
             ],
             [
                 'number' => '03',

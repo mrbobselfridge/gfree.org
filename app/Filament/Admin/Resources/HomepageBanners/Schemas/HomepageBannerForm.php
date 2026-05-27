@@ -20,7 +20,7 @@ class HomepageBannerForm
                     ->required()
                     ->maxLength(255),
                 ToggleButtons::make('is_published')
-                    ->label('Make Announcement Live')
+                    ->label('Make Banner Live')
                     ->boolean()
                     ->inline()
                     ->default(false)
@@ -46,6 +46,7 @@ class HomepageBannerForm
                 TextInput::make('secondary_button_url')
                     ->maxLength(255),
                 FileUpload::make('image_path')
+                    ->label('Banner Image')
                     ->image()
                     ->disk('public')
                     ->directory('homepage-banners')
