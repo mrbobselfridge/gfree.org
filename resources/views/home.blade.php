@@ -23,10 +23,7 @@
     <main>
         @include('home.partials.hero')
         @include('home.partials.service-strip')
-        @include('home.partials.intro')
-        @include('home.partials.next-steps')
-        @include('home.partials.process')
-        @include('home.partials.feature')
+        @include('home.partials.content-blocks')
         @include('home.partials.updates')
     </main>
 

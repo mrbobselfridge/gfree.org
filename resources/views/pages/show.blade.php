@@ -43,6 +43,10 @@
                             @include('pages.blocks.image-text')
                             @break
 
+                        @case('process_steps')
+                            @include('pages.blocks.process-steps')
+                            @break
+
                         @case('cta')
                             @include('pages.blocks.cta')
                             @break

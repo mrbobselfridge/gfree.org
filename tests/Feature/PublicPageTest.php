@@ -142,4 +142,36 @@ class PublicPageTest extends TestCase
             ->assertSee('Students worshiping together')
             ->assertSee('page-block--image-center');
     }
+
+    public function test_process_step_blocks_render_on_public_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Serve',
+            'slug' => 'serve',
+            'content_blocks' => [
+                [
+                    'type' => 'process_steps',
+                    'data' => [
+                        'eyebrow' => 'Ready to serve?',
+                        'heading' => 'Start with three steps.',
+                        'background' => 'black',
+                        'steps' => [
+                            ['title' => 'Fill out the form', 'summary' => 'Tell us where you are interested.'],
+                            ['title' => 'Talk with a leader', 'summary' => 'Find a team that fits your gifts.'],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/serve')
+            ->assertOk()
+            ->assertSee('page-block--process-steps', false)
+            ->assertSee('page-block--bg-black', false)
+            ->assertSee('Ready to serve?')
+            ->assertSee('Start with three steps.')
+            ->assertSee('Fill out the form')
+            ->assertSee('Find a team that fits your gifts.');
+    }
 }

@@ -610,6 +610,39 @@
     line-height: 1.6;
 }
 
+.page-process {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 56px;
+    align-items: start;
+}
+
+.page-process__steps {
+    display: grid;
+    gap: 14px;
+}
+
+.page-process__steps article {
+    display: grid;
+    grid-template-columns: minmax(140px, 0.42fr) minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px;
+    color: var(--page-block-card-fg);
+    background: var(--page-block-card-bg);
+    border: 1px solid var(--page-block-border);
+}
+
+.page-process__steps strong {
+    font-size: 1.12rem;
+    line-height: 1.25;
+}
+
+.page-process__steps span {
+    color: var(--page-block-card-muted);
+    font-size: 1.02rem;
+    line-height: 1.6;
+}
+
 .announcement-index,
 .leadership-index,
 .ministry-index {
@@ -1091,7 +1124,8 @@
     .ministry-grid,
     .ministry-detail__layout,
     .page-image-text,
-    .page-link-cards {
+    .page-link-cards,
+    .page-process {
         grid-template-columns: 1fr;
     }
 
@@ -1148,6 +1182,11 @@
     }
 
     .site-process__steps article {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .page-process__steps article {
         grid-template-columns: 1fr;
         gap: 8px;
     }

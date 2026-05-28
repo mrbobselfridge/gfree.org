@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\HomepageContent;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
@@ -15,6 +16,7 @@ class HomeController extends Controller
     public function __invoke(): View
     {
         $settings = SiteSetting::query()->first();
+        $homepageContent = HomepageContent::query()->first();
         $defaults = config('gfree.homepage');
         $now = now();
 
@@ -58,10 +60,7 @@ class HomeController extends Controller
             'hero' => $this->hero($defaults['hero'], $heroBanners->first()),
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
             'serviceDetails' => $this->serviceDetails($defaults['service_details'], $settings),
-            'intro' => $defaults['intro'],
-            'nextSteps' => $ministries->isNotEmpty() ? $this->ministrySteps($ministries) : collect($defaults['next_steps']),
-            'process' => $defaults['process'],
-            'feature' => $this->feature($defaults['feature'], $settings),
+            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries),
             'updates' => $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']),
             'socialLinks' => $this->socialLinks($settings),
         ]);
@@ -127,15 +126,100 @@ class HomeController extends Controller
         ]);
     }
 
-    private function feature(array $defaults, ?SiteSetting $settings): array
+    private function feature(array $defaults, ?SiteSetting $settings, ?HomepageContent $content): array
     {
-        if (! $settings?->one_church_url) {
-            return $defaults;
+        $featureUrl = $content?->feature_url ?: $defaults['url'];
+
+        if ($settings?->one_church_url && (blank($featureUrl) || $featureUrl === '#')) {
+            $featureUrl = $settings->one_church_url;
         }
 
-        $defaults['url'] = $settings->one_church_url;
+        return [
+            'eyebrow' => $content?->feature_eyebrow ?: $defaults['eyebrow'],
+            'title' => $content?->feature_title ?: $defaults['title'],
+            'body' => $content?->feature_body ?: $defaults['body'],
+            'label' => $content?->feature_label ?: $defaults['label'],
+            'url' => $featureUrl,
+        ];
+    }
 
-        return $defaults;
+    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries): array
+    {
+        $blocks = $content?->content_blocks;
+
+        if (blank($blocks)) {
+            $blocks = $this->defaultHomepageBlocks($defaults, $settings, $ministries);
+        }
+
+        return collect($blocks)
+            ->map(function (array $block): array {
+                $type = $block['type'] ?? null;
+                $data = $block['data'] ?? [];
+
+                if ($type === 'image_text') {
+                    $data['image_url'] = $this->imageUrl($data['image_path'] ?? null);
+                }
+
+                return [
+                    'type' => $type,
+                    'data' => $data,
+                ];
+            })
+            ->filter(fn (array $block): bool => filled($block['type']))
+            ->values()
+            ->all();
+    }
+
+    private function defaultHomepageBlocks(array $defaults, ?SiteSetting $settings, $ministries): array
+    {
+        $nextSteps = $ministries->isNotEmpty() ? $this->ministrySteps($ministries)->all() : ($defaults['next_steps'] ?? []);
+        $feature = $this->feature($defaults['feature'], $settings, null);
+
+        return [
+            [
+                'type' => 'text',
+                'data' => [
+                    'eyebrow' => $defaults['intro']['eyebrow'] ?? null,
+                    'heading' => $defaults['intro']['title'] ?? null,
+                    'body' => '<p>'.($defaults['intro']['body'] ?? '').'</p>',
+                    'background' => 'white',
+                ],
+            ],
+            [
+                'type' => 'link_cards',
+                'data' => [
+                    'eyebrow' => 'Serving',
+                    'heading' => 'Start with a clear next step.',
+                    'background' => 'black',
+                    'cards' => collect($nextSteps)->map(fn (array $step): array => [
+                        'title' => $step['title'] ?? '',
+                        'summary' => $step['summary'] ?? null,
+                        'url' => $step['url'] ?? '#',
+                    ])->all(),
+                ],
+            ],
+            [
+                'type' => 'process_steps',
+                'data' => [
+                    'eyebrow' => $defaults['process']['eyebrow'] ?? null,
+                    'heading' => $defaults['process']['title'] ?? null,
+                    'background' => 'white',
+                    'steps' => $defaults['process']['steps'] ?? [],
+                ],
+            ],
+            [
+                'type' => 'image_text',
+                'data' => [
+                    'eyebrow' => $feature['eyebrow'],
+                    'heading' => $feature['title'],
+                    'body' => '<p>'.$feature['body'].'</p>',
+                    'button_label' => $feature['label'],
+                    'button_url' => $feature['url'] === '#' ? null : $feature['url'],
+                    'background' => 'forest',
+                    'image_position' => 'right',
+                ],
+            ],
+        ];
     }
 
     private function socialLinks(?SiteSetting $settings)
