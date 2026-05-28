@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
@@ -10,6 +11,8 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Support\Icons\Heroicon;
 
 class ContentBlockBuilder
 {
@@ -70,8 +73,8 @@ class ContentBlockBuilder
                             ->options([
                                 'left' => 'Image left',
                                 'right' => 'Image right',
-                                'center' => 'Image center',
                                 'full_width' => 'Image full width',
+                                'screen_width' => 'Image screenwidth',
                             ])
                             ->default('left')
                             ->required(),
@@ -116,8 +119,7 @@ class ContentBlockBuilder
                         TextInput::make('heading')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        Textarea::make('body')
-                            ->rows(3)
+                        RichEditorDefaults::configure(RichEditor::make('body'))
                             ->columnSpanFull(),
                         TextInput::make('button_label')
                             ->required()
@@ -128,6 +130,15 @@ class ContentBlockBuilder
                         Select::make('background')
                             ->options(self::backgroundOptions())
                             ->default('black')
+                            ->required(),
+                        Select::make('layout')
+                            ->options([
+                                'content_left' => 'Content left, button right',
+                                'content_right' => 'Button left, content right',
+                                'button_top' => 'Button top, content bottom',
+                                'button_bottom' => 'Content top, button bottom',
+                            ])
+                            ->default('content_left')
                             ->required(),
                     ])
                     ->columns(2),
@@ -161,8 +172,101 @@ class ContentBlockBuilder
                             ->minItems(1)
                             ->columnSpanFull(),
                     ]),
+                Block::make('info_strip')
+                    ->label(fn (?array $state): string => self::blockLabel('Info Strip', $state))
+                    ->schema([
+                        Select::make('spacing')
+                            ->options([
+                                'both' => 'Space above and below',
+                                'top' => 'Space above only',
+                                'bottom' => 'Space below only',
+                                'none' => 'No extra space',
+                            ])
+                            ->default('both')
+                            ->required(),
+                        Repeater::make('items')
+                            ->schema([
+                                TextInput::make('label')
+                                    ->live(onBlur: true)
+                                    ->maxLength(80),
+                                Select::make('source')
+                                    ->options([
+                                        'custom' => 'Custom value',
+                                        'sunday_service_times' => 'Sunday service times',
+                                        'office_hours' => 'Office hours',
+                                        'address' => 'Address',
+                                    ])
+                                    ->default('custom')
+                                    ->required(),
+                                Textarea::make('value')
+                                    ->rows(2)
+                                    ->maxLength(500),
+                            ])
+                            ->addActionLabel('Add item')
+                            ->columns(3)
+                            ->minItems(1)
+                            ->maxItems(5)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+                Block::make('announcements_bar')
+                    ->label(fn (?array $state): string => self::blockLabel('Announcements', $state))
+                    ->schema([
+                        ToggleButtons::make('is_visible')
+                            ->label('Show announcements')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required(),
+                        Select::make('background')
+                            ->options(self::backgroundOptions())
+                            ->default('white')
+                            ->required(),
+                        TextInput::make('heading')
+                            ->live(onBlur: true)
+                            ->default('Latest at gFree')
+                            ->maxLength(255),
+                        TextInput::make('link_label')
+                            ->default('View all')
+                            ->maxLength(80),
+                        TextInput::make('link_url')
+                            ->default('/announcements')
+                            ->maxLength(255),
+                    ])
+                    ->columns(2)
+                    ->maxItems(1),
             ])
             ->addActionLabel('Add content block')
+            ->cloneable()
+            ->cloneAction(fn (Action $action): Action => $action
+                ->label('Copy')
+                ->icon(Heroicon::OutlinedSquare2Stack)
+                ->action(function (array $arguments, Builder $component): void {
+                    $items = $component->getRawState();
+                    $itemKey = $arguments['item'] ?? null;
+
+                    if ($itemKey === null || ! array_key_exists($itemKey, $items)) {
+                        return;
+                    }
+
+                    $copiedItem = self::markCopiedItem($items[$itemKey]);
+                    $newUuid = $component->generateUuid();
+
+                    if ($newUuid) {
+                        $items[$newUuid] = $copiedItem;
+                    } else {
+                        $items[] = $copiedItem;
+                    }
+
+                    $component->rawState($items);
+                    $component->collapsed(false, shouldMakeComponentCollapsible: false);
+                    $component->callAfterStateUpdated();
+
+                    $component->shouldPartiallyRenderAfterActionsCalled() ? $component->partiallyRender() : null;
+                }))
+            ->extraFieldWrapperAttributes([
+                'class' => 'gfree-content-block-builder-field',
+            ])
             ->blockNumbers(false)
             ->collapsible()
             ->collapsed()
@@ -191,6 +295,17 @@ class ContentBlockBuilder
         ], filled(...));
 
         return implode(' - ', $parts);
+    }
+
+    private static function markCopiedItem(array $item): array
+    {
+        foreach (['heading', 'title', 'label'] as $field) {
+            if (filled($item['data'][$field] ?? null)) {
+                $item['data'][$field] .= ' copy';
+            }
+        }
+
+        return $item;
     }
 
     private static function backgroundOptions(): array

@@ -2,8 +2,9 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
+use App\Filament\Admin\Forms\RichEditorDefaults;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -26,10 +27,8 @@ class SiteSettingForm
                     ->maxLength(255),
                 TextInput::make('tagline')
                     ->maxLength(255),
-                Textarea::make('sunday_service_times')
-                    ->rows(3),
-                Textarea::make('address')
-                    ->rows(3),
+                RichEditorDefaults::configure(RichEditor::make('sunday_service_times')),
+                RichEditorDefaults::configure(RichEditor::make('address')),
                 TextInput::make('livestream_url')
                     ->url()
                     ->maxLength(255),
@@ -49,8 +48,7 @@ class SiteSettingForm
                 TextInput::make('youtube_url')
                     ->url()
                     ->maxLength(255),
-                Textarea::make('office_hours')
-                    ->rows(2)
+                RichEditorDefaults::configure(RichEditor::make('office_hours'))
                     ->columnSpanFull(),
                 TextInput::make('announcements_small_label')
                     ->label('Announcements small label')
@@ -58,9 +56,8 @@ class SiteSettingForm
                 TextInput::make('announcements_title')
                     ->label('Announcements title')
                     ->maxLength(255),
-                Textarea::make('announcements_subtitle')
+                RichEditorDefaults::configure(RichEditor::make('announcements_subtitle'))
                     ->label('Announcements subtitle')
-                    ->rows(3)
                     ->columnSpanFull(),
                 FileUpload::make('announcements_image_path')
                     ->label('Announcements Image')
@@ -74,9 +71,8 @@ class SiteSettingForm
                 TextInput::make('leadership_title')
                     ->label('Leadership title')
                     ->maxLength(255),
-                Textarea::make('leadership_subtitle')
+                RichEditorDefaults::configure(RichEditor::make('leadership_subtitle'))
                     ->label('Leadership subtitle')
-                    ->rows(2)
                     ->columnSpanFull(),
                 FileUpload::make('leadership_image_path')
                     ->label('Leadership Image')
@@ -90,9 +86,8 @@ class SiteSettingForm
                 TextInput::make('ministry_title')
                     ->label('Ministry title')
                     ->maxLength(255),
-                Textarea::make('ministry_subtitle')
+                RichEditorDefaults::configure(RichEditor::make('ministry_subtitle'))
                     ->label('Ministry subtitle')
-                    ->rows(2)
                     ->columnSpanFull(),
                 FileUpload::make('ministry_image_path')
                     ->label('Ministry image')

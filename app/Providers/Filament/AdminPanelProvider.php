@@ -35,6 +35,61 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): HtmlString => new HtmlString(<<<'HTML'
+                    <style>
+                        .gfree-content-block-builder-field {
+                            position: relative;
+                        }
+
+                        .gfree-content-block-builder-field > .fi-fo-field-label-col {
+                            padding-inline-end: 18rem;
+                        }
+
+                        .gfree-content-block-builder-field .fi-fo-field-label-content {
+                            color: var(--gray-950);
+                            font-size: 1.125rem;
+                            font-weight: 750;
+                            line-height: 1.25;
+                        }
+
+                        .dark .gfree-content-block-builder-field .fi-fo-field-label-content {
+                            color: white;
+                        }
+
+                        .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions {
+                            position: absolute;
+                            top: 0;
+                            inset-inline-end: 0;
+                            align-items: center;
+                            gap: 0;
+                        }
+
+                        .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
+                            margin-inline-start: 1.25rem;
+                            padding-inline-start: 1.25rem;
+                            border-inline-start: 1px solid var(--gray-300);
+                        }
+
+                        .dark .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
+                            border-inline-start-color: var(--gray-700);
+                        }
+
+                        @media (max-width: 640px) {
+                            .gfree-content-block-builder-field > .fi-fo-field-label-col {
+                                padding-inline-end: 0;
+                            }
+
+                            .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions {
+                                position: static;
+                                justify-content: flex-start;
+                                margin-bottom: 0.75rem;
+                            }
+                        }
+                    </style>
+                HTML),
+            )
+            ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): HtmlString => new HtmlString(<<<'HTML'
                     <script>

@@ -6,7 +6,7 @@
 
     <div class="site-footer__details">
         @if ($settings?->address)
-            <span>{{ $settings->address }}</span>
+            <div>{!! $settings->address !!}</div>
         @endif
         @if ($settings?->email)
             <a href="mailto:{{ $settings->email }}">{{ $settings->email }}</a>

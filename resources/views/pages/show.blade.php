@@ -54,6 +54,14 @@
                         @case('link_cards')
                             @include('pages.blocks.link-cards')
                             @break
+
+                        @case('info_strip')
+                            @include('pages.blocks.info-strip')
+                            @break
+
+                        @case('announcements_bar')
+                            @include('pages.blocks.announcements-bar')
+                            @break
                     @endswitch
                 @endforeach
             </div>

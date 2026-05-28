@@ -4,12 +4,19 @@
         'light' => 'white',
         default => $data['background'] ?? $data['style'] ?? 'black',
     };
+
+    $layout = $data['layout'] ?? 'content_left';
+    $body = $data['body'] ?? null;
+    $bodyHasHtml = filled($body) && $body !== strip_tags($body);
 @endphp
 
 <section @class([
     'page-block',
     'page-block--cta',
     'page-block--bg-' . $background,
+    'page-block--cta-content-right' => $layout === 'content_right',
+    'page-block--cta-button-top' => $layout === 'button_top',
+    'page-block--cta-button-bottom' => $layout === 'button_bottom',
 ])>
     <div class="page-block__inner page-cta">
         <div>
@@ -22,7 +29,13 @@
             @endif
 
             @if (filled($data['body'] ?? null))
-                <p>{!! nl2br(e($data['body'])) !!}</p>
+                <div class="page-rich-text page-cta__body">
+                    @if ($bodyHasHtml)
+                        {!! $body !!}
+                    @else
+                        <p>{!! nl2br(e($body)) !!}</p>
+                    @endif
+                </div>
             @endif
         </div>
 

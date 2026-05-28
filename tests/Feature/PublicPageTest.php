@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Announcement;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -74,10 +76,11 @@ class PublicPageTest extends TestCase
                     'type' => 'cta',
                     'data' => [
                         'heading' => 'Ready to connect?',
-                        'body' => 'Send us a note before you visit.',
+                        'body' => '<p>Send us a <strong>note</strong> before you visit.</p>',
                         'button_label' => 'Contact Us',
                         'button_url' => '/contact',
                         'style' => 'dark',
+                        'layout' => 'button_bottom',
                     ],
                 ],
             ],
@@ -90,6 +93,8 @@ class PublicPageTest extends TestCase
             ->assertSee('Plan your visit')
             ->assertSee('Everything you need for Sunday.')
             ->assertSee('Ready to connect?')
+            ->assertSee('page-block--cta-button-bottom', false)
+            ->assertSee('<strong>note</strong>', false)
             ->assertSee('Contact Us')
             ->assertDontSee('Legacy fallback text.');
     }
@@ -129,8 +134,9 @@ class PublicPageTest extends TestCase
                     'data' => [
                         'image_path' => 'pages/content-images/students.jpg',
                         'image_alt' => 'Students worshiping together',
-                        'image_position' => 'center',
+                        'image_position' => 'screen_width',
                         'background' => 'white',
+                        'body' => '<p><br></p>',
                     ],
                 ],
             ],
@@ -140,7 +146,80 @@ class PublicPageTest extends TestCase
         $this->get('/students')
             ->assertOk()
             ->assertSee('Students worshiping together')
-            ->assertSee('page-block--image-center');
+            ->assertSee('page-block--image-screenwidth')
+            ->assertSee('page-block--image-only')
+            ->assertDontSee('page-image-text__content');
+    }
+
+    public function test_page_info_strip_can_pull_office_hours_from_site_settings(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'office_hours' => '<p>Monday-Thursday <strong>9 AM-4 PM</strong></p>',
+        ]);
+
+        Page::query()->create([
+            'title' => 'Visit',
+            'slug' => 'visit',
+            'content_blocks' => [
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'items' => [
+                            ['label' => 'Office', 'source' => 'office_hours', 'value' => 'Fallback Hours'],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/visit')
+            ->assertOk()
+            ->assertSee('concept-service-strip', false)
+            ->assertSee('<strong>9 AM-4 PM</strong>', false)
+            ->assertDontSee('Fallback Hours');
+    }
+
+    public function test_page_announcements_bar_renders_featured_announcements(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Page Announcement',
+            'slug' => 'page-announcement',
+            'summary' => 'This should appear on a page.',
+            'image_path' => 'announcements/page.jpg',
+            'is_featured' => true,
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Visit',
+            'slug' => 'visit',
+            'content_blocks' => [
+                [
+                    'type' => 'announcements_bar',
+                    'data' => [
+                        'is_visible' => true,
+                        'heading' => 'Page News',
+                        'link_label' => 'All announcements',
+                        'link_url' => '/announcements',
+                        'background' => 'teal',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/visit')
+            ->assertOk()
+            ->assertSee('concept-updates--bar', false)
+            ->assertSee('concept-updates--bg-teal', false)
+            ->assertSee('Page News')
+            ->assertSee('All announcements')
+            ->assertSee('Page Announcement')
+            ->assertSee('This should appear on a page.')
+            ->assertSee('/storage/announcements/page.jpg')
+            ->assertSee('/announcements/page-announcement');
     }
 
     public function test_process_step_blocks_render_on_public_pages(): void

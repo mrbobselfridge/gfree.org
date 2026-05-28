@@ -52,6 +52,7 @@ class HomeController extends Controller
             ->latest()
             ->limit(3)
             ->get();
+        $updates = $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']);
 
         return view('home', [
             'settings' => $settings,
@@ -59,9 +60,7 @@ class HomeController extends Controller
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'hero' => $this->hero($defaults['hero'], $heroBanners->first()),
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
-            'serviceDetails' => $this->serviceDetails($defaults['service_details'], $settings),
-            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries),
-            'updates' => $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']),
+            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $updates),
             'socialLinks' => $this->socialLinks($settings),
         ]);
     }
@@ -91,18 +90,6 @@ class HomeController extends Controller
             'secondary_label' => $banner->secondary_button_label,
             'secondary_url' => $banner->secondary_button_url ?: $defaults['secondary_url'],
         ];
-    }
-
-    private function serviceDetails(array $defaults, ?SiteSetting $settings): array
-    {
-        if (! $settings) {
-            return $defaults;
-        }
-
-        $defaults[0]['value'] = $settings->sunday_service_times ?: $defaults[0]['value'];
-        $defaults[1]['value'] = $settings->address ?: $defaults[1]['value'];
-
-        return $defaults;
     }
 
     private function ministrySteps($ministries)
@@ -143,7 +130,7 @@ class HomeController extends Controller
         ];
     }
 
-    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries): array
+    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries, $updates): array
     {
         $blocks = $content?->content_blocks;
 
@@ -151,13 +138,32 @@ class HomeController extends Controller
             $blocks = $this->defaultHomepageBlocks($defaults, $settings, $ministries);
         }
 
+        if (! $this->hasBlock($blocks, 'announcements_bar')) {
+            $blocks[] = $this->defaultAnnouncementsBarBlock();
+        }
+
+        $blocks = $this->normalizeHomepageBlocks($blocks);
+
         return collect($blocks)
-            ->map(function (array $block): array {
+            ->map(function (array $block) use ($settings, $updates): array {
                 $type = $block['type'] ?? null;
                 $data = $block['data'] ?? [];
 
                 if ($type === 'image_text') {
                     $data['image_url'] = $this->imageUrl($data['image_path'] ?? null);
+                }
+
+                if ($type === 'info_strip') {
+                    $data['items'] = $this->infoStripItems($data['items'] ?? [], $settings);
+                }
+
+                if ($type === 'announcements_bar') {
+                    $data['updates'] = $updates;
+                    $data['is_visible'] = $data['is_visible'] ?? true;
+                    $data['heading'] = $data['heading'] ?? 'Latest at gFree';
+                    $data['link_label'] = $data['link_label'] ?? 'View all';
+                    $data['link_url'] = $data['link_url'] ?? '/announcements';
+                    $data['background'] = $data['background'] ?? 'white';
                 }
 
                 return [
@@ -166,6 +172,38 @@ class HomeController extends Controller
                 ];
             })
             ->filter(fn (array $block): bool => filled($block['type']))
+            ->filter(fn (array $block): bool => $block['type'] !== 'info_strip' || filled($block['data']['items'] ?? []))
+            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || (bool) ($block['data']['is_visible'] ?? true))
+            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || filled($block['data']['updates'] ?? []))
+            ->values()
+            ->all();
+    }
+
+    private function infoStripItems(array $items, ?SiteSetting $settings): array
+    {
+        return collect($items)
+            ->map(function (array $item) use ($settings): array {
+                $source = $item['source'] ?? 'custom';
+                $value = $item['value'] ?? null;
+
+                if ($source === 'sunday_service_times') {
+                    $value = $settings?->sunday_service_times ?: $value;
+                }
+
+                if ($source === 'office_hours') {
+                    $value = $settings?->office_hours ?: $value;
+                }
+
+                if ($source === 'address') {
+                    $value = $settings?->address ?: $value;
+                }
+
+                return [
+                    'label' => $item['label'] ?? null,
+                    'value' => $value,
+                ];
+            })
+            ->filter(fn (array $item): bool => filled($item['label'] ?? null) && filled($item['value'] ?? null))
             ->values()
             ->all();
     }
@@ -176,6 +214,13 @@ class HomeController extends Controller
         $feature = $this->feature($defaults['feature'], $settings, null);
 
         return [
+            [
+                'type' => 'info_strip',
+                'data' => [
+                    'spacing' => 'bottom',
+                    'items' => $this->defaultInfoStripItems($defaults['service_details'] ?? []),
+                ],
+            ],
             [
                 'type' => 'text',
                 'data' => [
@@ -219,7 +264,67 @@ class HomeController extends Controller
                     'image_position' => 'right',
                 ],
             ],
+            $this->defaultAnnouncementsBarBlock(),
         ];
+    }
+
+    private function defaultAnnouncementsBarBlock(): array
+    {
+        return [
+            'type' => 'announcements_bar',
+            'data' => [
+                'is_visible' => true,
+                'heading' => 'Latest at gFree',
+                'link_label' => 'View all',
+                'link_url' => '/announcements',
+                'background' => 'white',
+            ],
+        ];
+    }
+
+    private function hasBlock(array $blocks, string $type): bool
+    {
+        return collect($blocks)
+            ->contains(fn (array $block): bool => ($block['type'] ?? null) === $type);
+    }
+
+    private function normalizeHomepageBlocks(array $blocks): array
+    {
+        $hasAnnouncementsBar = false;
+
+        return collect($blocks)
+            ->filter(function (array $block) use (&$hasAnnouncementsBar): bool {
+                if (($block['type'] ?? null) !== 'announcements_bar') {
+                    return true;
+                }
+
+                if ($hasAnnouncementsBar) {
+                    return false;
+                }
+
+                $hasAnnouncementsBar = true;
+
+                return true;
+            })
+            ->values()
+            ->all();
+    }
+
+    private function defaultInfoStripItems(array $serviceDetails): array
+    {
+        return collect($serviceDetails)
+            ->map(function (array $detail, int $index): array {
+                return [
+                    'label' => $detail['label'] ?? null,
+                    'source' => match ($index) {
+                        0 => 'sunday_service_times',
+                        1 => 'address',
+                        default => 'custom',
+                    },
+                    'value' => $detail['value'] ?? null,
+                ];
+            })
+            ->all();
     }
 
     private function socialLinks(?SiteSetting $settings)

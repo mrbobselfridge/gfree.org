@@ -17,7 +17,7 @@ class ListingHeroSettingsTest extends TestCase
             'church_name' => 'gFree Church',
             'announcements_small_label' => 'Latest',
             'announcements_title' => 'Church updates',
-            'announcements_subtitle' => 'Important things to know this week.',
+            'announcements_subtitle' => '<p>Important things to <strong>know</strong> this week.</p>',
             'announcements_image_path' => 'site-settings/announcements/updates.jpg',
         ]);
 
@@ -25,7 +25,8 @@ class ListingHeroSettingsTest extends TestCase
             ->assertOk()
             ->assertSee('Latest')
             ->assertSee('Church updates')
-            ->assertSee('Important things to know this week.')
+            ->assertSee('<strong>know</strong>', false)
+            ->assertDontSee('&lt;strong&gt;know&lt;/strong&gt;', false)
             ->assertSee('/storage/site-settings/announcements/updates.jpg')
             ->assertSee('page-hero--image');
     }
@@ -36,7 +37,7 @@ class ListingHeroSettingsTest extends TestCase
             'church_name' => 'gFree Church',
             'leadership_small_label' => 'Our team',
             'leadership_title' => 'Leaders who serve',
-            'leadership_subtitle' => 'Meet the people helping gFree follow Jesus.',
+            'leadership_subtitle' => '<p>Meet the people helping <strong>gFree</strong> follow Jesus.</p>',
             'leadership_image_path' => 'site-settings/leadership/team.jpg',
         ]);
 
@@ -44,7 +45,8 @@ class ListingHeroSettingsTest extends TestCase
             ->assertOk()
             ->assertSee('Our team')
             ->assertSee('Leaders who serve')
-            ->assertSee('Meet the people helping gFree follow Jesus.')
+            ->assertSee('<strong>gFree</strong>', false)
+            ->assertDontSee('&lt;strong&gt;gFree&lt;/strong&gt;', false)
             ->assertSee('/storage/site-settings/leadership/team.jpg')
             ->assertSee('page-hero--image');
     }
@@ -55,7 +57,7 @@ class ListingHeroSettingsTest extends TestCase
             'church_name' => 'gFree Church',
             'ministry_small_label' => 'Ministries',
             'ministry_title' => 'Find a place to connect',
-            'ministry_subtitle' => 'Groups and teams for every season.',
+            'ministry_subtitle' => '<p>Groups and <strong>teams</strong> for every season.</p>',
             'ministry_image_path' => 'site-settings/ministry/ministries.jpg',
         ]);
 
@@ -73,7 +75,8 @@ class ListingHeroSettingsTest extends TestCase
             ->assertOk()
             ->assertSee('Ministries')
             ->assertSee('Find a place to connect')
-            ->assertSee('Groups and teams for every season.')
+            ->assertSee('<strong>teams</strong>', false)
+            ->assertDontSee('&lt;strong&gt;teams&lt;/strong&gt;', false)
             ->assertSee('/storage/site-settings/ministry/ministries.jpg')
             ->assertSee('Kids Ministry')
             ->assertSee('Helping kids know Jesus.')

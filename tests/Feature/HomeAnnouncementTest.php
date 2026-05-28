@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Announcement;
+use App\Models\HomepageContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,6 +26,7 @@ class HomeAnnouncementTest extends TestCase
 
         $this->get('/')
             ->assertOk()
+            ->assertSee('concept-updates--bar', false)
             ->assertSee('Church Picnic')
             ->assertSee('/storage/announcements/picnic.jpg')
             ->assertSee('/announcements/church-picnic')
@@ -97,5 +99,109 @@ class HomeAnnouncementTest extends TestCase
             ->assertOk()
             ->assertSee('Published Featured Announcement')
             ->assertDontSee('Expired Published Announcement');
+    }
+
+    public function test_homepage_announcements_can_be_hidden_from_content_blocks(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Hidden Announcement',
+            'slug' => 'hidden-announcement',
+            'summary' => 'Do not show on homepage.',
+            'is_featured' => true,
+            'is_published' => true,
+        ]);
+
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'announcements_bar',
+                    'data' => [
+                        'is_visible' => false,
+                        'background' => 'black',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('concept-updates--bar', false)
+            ->assertDontSee('Hidden Announcement');
+    }
+
+    public function test_homepage_announcements_bar_can_be_moved_and_change_background(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Movable Announcement',
+            'slug' => 'movable-announcement',
+            'summary' => 'This section can move.',
+            'is_featured' => true,
+            'is_published' => true,
+        ]);
+
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'announcements_bar',
+                    'data' => [
+                        'is_visible' => true,
+                        'heading' => 'Current News',
+                        'link_label' => 'All news',
+                        'link_url' => '/announcements',
+                        'background' => 'forest',
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'After the bar',
+                        'body' => '<p>This content follows announcements.</p>',
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response = $this->get('/')
+            ->assertOk()
+            ->assertSee('concept-updates--bg-forest', false)
+            ->assertSee('Current News')
+            ->assertSee('All news')
+            ->assertSee('Movable Announcement')
+            ->assertSee('After the bar');
+
+        $this->assertLessThan(
+            strpos($response->getContent(), 'After the bar'),
+            strpos($response->getContent(), 'Movable Announcement'),
+        );
+    }
+
+    public function test_homepage_only_renders_one_announcements_bar(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Single Bar Announcement',
+            'slug' => 'single-bar-announcement',
+            'summary' => 'Only one section should render.',
+            'is_featured' => true,
+            'is_published' => true,
+        ]);
+
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'announcements_bar',
+                    'data' => ['is_visible' => true, 'heading' => 'First', 'background' => 'white'],
+                ],
+                [
+                    'type' => 'announcements_bar',
+                    'data' => ['is_visible' => true, 'heading' => 'Second', 'background' => 'black'],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('First')
+            ->assertDontSee('Second');
     }
 }

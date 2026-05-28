@@ -72,6 +72,15 @@ class HomepageContentTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
+            ->assertSee('concept-service-strip', false)
+            ->assertSee('page-block--info-strip-spacing-bottom', false)
+            ->assertSee('--info-strip-count: 3', false)
+            ->assertSee('Sunday')
+            ->assertSee('9:00 & 10:45 AM', false)
+            ->assertSee('Visit')
+            ->assertSee('305 Keystone Hill Road')
+            ->assertSee('Next Step')
+            ->assertSee('Connect Card & Prayer', false)
             ->assertSee('Everything a guest needs without digging.')
             ->assertSee('Visit Sunday')
             ->assertSee('Every step matters.')
@@ -108,10 +117,11 @@ class HomepageContentTest extends TestCase
                     'data' => [
                         'eyebrow' => 'Ready',
                         'heading' => 'Take a next step',
-                        'body' => 'Start with a simple form.',
+                        'body' => '<p>Start with a <strong>simple</strong> form.</p>',
                         'button_label' => 'Get Started',
                         'button_url' => '/next-step',
                         'background' => 'gold',
+                        'layout' => 'button_top',
                     ],
                 ],
             ],
@@ -127,7 +137,9 @@ class HomepageContentTest extends TestCase
             ->assertSee('Simple process')
             ->assertSee('Pick a first step.')
             ->assertSee('page-block--bg-gold', false)
+            ->assertSee('page-block--cta-button-top', false)
             ->assertSee('Take a next step')
+            ->assertSee('<strong>simple</strong>', false)
             ->assertSee('Get Started')
             ->assertSee('/next-step');
     }
@@ -146,5 +158,93 @@ class HomepageContentTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('https://example.com/one-church');
+    }
+
+    public function test_homepage_info_strip_can_pull_values_from_site_settings(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'sunday_service_times' => '<p>8:00, 9:15, &amp; <strong>11:00</strong></p>',
+            'office_hours' => '<p>Mon-Thu <strong>9-4</strong></p>',
+            'address' => '<p>gFree Church 305 Keystone Hill Road <strong>Philipsburg</strong>, PA 16866</p>',
+        ]);
+
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'items' => [
+                            ['label' => 'Sunday', 'source' => 'sunday_service_times', 'value' => 'Fallback Times'],
+                            ['label' => 'Office', 'source' => 'office_hours', 'value' => 'Fallback Office'],
+                            ['label' => 'Visit', 'source' => 'address', 'value' => 'Fallback Address'],
+                            ['label' => 'Next Step', 'source' => 'custom', 'value' => '<p>Connect Card &amp; <strong>Prayer</strong></p>'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('concept-service-strip', false)
+            ->assertSee('--info-strip-count: 4', false)
+            ->assertSee('<strong>11:00</strong>', false)
+            ->assertSee('<strong>9-4</strong>', false)
+            ->assertSee('<strong>Philipsburg</strong>', false)
+            ->assertSee('<strong>Prayer</strong>', false)
+            ->assertDontSee('&lt;strong&gt;11:00&lt;/strong&gt;', false)
+            ->assertDontSee('Fallback Times')
+            ->assertDontSee('Fallback Office')
+            ->assertDontSee('Fallback Address');
+    }
+
+    public function test_homepage_info_strip_is_hidden_when_no_items_have_content(): void
+    {
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'items' => [
+                            ['label' => 'Sunday', 'source' => 'custom', 'value' => null],
+                            ['label' => null, 'source' => 'custom', 'value' => 'Has a value'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('concept-service-strip', false)
+            ->assertDontSee('Has a value');
+    }
+
+    public function test_homepage_info_strip_supports_spacing_options_and_up_to_five_items(): void
+    {
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'spacing' => 'both',
+                        'items' => [
+                            ['label' => 'One', 'source' => 'custom', 'value' => 'First'],
+                            ['label' => 'Two', 'source' => 'custom', 'value' => 'Second'],
+                            ['label' => 'Three', 'source' => 'custom', 'value' => 'Third'],
+                            ['label' => 'Four', 'source' => 'custom', 'value' => 'Fourth'],
+                            ['label' => 'Five', 'source' => 'custom', 'value' => 'Fifth'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('page-block--info-strip-spacing-both', false)
+            ->assertSee('--info-strip-count: 5', false)
+            ->assertSee('Fifth');
     }
 }

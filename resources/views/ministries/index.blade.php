@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ministries | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
-    <meta name="description" content="{{ $hero['subtitle'] ?: 'Explore ministries at gFree Church.' }}">
+    <meta name="description" content="{{ strip_tags($hero['subtitle'] ?: 'Explore ministries at gFree Church.') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
@@ -24,7 +24,7 @@
                 <h1>{{ $hero['title'] }}</h1>
 
                 @if ($hero['subtitle'])
-                    <p>{{ $hero['subtitle'] }}</p>
+                    <div class="page-hero__subtitle">{!! $hero['subtitle'] !!}</div>
                 @endif
             </div>
         </section>

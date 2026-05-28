@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings;
 
-use App\Filament\Admin\Resources\SiteSettings\Pages\CreateSiteSetting;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Filament\Admin\Resources\SiteSettings\Pages\ListSiteSettings;
 use App\Filament\Admin\Resources\SiteSettings\Schemas\SiteSettingForm;
@@ -51,7 +50,6 @@ class SiteSettingResource extends Resource
     {
         return [
             'index' => ListSiteSettings::route('/'),
-            'create' => CreateSiteSetting::route('/create'),
             'edit' => EditSiteSetting::route('/{record}/edit'),
         ];
     }

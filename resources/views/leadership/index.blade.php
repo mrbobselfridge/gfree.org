@@ -24,7 +24,7 @@
                 <h1>{{ $hero['title'] }}</h1>
 
                 @if ($hero['subtitle'])
-                    <p>{{ $hero['subtitle'] }}</p>
+                    <div class="page-hero__subtitle">{!! $hero['subtitle'] !!}</div>
                 @endif
             </div>
         </section>

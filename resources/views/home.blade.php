@@ -22,9 +22,7 @@
 
     <main>
         @include('home.partials.hero')
-        @include('home.partials.service-strip')
         @include('home.partials.content-blocks')
-        @include('home.partials.updates')
     </main>
 
     @include('home.partials.footer')
