@@ -40,7 +40,6 @@ class DatabaseSeeder extends Seeder
             'button_url' => '/new-here',
             'secondary_button_label' => 'Watch Live',
             'secondary_button_url' => '/live',
-            'sort_order' => 1,
             'is_published' => true,
         ]);
 
