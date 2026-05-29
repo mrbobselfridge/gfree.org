@@ -16,7 +16,7 @@ class SermonController extends Controller
         $defaults = config('gfree.homepage');
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         return view('sermons.index', [

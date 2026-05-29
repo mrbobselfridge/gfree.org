@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\NavigationLink;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class NavigationLinkTest extends TestCase
@@ -98,5 +99,28 @@ class NavigationLinkTest extends TestCase
             ->assertOk()
             ->assertDontSee('concept-nav__give', false)
             ->assertDontSee('>Give</a>', false);
+    }
+
+    public function test_sermons_header_navigation_is_not_limited_to_five_links(): void
+    {
+        Http::fake([
+            'youtube.com/feeds/videos.xml*' => Http::response('', 500),
+        ]);
+
+        foreach (range(1, 6) as $index) {
+            NavigationLink::query()->create([
+                'label' => "Header Link {$index}",
+                'url' => "/header-link-{$index}",
+                'location' => 'header',
+                'sort_order' => $index,
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/sermons')
+            ->assertOk()
+            ->assertSee('Header Link 1')
+            ->assertSee('Header Link 5')
+            ->assertSee('Header Link 6');
     }
 }
