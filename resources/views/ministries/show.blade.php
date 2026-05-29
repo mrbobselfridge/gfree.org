@@ -33,7 +33,7 @@
                 <div class="ministry-detail__main">
                     @if ($ministry->description)
                         <div class="page-rich-text">
-                            {!! $ministry->description !!}
+                            {!! \App\Support\RichContent::render($ministry->description) !!}
                         </div>
                     @else
                         <div class="page-rich-text">

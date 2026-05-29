@@ -30,7 +30,7 @@
             <div class="page-block__inner page-block__inner--narrow">
                 @if ($leader->bio)
                     <div class="page-rich-text">
-                        {!! $leader->bio !!}
+                        {!! \App\Support\RichContent::render($leader->bio) !!}
                     </div>
                 @endif
 

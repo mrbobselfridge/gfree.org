@@ -144,6 +144,30 @@ class HomepageContentTest extends TestCase
             ->assertSee('/next-step');
     }
 
+    public function test_homepage_content_renders_rich_text_embeds(): void
+    {
+        $embedCode = '<iframe src="https://example.com/form"></iframe>';
+
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'Sign up',
+                        'body' => '<p>Use the form below.</p>'.$this->embedBlockHtml($embedCode),
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Use the form below.')
+            ->assertSee('<div class="page-rich-embed"><iframe src="https://example.com/form"></iframe></div>', false)
+            ->assertDontSee('data-type="customBlock"', false);
+    }
+
     public function test_homepage_content_default_feature_url_still_allows_one_church_fallback(): void
     {
         SiteSetting::query()->create([
@@ -246,5 +270,15 @@ class HomepageContentTest extends TestCase
             ->assertSee('page-block--info-strip-spacing-both', false)
             ->assertSee('--info-strip-count: 5', false)
             ->assertSee('Fifth');
+    }
+
+    private function embedBlockHtml(string $embedCode, string $label = 'Signup form'): string
+    {
+        $config = htmlspecialchars(json_encode([
+            'label' => $label,
+            'embed_code' => $embedCode,
+        ], JSON_THROW_ON_ERROR), ENT_QUOTES);
+
+        return '<div data-type="customBlock" data-id="embed" data-config="'.$config.'"></div>';
     }
 }

@@ -2,19 +2,32 @@
 
 namespace App\Filament\Admin\Forms;
 
+use App\Filament\Admin\Forms\RichContentBlocks\EmbedBlock;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\RichEditor\RichEditorTool;
+use Filament\Support\Icons\Heroicon;
 
 class RichEditorDefaults
 {
     public static function configure(RichEditor $editor): RichEditor
     {
         return $editor
+            ->customBlocks([
+                EmbedBlock::class,
+            ])
+            ->tools([
+                RichEditorTool::make('embed')
+                    ->label('Embed')
+                    ->jsHandler('togglePanel(\'customBlocks\')')
+                    ->activeJsExpression('isPanelActive(\'customBlocks\')')
+                    ->icon(Heroicon::OutlinedCodeBracketSquare),
+            ])
             ->toolbarButtons([
                 ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
                 ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
                 ['alignStart', 'alignCenter', 'alignEnd'],
                 ['blockquote', 'bulletList', 'orderedList'],
-                ['table', 'horizontalRule'],
+                ['table', 'horizontalRule', 'embed'],
                 ['undo', 'redo'],
             ]);
     }

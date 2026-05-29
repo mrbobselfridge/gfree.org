@@ -30,7 +30,7 @@
             <div class="page-block__inner page-block__inner--narrow">
                 @if ($announcement->body)
                     <div class="page-rich-text">
-                        {!! $announcement->body !!}
+                        {!! \App\Support\RichContent::render($announcement->body) !!}
                     </div>
                 @endif
 

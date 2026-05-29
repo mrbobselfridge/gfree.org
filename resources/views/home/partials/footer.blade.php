@@ -6,7 +6,7 @@
 
     <div class="site-footer__details">
         @if ($settings?->address)
-            <div>{!! $settings->address !!}</div>
+            <div>{!! \App\Support\RichContent::render($settings->address) !!}</div>
         @endif
         @if ($settings?->email)
             <a href="mailto:{{ $settings->email }}">{{ $settings->email }}</a>

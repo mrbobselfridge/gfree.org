@@ -14,7 +14,7 @@
         @foreach ($items as $item)
             <div class="concept-service-strip__item">
                 <span>{{ $item['label'] }}</span>
-                <div class="concept-service-strip__value">{!! $item['value'] !!}</div>
+                <div class="concept-service-strip__value">{!! \App\Support\RichContent::render($item['value']) !!}</div>
             </div>
         @endforeach
     </section>

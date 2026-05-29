@@ -517,6 +517,27 @@
     background: color-mix(in srgb, var(--page-block-fg) 8%, transparent);
 }
 
+.page-rich-embed {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.page-rich-embed iframe,
+.page-rich-embed object,
+.page-rich-embed embed,
+.page-rich-embed video {
+    max-width: 100%;
+}
+
+.page-rich-embed iframe[src*="youtube"],
+.page-rich-embed iframe[src*="youtu.be"],
+.page-rich-embed iframe[src*="vimeo"] {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
 .page-block__button {
     display: inline-flex;
     align-items: center;

@@ -44,7 +44,7 @@
 
             @if (filled($data['body'] ?? null))
                 <div class="page-rich-text">
-                    {!! $data['body'] !!}
+                    {!! \App\Support\RichContent::render($data['body']) !!}
                 </div>
             @endif
 

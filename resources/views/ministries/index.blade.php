@@ -24,7 +24,7 @@
                 <h1>{{ $hero['title'] }}</h1>
 
                 @if ($hero['subtitle'])
-                    <div class="page-hero__subtitle">{!! $hero['subtitle'] !!}</div>
+                    <div class="page-hero__subtitle">{!! \App\Support\RichContent::render($hero['subtitle']) !!}</div>
                 @endif
             </div>
         </section>

@@ -31,7 +31,7 @@
             @if (filled($data['body'] ?? null))
                 <div class="page-rich-text page-cta__body">
                     @if ($bodyHasHtml)
-                        {!! $body !!}
+                        {!! \App\Support\RichContent::render($body) !!}
                     @else
                         <p>{!! nl2br(e($body)) !!}</p>
                     @endif
