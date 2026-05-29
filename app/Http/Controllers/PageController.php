@@ -23,10 +23,7 @@ class PageController extends Controller
         $now = now();
 
         $navigationLinks = NavigationLink::query()
-            ->active()
-            ->where('location', 'header')
-            ->whereNull('parent_id')
-            ->orderBy('sort_order')
+            ->topLevelHeader()
             ->limit(5)
             ->get();
 

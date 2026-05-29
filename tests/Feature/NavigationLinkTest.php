@@ -55,4 +55,40 @@ class NavigationLinkTest extends TestCase
             ->assertDontSee('Future Link')
             ->assertDontSee('Expired Link');
     }
+
+    public function test_header_navigation_renders_active_child_links_in_dropdowns(): void
+    {
+        $parent = NavigationLink::query()->create([
+            'label' => 'Ministries',
+            'url' => '/ministry',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Kids',
+            'url' => '/ministry/kids',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Future Students',
+            'url' => '/ministry/students',
+            'location' => 'header',
+            'sort_order' => 2,
+            'publish_at' => now()->addDay(),
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Ministries')
+            ->assertSee('Kids')
+            ->assertDontSee('Future Students');
+    }
 }

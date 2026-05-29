@@ -16,21 +16,21 @@ class NavigationLinkForm
     {
         return $schema
             ->components([
-                TextInput::make('label')
-                    ->label('Link Text')
-                    ->required()
-                    ->maxLength(255),
+                Select::make('parent_id')
+                    ->label('Parent link')
+                    ->relationship('parent', 'label')
+                    ->searchable()
+                    ->preload(),
                 ToggleButtons::make('is_published')
                     ->label('Make Link Live')
                     ->boolean()
                     ->inline()
                     ->default(false)
                     ->required(),
-                Select::make('parent_id')
-                    ->label('Parent link')
-                    ->relationship('parent', 'label')
-                    ->searchable()
-                    ->preload(),
+                TextInput::make('label')
+                    ->label('Link Text')
+                    ->required()
+                    ->maxLength(255),
                 ToggleButtons::make('opens_in_new_tab')
                     ->label('Open in new tab')
                     ->boolean()

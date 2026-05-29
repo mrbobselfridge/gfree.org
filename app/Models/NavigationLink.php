@@ -41,6 +41,22 @@ class NavigationLink extends Model
             ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now));
     }
 
+    public function scopeTopLevelHeader(Builder $query): Builder
+    {
+        return $query
+            ->active()
+            ->where('location', 'header')
+            ->whereNull('parent_id')
+            ->with(['children' => fn (HasMany $query) => $query
+                ->active()
+                ->where('location', 'header')
+                ->orderBy('sort_order')
+                ->orderBy('label'),
+            ])
+            ->orderBy('sort_order')
+            ->orderBy('label');
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');

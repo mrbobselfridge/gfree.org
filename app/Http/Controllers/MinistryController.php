@@ -63,10 +63,7 @@ class MinistryController extends Controller
         $defaults = config('gfree.homepage');
 
         $navigationLinks = NavigationLink::query()
-            ->active()
-            ->where('location', 'header')
-            ->whereNull('parent_id')
-            ->orderBy('sort_order')
+            ->topLevelHeader()
             ->limit(5)
             ->get();
 

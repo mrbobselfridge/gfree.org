@@ -23,7 +23,7 @@ class StaffMemberForm
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->maxLength(255),
                 ToggleButtons::make('is_published')
-                    ->label('Make Announcement Live')
+                    ->label('Make Leader Live')
                     ->boolean()
                     ->inline()
                     ->default(false)
