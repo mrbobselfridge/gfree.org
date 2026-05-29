@@ -91,4 +91,12 @@ class NavigationLinkTest extends TestCase
             ->assertSee('Kids')
             ->assertDontSee('Future Students');
     }
+
+    public function test_header_navigation_does_not_render_default_give_link(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('concept-nav__give', false)
+            ->assertDontSee('>Give</a>', false);
+    }
 }

@@ -43,6 +43,5 @@
             @endif
         @endforeach
 
-        <a href="{{ $settings?->giving_url ?: '/give' }}" class="concept-nav__give">Give</a>
     </nav>
 </header>
