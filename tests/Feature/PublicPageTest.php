@@ -52,6 +52,28 @@ class PublicPageTest extends TestCase
             ->assertDontSee('site-footer', false);
     }
 
+    public function test_page_can_hide_site_chrome_and_page_header_for_content_only_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Content Only Landing',
+            'slug' => 'content-only-landing',
+            'intro' => 'This intro belongs to the hidden page header.',
+            'body' => 'Only this body content should show.',
+            'show_site_chrome' => false,
+            'show_page_header' => false,
+            'is_published' => true,
+        ]);
+
+        $this->get('/content-only-landing')
+            ->assertOk()
+            ->assertSee('Only this body content should show.')
+            ->assertDontSee('concept-header', false)
+            ->assertDontSee('site-footer', false)
+            ->assertDontSee('page-hero', false)
+            ->assertDontSee('<h1>Content Only Landing</h1>', false)
+            ->assertDontSee('<p>This intro belongs to the hidden page header.</p>', false);
+    }
+
     public function test_page_hero_label_is_optional_and_page_specific(): void
     {
         Page::query()->create([

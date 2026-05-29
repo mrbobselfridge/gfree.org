@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
     'sort_order',
     'is_published',
     'show_site_chrome',
+    'show_page_header',
 ])]
 class Page extends Model
 {
@@ -27,6 +28,7 @@ class Page extends Model
             'content_blocks' => 'array',
             'is_published' => 'boolean',
             'show_site_chrome' => 'boolean',
+            'show_page_header' => 'boolean',
         ];
     }
 }

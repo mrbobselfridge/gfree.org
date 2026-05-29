@@ -323,6 +323,10 @@
     border-top: 1px solid var(--page-block-border);
 }
 
+.public-page .page-blocks .page-block {
+    padding: 20px 0;
+}
+
 .page-block--light,
 .page-block--bg-white {
     --page-block-bg: white;

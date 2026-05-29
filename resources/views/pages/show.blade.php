@@ -7,29 +7,31 @@
     <meta name="description" content="{{ $page->seo_description ?: $page->intro ?: $settings?->tagline }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
+<body class="site-page public-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
     @if ($page->show_site_chrome)
         @include('home.partials.header')
     @endif
 
     <main>
-        <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
-            @if ($heroImageUrl)
-                <div class="page-hero__image" style="background-image: url('{{ $heroImageUrl }}')"></div>
-            @endif
-
-            <div class="page-hero__content">
-                @if ($page->hero_label)
-                    <p class="concept-eyebrow">{{ $page->hero_label }}</p>
+        @if ($page->show_page_header)
+            <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
+                @if ($heroImageUrl)
+                    <div class="page-hero__image" style="background-image: url('{{ $heroImageUrl }}')"></div>
                 @endif
 
-                <h1>{{ $page->title }}</h1>
+                <div class="page-hero__content">
+                    @if ($page->hero_label)
+                        <p class="concept-eyebrow">{{ $page->hero_label }}</p>
+                    @endif
 
-                @if ($page->intro)
-                    <p>{{ $page->intro }}</p>
-                @endif
-            </div>
-        </section>
+                    <h1>{{ $page->title }}</h1>
+
+                    @if ($page->intro)
+                        <p>{{ $page->intro }}</p>
+                    @endif
+                </div>
+            </section>
+        @endif
 
         @if (count($contentBlocks))
             <div class="page-blocks">

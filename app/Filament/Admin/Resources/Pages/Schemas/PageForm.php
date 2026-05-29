@@ -36,6 +36,12 @@ class PageForm
                     ->inline()
                     ->default(true)
                     ->required(),
+                ToggleButtons::make('show_page_header')
+                    ->label('Show page header')
+                    ->boolean()
+                    ->inline()
+                    ->default(true)
+                    ->required(),
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255),
