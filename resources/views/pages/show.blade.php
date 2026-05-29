@@ -8,7 +8,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
-    @include('home.partials.header')
+    @if ($page->show_site_chrome)
+        @include('home.partials.header')
+    @endif
 
     <main>
         <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
@@ -78,6 +80,8 @@
         @endif
     </main>
 
-    @include('home.partials.footer')
+    @if ($page->show_site_chrome)
+        @include('home.partials.footer')
+    @endif
 </body>
 </html>

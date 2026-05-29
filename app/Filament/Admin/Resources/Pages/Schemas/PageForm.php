@@ -30,6 +30,12 @@ class PageForm
                     ->inline()
                     ->default(false)
                     ->required(),
+                ToggleButtons::make('show_site_chrome')
+                    ->label('Show navigation and footer')
+                    ->boolean()
+                    ->inline()
+                    ->default(true)
+                    ->required(),
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255),

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
     'seo_description',
     'sort_order',
     'is_published',
+    'show_site_chrome',
 ])]
 class Page extends Model
 {
@@ -25,6 +26,7 @@ class Page extends Model
         return [
             'content_blocks' => 'array',
             'is_published' => 'boolean',
+            'show_site_chrome' => 'boolean',
         ];
     }
 }

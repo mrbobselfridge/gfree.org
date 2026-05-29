@@ -27,7 +27,29 @@ class PublicPageTest extends TestCase
             ->assertSee('About gFree')
             ->assertSee('A short intro for the page.')
             ->assertSee('This is the page body.')
+            ->assertSee('concept-header', false)
+            ->assertSee('site-footer', false)
             ->assertDontSee('<p class="concept-eyebrow">gFree Church</p>', false);
+    }
+
+    public function test_page_can_hide_navigation_and_footer_for_minimal_landing_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Mobile Landing',
+            'slug' => 'mobile-landing',
+            'intro' => 'A focused landing page.',
+            'body' => 'Only the page content should show.',
+            'show_site_chrome' => false,
+            'is_published' => true,
+        ]);
+
+        $this->get('/mobile-landing')
+            ->assertOk()
+            ->assertSee('Mobile Landing')
+            ->assertSee('A focused landing page.')
+            ->assertSee('Only the page content should show.')
+            ->assertDontSee('concept-header', false)
+            ->assertDontSee('site-footer', false);
     }
 
     public function test_page_hero_label_is_optional_and_page_specific(): void
