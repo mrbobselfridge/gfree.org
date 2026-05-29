@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
-use App\Models\HomepageContent;
 use App\Models\HomepageBanner;
+use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
@@ -29,7 +29,7 @@ class HomeController extends Controller
 
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         $ministries = Ministry::query()

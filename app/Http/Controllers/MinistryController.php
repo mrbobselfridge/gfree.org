@@ -64,7 +64,7 @@ class MinistryController extends Controller
 
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         return [
