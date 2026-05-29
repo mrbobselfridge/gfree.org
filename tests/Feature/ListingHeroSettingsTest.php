@@ -83,6 +83,8 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('Kids Ministry')
             ->assertSee('Helping kids know Jesus.')
             ->assertSee('/storage/ministries/card-images/kids.jpg')
+            ->assertSee('listing-card__link', false)
+            ->assertSee('listing-card__button', false)
             ->assertSee('/ministry/kids-ministry');
     }
 
@@ -138,6 +140,7 @@ class ListingHeroSettingsTest extends TestCase
             'location' => 'Kids Wing',
             'leader_name' => 'Jane Doe',
             'leader_email' => 'jane@example.com',
+            'leader_phone' => '814-555-1212',
             'one_church_url' => 'https://example.com/kids',
             'is_published' => true,
         ]);
@@ -152,6 +155,7 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('Sundays at 10am')
             ->assertSee('Kids Wing')
             ->assertSee('Jane Doe')
+            ->assertSee('814-555-1212')
             ->assertSee('mailto:jane@example.com')
             ->assertSee('https://example.com/kids');
     }

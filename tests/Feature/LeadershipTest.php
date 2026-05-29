@@ -32,6 +32,8 @@ class LeadershipTest extends TestCase
             ->assertSee('Pastor')
             ->assertSee('/storage/leadership/jane.jpg')
             ->assertSee('/leadership/jane-leader')
+            ->assertSee('listing-card__link', false)
+            ->assertSee('listing-card__button', false)
             ->assertDontSee('Draft Leader');
     }
 

@@ -34,20 +34,22 @@
                 <div class="announcement-grid">
                     @foreach ($announcements as $announcement)
                         <article class="announcement-card">
-                            @if ($announcement->image_url)
-                                <img src="{{ $announcement->image_url }}" alt="">
-                            @endif
-
-                            <div>
-                                <p>{{ $announcement->is_featured ? 'Featured' : 'Announcement' }}</p>
-                                <h2>{{ $announcement->title }}</h2>
-
-                                @if ($announcement->summary)
-                                    <span>{{ $announcement->summary }}</span>
+                            <a class="listing-card__link" href="{{ route('announcements.show', $announcement->slug) }}">
+                                @if ($announcement->image_url)
+                                    <img src="{{ $announcement->image_url }}" alt="">
                                 @endif
 
-                                <a href="{{ route('announcements.show', $announcement->slug) }}">Read more</a>
-                            </div>
+                                <div class="listing-card__content">
+                                    <p>{{ $announcement->is_featured ? 'Featured' : 'Announcement' }}</p>
+                                    <h2>{{ $announcement->title }}</h2>
+
+                                    @if ($announcement->summary)
+                                        <span class="listing-card__summary">{{ $announcement->summary }}</span>
+                                    @endif
+
+                                    <span class="listing-card__button">Read more</span>
+                                </div>
+                            </a>
                         </article>
                     @endforeach
                 </div>

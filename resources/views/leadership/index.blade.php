@@ -34,18 +34,20 @@
                 <div class="leadership-grid">
                     @foreach ($leaders as $leader)
                         <article class="leadership-card">
-                            @if ($leader->photo_url)
-                                <img src="{{ $leader->photo_url }}" alt="{{ $leader->name }}">
-                            @endif
-
-                            <div>
-                                @if ($leader->role)
-                                    <p>{{ $leader->role }}</p>
+                            <a class="listing-card__link" href="{{ route('leadership.show', $leader->slug) }}">
+                                @if ($leader->photo_url)
+                                    <img src="{{ $leader->photo_url }}" alt="{{ $leader->name }}">
                                 @endif
 
-                                <h2>{{ $leader->name }}</h2>
-                                <a href="{{ route('leadership.show', $leader->slug) }}">View profile</a>
-                            </div>
+                                <div class="listing-card__content">
+                                    @if ($leader->role)
+                                        <p>{{ $leader->role }}</p>
+                                    @endif
+
+                                    <h2>{{ $leader->name }}</h2>
+                                    <span class="listing-card__button">View profile</span>
+                                </div>
+                            </a>
                         </article>
                     @endforeach
                 </div>

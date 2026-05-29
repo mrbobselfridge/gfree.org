@@ -54,6 +54,7 @@ class MinistryController extends Controller
             ['label' => 'When', 'value' => $ministry->meeting_time],
             ['label' => 'Where', 'value' => $ministry->location],
             ['label' => 'Leader', 'value' => $ministry->leader_name],
+            ['label' => 'Phone', 'value' => $ministry->leader_phone],
         ])->filter(fn (array $item) => filled($item['value']));
     }
 

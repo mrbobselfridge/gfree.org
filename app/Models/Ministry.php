@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
     'location',
     'leader_name',
     'leader_email',
+    'leader_phone',
     'one_church_url',
     'embed_code',
     'sort_order',

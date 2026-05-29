@@ -31,6 +31,8 @@ class PublicAnnouncementTest extends TestCase
             ->assertSee('Church Picnic')
             ->assertSee('Join us after service.')
             ->assertSee('/storage/announcements/picnic.jpg')
+            ->assertSee('listing-card__link', false)
+            ->assertSee('listing-card__button', false)
             ->assertDontSee('Draft Announcement');
     }
 

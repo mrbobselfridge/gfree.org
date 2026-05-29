@@ -34,23 +34,25 @@
                 <div class="ministry-grid">
                     @foreach ($ministries as $ministry)
                         <article class="ministry-card">
-                            @if ($ministry->image_url)
-                                <img src="{{ $ministry->image_url }}" alt="">
-                            @endif
-
-                            <div>
-                                @if ($ministry->category)
-                                    <p>{{ $ministry->category }}</p>
+                            <a class="listing-card__link" href="{{ route('ministries.show', $ministry->slug) }}">
+                                @if ($ministry->image_url)
+                                    <img src="{{ $ministry->image_url }}" alt="">
                                 @endif
 
-                                <h2>{{ $ministry->name }}</h2>
+                                <div class="listing-card__content">
+                                    @if ($ministry->category)
+                                        <p>{{ $ministry->category }}</p>
+                                    @endif
 
-                                @if ($ministry->short_summary)
-                                    <span>{{ $ministry->short_summary }}</span>
-                                @endif
+                                    <h2>{{ $ministry->name }}</h2>
 
-                                <a href="{{ route('ministries.show', $ministry->slug) }}">Learn more</a>
-                            </div>
+                                    @if ($ministry->short_summary)
+                                        <span class="listing-card__summary">{{ $ministry->short_summary }}</span>
+                                    @endif
+
+                                    <span class="listing-card__button">Learn more</span>
+                                </div>
+                            </a>
                         </article>
                     @endforeach
                 </div>

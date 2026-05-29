@@ -60,6 +60,9 @@ class MinistryForm
                 TextInput::make('leader_email')
                     ->email()
                     ->maxLength(255),
+                TextInput::make('leader_phone')
+                    ->tel()
+                    ->maxLength(255),
                 TextInput::make('one_church_url')
                     ->label('One Church URL')
                     ->url()
