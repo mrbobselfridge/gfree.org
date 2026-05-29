@@ -95,6 +95,35 @@ class SiteSettingForm
                     ->disk('public')
                     ->directory('site-settings/ministry')
                     ->columnSpanFull(),
+                TextInput::make('sermons_small_label')
+                    ->label('Sermons small label')
+                    ->maxLength(255),
+                TextInput::make('sermons_title')
+                    ->label('Sermons title')
+                    ->maxLength(255),
+                RichEditorDefaults::configure(RichEditor::make('sermons_subtitle'))
+                    ->label('Sermons subtitle')
+                    ->columnSpanFull(),
+                RichEditorDefaults::configure(RichEditor::make('sermons_text'))
+                    ->label('Sermons text')
+                    ->columnSpanFull(),
+                TextInput::make('sermons_youtube_link_label')
+                    ->label('View on YouTube text')
+                    ->maxLength(255),
+                TextInput::make('sermons_youtube_feed_url')
+                    ->label('Sermons YouTube feed URL')
+                    ->helperText('Optional. Paste a YouTube RSS feed URL to replace the default sermon channel feed.')
+                    ->url(),
+                TextInput::make('sermons_youtube_channel_url')
+                    ->label('Sermons YouTube channel URL')
+                    ->helperText('Optional. Used for the View on YouTube link when the feed source changes.')
+                    ->url(),
+                FileUpload::make('sermons_image_path')
+                    ->label('Sermons image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('site-settings/sermons')
+                    ->columnSpanFull(),
             ]);
     }
 }

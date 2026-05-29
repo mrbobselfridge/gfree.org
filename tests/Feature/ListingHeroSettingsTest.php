@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Ministry;
 use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ListingHeroSettingsTest extends TestCase
@@ -84,6 +86,41 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('/ministry/kids-ministry');
     }
 
+    public function test_sermons_listing_uses_configured_site_settings(): void
+    {
+        Cache::forget('youtube-sermons-feed-v2-UCDDrEtN3XPxVE9-oY008IYA-12');
+
+        Http::fake([
+            'youtube.com/feeds/videos.xml*' => Http::response($this->youtubeFeed(), 200, [
+                'Content-Type' => 'application/xml',
+            ]),
+        ]);
+
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'sermons_small_label' => 'Messages',
+            'sermons_title' => 'Latest sermons',
+            'sermons_subtitle' => '<p>Messages for <strong>real life</strong>.</p>',
+            'sermons_text' => '<p>Catch up on recent teaching from Sunday mornings.</p>',
+            'sermons_youtube_link_label' => 'Open the sermon channel',
+            'sermons_image_path' => 'site-settings/sermons/sermons.jpg',
+        ]);
+
+        $this->get('/sermons')
+            ->assertOk()
+            ->assertSee('Messages')
+            ->assertSee('Latest sermons')
+            ->assertSee('<strong>real life</strong>', false)
+            ->assertDontSee('&lt;strong&gt;real life&lt;/strong&gt;', false)
+            ->assertSee('Catch up on recent teaching from Sunday mornings.')
+            ->assertSee('Open the sermon channel')
+            ->assertSee('target="_blank"', false)
+            ->assertSee('rel="noopener noreferrer"', false)
+            ->assertSee('/storage/site-settings/sermons/sermons.jpg')
+            ->assertSee('page-hero--image')
+            ->assertSee('3. Bless This Home- Peace');
+    }
+
     public function test_ministry_detail_shows_ministry_content_and_actions(): void
     {
         SiteSetting::query()->create([
@@ -117,5 +154,26 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('Jane Doe')
             ->assertSee('mailto:jane@example.com')
             ->assertSee('https://example.com/kids');
+    }
+
+    private function youtubeFeed(): string
+    {
+        return <<<'XML'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+            <entry>
+                <id>yt:video:5n_lIV6pxyQ</id>
+                <yt:videoId>5n_lIV6pxyQ</yt:videoId>
+                <title>3. Bless This Home- Peace</title>
+                <link rel="alternate" href="https://www.youtube.com/watch?v=5n_lIV6pxyQ"/>
+                <published>2026-05-26T21:26:52+00:00</published>
+                <media:group>
+                    <media:title>3. Bless This Home- Peace</media:title>
+                    <media:thumbnail url="https://i2.ytimg.com/vi/5n_lIV6pxyQ/hqdefault.jpg" width="480" height="360"/>
+                    <media:description>Let’s learn what it means to not just keep the peace, but to be true peacemakers for our families.</media:description>
+                </media:group>
+            </entry>
+        </feed>
+        XML;
     }
 }

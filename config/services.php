@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'youtube' => [
+        'sermons_channel_id' => env('YOUTUBE_SERMONS_CHANNEL_ID', 'UCDDrEtN3XPxVE9-oY008IYA'),
+    ],
+
 ];

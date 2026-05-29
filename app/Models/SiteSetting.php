@@ -31,6 +31,14 @@ use Illuminate\Database\Eloquent\Model;
     'ministry_title',
     'ministry_subtitle',
     'ministry_image_path',
+    'sermons_small_label',
+    'sermons_title',
+    'sermons_subtitle',
+    'sermons_text',
+    'sermons_youtube_link_label',
+    'sermons_youtube_feed_url',
+    'sermons_youtube_channel_url',
+    'sermons_image_path',
 ])]
 class SiteSetting extends Model
 {
