@@ -4012,8 +4012,9 @@
 }
 
 .site-footer__address .site-footer__value {
-    font-size: clamp(1.1rem, 2vw, 1.55rem);
-    line-height: 1.15;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.35;
 }
 
 .site-footer__address .site-footer__value > * {
@@ -4023,6 +4024,11 @@
 
 .site-footer__address .site-footer__value > :last-child {
     margin-bottom: 0;
+}
+
+.site-footer__address .site-footer__value strong,
+.site-footer__address .site-footer__value b {
+    font-weight: 500;
 }
 
 .site-footer__value a,
