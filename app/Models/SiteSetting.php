@@ -39,7 +39,9 @@ use Illuminate\Database\Eloquent\Model;
     'sermons_youtube_feed_url',
     'sermons_youtube_channel_url',
     'sermons_image_path',
+    'bulletins_small_label',
+    'bulletins_title',
+    'bulletins_subtitle',
+    'bulletins_image_path',
 ])]
-class SiteSetting extends Model
-{
-}
+class SiteSetting extends Model {}

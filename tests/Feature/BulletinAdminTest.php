@@ -1,0 +1,134 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
+use App\Models\Bulletin;
+use App\Models\User;
+use App\Support\AdminAccess;
+use App\Support\OpenAiBulletinExtractor;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class BulletinAdminTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_admin_can_create_bulletins_under_content(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->get('/admin/bulletins/create')
+            ->assertOk()
+            ->assertSee('Bulletin Details')
+            ->assertSee('Bulletin PDF')
+            ->assertSee('PDF Extraction')
+            ->assertSee('Extracted formatted HTML');
+    }
+
+    public function test_editor_needs_bulletins_permission(): void
+    {
+        $editor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [],
+                'records' => [],
+            ],
+        ]);
+
+        $this->actingAs($editor)
+            ->get('/admin/bulletins')
+            ->assertForbidden();
+
+        $editor->update([
+            'admin_permissions' => [
+                'tools' => [AdminAccess::BULLETINS],
+                'records' => [],
+            ],
+        ]);
+
+        $this->actingAs($editor)
+            ->get('/admin/bulletins')
+            ->assertOk();
+    }
+
+    public function test_openai_extractor_sends_pdf_and_prompt(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
+
+        config([
+            'services.openai.api_key' => 'test-key',
+            'services.openai.bulletin_model' => 'gpt-4o-mini',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => '<h2>Sunday Bulletin</h2><p>Welcome.</p>',
+            ]),
+        ]);
+
+        $bulletin = Bulletin::query()->create([
+            'title' => 'Sunday Bulletin',
+            'pdf_path' => 'bulletins/pdfs/test.pdf',
+            'extraction_prompt' => 'Only extract announcements.',
+        ]);
+
+        $html = app(OpenAiBulletinExtractor::class)->extract($bulletin);
+
+        $this->assertSame('<h2>Sunday Bulletin</h2><p>Welcome.</p>', $html);
+
+        Http::assertSent(function (Request $request): bool {
+            $payload = $request->data();
+            $content = data_get($payload, 'input.0.content');
+
+            return $request->url() === 'https://api.openai.com/v1/responses'
+                && data_get($payload, 'model') === 'gpt-4o-mini'
+                && data_get($content, '0.type') === 'input_file'
+                && data_get($content, '0.filename') === 'test.pdf'
+                && str_starts_with(data_get($content, '0.file_data'), 'data:application/pdf;base64,')
+                && data_get($content, '1.type') === 'input_text'
+                && str_contains(data_get($content, '1.text'), 'Only extract announcements.');
+        });
+    }
+
+    public function test_extract_pdf_action_updates_rich_text_field(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
+
+        config([
+            'services.openai.api_key' => 'test-key',
+            'services.openai.bulletin_model' => 'gpt-4o-mini',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => '<h2>Extracted Bulletin</h2>',
+            ]),
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $bulletin = Bulletin::query()->create([
+            'title' => 'Sunday Bulletin',
+            'bulletin_date' => '2026-05-31',
+            'pdf_path' => 'bulletins/pdfs/test.pdf',
+            'extraction_prompt' => 'Extract everything.',
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
+            ->callAction('extractPdf')
+            ->assertHasNoActionErrors();
+
+        $this->assertSame('<h2>Extracted Bulletin</h2>', $bulletin->refresh()->extracted_html);
+    }
+}

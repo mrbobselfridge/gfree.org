@@ -39,4 +39,9 @@ return [
         'sermons_channel_id' => env('YOUTUBE_SERMONS_CHANNEL_ID', 'UCDDrEtN3XPxVE9-oY008IYA'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'bulletin_model' => env('OPENAI_BULLETIN_MODEL', 'gpt-5-mini'),
+    ],
+
 ];

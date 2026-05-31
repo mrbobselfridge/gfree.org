@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\Sermons as SermonsPage;
 use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
+use App\Filament\Admin\Resources\Bulletins\Pages\ListBulletins;
 use App\Filament\Admin\Resources\Ministries\Pages\ListMinistries;
 use App\Filament\Admin\Resources\StaffMembers\Pages\ListStaffMembers;
 use App\Models\SiteSetting;
@@ -126,6 +127,41 @@ class MinistryListingAdminTest extends TestCase
             'announcements_small_label' => 'Latest',
             'announcements_title' => 'Church updates',
             'announcements_subtitle' => '<p>Important things to know.</p>',
+        ]);
+    }
+
+    public function test_bulletins_listing_settings_appear_above_bulletins_table(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get('/admin/bulletins')
+            ->assertOk()
+            ->assertSee('Bulletins Landing Page Content')
+            ->assertSee('Bulletins small label')
+            ->assertSee('Bulletins title')
+            ->assertSee('Bulletins subtitle')
+            ->assertSee('Bulletins image')
+            ->assertSee('Expand')
+            ->assertSee('Collapse')
+            ->assertSee('Save Landing Page Settings');
+    }
+
+    public function test_bulletins_listing_settings_can_be_saved_from_list_page(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(ListBulletins::class)
+            ->set('listingSettingsData.bulletins_small_label', 'Weekly')
+            ->set('listingSettingsData.bulletins_title', 'Bulletins')
+            ->set('listingSettingsData.bulletins_subtitle', '<p>Follow along with this week.</p>')
+            ->call('saveListingSettings')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'church_name' => 'gFree Church',
+            'bulletins_small_label' => 'Weekly',
+            'bulletins_title' => 'Bulletins',
+            'bulletins_subtitle' => '<p>Follow along with this week.</p>',
         ]);
     }
 

@@ -162,6 +162,25 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
+                Section::make('Bulletins Settings')
+                    ->description('Can also be managed in the Bulletins area.')
+                    ->schema([
+                        TextInput::make('bulletins_small_label')
+                            ->label('Bulletins small label')
+                            ->maxLength(255),
+                        TextInput::make('bulletins_title')
+                            ->label('Bulletins title')
+                            ->maxLength(255),
+                        RichEditorDefaults::configure(RichEditor::make('bulletins_subtitle'))
+                            ->label('Bulletins subtitle'),
+                        FileUpload::make('bulletins_image_path')
+                            ->label('Bulletins Image')
+                            ->image()
+                            ->disk('public')
+                            ->directory('site-settings/bulletins'),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -32,6 +32,12 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Can also be managed in the Leaders area.')
             ->assertSee('Sermons Settings')
             ->assertSee('Can also be managed in the Sermons area.')
+            ->assertSee('Bulletins Settings')
+            ->assertSee('Can also be managed in the Bulletins area.')
+            ->assertSee('Bulletins small label')
+            ->assertSee('Bulletins title')
+            ->assertSee('Bulletins subtitle')
+            ->assertSee('Bulletins Image')
             ->assertSee('Save');
 
         $this->assertGreaterThanOrEqual(2, substr_count($response->getContent(), 'Cancel'));

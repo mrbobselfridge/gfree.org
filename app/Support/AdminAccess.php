@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Filament\Admin\Pages\HomepageContent;
 use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
+use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
@@ -13,6 +14,7 @@ use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Models\Announcement;
+use App\Models\Bulletin;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
@@ -35,6 +37,8 @@ class AdminAccess
     public const HOMEPAGE_BANNERS = 'homepage_banners';
 
     public const ANNOUNCEMENTS = 'announcements';
+
+    public const BULLETINS = 'bulletins';
 
     public const MINISTRIES = 'ministries';
 
@@ -69,6 +73,12 @@ class AdminAccess
                 'group' => 'Content',
                 'model' => Announcement::class,
                 'resource' => AnnouncementResource::class,
+            ],
+            self::BULLETINS => [
+                'label' => 'Bulletins',
+                'group' => 'Content',
+                'model' => Bulletin::class,
+                'resource' => BulletinResource::class,
             ],
             self::MINISTRIES => [
                 'label' => 'Ministries',

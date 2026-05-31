@@ -30,6 +30,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('Homepage Content')
             ->assertSee('Homepage Banners')
             ->assertSee('Announcements')
+            ->assertSee('Bulletins')
             ->assertSee('Ministries')
             ->assertSee('Pages')
             ->assertSee('Leaders')
