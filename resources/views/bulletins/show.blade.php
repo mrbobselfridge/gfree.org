@@ -11,9 +11,16 @@
     @include('home.partials.header')
 
     <main>
-        <section class="page-hero">
+        <section @class(['page-hero', 'page-hero--image' => filled($hero['image_url'])])>
+            @if ($hero['image_url'])
+                <div class="page-hero__image" style="background-image: url('{{ $hero['image_url'] }}')"></div>
+            @endif
+
             <div class="page-hero__content">
-                <p class="concept-eyebrow">Bulletin</p>
+                @if ($hero['small_label'])
+                    <p class="concept-eyebrow">{{ $hero['small_label'] }}</p>
+                @endif
+
                 <h1>{{ $bulletin->title }}</h1>
                 <p>{{ $bulletin->bulletin_date->format('F j, Y') }}</p>
             </div>

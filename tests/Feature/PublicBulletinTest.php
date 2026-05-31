@@ -84,6 +84,7 @@ class PublicBulletinTest extends TestCase
     {
         SiteSetting::query()->create([
             'church_name' => 'gFree Church',
+            'bulletins_image_path' => 'site-settings/bulletins/bulletins.jpg',
         ]);
 
         Bulletin::query()->create([
@@ -98,6 +99,8 @@ class PublicBulletinTest extends TestCase
             ->assertOk()
             ->assertSee('Sunday Bulletin')
             ->assertSee('May 31, 2026')
+            ->assertSee('/storage/site-settings/bulletins/bulletins.jpg')
+            ->assertSee('page-hero--image')
             ->assertSee('<h2>Welcome</h2>', false)
             ->assertSee('Join us this week.')
             ->assertSee('/storage/bulletins/pdfs/sunday.pdf')

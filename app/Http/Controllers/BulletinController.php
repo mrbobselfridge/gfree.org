@@ -42,6 +42,11 @@ class BulletinController extends Controller
         return view('bulletins.show', [
             ...$this->sharedViewData(),
             'bulletin' => $bulletin,
+            'hero' => $this->listingHero('bulletins', [
+                'small_label' => 'Bulletin',
+                'title' => $bulletin->title,
+                'subtitle' => $bulletin->bulletin_date->format('F j, Y'),
+            ]),
             'pdfUrl' => $this->pdfUrl($bulletin->pdf_path),
         ]);
     }
