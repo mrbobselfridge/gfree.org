@@ -3,10 +3,12 @@
 namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Support\YoutubeFeedUrl;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class SiteSettingForm
@@ -135,8 +137,16 @@ class SiteSettingForm
                             ->label('Sermons text'),
                         TextInput::make('sermons_youtube_channel_url')
                             ->label('Sermons YouTube channel URL')
-                            ->helperText('Optional. Used for the View on YouTube link when the feed source changes.')
-                            ->url(),
+                            ->helperText('Optional. Used for the View on YouTube link when the feed source changes. The RSS feed URL is filled automatically when a channel ID can be found.')
+                            ->url()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                $feedUrl = YoutubeFeedUrl::fromChannelUrl($state);
+
+                                if ($feedUrl) {
+                                    $set('sermons_youtube_feed_url', $feedUrl);
+                                }
+                            }),
                         TextInput::make('sermons_youtube_feed_url')
                             ->label('Sermons YouTube feed URL')
                             ->helperText('Optional. Paste a YouTube RSS feed URL to replace the default sermon channel feed.')

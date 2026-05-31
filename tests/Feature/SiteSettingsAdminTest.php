@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class SiteSettingsAdminTest extends TestCase
@@ -33,5 +35,17 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Save');
 
         $this->assertGreaterThanOrEqual(2, substr_count($response->getContent(), 'Cancel'));
+    }
+
+    public function test_site_settings_sermons_channel_url_fills_feed_url(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCSiteSettingsChannelId/videos')
+            ->assertSet('data.sermons_youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSiteSettingsChannelId');
     }
 }
