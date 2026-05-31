@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\StaffMembers;
 
+use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\StaffMembers\Pages\CreateStaffMember;
 use App\Filament\Admin\Resources\StaffMembers\Pages\EditStaffMember;
 use App\Filament\Admin\Resources\StaffMembers\Pages\ListStaffMembers;
@@ -16,15 +17,17 @@ use Filament\Tables\Table;
 
 class StaffMemberResource extends Resource
 {
+    use AppliesAdminAccess;
+
     protected static ?string $model = StaffMember::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedIdentification;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 50;
 
-    protected static ?string $navigationLabel = 'Leadership';
+    protected static ?string $navigationLabel = 'Leaders';
 
     protected static ?string $modelLabel = 'leader';
 

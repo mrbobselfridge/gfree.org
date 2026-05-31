@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\HomepageBanners;
 
+use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\HomepageBanners\Pages\CreateHomepageBanner;
 use App\Filament\Admin\Resources\HomepageBanners\Pages\EditHomepageBanner;
 use App\Filament\Admin\Resources\HomepageBanners\Pages\ListHomepageBanners;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class HomepageBannerResource extends Resource
 {
+    use AppliesAdminAccess;
+
     protected static ?string $model = HomepageBanner::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;

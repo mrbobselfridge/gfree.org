@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class StandardTableActions
@@ -24,6 +25,7 @@ class StandardTableActions
                 ->label('Copy')
                 ->icon(Heroicon::OutlinedSquare2Stack)
                 ->iconButton()
+                ->authorize(fn (Model $record): bool => Gate::allows('create', $record::class))
                 ->action(function (Model $record): void {
                     $copy = $record->replicate();
                     $labelField = self::labelField($record);

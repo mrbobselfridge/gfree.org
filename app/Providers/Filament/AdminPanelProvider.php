@@ -10,16 +10,17 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Tables\View\TablesRenderHook;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
-use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\HtmlString;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -88,6 +89,36 @@ class AdminPanelProvider extends PanelProvider
                         }
                     </style>
                 HTML),
+            )
+            ->renderHook(
+                TablesRenderHook::TOOLBAR_START,
+                fn (): HtmlString => request()->is('admin/ministries')
+                    ? new HtmlString(<<<'HTML'
+                        <h2 class="gfree-ministry-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                            Individual Ministries
+                        </h2>
+                    HTML)
+                    : new HtmlString(''),
+            )
+            ->renderHook(
+                TablesRenderHook::TOOLBAR_START,
+                fn (): HtmlString => request()->is('admin/staff-members')
+                    ? new HtmlString(<<<'HTML'
+                        <h2 class="gfree-leadership-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                            Individual Leaders
+                        </h2>
+                    HTML)
+                    : new HtmlString(''),
+            )
+            ->renderHook(
+                TablesRenderHook::TOOLBAR_START,
+                fn (): HtmlString => request()->is('admin/announcements')
+                    ? new HtmlString(<<<'HTML'
+                        <h2 class="gfree-announcements-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                            Individual Announcements
+                        </h2>
+                    HTML)
+                    : new HtmlString(''),
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,

@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\Announcements\Pages\EditAnnouncement;
 use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
 use App\Filament\Admin\Resources\Announcements\Schemas\AnnouncementForm;
 use App\Filament\Admin\Resources\Announcements\Tables\AnnouncementsTable;
+use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Models\Announcement;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -16,13 +17,15 @@ use Filament\Tables\Table;
 
 class AnnouncementResource extends Resource
 {
+    use AppliesAdminAccess;
+
     protected static ?string $model = Announcement::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Homepage';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $recordTitleAttribute = 'title';
 

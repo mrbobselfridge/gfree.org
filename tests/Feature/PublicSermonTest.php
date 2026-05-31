@@ -81,6 +81,22 @@ class PublicSermonTest extends TestCase
             ->assertDontSee('Sermons are currently available on YouTube.');
     }
 
+    public function test_sermons_page_adds_videos_path_to_configured_base_channel_url(): void
+    {
+        Http::fake([
+            'youtube.com/feeds/videos.xml*' => Http::response('', 500),
+        ]);
+
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'sermons_youtube_channel_url' => 'https://www.youtube.com/@customsermons',
+        ]);
+
+        $this->get('/sermons')
+            ->assertOk()
+            ->assertSee('https://www.youtube.com/@customsermons/videos');
+    }
+
     private function youtubeFeed(): string
     {
         return <<<'XML'

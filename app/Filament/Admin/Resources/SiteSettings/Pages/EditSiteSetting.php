@@ -13,6 +13,7 @@ class EditSiteSetting extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            $this->getCancelHeaderAction(),
             Action::make('save')
                 ->label('Save')
                 ->action('save')
@@ -24,6 +25,7 @@ class EditSiteSetting extends EditRecord
     {
         return [
             $this->getSaveFormAction(),
+            $this->getCancelFormAction(),
         ];
     }
 
@@ -33,6 +35,22 @@ class EditSiteSetting extends EditRecord
             ->label('Save')
             ->color('success')
             ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']);
+    }
+
+    protected function getCancelHeaderAction(): Action
+    {
+        return Action::make('cancelHeader')
+            ->label('Cancel')
+            ->url(SiteSettingResource::getUrl('index'))
+            ->color('gray');
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        return Action::make('cancelForm')
+            ->label('Cancel')
+            ->url(SiteSettingResource::getUrl('index'))
+            ->color('gray');
     }
 
     protected function getRedirectUrl(): ?string

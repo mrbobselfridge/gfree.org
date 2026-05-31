@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
+use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Models\HomepageContent as HomepageContentModel;
 use App\Models\SiteSetting;
 use BackedEnum;
@@ -20,9 +21,11 @@ use Filament\Support\Icons\Heroicon;
 
 class HomepageContent extends Page
 {
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRectangleGroup;
+    use RequiresAdminPageAccess;
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Homepage';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Homepage';
 
     protected static ?int $navigationSort = 0;
 

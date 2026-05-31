@@ -22,13 +22,13 @@ class DatabaseSeeder extends Seeder
         SiteSetting::updateOrCreate([
             'church_name' => 'gFree Church',
         ], [
-            'tagline' => 'Grace Free Church',
-            'sunday_service_times' => '9:00 & 10:45 AM',
+            'tagline' => 'Somewhere you can belong',
+            'sunday_service_times' => '9:15 & 11 AM',
             'address' => '305 Keystone Hill Road',
-            'email' => 'hello@gfree.org',
+            'email' => 'office@gfree.org',
             'livestream_url' => '/live',
             'giving_url' => '/give',
-            'one_church_url' => '#',
+            'one_church_url' => 'https://gfree.onechurchsoftware.com',
         ]);
 
         HomepageBanner::updateOrCreate([

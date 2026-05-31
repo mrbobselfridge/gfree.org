@@ -30,7 +30,7 @@ class SermonController extends Controller
             ]),
             'introText' => $settings?->sermons_text,
             'sermons' => $feed->latest(feedUrl: $settings?->sermons_youtube_feed_url),
-            'channelUrl' => $settings?->sermons_youtube_channel_url ?: 'https://www.youtube.com/@gfreesermons9521/videos',
+            'channelUrl' => $this->youtubeVideosUrl($settings?->sermons_youtube_channel_url),
             'channelLinkLabel' => $settings?->sermons_youtube_link_label ?: 'View on YouTube',
         ]);
     }
@@ -54,6 +54,15 @@ class SermonController extends Controller
             ['label' => 'Instagram', 'url' => $settings?->instagram_url],
             ['label' => 'YouTube', 'url' => $settings?->youtube_url],
         ])->filter(fn (array $link) => filled($link['url']));
+    }
+
+    private function youtubeVideosUrl(?string $channelUrl): string
+    {
+        $channelUrl = filled($channelUrl)
+            ? rtrim((string) $channelUrl, '/')
+            : 'https://www.youtube.com/@gfreesermons9521';
+
+        return str_ends_with($channelUrl, '/videos') ? $channelUrl : "{$channelUrl}/videos";
     }
 
     private function imageUrl(mixed $path): ?string

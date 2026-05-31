@@ -52,6 +52,50 @@ class PublicPageTest extends TestCase
             ->assertDontSee('site-footer', false);
     }
 
+    public function test_public_footer_uses_logo_contact_details_and_social_icons(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'tagline' => 'This tagline should not be in the footer.',
+            'address' => '<p>305 Keystone Hill Road</p>',
+            'email' => 'hello@example.com',
+            'phone' => '(814) 555-1212',
+            'facebook_url' => 'https://facebook.example/gfree',
+            'instagram_url' => 'https://instagram.example/gfree',
+            'youtube_url' => 'https://youtube.example/gfree',
+        ]);
+
+        Page::query()->create([
+            'title' => 'About',
+            'slug' => 'about',
+            'intro' => 'About page intro.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/about')
+            ->assertOk()
+            ->assertSee('site-footer__brand', false)
+            ->assertSee('<a href="'.url('/').'" aria-label="gFree Church home">', false)
+            ->assertSee('site-footer__contact', false)
+            ->assertSee('site-footer__social', false)
+            ->assertSee('Address')
+            ->assertSee('Email')
+            ->assertSee('Phone')
+            ->assertSee('gFree Church')
+            ->assertSee('305 Keystone Hill Road')
+            ->assertSee('https://www.google.com/maps/search/?api=1&query=305+Keystone+Hill+Road', false)
+            ->assertSee('mailto:hello@example.com', false)
+            ->assertSee('tel:8145551212', false)
+            ->assertSee('aria-label="Facebook"', false)
+            ->assertSee('site-footer__social-link--facebook', false)
+            ->assertSee('target="_blank"', false)
+            ->assertSee('rel="noopener noreferrer"', false)
+            ->assertSee('title="Instagram"', false)
+            ->assertSee('site-footer__social-link--youtube', false)
+            ->assertSee('site-footer__social-label', false)
+            ->assertDontSee('This tagline should not be in the footer.');
+    }
+
     public function test_page_can_hide_site_chrome_and_page_header_for_content_only_pages(): void
     {
         Page::query()->create([

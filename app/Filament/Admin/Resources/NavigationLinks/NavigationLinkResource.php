@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\NavigationLinks;
 
+use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\CreateNavigationLink;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\EditNavigationLink;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\ListNavigationLinks;
@@ -16,13 +17,15 @@ use Filament\Tables\Table;
 
 class NavigationLinkResource extends Resource
 {
+    use AppliesAdminAccess;
+
     protected static ?string $model = NavigationLink::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site';
+    protected static string|\UnitEnum|null $navigationGroup = 'Sitewide';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 200;
 
     protected static ?string $modelLabel = 'navigation link';
 

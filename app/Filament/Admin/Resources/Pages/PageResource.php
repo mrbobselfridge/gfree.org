@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Pages;
 
+use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Resources\Pages\Pages\ListPages;
@@ -16,13 +17,15 @@ use Filament\Tables\Table;
 
 class PageResource extends Resource
 {
+    use AppliesAdminAccess;
+
     protected static ?string $model = Page::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 35;
 
     protected static ?string $recordTitleAttribute = 'title';
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings;
 
+use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Filament\Admin\Resources\SiteSettings\Pages\ListSiteSettings;
 use App\Filament\Admin\Resources\SiteSettings\Schemas\SiteSettingForm;
@@ -15,13 +16,15 @@ use Filament\Tables\Table;
 
 class SiteSettingResource extends Resource
 {
+    use AppliesAdminAccess;
+
     protected static ?string $model = SiteSetting::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site';
+    protected static string|\UnitEnum|null $navigationGroup = 'Sitewide';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 100;
 
     protected static ?string $modelLabel = 'site settings';
 
