@@ -3738,6 +3738,8 @@
     .concept-page .concept-header,
     .concept-page--editorial .concept-header,
     .concept-page--hub .concept-header {
+        position: relative;
+        top: auto;
         width: min(100% - 22px, 1180px);
         min-height: 0;
         align-items: flex-start;
