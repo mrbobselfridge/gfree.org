@@ -23,6 +23,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class UserResource extends Resource
 {
@@ -82,48 +83,67 @@ class UserResource extends Resource
                             ->hidden()
                             ->dehydrated(false),
                         CheckboxList::make('admin_permissions.tool_groups.homepage')
-                            ->label('Homepage')
+                            ->label(self::permissionGroupLabel('Homepage'))
                             ->options(AdminAccess::toolOptionsForGroup('Homepage'))
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                         CheckboxList::make('admin_permissions.tool_groups.content')
-                            ->label('Content')
+                            ->label(self::permissionGroupLabel('Content'))
                             ->options(AdminAccess::toolOptionsForGroup('Content'))
                             ->helperText('Selecting Ministries, Pages, or Leaders here grants access to all current and future entries in that area.')
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                         CheckboxList::make('admin_permissions.tool_groups.sitewide')
-                            ->label('Sitewide')
+                            ->label(self::permissionGroupLabel('Sitewide'))
                             ->options(AdminAccess::toolOptionsForGroup('Sitewide'))
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                         CheckboxList::make('admin_permissions.tool_groups.additional')
-                            ->label('Additional Tools')
+                            ->label(self::permissionGroupLabel('Additional Tools'))
                             ->options(AdminAccess::additionalToolOptions())
                             ->visible(fn (): bool => count(AdminAccess::additionalToolOptions()) > 0)
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                         CheckboxList::make('admin_permissions.records.ministries')
-                            ->label('Individual Ministry Entries')
+                            ->label(self::permissionGroupLabel('Individual Ministry Entries'))
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::MINISTRIES))
                             ->helperText('Leave blank if the user has full Ministries access above.')
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                         CheckboxList::make('admin_permissions.records.pages')
-                            ->label('Individual Page Entries')
+                            ->label(self::permissionGroupLabel('Individual Page Entries'))
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::PAGES))
                             ->helperText('Leave blank if the user has full Pages access above.')
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                         CheckboxList::make('admin_permissions.records.leaders')
-                            ->label('Individual Leader Entries')
+                            ->label(self::permissionGroupLabel('Individual Leader Entries'))
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::LEADERS))
                             ->helperText('Leave blank if the user has full Leaders access above.')
+                            ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
                     ])
                     ->columnSpanFull(),
             ]);
+    }
+
+    private static function permissionGroupLabel(string $label): HtmlString
+    {
+        return new HtmlString('<span class="text-base font-semibold leading-6 text-gray-950 dark:text-white">'.$label.'</span>');
+    }
+
+    private static function permissionListAttributes(): array
+    {
+        return [
+            'class' => 'gfree-user-permission-list',
+        ];
     }
 
     public static function table(Table $table): Table

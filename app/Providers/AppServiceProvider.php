@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Notifications\AdminResetPassword;
 use App\Support\AdminAccess;
+use Filament\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(ResetPassword::class, fn ($app, array $parameters): AdminResetPassword => new AdminResetPassword($parameters['token']));
     }
 
     /**

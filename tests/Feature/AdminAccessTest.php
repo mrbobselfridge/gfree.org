@@ -25,6 +25,8 @@ class AdminAccessTest extends TestCase
             ->assertOk()
             ->assertSee('User Details')
             ->assertSee('Approved Admin Areas')
+            ->assertSee('text-base font-semibold', false)
+            ->assertSee('gfree-user-permission-list', false)
             ->assertSee('Homepage Content')
             ->assertSee('Homepage Banners')
             ->assertSee('Announcements')

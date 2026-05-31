@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
             ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Amber,
@@ -74,6 +75,18 @@ class AdminPanelProvider extends PanelProvider
 
                         .dark .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
                             border-inline-start-color: var(--gray-700);
+                        }
+
+                        .gfree-user-permission-list .fi-fo-checkbox-list-option-ctn {
+                            padding-inline-start: 1.25rem;
+                        }
+
+                        .gfree-user-permission-list .fi-fo-checkbox-list-actions {
+                            padding-inline-start: 1.25rem;
+                        }
+
+                        .gfree-user-permission-list .fi-fo-checkbox-list-option {
+                            gap: 0.625rem;
                         }
 
                         @media (max-width: 640px) {
