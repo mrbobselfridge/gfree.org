@@ -43,7 +43,7 @@ class MinistryController extends Controller
         return view('ministries.show', [
             ...$this->sharedViewData(),
             'ministry' => $ministry,
-            'heroImageUrl' => $this->imageUrl($ministry->hero_image_path ?: $ministry->card_image_path),
+            'heroImageUrl' => $this->imageUrl($ministry->hero_image_path) ?: $this->listingImageUrl('ministry'),
             'detailItems' => $this->detailItems($ministry),
         ]);
     }
@@ -85,6 +85,13 @@ class MinistryController extends Controller
             'subtitle' => data_get($settings, "{$prefix}_subtitle") ?: ($defaults['subtitle'] ?? null),
             'image_url' => $this->imageUrl(data_get($settings, "{$prefix}_image_path")),
         ];
+    }
+
+    private function listingImageUrl(string $prefix): ?string
+    {
+        $settings = SiteSetting::query()->first();
+
+        return $this->imageUrl(data_get($settings, "{$prefix}_image_path"));
     }
 
     private function socialLinks(?SiteSetting $settings)

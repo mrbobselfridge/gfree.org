@@ -39,7 +39,7 @@ class AnnouncementController extends Controller
         return view('announcements.show', [
             ...$this->sharedViewData(),
             'announcement' => $announcement,
-            'imageUrl' => $this->imageUrl($announcement->image_path),
+            'imageUrl' => $this->imageUrl($announcement->image_path) ?: $this->listingImageUrl('announcements'),
         ]);
     }
 
@@ -83,6 +83,13 @@ class AnnouncementController extends Controller
             'subtitle' => data_get($settings, "{$prefix}_subtitle") ?: ($defaults['subtitle'] ?? null),
             'image_url' => $this->imageUrl(data_get($settings, "{$prefix}_image_path")),
         ];
+    }
+
+    private function listingImageUrl(string $prefix): ?string
+    {
+        $settings = SiteSetting::query()->first();
+
+        return $this->imageUrl(data_get($settings, "{$prefix}_image_path"));
     }
 
     private function socialLinks(?SiteSetting $settings)

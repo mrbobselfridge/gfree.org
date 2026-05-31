@@ -160,6 +160,28 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('https://example.com/kids');
     }
 
+    public function test_ministry_detail_uses_landing_image_when_hero_image_is_missing(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'ministry_image_path' => 'site-settings/ministry/default.jpg',
+        ]);
+
+        Ministry::query()->create([
+            'name' => 'Students Ministry',
+            'slug' => 'students-ministry',
+            'short_summary' => 'Students following Jesus.',
+            'card_image_path' => 'ministries/card-images/students.jpg',
+            'is_published' => true,
+        ]);
+
+        $this->get('/ministry/students-ministry')
+            ->assertOk()
+            ->assertSee('/storage/site-settings/ministry/default.jpg')
+            ->assertDontSee('/storage/ministries/card-images/students.jpg')
+            ->assertSee('page-hero--image');
+    }
+
     private function youtubeFeed(): string
     {
         return <<<'XML'

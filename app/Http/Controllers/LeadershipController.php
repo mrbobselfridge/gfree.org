@@ -44,7 +44,7 @@ class LeadershipController extends Controller
         return view('leadership.show', [
             ...$this->sharedViewData(),
             'leader' => $leader,
-            'photoUrl' => $this->imageUrl($leader->photo_path),
+            'photoUrl' => $this->imageUrl($leader->photo_path) ?: $this->listingImageUrl('leadership'),
         ]);
     }
 
@@ -75,6 +75,13 @@ class LeadershipController extends Controller
             'subtitle' => data_get($settings, "{$prefix}_subtitle") ?: ($defaults['subtitle'] ?? null),
             'image_url' => $this->imageUrl(data_get($settings, "{$prefix}_image_path")),
         ];
+    }
+
+    private function listingImageUrl(string $prefix): ?string
+    {
+        $settings = SiteSetting::query()->first();
+
+        return $this->imageUrl(data_get($settings, "{$prefix}_image_path"));
     }
 
     private function socialLinks(?SiteSetting $settings)

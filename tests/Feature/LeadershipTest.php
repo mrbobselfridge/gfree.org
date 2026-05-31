@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\SiteSetting;
 use App\Models\StaffMember;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -59,6 +60,26 @@ class LeadershipTest extends TestCase
             ->assertSee('<li>Prayer</li>', false)
             ->assertSee('mailto:john@example.com')
             ->assertSee('Email John Shepherd');
+    }
+
+    public function test_leader_profile_uses_landing_image_when_photo_is_missing(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'leadership_image_path' => 'site-settings/leadership/default.jpg',
+        ]);
+
+        StaffMember::query()->create([
+            'name' => 'No Photo Leader',
+            'slug' => 'no-photo-leader',
+            'role' => 'Director',
+            'is_published' => true,
+        ]);
+
+        $this->get('/leadership/no-photo-leader')
+            ->assertOk()
+            ->assertSee('/storage/site-settings/leadership/default.jpg')
+            ->assertSee('page-hero--image');
     }
 
     public function test_unpublished_leader_profile_is_not_public(): void

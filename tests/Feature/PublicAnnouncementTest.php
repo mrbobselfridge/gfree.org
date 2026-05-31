@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Announcement;
+use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -93,5 +94,24 @@ class PublicAnnouncementTest extends TestCase
             ->assertSee('Stay for lunch.')
             ->assertSee('Register')
             ->assertSee('https://example.com/register');
+    }
+
+    public function test_announcement_detail_uses_landing_image_when_record_image_is_missing(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'announcements_image_path' => 'site-settings/announcements/default.jpg',
+        ]);
+
+        Announcement::query()->create([
+            'title' => 'No Image Announcement',
+            'slug' => 'no-image-announcement',
+            'is_published' => true,
+        ]);
+
+        $this->get('/announcements/no-image-announcement')
+            ->assertOk()
+            ->assertSee('/storage/site-settings/announcements/default.jpg')
+            ->assertSee('page-hero--image');
     }
 }
