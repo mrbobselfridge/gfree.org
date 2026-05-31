@@ -4011,6 +4011,20 @@
     color: inherit;
 }
 
+.site-footer__address .site-footer__value {
+    font-size: clamp(1.1rem, 2vw, 1.55rem);
+    line-height: 1.15;
+}
+
+.site-footer__address .site-footer__value > * {
+    margin-top: 0;
+    margin-bottom: 0.35em;
+}
+
+.site-footer__address .site-footer__value > :last-child {
+    margin-bottom: 0;
+}
+
 .site-footer__value a,
 .site-footer__block a {
     color: white;

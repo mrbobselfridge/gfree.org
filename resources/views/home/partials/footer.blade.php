@@ -1,7 +1,3 @@
-@php
-    $addressText = trim(preg_replace('/\s+/', ' ', strip_tags($settings?->address ?? '')));
-@endphp
-
 <footer class="concept-footer site-footer">
     <div class="site-footer__brand">
         <a href="{{ url('/') }}" aria-label="{{ $settings?->church_name ?? 'gFree Church' }} home">
@@ -10,11 +6,11 @@
     </div>
 
     <div class="site-footer__block site-footer__address">
-        @if ($addressText !== '')
+        @if (filled($settings?->address))
             <span class="site-footer__label">Address</span>
-            <a class="site-footer__value" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($addressText) }}" target="_blank" rel="noopener noreferrer">
+            <div class="site-footer__value">
                 {!! \App\Support\RichContent::render($settings->address) !!}
-            </a>
+            </div>
         @endif
     </div>
 

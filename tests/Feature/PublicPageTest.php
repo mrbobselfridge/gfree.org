@@ -83,7 +83,7 @@ class PublicPageTest extends TestCase
             ->assertSee('Phone')
             ->assertSee('gFree Church')
             ->assertSee('305 Keystone Hill Road')
-            ->assertSee('https://www.google.com/maps/search/?api=1&query=305+Keystone+Hill+Road', false)
+            ->assertDontSee('https://www.google.com/maps/search/?api=1', false)
             ->assertSee('mailto:hello@example.com', false)
             ->assertSee('tel:8145551212', false)
             ->assertSee('aria-label="Facebook"', false)
