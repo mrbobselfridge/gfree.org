@@ -43,9 +43,10 @@
     <style>
         .gfree-image-picker-controls {
             display: grid;
-            grid-template-columns: minmax(180px, 1fr) minmax(160px, 240px);
+            grid-template-columns: minmax(180px, 1fr) minmax(160px, 240px) auto;
             gap: 0.75rem;
             margin-bottom: 0.75rem;
+            align-items: end;
         }
 
         .gfree-image-picker-control label {
@@ -76,6 +77,24 @@
             border-color: rgb(55 65 81);
             background: rgb(3 7 18);
             color: white;
+        }
+
+        .gfree-image-picker-submit {
+            display: inline-flex;
+            min-height: 2.375rem;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            background: rgb(217 119 6);
+            padding: 0.5rem 0.875rem;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .gfree-image-picker-submit:hover {
+            background: rgb(180 83 9);
         }
 
         .gfree-image-picker {
@@ -230,6 +249,16 @@
                     @endforeach
                 </select>
             </div>
+
+            <button
+                type="button"
+                class="gfree-image-picker-submit"
+                wire:click="callMountedAction"
+                wire:loading.attr="disabled"
+                wire:target="callMountedAction"
+            >
+                Use selected image
+            </button>
         </div>
 
         @if ($images->isEmpty())
@@ -249,6 +278,7 @@
                     class="gfree-image-picker-option"
                     x-show="matches(@js($imageForControls))"
                     x-bind:style="{ order: order(@js($image['path'])) }"
+                    x-on:dblclick.prevent="$wire.set(@js($statePath), @js($image['path'])); $nextTick(() => $wire.callMountedAction())"
                 >
                     <input
                         id="{{ $optionId }}"
