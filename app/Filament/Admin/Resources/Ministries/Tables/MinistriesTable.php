@@ -20,7 +20,7 @@ class MinistriesTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('slug')
-                    ->formatStateUsing(fn (string $state): string => '/ministries'.ltrim($state, '/'))
+                    ->formatStateUsing(fn (string $state): string => '/ministry/'.ltrim($state, '/'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 ImageColumn::make('card_image_path')

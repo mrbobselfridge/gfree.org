@@ -21,6 +21,7 @@ class StaffMembersTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable()
+                    ->formatStateUsing(fn (string $state): string => '/leadership/'.ltrim($state, '/'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('role')
                     ->searchable(),

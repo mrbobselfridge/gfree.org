@@ -20,7 +20,7 @@ class AnnouncementsTable
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('slug')
-                    ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
+                    ->formatStateUsing(fn (string $state): string => '/announcements/'.ltrim($state, '/'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('image_path')
