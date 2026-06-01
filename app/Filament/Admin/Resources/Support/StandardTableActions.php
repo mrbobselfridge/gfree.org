@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Support;
 
 use App\Support\AdminAccess;
+use App\Models\NavigationLink;
 use Filament\Facades\Filament;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -45,6 +46,7 @@ class StandardTableActions
                     }
 
                     $copy->save();
+                    self::copyRelatedRecords($record, $copy);
 
                     Notification::make()
                         ->success()
@@ -109,6 +111,30 @@ class StandardTableActions
         $baseLength = max(1, $maxLength - strlen($suffix));
 
         return Str::limit($source, $baseLength, '').$suffix;
+    }
+
+    private static function copyRelatedRecords(Model $record, Model $copy): void
+    {
+        if (! $record instanceof NavigationLink || ! $copy instanceof NavigationLink) {
+            return;
+        }
+
+        self::copyNavigationChildren($record, $copy);
+    }
+
+    private static function copyNavigationChildren(NavigationLink $sourceParent, NavigationLink $copyParent): void
+    {
+        $sourceParent->children()
+            ->orderBy('sort_order')
+            ->orderBy('label')
+            ->get()
+            ->each(function (NavigationLink $child) use ($copyParent): void {
+                $childCopy = $child->replicate();
+                $childCopy->parent_id = $copyParent->id;
+                $childCopy->save();
+
+                self::copyNavigationChildren($child, $childCopy);
+            });
     }
 
     private static function stringColumnLength(Model $record, string $field): ?int

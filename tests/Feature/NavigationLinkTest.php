@@ -181,4 +181,47 @@ class NavigationLinkTest extends TestCase
         $this->assertLessThanOrEqual(255, strlen($copy->label));
         $this->assertStringContainsString('(copy @ ', $copy->label);
     }
+
+    public function test_copying_parent_navigation_link_copies_child_links(): void
+    {
+        $parent = NavigationLink::query()->create([
+            'label' => 'Ministries',
+            'url' => '/ministry',
+            'location' => 'header',
+            'sort_order' => 2,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Kids',
+            'url' => '/ministry/kids',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Students',
+            'url' => '/ministry/students',
+            'location' => 'header',
+            'sort_order' => 2,
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->callTableAction('copy', $parent)
+            ->assertHasNoErrors();
+
+        $copy = NavigationLink::query()
+            ->whereNull('parent_id')
+            ->whereKeyNot($parent->id)
+            ->firstOrFail();
+
+        $this->assertStringStartsWith('Ministries (copy @ ', $copy->label);
+        $this->assertSame(['Kids', 'Students'], $copy->children()->orderBy('sort_order')->pluck('label')->all());
+        $this->assertSame(['/ministry/kids', '/ministry/students'], $copy->children()->orderBy('sort_order')->pluck('url')->all());
+    }
 }
