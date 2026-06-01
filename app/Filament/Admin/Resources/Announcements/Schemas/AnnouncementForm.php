@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Announcements\Schemas;
 
+use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -12,7 +13,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 
 class AnnouncementForm
@@ -62,7 +65,20 @@ class AnnouncementForm
                     ])
                     ->default('white')
                     ->required(),
+                Section::make('Announcement Content Blocks')
+                    ->description('Build the visible announcement detail page here. New announcements start with one text block.')
+                    ->icon(Heroicon::OutlinedRectangleGroup)
+                    ->iconColor('success')
+                    ->extraAttributes([
+                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
+                    ])
+                    ->schema([
+                        ContentBlockBuilder::make('content_blocks', 'announcements/content-images', 'Announcement Content', true),
+                    ])
+                    ->columnSpanFull(),
                 RichEditorDefaults::configure(RichEditor::make('body'))
+                    ->label('Legacy body fallback')
+                    ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
                 FileUpload::make('image_path')
                     ->label('Announcement Image')

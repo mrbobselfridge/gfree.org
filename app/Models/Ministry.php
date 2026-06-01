@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
     'slug',
     'short_summary',
     'description',
+    'content_blocks',
     'hero_image_path',
     'card_image_path',
     'category',
@@ -28,6 +29,7 @@ class Ministry extends Model
     protected function casts(): array
     {
         return [
+            'content_blocks' => 'array',
             'is_published' => 'boolean',
         ];
     }

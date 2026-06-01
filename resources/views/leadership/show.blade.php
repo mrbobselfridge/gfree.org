@@ -26,9 +26,14 @@
             </div>
         </section>
 
+        @if (count($contentBlocks))
+            @include('pages.partials.content-blocks')
+        @endif
+
+        @if (! count($contentBlocks) || $leader->email)
         <article class="leadership-detail page-block page-block--bg-white">
             <div class="page-block__inner page-block__inner--narrow">
-                @if ($leader->bio)
+                @if (! count($contentBlocks) && $leader->bio)
                     <div class="page-rich-text">
                         {!! \App\Support\RichContent::render($leader->bio) !!}
                     </div>
@@ -39,6 +44,7 @@
                 @endif
             </div>
         </article>
+        @endif
     </main>
 
     @include('home.partials.footer')

@@ -26,16 +26,22 @@
             </div>
         </section>
 
+        @php($hasSidebar = $detailItems->count() || $ministry->leader_email || $ministry->one_church_url)
+
+        @if (count($contentBlocks))
+            @include('pages.partials.content-blocks')
+        @endif
+
+        @if (! count($contentBlocks) || $hasSidebar || $ministry->embed_code)
         <article class="ministry-detail page-block page-block--bg-white">
-            @php($hasSidebar = $detailItems->count() || $ministry->leader_email || $ministry->one_church_url)
 
             <div @class(['page-block__inner', 'ministry-detail__layout', 'ministry-detail__layout--single' => ! $hasSidebar])>
                 <div class="ministry-detail__main">
-                    @if ($ministry->description)
+                    @if (! count($contentBlocks) && $ministry->description)
                         <div class="page-rich-text">
                             {!! \App\Support\RichContent::render($ministry->description) !!}
                         </div>
-                    @else
+                    @elseif (! count($contentBlocks))
                         <div class="page-rich-text">
                             <p>More information about this ministry is coming soon.</p>
                         </div>
@@ -72,6 +78,7 @@
                 @endif
             </div>
         </article>
+        @endif
     </main>
 
     @include('home.partials.footer')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
+use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 
@@ -43,6 +44,7 @@ class MinistryController extends Controller
         return view('ministries.show', [
             ...$this->sharedViewData(),
             'ministry' => $ministry,
+            'contentBlocks' => ContentBlocks::prepare($ministry->content_blocks, SiteSetting::query()->first()),
             'heroImageUrl' => $this->imageUrl($ministry->hero_image_path) ?: $this->listingImageUrl('ministry'),
             'detailItems' => $this->detailItems($ministry),
         ]);

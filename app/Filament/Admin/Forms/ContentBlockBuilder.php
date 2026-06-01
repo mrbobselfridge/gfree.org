@@ -16,10 +16,20 @@ use Filament\Support\Icons\Heroicon;
 
 class ContentBlockBuilder
 {
-    public static function make(string $field = 'content_blocks', string $imageDirectory = 'pages/content-images'): Builder
-    {
-        return Builder::make($field)
-            ->label('Page Content')
+    public static function make(
+        string $field = 'content_blocks',
+        string $imageDirectory = 'pages/content-images',
+        string $label = 'Page Content',
+        bool $withStarterTextBlock = false,
+    ): Builder {
+        $builder = Builder::make($field);
+
+        if ($withStarterTextBlock) {
+            $builder->default(self::defaultTextBlock());
+        }
+
+        return $builder
+            ->label($label)
             ->blocks([
                 Block::make('text')
                     ->label(fn (?array $state): string => self::blockLabel('Text', $state))
@@ -284,6 +294,18 @@ class ContentBlockBuilder
                 JS,
             ])
             ->columnSpanFull();
+    }
+
+    public static function defaultTextBlock(): array
+    {
+        return [
+            [
+                'type' => 'text',
+                'data' => [
+                    'background' => 'white',
+                ],
+            ],
+        ];
     }
 
     private static function blockLabel(string $type, ?array $state): string

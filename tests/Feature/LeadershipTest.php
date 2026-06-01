@@ -62,6 +62,39 @@ class LeadershipTest extends TestCase
             ->assertSee('Email John Shepherd');
     }
 
+    public function test_leader_profile_renders_content_blocks_before_legacy_bio(): void
+    {
+        StaffMember::query()->create([
+            'name' => 'Jamie Leader',
+            'slug' => 'jamie-leader',
+            'role' => 'Students Director',
+            'bio' => '<p>Legacy leader bio.</p>',
+            'content_blocks' => [
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'leadership/content-images/students.jpg',
+                        'image_alt' => 'Students gathering',
+                        'heading' => 'Leading students toward Jesus.',
+                        'body' => '<p>Jamie supports leaders and families.</p>',
+                        'background' => 'forest',
+                        'image_position' => 'right',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/leadership/jamie-leader')
+            ->assertOk()
+            ->assertSee('Leading students toward Jesus.')
+            ->assertSee('Jamie supports leaders and families.')
+            ->assertSee('/storage/leadership/content-images/students.jpg')
+            ->assertSee('Students gathering')
+            ->assertSee('page-block--bg-forest', false)
+            ->assertDontSee('Legacy leader bio.');
+    }
+
     public function test_leader_profile_uses_landing_image_when_photo_is_missing(): void
     {
         SiteSetting::query()->create([

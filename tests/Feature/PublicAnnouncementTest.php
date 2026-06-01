@@ -96,6 +96,39 @@ class PublicAnnouncementTest extends TestCase
             ->assertSee('https://example.com/register');
     }
 
+    public function test_announcement_detail_renders_content_blocks_before_legacy_body(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Serve Weekend',
+            'slug' => 'serve-weekend',
+            'summary' => 'Teams serving the city.',
+            'body' => '<p>Legacy announcement body.</p>',
+            'content_blocks' => [
+                [
+                    'type' => 'cta',
+                    'data' => [
+                        'eyebrow' => 'Serve',
+                        'heading' => 'Pick a project.',
+                        'body' => '<p>Choose a team and invite a friend.</p>',
+                        'button_label' => 'Sign up',
+                        'button_url' => '/serve',
+                        'background' => 'gold',
+                        'layout' => 'content_left',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/announcements/serve-weekend')
+            ->assertOk()
+            ->assertSee('Pick a project.')
+            ->assertSee('Choose a team and invite a friend.')
+            ->assertSee('Sign up')
+            ->assertSee('page-block--bg-gold', false)
+            ->assertDontSee('Legacy announcement body.');
+    }
+
     public function test_announcement_detail_uses_landing_image_when_record_image_is_missing(): void
     {
         SiteSetting::query()->create([

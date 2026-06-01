@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Models\StaffMember;
+use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,6 +45,7 @@ class LeadershipController extends Controller
         return view('leadership.show', [
             ...$this->sharedViewData(),
             'leader' => $leader,
+            'contentBlocks' => ContentBlocks::prepare($leader->content_blocks, SiteSetting::query()->first()),
             'photoUrl' => $this->imageUrl($leader->photo_path) ?: $this->listingImageUrl('leadership'),
         ]);
     }

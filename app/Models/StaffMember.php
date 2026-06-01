@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
     'slug',
     'role',
     'bio',
+    'content_blocks',
     'photo_path',
     'email',
     'sort_order',
@@ -20,6 +21,7 @@ class StaffMember extends Model
     protected function casts(): array
     {
         return [
+            'content_blocks' => 'array',
             'is_published' => 'boolean',
         ];
     }

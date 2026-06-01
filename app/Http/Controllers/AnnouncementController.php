@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
+use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 
@@ -39,6 +40,7 @@ class AnnouncementController extends Controller
         return view('announcements.show', [
             ...$this->sharedViewData(),
             'announcement' => $announcement,
+            'contentBlocks' => ContentBlocks::prepare($announcement->content_blocks, SiteSetting::query()->first()),
             'imageUrl' => $this->imageUrl($announcement->image_path) ?: $this->listingImageUrl('announcements'),
         ]);
     }

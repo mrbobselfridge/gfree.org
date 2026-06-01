@@ -26,6 +26,9 @@
             </div>
         </section>
 
+        @if (count($contentBlocks))
+            @include('pages.partials.content-blocks')
+        @else
         <article class="announcement-detail page-block page-block--bg-{{ $announcement->background ?: 'white' }}">
             <div class="page-block__inner page-block__inner--narrow">
                 @if ($announcement->body)
@@ -39,6 +42,7 @@
                 @endif
             </div>
         </article>
+        @endif
     </main>
 
     @include('home.partials.footer')

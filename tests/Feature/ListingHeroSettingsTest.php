@@ -160,6 +160,36 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('https://example.com/kids');
     }
 
+    public function test_ministry_detail_renders_content_blocks_before_legacy_description(): void
+    {
+        Ministry::query()->create([
+            'name' => 'Care Ministry',
+            'slug' => 'care-ministry',
+            'short_summary' => 'Care for one another.',
+            'description' => '<p>Legacy ministry details.</p>',
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'eyebrow' => 'Pastoral Care',
+                        'heading' => 'Walk with someone this week.',
+                        'body' => '<p>Request prayer or join a care team.</p>',
+                        'background' => 'teal',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/ministry/care-ministry')
+            ->assertOk()
+            ->assertSee('Pastoral Care')
+            ->assertSee('Walk with someone this week.')
+            ->assertSee('Request prayer or join a care team.')
+            ->assertSee('page-block--bg-teal', false)
+            ->assertDontSee('Legacy ministry details.');
+    }
+
     public function test_ministry_detail_uses_landing_image_when_hero_image_is_missing(): void
     {
         SiteSetting::query()->create([

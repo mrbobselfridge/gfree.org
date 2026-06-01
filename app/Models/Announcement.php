@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
     'slug',
     'summary',
     'body',
+    'content_blocks',
     'image_path',
     'background',
     'cta_label',
@@ -26,6 +27,7 @@ class Announcement extends Model
     protected function casts(): array
     {
         return [
+            'content_blocks' => 'array',
             'publish_at' => 'datetime',
             'expires_at' => 'datetime',
             'featured_at' => 'datetime',

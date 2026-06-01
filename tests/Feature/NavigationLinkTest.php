@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\NavigationLinks\Pages\ListNavigationLinks;
 use App\Models\NavigationLink;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class NavigationLinkTest extends TestCase
@@ -122,5 +125,60 @@ class NavigationLinkTest extends TestCase
             ->assertSee('Header Link 1')
             ->assertSee('Header Link 5')
             ->assertSee('Header Link 6');
+    }
+
+    public function test_navigation_links_can_be_copied_from_admin_table(): void
+    {
+        $link = NavigationLink::query()->create([
+            'label' => 'Visit',
+            'url' => '/visit',
+            'location' => 'header',
+            'sort_order' => 4,
+            'opens_in_new_tab' => false,
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->callTableAction('copy', $link)
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseCount(NavigationLink::class, 2);
+        $this->assertDatabaseHas(NavigationLink::class, [
+            'url' => '/visit',
+            'location' => 'header',
+            'sort_order' => 4,
+            'is_published' => true,
+        ]);
+
+        $copy = NavigationLink::query()
+            ->whereKeyNot($link->id)
+            ->firstOrFail();
+
+        $this->assertStringStartsWith('Visit (copy @ ', $copy->label);
+    }
+
+    public function test_navigation_copy_keeps_long_labels_within_column_length(): void
+    {
+        $label = str_repeat('A', 255);
+
+        $link = NavigationLink::query()->create([
+            'label' => $label,
+            'url' => '/long-label',
+            'location' => 'header',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->callTableAction('copy', $link)
+            ->assertHasNoErrors();
+
+        $copy = NavigationLink::query()
+            ->whereKeyNot($link->id)
+            ->firstOrFail();
+
+        $this->assertLessThanOrEqual(255, strlen($copy->label));
+        $this->assertStringContainsString('(copy @ ', $copy->label);
     }
 }

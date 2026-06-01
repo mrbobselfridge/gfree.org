@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Support;
 
+use App\Support\AdminAccess;
+use Filament\Facades\Filament;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -25,18 +27,14 @@ class StandardTableActions
                 ->label('Copy')
                 ->icon(Heroicon::OutlinedSquare2Stack)
                 ->iconButton()
-                ->authorize(fn (Model $record): bool => Gate::allows('create', $record::class))
+                ->authorize(fn (Model $record): bool => self::canCopy($record))
                 ->action(function (Model $record): void {
                     $copy = $record->replicate();
                     $labelField = self::labelField($record);
                     $timestamp = now();
 
                     if ($labelField) {
-                        $copy->{$labelField} = sprintf(
-                            '%s (copy @ %s)',
-                            $record->{$labelField},
-                            $timestamp->format('Y-m-d H:i:s'),
-                        );
+                        $copy->{$labelField} = self::copyLabel($record, $labelField, $timestamp->format('Y-m-d H:i:s'));
                     }
 
                     if (array_key_exists('slug', $record->getAttributes())) {
@@ -86,6 +84,40 @@ class StandardTableActions
         }
 
         return null;
+    }
+
+    private static function canCopy(Model $record): bool
+    {
+        $user = Filament::auth()->user();
+
+        if ($user) {
+            $adminAccess = AdminAccess::authorizeModelAbility($user, 'create', $record::class);
+
+            if ($adminAccess !== null) {
+                return $adminAccess;
+            }
+        }
+
+        return Gate::allows('create', $record::class);
+    }
+
+    private static function copyLabel(Model $record, string $field, string $timestamp): string
+    {
+        $suffix = " (copy @ {$timestamp})";
+        $source = (string) $record->{$field};
+        $maxLength = self::stringColumnLength($record, $field) ?? 255;
+        $baseLength = max(1, $maxLength - strlen($suffix));
+
+        return Str::limit($source, $baseLength, '').$suffix;
+    }
+
+    private static function stringColumnLength(Model $record, string $field): ?int
+    {
+        $connection = $record->getConnection();
+        $columns = $connection->getSchemaBuilder()->getColumns($record->getTable());
+        $column = collect($columns)->firstWhere('name', $field);
+
+        return is_numeric($column['length'] ?? null) ? (int) $column['length'] : null;
     }
 
     private static function uniqueSlug(Model $record, ?string $source): string
