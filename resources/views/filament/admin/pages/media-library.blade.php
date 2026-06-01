@@ -1,6 +1,8 @@
 <x-filament-panels::page>
     @php
         $images = $this->getImages();
+        $totalImages = $this->getTotalImageCount();
+        $sortOptions = $this->getSortOptions();
     @endphp
 
     <style>
@@ -14,6 +16,43 @@
         .dark .gfree-media-summary {
             border-color: rgb(31 41 55);
             background: rgb(17 24 39);
+        }
+
+        .gfree-media-controls {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px);
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .gfree-media-control label {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: rgb(75 85 99);
+            font-size: 0.75rem;
+            font-weight: 650;
+        }
+
+        .dark .gfree-media-control label {
+            color: rgb(209 213 219);
+        }
+
+        .gfree-media-control input,
+        .gfree-media-control select {
+            width: 100%;
+            border: 1px solid rgb(209 213 219);
+            border-radius: 0.5rem;
+            background: white;
+            padding: 0.5rem 0.75rem;
+            color: rgb(17 24 39);
+            font-size: 0.875rem;
+        }
+
+        .dark .gfree-media-control input,
+        .dark .gfree-media-control select {
+            border-color: rgb(55 65 81);
+            background: rgb(3 7 18);
+            color: white;
         }
 
         .gfree-media-grid {
@@ -141,6 +180,10 @@
         }
 
         @media (max-width: 640px) {
+            .gfree-media-controls {
+                grid-template-columns: 1fr;
+            }
+
             .gfree-media-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
@@ -153,15 +196,36 @@
                 <div>
                     <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                        {{ $images->count() }} {{ \Illuminate\Support\Str::plural('image', $images->count()) }} found in public storage.
+                        {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('image', $totalImages) }} shown.
                     </p>
                 </div>
             </div>
         </div>
 
+        <div class="gfree-media-controls">
+            <div class="gfree-media-control">
+                <label for="media-search">Search</label>
+                <input
+                    id="media-search"
+                    type="search"
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="Search path, filename, or content area"
+                >
+            </div>
+
+            <div class="gfree-media-control">
+                <label for="media-sort">Sort by</label>
+                <select id="media-sort" wire:model.live="sort">
+                    @foreach ($sortOptions as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
         @if ($images->isEmpty())
             <div class="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                No uploaded images were found.
+                No images match the current search.
             </div>
         @else
             <div class="gfree-media-grid">

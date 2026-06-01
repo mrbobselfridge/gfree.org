@@ -180,4 +180,87 @@ class MediaLibraryAdminTest extends TestCase
 
         $this->assertCount(1, Storage::disk('public')->files('media-library'));
     }
+
+    public function test_media_library_can_search_filename_path_and_usage(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('picnic.jpg', 800, 600)
+            ->storeAs('announcements', 'picnic.jpg', 'public');
+
+        UploadedFile::fake()
+            ->image('students.png', 800, 600)
+            ->storeAs('pages/content-images', 'students.png', 'public');
+
+        Page::query()->create([
+            'title' => 'Student Ministry',
+            'slug' => 'students',
+            'content_blocks' => [
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'pages/content-images/students.png',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $component = Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->set('search', 'Student Ministry');
+
+        $images = $component->instance()->getImages();
+
+        $this->assertCount(1, $images);
+        $this->assertSame('pages/content-images/students.png', $images->first()['path']);
+
+        $component->set('search', 'announcements');
+
+        $images = $component->instance()->getImages();
+
+        $this->assertCount(1, $images);
+        $this->assertSame('announcements/picnic.jpg', $images->first()['path']);
+    }
+
+    public function test_media_library_can_sort_images(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('zulu.jpg', 400, 300)
+            ->size(100)
+            ->storeAs('z-folder', 'zulu.jpg', 'public');
+
+        UploadedFile::fake()
+            ->image('alpha.jpg', 1200, 800)
+            ->size(500)
+            ->storeAs('a-folder', 'alpha.jpg', 'public');
+
+        Announcement::query()->create([
+            'title' => 'Alpha Announcement',
+            'slug' => 'alpha-announcement',
+            'image_path' => 'a-folder/alpha.jpg',
+            'is_published' => true,
+        ]);
+
+        $component = Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class);
+
+        $component->set('sort', 'file_name');
+        $this->assertSame(['a-folder/alpha.jpg', 'z-folder/zulu.jpg'], $component->instance()->getImages()->pluck('path')->all());
+
+        $component->set('sort', 'path');
+        $this->assertSame(['a-folder/alpha.jpg', 'z-folder/zulu.jpg'], $component->instance()->getImages()->pluck('path')->all());
+
+        $component->set('sort', 'size');
+        $this->assertSame('a-folder/alpha.jpg', $component->instance()->getImages()->first()['path']);
+
+        $component->set('sort', 'dimensions');
+        $this->assertSame('a-folder/alpha.jpg', $component->instance()->getImages()->first()['path']);
+
+        $component->set('sort', 'content_type');
+        $this->assertSame('a-folder/alpha.jpg', $component->instance()->getImages()->first()['path']);
+    }
 }

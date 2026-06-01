@@ -32,12 +32,48 @@ class MediaLibrary extends Page
 
     protected string $view = 'filament.admin.pages.media-library';
 
+    public string $search = '';
+
+    public string $sort = 'recent';
+
+    public function updatedSearch(): void
+    {
+        $this->search = trim($this->search);
+    }
+
     /**
      * @return Collection<int, array<string, mixed>>
      */
     public function getImages(): Collection
     {
-        return MediaLibrarySupport::images();
+        $images = MediaLibrarySupport::images();
+
+        if (filled($this->search)) {
+            $search = str($this->search)->lower()->toString();
+
+            $images = $images->filter(fn (array $image): bool => str($this->searchHaystack($image))
+                ->lower()
+                ->contains($search));
+        }
+
+        return $this->sortImages($images)->values();
+    }
+
+    public function getTotalImageCount(): int
+    {
+        return MediaLibrarySupport::images()->count();
+    }
+
+    public function getSortOptions(): array
+    {
+        return [
+            'recent' => 'Most recent',
+            'content_type' => 'Content Type',
+            'file_name' => 'File Name',
+            'size' => 'Size',
+            'path' => 'File Path + Name',
+            'dimensions' => 'Dimensions',
+        ];
     }
 
     protected function getHeaderActions(): array
@@ -144,5 +180,62 @@ class MediaLibrary extends Page
             ->implode(', ');
 
         return "Warning: this image is currently used in {$usedIn}. Deleting it will leave those places without this file.";
+    }
+
+    private function searchHaystack(array $image): string
+    {
+        return collect([
+            $image['name'] ?? null,
+            $image['path'] ?? null,
+            $image['directory'] ?? null,
+            $image['usage_summary'] ?? null,
+            ...collect($image['usage'] ?? [])
+                ->flatMap(fn (array $usage): array => [
+                    $usage['label'] ?? null,
+                    $usage['short_label'] ?? null,
+                    $usage['detail'] ?? null,
+                ])
+                ->all(),
+        ])
+            ->filter()
+            ->implode(' ');
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $images
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function sortImages(Collection $images): Collection
+    {
+        return match ($this->sort) {
+            'content_type' => $images->sortBy(fn (array $image): string => $this->contentTypeSortValue($image), SORT_NATURAL | SORT_FLAG_CASE),
+            'file_name' => $images->sortBy(fn (array $image): string => (string) ($image['name'] ?? ''), SORT_NATURAL | SORT_FLAG_CASE),
+            'size' => $images->sortByDesc(fn (array $image): int => (int) ($image['size'] ?? 0)),
+            'path' => $images->sortBy(fn (array $image): string => (string) ($image['path'] ?? ''), SORT_NATURAL | SORT_FLAG_CASE),
+            'dimensions' => $images->sortByDesc(fn (array $image): int => $this->dimensionSortValue($image)),
+            default => $images->sortByDesc(fn (array $image): int => (int) ($image['modified'] ?? 0)),
+        };
+    }
+
+    private function contentTypeSortValue(array $image): string
+    {
+        $usage = collect($image['usage'] ?? [])->first();
+
+        if (! $usage) {
+            return 'zz-unused';
+        }
+
+        return (string) ($usage['short_label'] ?? $usage['label'] ?? '');
+    }
+
+    private function dimensionSortValue(array $image): int
+    {
+        $dimensions = $image['dimensions'] ?? null;
+
+        if (! is_array($dimensions) || count($dimensions) < 2) {
+            return 0;
+        }
+
+        return (int) $dimensions[0] * (int) $dimensions[1];
     }
 }
