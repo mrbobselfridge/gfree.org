@@ -57,8 +57,8 @@
         .gfree-image-picker-card__image {
             display: block;
             width: 100%;
-            aspect-ratio: 4 / 3;
-            object-fit: cover;
+            height: 4.75rem;
+            object-fit: contain;
             background: rgb(243 244 246);
         }
 
@@ -150,7 +150,6 @@
                             </span>
                             <span @class([
                                 'gfree-image-picker-card__meta',
-                                'font-semibold' => ($image['usage_count'] ?? 0) === 0,
                             ])>
                                 {{ $image['usage_summary'] ?? 'Unused' }}
                             </span>

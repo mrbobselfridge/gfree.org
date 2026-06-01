@@ -37,8 +37,8 @@
         .gfree-media-card__image {
             display: block;
             width: 100%;
-            aspect-ratio: 4 / 3;
-            object-fit: cover;
+            height: 5.25rem;
+            object-fit: contain;
             background: rgb(243 244 246);
         }
 
@@ -164,7 +164,7 @@
                                 </div>
                             </dl>
 
-                            <div class="mt-3 rounded-lg bg-gray-50 p-2 text-xs text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+                            <div class="mt-3 rounded-lg bg-gray-50 p-2 text-[0.6875rem] text-gray-600 dark:bg-gray-900 dark:text-gray-300">
                                 <p class="font-semibold text-gray-800 dark:text-gray-100">
                                     {{ $image['usage_count'] > 0 ? 'Used in' : 'Unused' }}
                                 </p>
