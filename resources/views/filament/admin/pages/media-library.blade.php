@@ -47,7 +47,7 @@
         }
 
         .gfree-media-card__body {
-            padding: 0.75rem;
+            padding: 0.625rem;
         }
 
         .gfree-media-card__title,
@@ -78,23 +78,18 @@
         .gfree-media-card__stats {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.5rem;
-            margin-top: 0.625rem;
+            gap: 0.375rem;
+            margin-top: 0;
             color: rgb(107 114 128);
             font-size: 0.6875rem;
         }
 
-        .gfree-media-card__stats dt {
-            color: rgb(75 85 99);
-            font-weight: 650;
-        }
-
-        .dark .gfree-media-card__stats dt {
-            color: rgb(209 213 219);
+        .gfree-media-card__stats dd {
+            margin: 0;
         }
 
         .gfree-media-card__usage {
-            margin-top: 0.625rem;
+            margin-top: 0.35rem;
             padding: 0;
             color: rgb(107 114 128);
             font-size: 0.6875rem;
@@ -124,15 +119,25 @@
         .gfree-media-card__actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.625rem;
+            gap: 0.25rem;
+            margin-top: 0.45rem;
             font-size: 0.75rem;
         }
 
         .gfree-media-card__actions a,
         .gfree-media-card__actions button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.6rem;
+            height: 1.6rem;
             color: rgb(217 119 6);
             font-weight: 650;
+        }
+
+        .gfree-media-card__actions svg {
+            width: 1rem;
+            height: 1rem;
         }
 
         @media (max-width: 640px) {
@@ -161,8 +166,8 @@
         @else
             <div class="gfree-media-grid">
                 @foreach ($images as $image)
-                    <article class="gfree-media-card">
-                        <a href="{{ $image['url'] }}" target="_blank" rel="noreferrer">
+                    <article class="gfree-media-card" title="{{ $image['path'] }}">
+                        <a href="{{ $image['url'] }}" target="_blank" rel="noreferrer" title="Open">
                             <img
                                 src="{{ $image['url'] }}"
                                 alt=""
@@ -172,22 +177,11 @@
                         </a>
 
                         <div class="gfree-media-card__body">
-                            <div class="min-w-0">
-                                <h3 class="gfree-media-card__title" title="{{ $image['name'] }}">
-                                    {{ $image['name'] }}
-                                </h3>
-                                <p class="gfree-media-card__path" title="{{ $image['path'] }}">
-                                    {{ $image['path'] }}
-                                </p>
-                            </div>
-
                             <dl class="gfree-media-card__stats">
                                 <div>
-                                    <dt class="font-medium text-gray-700 dark:text-gray-300">Size</dt>
                                     <dd>{{ $image['size_for_humans'] }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="font-medium text-gray-700 dark:text-gray-300">Dimensions</dt>
                                     <dd>{{ $image['dimensions_for_humans'] ?? 'Unknown' }}</dd>
                                 </div>
                             </dl>
@@ -221,21 +215,54 @@
                                     href="{{ $image['url'] }}"
                                     target="_blank"
                                     rel="noreferrer"
+                                    title="Open"
+                                    aria-label="Open"
                                 >
-                                    Open
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 7.5v10.5h10.5" />
+                                    </svg>
                                 </a>
                                 <a
                                     href="{{ $image['url'] }}"
                                     download="{{ $image['name'] }}"
+                                    title="Download"
+                                    aria-label="Download"
                                 >
-                                    Download
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" />
+                                    </svg>
                                 </a>
                                 <button
                                     type="button"
                                     x-data
                                     x-on:click="navigator.clipboard.writeText(@js($image['url']))"
+                                    title="Copy URL"
+                                    aria-label="Copy URL"
                                 >
-                                    Copy URL
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 8V5.5A1.5 1.5 0 0 1 9.5 4h8A1.5 1.5 0 0 1 19 5.5v8A1.5 1.5 0 0 1 17.5 15H15M6.5 9h8A1.5 1.5 0 0 1 16 10.5v8a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 18.5v-8A1.5 1.5 0 0 1 6.5 9Z" />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    wire:click="mountAction('replaceImage', { path: @js($image['path']) })"
+                                    title="Replace"
+                                    aria-label="Replace"
+                                >
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.9 4.6 2.5 2.5M4 20h4.2L18.7 9.5a1.8 1.8 0 0 0 0-2.5L17 5.3a1.8 1.8 0 0 0-2.5 0L4 15.8V20Z" />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    wire:click="mountAction('deleteImage', { path: @js($image['path']) })"
+                                    title="Delete"
+                                    aria-label="Delete"
+                                    class="text-danger-600"
+                                >
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7m2 0-.7 12.2A1.5 1.5 0 0 1 14.8 20H9.2a1.5 1.5 0 0 1-1.5-1.4L7 7m3 3v7m4-7v7" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Models\Announcement;
 use App\Models\Page;
 use App\Models\User;
@@ -9,6 +10,7 @@ use App\Support\MediaLibrary;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class MediaLibraryAdminTest extends TestCase
@@ -48,6 +50,14 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('An: Church Picnic | Announceme..')
             ->assertSee('unused.jpg')
             ->assertSee('Unused')
+            ->assertSee('title="Open"', false)
+            ->assertSee('title="Download"', false)
+            ->assertSee('title="Copy URL"', false)
+            ->assertSee('title="Replace"', false)
+            ->assertSee('title="Delete"', false)
+            ->assertDontSee('>Open<', false)
+            ->assertDontSee('>Download<', false)
+            ->assertDontSee('>Copy URL<', false)
             ->assertDontSee('bulletin.pdf');
     }
 
@@ -97,5 +107,77 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame('Page: Students', $image['usage'][0]['label']);
         $this->assertSame('Content image', $image['usage'][0]['detail']);
         $this->assertSame('Pg: Students - Content image', $image['usage_summary']);
+    }
+
+    public function test_media_library_can_delete_unused_image(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('unused.jpg', 800, 600)
+            ->storeAs('announcements', 'unused.jpg', 'public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('deleteImage', arguments: ['path' => 'announcements/unused.jpg'])
+            ->assertHasNoActionErrors();
+
+        Storage::disk('public')->assertMissing('announcements/unused.jpg');
+    }
+
+    public function test_media_library_replaces_image_everywhere_it_is_tracked(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('old.jpg', 800, 600)
+            ->storeAs('announcements', 'old.jpg', 'public');
+
+        $announcement = Announcement::query()->create([
+            'title' => 'Church Picnic',
+            'slug' => 'church-picnic',
+            'image_path' => 'announcements/old.jpg',
+            'content_blocks' => [
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'announcements/old.jpg',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('replaceImage', [
+                'replacement_image' => UploadedFile::fake()->image('new.jpg', 800, 600),
+            ], [
+                'path' => 'announcements/old.jpg',
+            ])
+            ->assertHasNoActionErrors();
+
+        $announcement->refresh();
+        $this->assertNotSame('announcements/old.jpg', $announcement->image_path);
+        $this->assertStringStartsWith('media-library/replacements/', $announcement->image_path);
+        $this->assertSame($announcement->image_path, $announcement->content_blocks[0]['data']['image_path']);
+        Storage::disk('public')->assertMissing('announcements/old.jpg');
+        Storage::disk('public')->assertExists($announcement->image_path);
+    }
+
+    public function test_media_library_can_upload_new_images_from_header_action(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('uploadImages', [
+                'images' => [
+                    UploadedFile::fake()->image('new-upload.jpg', 800, 600),
+                ],
+            ])
+            ->assertHasNoActionErrors();
+
+        $this->assertCount(1, Storage::disk('public')->files('media-library'));
     }
 }

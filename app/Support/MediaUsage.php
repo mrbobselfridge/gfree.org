@@ -39,6 +39,25 @@ class MediaUsage
         return $usage;
     }
 
+    public static function replaceImagePath(string $oldPath, string $newPath): int
+    {
+        if ($oldPath === $newPath) {
+            return 0;
+        }
+
+        $updated = 0;
+
+        foreach (self::directImageFieldDefinitions() as $definition) {
+            $updated += self::replaceDirectImageFieldUsages($oldPath, $newPath, $definition);
+        }
+
+        foreach (self::contentBlockDefinitions() as $definition) {
+            $updated += self::replaceContentBlockUsages($oldPath, $newPath, $definition);
+        }
+
+        return $updated;
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -177,6 +196,44 @@ class MediaUsage
     }
 
     /**
+     * @param  array<string, mixed>  $definition
+     */
+    private static function replaceDirectImageFieldUsages(string $oldPath, string $newPath, array $definition): int
+    {
+        /** @var class-string<Model> $model */
+        $model = $definition['model'];
+        $fields = array_keys($definition['fields']);
+        $updated = 0;
+
+        $model::query()
+            ->where(function ($query) use ($fields, $oldPath): void {
+                foreach ($fields as $field) {
+                    $query->orWhere($field, $oldPath);
+                }
+            })
+            ->get()
+            ->each(function (Model $record) use ($fields, $oldPath, $newPath, &$updated): void {
+                $changed = false;
+
+                foreach ($fields as $field) {
+                    if ($record->getAttribute($field) !== $oldPath) {
+                        continue;
+                    }
+
+                    $record->setAttribute($field, $newPath);
+                    $changed = true;
+                }
+
+                if ($changed) {
+                    $record->save();
+                    $updated++;
+                }
+            });
+
+        return $updated;
+    }
+
+    /**
      * @param  array<string, array<int, array<string, string>>>  $usage
      * @param  Collection<int, string>  $paths
      * @param  array<string, mixed>  $definition
@@ -204,6 +261,45 @@ class MediaUsage
                     );
                 }
             });
+    }
+
+    /**
+     * @param  array<string, mixed>  $definition
+     */
+    private static function replaceContentBlockUsages(string $oldPath, string $newPath, array $definition): int
+    {
+        /** @var class-string<Model> $model */
+        $model = $definition['model'];
+        $field = $definition['field'];
+        $updated = 0;
+
+        $model::query()
+            ->whereNotNull($field)
+            ->get()
+            ->each(function (Model $record) use ($field, $oldPath, $newPath, &$updated): void {
+                $blocks = $record->getAttribute($field);
+
+                if (is_string($blocks)) {
+                    $blocks = json_decode($blocks, true);
+                }
+
+                if (! is_array($blocks)) {
+                    return;
+                }
+
+                $changed = false;
+                $blocks = self::replaceImagePathsInArray($blocks, $oldPath, $newPath, $changed);
+
+                if (! $changed) {
+                    return;
+                }
+
+                $record->setAttribute($field, $blocks);
+                $record->save();
+                $updated++;
+            });
+
+        return $updated;
     }
 
     /**
@@ -239,6 +335,28 @@ class MediaUsage
         }
 
         return $paths;
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     * @return array<mixed>
+     */
+    private static function replaceImagePathsInArray(array $value, string $oldPath, string $newPath, bool &$changed): array
+    {
+        foreach ($value as $key => $item) {
+            if ($key === 'image_path' && $item === $oldPath) {
+                $value[$key] = $newPath;
+                $changed = true;
+
+                continue;
+            }
+
+            if (is_array($item)) {
+                $value[$key] = self::replaceImagePathsInArray($item, $oldPath, $newPath, $changed);
+            }
+        }
+
+        return $value;
     }
 
     /**
