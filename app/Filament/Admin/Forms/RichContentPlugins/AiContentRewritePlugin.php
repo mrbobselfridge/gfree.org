@@ -74,7 +74,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                 ->schema([
                     Textarea::make('prompt')
                         ->label('Prompt')
-                        ->rows(8)
+                        ->rows(4)
                         ->required()
                         ->columnSpanFull(),
                     Hidden::make('source_html'),
@@ -88,6 +88,9 @@ class AiContentRewritePlugin implements RichContentPlugin
                             ['blockquote', 'bulletList', 'orderedList'],
                             ['table', 'horizontalRule'],
                             ['undo', 'redo'],
+                        ])
+                        ->extraInputAttributes([
+                            'style' => 'max-height: min(55vh, 34rem); overflow-y: auto;',
                         ])
                         ->visible(fn (Get $get): bool => filled($get('suggested_html')))
                         ->columnSpanFull(),
