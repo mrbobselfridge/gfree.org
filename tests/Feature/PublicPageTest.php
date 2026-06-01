@@ -310,6 +310,34 @@ class PublicPageTest extends TestCase
             ->assertSee('/announcements/page-announcement');
     }
 
+    public function test_embed_blocks_render_raw_provider_code_on_public_pages(): void
+    {
+        $embedCode = '<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="gfree" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>'
+            .'<script async src="https://cdn.onechurchsoftware.com/embed/v3.1.js"></script>';
+
+        Page::query()->create([
+            'title' => 'Calendar',
+            'slug' => 'calendar',
+            'content_blocks' => [
+                [
+                    'type' => 'embed',
+                    'data' => [
+                        'heading' => 'Church Calendar',
+                        'embed_code' => $embedCode,
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/calendar')
+            ->assertOk()
+            ->assertSee('Church Calendar')
+            ->assertSee('<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="gfree" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>', false)
+            ->assertSee('<script async src="https://cdn.onechurchsoftware.com/embed/v3.1.js"></script>', false);
+    }
+
     public function test_process_step_blocks_render_on_public_pages(): void
     {
         Page::query()->create([

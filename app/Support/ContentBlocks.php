@@ -138,6 +138,7 @@ class ContentBlocks
                 || self::hasText($data['body'] ?? null)
                 || (filled($data['button_label'] ?? null) && filled($data['button_url'] ?? null)),
             'link_cards' => filled($data['cards'] ?? []),
+            'embed' => self::hasText($data['heading'] ?? null) || filled($data['embed_code'] ?? null),
             'info_strip', 'announcements_bar' => true,
             default => true,
         };

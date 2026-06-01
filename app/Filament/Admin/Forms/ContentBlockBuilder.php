@@ -219,6 +219,24 @@ class ContentBlockBuilder
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
+                Block::make('embed')
+                    ->label(fn (?array $state): string => self::blockLabel('Embed', $state))
+                    ->schema([
+                        TextInput::make('heading')
+                            ->live(onBlur: true)
+                            ->maxLength(255),
+                        Select::make('background')
+                            ->options(self::backgroundOptions())
+                            ->default('white')
+                            ->required(),
+                        Textarea::make('embed_code')
+                            ->label('Embed code')
+                            ->rows(8)
+                            ->required()
+                            ->helperText('Paste trusted embed code, including script tags when the provider requires them.')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
                 Block::make('announcements_bar')
                     ->label(fn (?array $state): string => self::blockLabel('Announcements', $state))
                     ->schema([
