@@ -21,6 +21,8 @@ class MinistriesTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->formatStateUsing(fn (string $state): string => '/ministry/'.ltrim($state, '/'))
+                    ->url(fn ($record): string => url('/ministry/'.ltrim((string) $record->slug, '/')))
+                    ->openUrlInNewTab()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 ImageColumn::make('card_image_path')

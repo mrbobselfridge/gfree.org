@@ -22,6 +22,8 @@ class BulletinsTable
                 TextColumn::make('bulletin_date')
                     ->label('Bulletin date')
                     ->date()
+                    ->url(fn ($record): ?string => $record->bulletin_date ? url('/bulletins/'.$record->bulletin_date->toDateString()) : null)
+                    ->openUrlInNewTab()
                     ->sortable(),
                 TextColumn::make('pdf_path')
                     ->label('PDF')

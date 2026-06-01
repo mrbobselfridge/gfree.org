@@ -21,6 +21,8 @@ class PagesTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
+                    ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
+                    ->openUrlInNewTab()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('hero_image_path')

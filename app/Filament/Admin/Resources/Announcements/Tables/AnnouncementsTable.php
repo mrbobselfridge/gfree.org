@@ -21,6 +21,8 @@ class AnnouncementsTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->formatStateUsing(fn (string $state): string => '/announcements/'.ltrim($state, '/'))
+                    ->url(fn ($record): string => url('/announcements/'.ltrim((string) $record->slug, '/')))
+                    ->openUrlInNewTab()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('image_path')

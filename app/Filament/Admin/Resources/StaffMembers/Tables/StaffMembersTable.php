@@ -22,6 +22,8 @@ class StaffMembersTable
                 TextColumn::make('slug')
                     ->searchable()
                     ->formatStateUsing(fn (string $state): string => '/leadership/'.ltrim($state, '/'))
+                    ->url(fn ($record): string => url('/leadership/'.ltrim((string) $record->slug, '/')))
+                    ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('role')
                     ->searchable(),
