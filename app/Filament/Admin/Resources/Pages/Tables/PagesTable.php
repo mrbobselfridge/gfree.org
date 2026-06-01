@@ -20,7 +20,6 @@ class PagesTable
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('slug')
-                    ->label('URL')
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
