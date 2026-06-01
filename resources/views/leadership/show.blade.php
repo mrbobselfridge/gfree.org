@@ -30,18 +30,10 @@
             @include('pages.partials.content-blocks')
         @endif
 
-        @if (! count($contentBlocks) || $leader->email)
+        @if ($leader->email)
         <article class="leadership-detail page-block page-block--bg-white">
             <div class="page-block__inner page-block__inner--narrow">
-                @if (! count($contentBlocks) && $leader->bio)
-                    <div class="page-rich-text">
-                        {!! \App\Support\RichContent::render($leader->bio) !!}
-                    </div>
-                @endif
-
-                @if ($leader->email)
-                    <a class="page-block__button" href="mailto:{{ $leader->email }}">Email {{ $leader->name }}</a>
-                @endif
+                <a class="page-block__button" href="mailto:{{ $leader->email }}">Email {{ $leader->name }}</a>
             </div>
         </article>
         @endif

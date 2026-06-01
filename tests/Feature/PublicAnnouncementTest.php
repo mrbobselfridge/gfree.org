@@ -90,7 +90,7 @@ class PublicAnnouncementTest extends TestCase
             ->assertSee('Published But No Longer Featured');
     }
 
-    public function test_announcement_detail_renders_image_body_and_cta(): void
+    public function test_announcement_detail_renders_image_and_cta_without_legacy_body(): void
     {
         Announcement::query()->create([
             'title' => 'Baptism Sunday',
@@ -112,9 +112,9 @@ class PublicAnnouncementTest extends TestCase
             ->assertSee('Celebrate new life together.')
             ->assertSee('/storage/announcements/baptism.jpg')
             ->assertSee('page-block--bg-forest')
-            ->assertSee('Bring your family.')
-            ->assertSee('<h2>Bring your family.</h2>', false)
-            ->assertSee('Stay for lunch.')
+            ->assertDontSee('Bring your family.')
+            ->assertDontSee('<h2>Bring your family.</h2>', false)
+            ->assertDontSee('Stay for lunch.')
             ->assertSee('Register')
             ->assertSee('https://example.com/register');
     }

@@ -4,16 +4,14 @@ namespace App\Filament\Admin\Resources\Announcements\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
-use App\Filament\Admin\Forms\RichEditorDefaults;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
@@ -77,10 +75,6 @@ class AnnouncementForm
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'announcements/content-images', 'Announcement Content', true),
                     ])
-                    ->columnSpanFull(),
-                RichEditorDefaults::configure(RichEditor::make('body'))
-                    ->label('Legacy body fallback')
-                    ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
                 ImageUpload::make('image_path', 'announcements', 'Announcement Image')
                     ->columnSpanFull(),

@@ -28,18 +28,10 @@
 
         @if (count($contentBlocks))
             @include('pages.partials.content-blocks')
-        @else
+        @elseif ($announcement->cta_label && $announcement->cta_url)
         <article class="announcement-detail page-block page-block--bg-{{ $announcement->background ?: 'white' }}">
             <div class="page-block__inner page-block__inner--narrow">
-                @if ($announcement->body)
-                    <div class="page-rich-text">
-                        {!! \App\Support\RichContent::render($announcement->body) !!}
-                    </div>
-                @endif
-
-                @if ($announcement->cta_label && $announcement->cta_url)
-                    <a class="page-block__button" href="{{ $announcement->cta_url }}"{!! \App\Support\LinkAttributes::externalAttributes($announcement->cta_url) !!}>{{ $announcement->cta_label }}</a>
-                @endif
+                <a class="page-block__button" href="{{ $announcement->cta_url }}"{!! \App\Support\LinkAttributes::externalAttributes($announcement->cta_url) !!}>{{ $announcement->cta_label }}</a>
             </div>
         </article>
         @endif

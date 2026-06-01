@@ -4,13 +4,11 @@ namespace App\Filament\Admin\Resources\Ministries\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
-use App\Filament\Admin\Forms\RichEditorDefaults;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
@@ -52,10 +50,6 @@ class MinistryForm
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'ministries/content-images', 'Ministry Content', true),
                     ])
-                    ->columnSpanFull(),
-                RichEditorDefaults::configure(RichEditor::make('description'))
-                    ->label('Legacy description fallback')
-                    ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
                 ImageUpload::make('hero_image_path', 'ministries/hero-images', 'Hero image'),
                 ImageUpload::make('card_image_path', 'ministries/card-images', 'Card image'),

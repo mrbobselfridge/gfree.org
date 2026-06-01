@@ -4,12 +4,10 @@ namespace App\Filament\Admin\Resources\StaffMembers\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
-use App\Filament\Admin\Forms\RichEditorDefaults;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
@@ -58,10 +56,6 @@ class StaffMemberForm
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'leadership/content-images', 'Leadership Content', true),
                     ])
-                    ->columnSpanFull(),
-                RichEditorDefaults::configure(RichEditor::make('bio'))
-                    ->label('Legacy bio fallback')
-                    ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
                 ImageUpload::make('photo_path', 'leadership', 'Leadership Image')
                     ->columnSpanFull(),

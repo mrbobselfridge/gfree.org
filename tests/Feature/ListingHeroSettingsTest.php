@@ -123,7 +123,7 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('3. Bless This Home- Peace');
     }
 
-    public function test_ministry_detail_shows_ministry_content_and_actions(): void
+    public function test_ministry_detail_shows_ministry_actions_without_legacy_description(): void
     {
         SiteSetting::query()->create([
             'church_name' => 'gFree Church',
@@ -150,7 +150,7 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('Families')
             ->assertSee('Kids Ministry')
             ->assertSee('Helping kids know Jesus.')
-            ->assertSee('Kids gather during Sunday services.', false)
+            ->assertDontSee('Kids gather during Sunday services.', false)
             ->assertSee('/storage/ministries/hero-images/kids.jpg')
             ->assertSee('ministry-hero-contact', false)
             ->assertSee('Ministry Leader')

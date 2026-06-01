@@ -13,18 +13,24 @@
     <main>
         @php($hasLeaderContact = $ministry->leader_name || $ministry->leader_email || $ministry->leader_phone)
 
-        <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
+        <section @class([
+            'page-hero',
+            'page-hero--image' => filled($heroImageUrl),
+            'page-hero--ministry-detail' => $hasLeaderContact,
+        ])>
             @if ($heroImageUrl)
                 <div class="page-hero__image" style="background-image: url('{{ $heroImageUrl }}')"></div>
             @endif
 
             <div class="page-hero__content">
-                <p class="concept-eyebrow">{{ $ministry->category ?: 'Ministry' }}</p>
-                <h1>{{ $ministry->name }}</h1>
+                <div class="page-hero__text">
+                    <p class="concept-eyebrow">{{ $ministry->category ?: 'Ministry' }}</p>
+                    <h1>{{ $ministry->name }}</h1>
 
-                @if ($ministry->short_summary)
-                    <p>{{ $ministry->short_summary }}</p>
-                @endif
+                    @if ($ministry->short_summary)
+                        <p>{{ $ministry->short_summary }}</p>
+                    @endif
+                </div>
 
                 @if ($hasLeaderContact)
                     <div class="ministry-hero-contact" aria-label="Ministry leader contact">
@@ -54,27 +60,17 @@
             @include('pages.partials.content-blocks')
         @endif
 
-        @if (! count($contentBlocks) || $hasSidebar || $ministry->embed_code)
+        @if ($hasSidebar || $ministry->embed_code)
         <article class="ministry-detail page-block page-block--bg-white">
 
-            <div @class(['page-block__inner', 'ministry-detail__layout', 'ministry-detail__layout--single' => ! $hasSidebar])>
-                <div class="ministry-detail__main">
-                    @if (! count($contentBlocks) && $ministry->description)
-                        <div class="page-rich-text">
-                            {!! \App\Support\RichContent::render($ministry->description) !!}
-                        </div>
-                    @elseif (! count($contentBlocks))
-                        <div class="page-rich-text">
-                            <p>More information about this ministry is coming soon.</p>
-                        </div>
-                    @endif
-
-                    @if ($ministry->embed_code)
+            <div @class(['page-block__inner', 'ministry-detail__layout', 'ministry-detail__layout--single' => ! ($hasSidebar && $ministry->embed_code)])>
+                @if ($ministry->embed_code)
+                    <div class="ministry-detail__main">
                         <div class="ministry-detail__embed">
                             {!! $ministry->embed_code !!}
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
 
                 @if ($hasSidebar)
                     <aside class="ministry-detail__sidebar" aria-label="Ministry details">
