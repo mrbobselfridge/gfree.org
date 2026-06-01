@@ -3,8 +3,8 @@
 namespace App\Filament\Admin\Resources\StaffMembers\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -63,11 +63,7 @@ class StaffMemberForm
                     ->label('Legacy bio fallback')
                     ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
-                FileUpload::make('photo_path')
-                    ->label('Leadership Image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('leadership')
+                ImageUpload::make('photo_path', 'leadership', 'Leadership Image')
                     ->columnSpanFull(),
             ]);
     }

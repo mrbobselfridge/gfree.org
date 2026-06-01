@@ -2,10 +2,10 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\SiteSetting;
 use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -137,11 +137,7 @@ trait ManagesListingPageSettings
                 ->maxLength(255),
             RichEditorDefaults::configure(RichEditor::make("{$prefix}_subtitle"))
                 ->label("{$labelPrefix} subtitle"),
-            FileUpload::make("{$prefix}_image_path")
-                ->label("{$labelPrefix} image")
-                ->image()
-                ->disk('public')
-                ->directory('site-settings/'.$this->getListingSettingsImageDirectory()),
+            ImageUpload::make("{$prefix}_image_path", 'site-settings/'.$this->getListingSettingsImageDirectory(), "{$labelPrefix} image"),
         ];
     }
 

@@ -3,9 +3,9 @@
 namespace App\Filament\Admin\Resources\Announcements\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -82,11 +82,7 @@ class AnnouncementForm
                     ->label('Legacy body fallback')
                     ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
-                FileUpload::make('image_path')
-                    ->label('Announcement Image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('announcements')
+                ImageUpload::make('image_path', 'announcements', 'Announcement Image')
                     ->columnSpanFull(),
                 DateTimePicker::make('publish_at'),
                 DateTimePicker::make('expires_at'),

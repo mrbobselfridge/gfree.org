@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources\HomepageBanners\Schemas;
 
+use App\Filament\Admin\Forms\ImageUpload;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -45,11 +45,7 @@ class HomepageBannerForm
                     ->maxLength(255),
                 TextInput::make('secondary_button_url')
                     ->maxLength(255),
-                FileUpload::make('image_path')
-                    ->label('Banner Image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('homepage-banners')
+                ImageUpload::make('image_path', 'homepage-banners', 'Banner Image')
                     ->columnSpanFull(),
 
             ]);

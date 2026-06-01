@@ -5,7 +5,6 @@ namespace App\Filament\Admin\Forms;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -53,11 +52,7 @@ class ContentBlockBuilder
                 Block::make('image_text')
                     ->label(fn (?array $state): string => self::blockLabel('Image', $state))
                     ->schema([
-                        FileUpload::make('image_path')
-                            ->label('Image')
-                            ->image()
-                            ->disk('public')
-                            ->directory($imageDirectory),
+                        ImageUpload::make('image_path', $imageDirectory, 'Image'),
                         TextInput::make('image_alt')
                             ->label('Image description')
                             ->maxLength(255),

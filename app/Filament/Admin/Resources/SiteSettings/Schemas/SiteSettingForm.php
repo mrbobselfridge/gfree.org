@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Support\YoutubeFeedUrl;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -76,11 +76,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('announcements_subtitle'))
                             ->label('Announcements subtitle'),
-                        FileUpload::make('announcements_image_path')
-                            ->label('Announcements Image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('site-settings/announcements'),
+                        ImageUpload::make('announcements_image_path', 'site-settings/announcements', 'Announcements Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -95,11 +91,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('ministry_subtitle'))
                             ->label('Ministry subtitle'),
-                        FileUpload::make('ministry_image_path')
-                            ->label('Ministry image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('site-settings/ministry'),
+                        ImageUpload::make('ministry_image_path', 'site-settings/ministry', 'Ministry image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -114,11 +106,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('leadership_subtitle'))
                             ->label('Leadership subtitle'),
-                        FileUpload::make('leadership_image_path')
-                            ->label('Leadership Image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('site-settings/leadership'),
+                        ImageUpload::make('leadership_image_path', 'site-settings/leadership', 'Leadership Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -154,11 +142,7 @@ class SiteSettingForm
                         TextInput::make('sermons_youtube_link_label')
                             ->label('View on YouTube text')
                             ->maxLength(255),
-                        FileUpload::make('sermons_image_path')
-                            ->label('Sermons image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('site-settings/sermons'),
+                        ImageUpload::make('sermons_image_path', 'site-settings/sermons', 'Sermons image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -173,11 +157,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('bulletins_subtitle'))
                             ->label('Bulletins subtitle'),
-                        FileUpload::make('bulletins_image_path')
-                            ->label('Bulletins Image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('site-settings/bulletins'),
+                        ImageUpload::make('bulletins_image_path', 'site-settings/bulletins', 'Bulletins Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

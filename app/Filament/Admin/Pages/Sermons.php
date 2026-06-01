@@ -2,12 +2,12 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Resources\Concerns\ManagesListingPageSettings;
 use App\Support\YoutubeFeedUrl;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Page;
@@ -103,11 +103,7 @@ class Sermons extends Page
             TextInput::make('sermons_youtube_link_label')
                 ->label('View on YouTube text')
                 ->maxLength(255),
-            FileUpload::make('sermons_image_path')
-                ->label('Sermons image')
-                ->image()
-                ->disk('public')
-                ->directory('site-settings/sermons'),
+            ImageUpload::make('sermons_image_path', 'site-settings/sermons', 'Sermons image'),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Filament\Admin\Pages\HomepageContent;
+use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
@@ -49,6 +50,8 @@ class AdminAccess
     public const SERMONS = 'sermons';
 
     public const SITE_SETTINGS = 'site_settings';
+
+    public const MEDIA_LIBRARY = 'media_library';
 
     public const NAVIGATION_LINKS = 'navigation_links';
 
@@ -108,6 +111,11 @@ class AdminAccess
                 'group' => 'Sitewide',
                 'model' => SiteSetting::class,
                 'resource' => SiteSettingResource::class,
+            ],
+            self::MEDIA_LIBRARY => [
+                'label' => 'Media Library',
+                'group' => 'Content',
+                'page' => MediaLibrary::class,
             ],
             self::NAVIGATION_LINKS => [
                 'label' => 'Navigation Links',

@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources\Pages\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Admin\Forms\ImageUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -65,11 +65,7 @@ class PageForm
                         ContentBlockBuilder::make('content_blocks', 'pages/content-images'),
                     ])
                     ->columnSpanFull(),
-                FileUpload::make('hero_image_path')
-                    ->image()
-                    ->label('Header Image')
-                    ->disk('public')
-                    ->directory('pages/hero-images')
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                     ->columnSpanFull(),
                 TextInput::make('seo_title')
                     ->label('SEO title')

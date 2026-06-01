@@ -3,8 +3,8 @@
 namespace App\Filament\Admin\Resources\Ministries\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -57,16 +57,8 @@ class MinistryForm
                     ->label('Legacy description fallback')
                     ->helperText('Used only when no content blocks have been added.')
                     ->columnSpanFull(),
-                FileUpload::make('hero_image_path')
-                    ->label('Hero image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('ministries/hero-images'),
-                FileUpload::make('card_image_path')
-                    ->label('Card image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('ministries/card-images'),
+                ImageUpload::make('hero_image_path', 'ministries/hero-images', 'Hero image'),
+                ImageUpload::make('card_image_path', 'ministries/card-images', 'Card image'),
                 TextInput::make('category')
                     ->maxLength(255),
                 TextInput::make('meeting_time')

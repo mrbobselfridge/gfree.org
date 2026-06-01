@@ -36,6 +36,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('Leaders')
             ->assertSee('Sermons')
             ->assertSee('Site Settings')
+            ->assertSee('Media Library')
             ->assertSee('Navigation Links')
             ->assertSee('Users')
             ->assertSee('Individual Ministry Entries')
@@ -96,13 +97,17 @@ class AdminAccessTest extends TestCase
         $editor = User::factory()->create([
             'role' => User::ROLE_EDITOR,
             'admin_permissions' => [
-                'tools' => [AdminAccess::SERMONS],
+                'tools' => [AdminAccess::SERMONS, AdminAccess::MEDIA_LIBRARY],
                 'records' => [],
             ],
         ]);
 
         $this->actingAs($editor)
             ->get('/admin/sermons')
+            ->assertOk();
+
+        $this->actingAs($editor)
+            ->get('/admin/media-library')
             ->assertOk();
 
         $this->actingAs($editor)
