@@ -164,17 +164,13 @@
                                 </div>
                             </dl>
 
-                            <div class="mt-3 rounded-lg bg-gray-50 p-2 text-[0.6875rem] text-gray-600 dark:bg-gray-900 dark:text-gray-300">
-                                <p class="font-semibold text-gray-800 dark:text-gray-100">
-                                    {{ $image['usage_count'] > 0 ? 'Used in' : 'Unused' }}
-                                </p>
-
+                            <div class="mt-3 rounded-lg bg-gray-50 p-2 text-[0.6875rem] leading-tight text-gray-600 dark:bg-gray-900 dark:text-gray-300">
                                 @if ($image['usage_count'] > 0)
-                                    <ul class="mt-1 space-y-1">
+                                    <ul class="list-disc space-y-1 pl-4">
                                         @foreach (array_slice($image['usage'], 0, 4) as $usage)
+                                            @php($usageText = "{$usage['label']} | {$usage['detail']}")
                                             <li>
-                                                <span class="font-medium">{{ $usage['label'] }}</span>
-                                                <span class="text-gray-500 dark:text-gray-400">| {{ $usage['detail'] }}</span>
+                                                <span title="{{ $usageText }}">{{ str($usageText)->limit(30) }}</span>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -185,8 +181,8 @@
                                         </p>
                                     @endif
                                 @else
-                                    <p class="mt-1 text-gray-500 dark:text-gray-400">
-                                        This image is not currently selected in any tracked image field or content block.
+                                    <p title="This image is not currently selected in any tracked image field or content block.">
+                                        Unused
                                     </p>
                                 @endif
                             </div>

@@ -44,9 +44,8 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('Uploaded images')
             ->assertSee('picnic.jpg')
             ->assertSee('announcements/picnic.jpg')
-            ->assertSee('Used in')
-            ->assertSee('Announcement: Church Picnic')
-            ->assertSee('Announcement image')
+            ->assertSee('Announcement: Church Picnic | Announcement image', false)
+            ->assertSee('Announcement: Church Picnic |..')
             ->assertSee('unused.jpg')
             ->assertSee('Unused')
             ->assertDontSee('bulletin.pdf');
