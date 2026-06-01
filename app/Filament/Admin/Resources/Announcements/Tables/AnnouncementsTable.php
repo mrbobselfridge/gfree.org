@@ -26,10 +26,12 @@ class AnnouncementsTable
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('image_path')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('cta_label')
                     ->label('Button')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('cta_url')
                     ->label('Button URL')
                     ->searchable()

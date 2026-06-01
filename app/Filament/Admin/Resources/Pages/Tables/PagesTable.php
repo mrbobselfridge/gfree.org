@@ -23,13 +23,14 @@ class PagesTable
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 ImageColumn::make('hero_image_path')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('seo_title')
                     ->label('SEO title')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_published')
                     ->label('Live')
                     ->boolean(),

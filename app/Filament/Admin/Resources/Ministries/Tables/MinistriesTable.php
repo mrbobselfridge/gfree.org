@@ -23,8 +23,7 @@ class MinistriesTable
                     ->formatStateUsing(fn (string $state): string => '/ministry/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/ministry/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->searchable(),
                 ImageColumn::make('card_image_path')
                     ->label('Image')
                     ->disk('public')

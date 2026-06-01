@@ -23,13 +23,13 @@ class StaffMembersTable
                     ->searchable()
                     ->formatStateUsing(fn (string $state): string => '/leadership/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/leadership/'.ltrim((string) $record->slug, '/')))
-                    ->openUrlInNewTab()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->openUrlInNewTab(),
                 TextColumn::make('role')
                     ->searchable(),
                 ImageColumn::make('photo_path')
                     ->label('Photo')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
