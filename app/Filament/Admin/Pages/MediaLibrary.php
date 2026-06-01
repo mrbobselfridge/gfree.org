@@ -100,8 +100,6 @@ class MediaLibrary extends Page
                         ->success()
                         ->send();
                 }),
-            $this->replaceImageAction(),
-            $this->deleteImageAction(),
         ];
     }
 

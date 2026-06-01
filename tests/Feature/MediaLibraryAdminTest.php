@@ -50,6 +50,7 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('An: Church Picnic | Announceme..')
             ->assertSee('unused.jpg')
             ->assertSee('Unused')
+            ->assertSee('Upload new')
             ->assertSee('title="Open"', false)
             ->assertSee('title="Download"', false)
             ->assertSee('title="Copy URL"', false)
@@ -58,6 +59,8 @@ class MediaLibraryAdminTest extends TestCase
             ->assertDontSee('>Open<', false)
             ->assertDontSee('>Download<', false)
             ->assertDontSee('>Copy URL<', false)
+            ->assertDontSee('>Replace image<', false)
+            ->assertDontSee('>Delete image<', false)
             ->assertDontSee('bulletin.pdf');
     }
 
