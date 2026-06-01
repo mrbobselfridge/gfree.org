@@ -21,19 +21,22 @@ class MinistriesTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 ImageColumn::make('card_image_path')
                     ->label('Image')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('hero_image_path')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('category')
                     ->searchable(),
                 TextColumn::make('meeting_time')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('location')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('leader_name')
                     ->searchable(),
                 TextColumn::make('leader_email')
