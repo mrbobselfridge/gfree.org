@@ -13,6 +13,7 @@ use Filament\Forms\Components\RichEditor\Plugins\Contracts\RichContentPlugin;
 use Filament\Forms\Components\RichEditor\RichEditorTool;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
@@ -62,9 +63,8 @@ class AiContentRewritePlugin implements RichContentPlugin
                 ->modalHeading('AI content rewrite')
                 ->modalDescription('Review or adjust the prompt, generate a suggested rewrite, then accept it to replace this rich text content.')
                 ->modalWidth(Width::Screen)
-                ->modalSubmitActionLabel('Go')
-                ->modalCancelActionLabel('Reject')
-                ->modalCancelAction(fn (Action $action): Action => $action->color('danger'))
+                ->modalSubmitAction(false)
+                ->modalCancelAction(false)
                 ->closeModalByClickingAway(false)
                 ->fillForm(fn (array $arguments): array => [
                     'prompt' => SiteSetting::query()->value('ai_content_prompt') ?: AiContentPrompt::DEFAULT,
@@ -78,6 +78,11 @@ class AiContentRewritePlugin implements RichContentPlugin
                         ->required()
                         ->columnSpanFull(),
                     Hidden::make('source_html'),
+                    View::make('filament.admin.forms.components.ai-rewrite-actions')
+                        ->viewData([
+                            'acceptArguments' => ['accept' => true],
+                        ])
+                        ->columnSpanFull(),
                     RichEditor::make('suggested_html')
                         ->label('Suggested new write up')
                         ->helperText('Review and tweak the suggestion, then choose Accept to place it into the original rich text box.')
@@ -94,11 +99,6 @@ class AiContentRewritePlugin implements RichContentPlugin
                         ])
                         ->visible(fn (Get $get): bool => filled($get('suggested_html')))
                         ->columnSpanFull(),
-                ])
-                ->extraModalFooterActions(fn (Action $action): array => [
-                    $action->makeModalSubmitAction('acceptSuggestion', arguments: ['accept' => true])
-                        ->label('Accept')
-                        ->color('success'),
                 ])
                 ->action(function (
                     Action $action,
