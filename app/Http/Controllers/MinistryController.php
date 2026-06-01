@@ -7,14 +7,19 @@ use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MinistryController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->query('search', ''));
+
         $ministries = Ministry::query()
             ->where('is_published', true)
+            ->when($search !== '', fn (Builder $query) => $this->searchMinistries($query, $search))
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()
@@ -27,11 +32,29 @@ class MinistryController extends Controller
         return view('ministries.index', [
             ...$this->sharedViewData(),
             'ministries' => $ministries,
+            'search' => $search,
             'hero' => $this->listingHero('ministry', [
                 'title' => 'Find your place.',
                 'subtitle' => 'Explore ministries, groups, and next steps at gFree Church.',
             ]),
         ]);
+    }
+
+    private function searchMinistries(Builder $query, string $search): Builder
+    {
+        $like = "%{$search}%";
+
+        return $query->where(function (Builder $query) use ($like): void {
+            $query
+                ->where('name', 'like', $like)
+                ->orWhere('short_summary', 'like', $like)
+                ->orWhere('description', 'like', $like)
+                ->orWhere('content_blocks', 'like', $like)
+                ->orWhere('category', 'like', $like)
+                ->orWhere('meeting_time', 'like', $like)
+                ->orWhere('location', 'like', $like)
+                ->orWhere('leader_name', 'like', $like);
+        });
     }
 
     public function show(string $slug): View
@@ -55,8 +78,6 @@ class MinistryController extends Controller
         return collect([
             ['label' => 'When', 'value' => $ministry->meeting_time],
             ['label' => 'Where', 'value' => $ministry->location],
-            ['label' => 'Leader', 'value' => $ministry->leader_name],
-            ['label' => 'Phone', 'value' => $ministry->leader_phone],
         ])->filter(fn (array $item) => filled($item['value']));
     }
 

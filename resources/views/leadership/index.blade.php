@@ -30,6 +30,8 @@
         </section>
 
         <section class="leadership-index">
+            <x-listing-search :search="$search" placeholder="Search leaders" />
+
             @if ($leaders->count())
                 <div class="leadership-grid">
                     @foreach ($leaders as $leader)
@@ -53,7 +55,7 @@
                 </div>
             @else
                 <div class="page-content">
-                    <p>Leadership profiles are coming soon.</p>
+                    <p>{{ filled($search) ? 'No leaders match your search.' : 'Leadership profiles are coming soon.' }}</p>
                 </div>
             @endif
         </section>

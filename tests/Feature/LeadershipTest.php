@@ -38,6 +38,29 @@ class LeadershipTest extends TestCase
             ->assertDontSee('Draft Leader');
     }
 
+    public function test_leadership_listing_can_be_searched(): void
+    {
+        StaffMember::query()->create([
+            'name' => 'Jane Leader',
+            'slug' => 'jane-leader',
+            'role' => 'Care Pastor',
+            'is_published' => true,
+        ]);
+
+        StaffMember::query()->create([
+            'name' => 'Sam Teacher',
+            'slug' => 'sam-teacher',
+            'role' => 'Teaching Pastor',
+            'is_published' => true,
+        ]);
+
+        $this->get('/leadership?search=care')
+            ->assertOk()
+            ->assertSee('Search leaders')
+            ->assertSee('Jane Leader')
+            ->assertDontSee('Sam Teacher');
+    }
+
     public function test_leader_profile_renders_photo_rich_bio_and_email(): void
     {
         StaffMember::query()->create([

@@ -7,15 +7,20 @@ use App\Models\SiteSetting;
 use App\Models\StaffMember;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class LeadershipController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->query('search', ''));
+
         $leaders = StaffMember::query()
             ->where('is_published', true)
             ->whereNotNull('slug')
+            ->when($search !== '', fn (Builder $query) => $this->searchLeaders($query, $search))
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()
@@ -28,11 +33,26 @@ class LeadershipController extends Controller
         return view('leadership.index', [
             ...$this->sharedViewData(),
             'leaders' => $leaders,
+            'search' => $search,
             'hero' => $this->listingHero('leadership', [
                 'title' => 'Meet the people serving gFree.',
                 'subtitle' => 'Staff and lay leaders helping our church follow Jesus together.',
             ]),
         ]);
+    }
+
+    private function searchLeaders(Builder $query, string $search): Builder
+    {
+        $like = "%{$search}%";
+
+        return $query->where(function (Builder $query) use ($like): void {
+            $query
+                ->where('name', 'like', $like)
+                ->orWhere('role', 'like', $like)
+                ->orWhere('bio', 'like', $like)
+                ->orWhere('content_blocks', 'like', $like)
+                ->orWhere('email', 'like', $like);
+        });
     }
 
     public function show(string $slug): View

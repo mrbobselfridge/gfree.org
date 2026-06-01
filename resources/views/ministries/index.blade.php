@@ -30,6 +30,8 @@
         </section>
 
         <section class="ministry-index">
+            <x-listing-search :search="$search" placeholder="Search ministries" />
+
             @if ($ministries->count())
                 <div class="ministry-grid">
                     @foreach ($ministries as $ministry)
@@ -58,7 +60,7 @@
                 </div>
             @else
                 <div class="page-content">
-                    <p>Ministry information is coming soon.</p>
+                    <p>{{ filled($search) ? 'No ministries match your search.' : 'Ministry information is coming soon.' }}</p>
                 </div>
             @endif
         </section>

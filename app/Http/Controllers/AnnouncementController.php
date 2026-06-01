@@ -7,14 +7,20 @@ use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->query('search', ''));
+
         $announcements = $this->activeAnnouncements()
+            ->when($search !== '', fn (Builder $query) => $this->searchAnnouncements($query, $search))
             ->paginate(12)
+            ->withQueryString()
             ->through(function (Announcement $announcement): Announcement {
                 $announcement->image_url = $this->imageUrl($announcement->image_path);
 
@@ -24,6 +30,7 @@ class AnnouncementController extends Controller
         return view('announcements.index', [
             ...$this->sharedViewData(),
             'announcements' => $announcements,
+            'search' => $search,
             'hero' => $this->listingHero('announcements', [
                 'title' => 'Announcements',
                 'subtitle' => 'Current updates, next steps, and opportunities around gFree Church.',
@@ -56,6 +63,19 @@ class AnnouncementController extends Controller
             ->orderByDesc('is_featured')
             ->orderByDesc('publish_at')
             ->latest();
+    }
+
+    private function searchAnnouncements(Builder $query, string $search): Builder
+    {
+        $like = "%{$search}%";
+
+        return $query->where(function (Builder $query) use ($like): void {
+            $query
+                ->where('title', 'like', $like)
+                ->orWhere('summary', 'like', $like)
+                ->orWhere('body', 'like', $like)
+                ->orWhere('content_blocks', 'like', $like);
+        });
     }
 
     private function sharedViewData(): array

@@ -37,6 +37,29 @@ class PublicAnnouncementTest extends TestCase
             ->assertDontSee('Draft Announcement');
     }
 
+    public function test_announcements_listing_can_be_searched(): void
+    {
+        Announcement::query()->create([
+            'title' => 'Youth Retreat',
+            'slug' => 'youth-retreat',
+            'summary' => 'Student weekend away.',
+            'is_published' => true,
+        ]);
+
+        Announcement::query()->create([
+            'title' => 'Church Picnic',
+            'slug' => 'church-picnic',
+            'summary' => 'Lunch after service.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/announcements?search=retreat')
+            ->assertOk()
+            ->assertSee('Search announcements')
+            ->assertSee('Youth Retreat')
+            ->assertDontSee('Church Picnic');
+    }
+
     public function test_announcement_detail_requires_current_published_record(): void
     {
         Announcement::query()->create([

@@ -284,6 +284,40 @@
     margin-bottom: 0;
 }
 
+.ministry-hero-contact {
+    display: grid;
+    gap: 8px;
+    width: min(520px, 100%);
+    margin-top: 28px;
+    padding: 22px 24px;
+    color: var(--site-ink);
+    background: color-mix(in srgb, white 94%, transparent);
+    border-left: 10px solid var(--site-accent);
+}
+
+.ministry-hero-contact span {
+    color: var(--site-accent-text);
+    font-size: 0.9rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.ministry-hero-contact strong {
+    font-size: clamp(1.25rem, 2vw, 1.55rem);
+    line-height: 1.15;
+}
+
+.ministry-hero-contact div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+}
+
+.ministry-hero-contact a {
+    color: inherit;
+    font-weight: 850;
+}
+
 .page-content {
     width: min(880px, calc(100% - 32px));
     margin: 0 auto;
@@ -850,6 +884,63 @@
     background: white;
 }
 
+.listing-search {
+    width: min(760px, 100%);
+    margin: 0 auto 36px;
+}
+
+.listing-search label {
+    display: block;
+    margin: 0 0 10px;
+    color: var(--site-ink);
+    font-size: 0.9rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.listing-search__controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.listing-search input {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    padding: 0 16px;
+    color: var(--site-ink);
+    font: inherit;
+    background: var(--site-paper);
+    border: 1px solid var(--site-line);
+}
+
+.listing-search input:focus {
+    border-color: var(--site-accent);
+    outline: 3px solid color-mix(in srgb, var(--site-accent) 28%, transparent);
+}
+
+.listing-search button,
+.listing-search a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 18px;
+    color: var(--site-ink);
+    font-weight: 900;
+    text-decoration: none;
+    background: var(--site-accent);
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.listing-search a {
+    color: var(--site-accent-text);
+    background: transparent;
+}
+
 .announcement-grid,
 .leadership-grid,
 .ministry-grid {
@@ -1367,6 +1458,16 @@
 
     .page-block--image-right .page-image-text img {
         order: initial;
+    }
+
+    .listing-search__controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .listing-search button,
+    .listing-search a {
+        width: 100%;
     }
 
     .page-cta {

@@ -7,14 +7,19 @@ use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class BulletinController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->query('search', ''));
+
         $bulletins = $this->publishedBulletins()
+            ->when($search !== '', fn (Builder $query) => $this->searchBulletins($query, $search))
             ->paginate(12)
+            ->withQueryString()
             ->through(function (Bulletin $bulletin): Bulletin {
                 $bulletin->public_url = route('bulletins.show', $bulletin->bulletin_date->toDateString());
                 $bulletin->pdf_url = $this->pdfUrl($bulletin->pdf_path);
@@ -25,6 +30,7 @@ class BulletinController extends Controller
         return view('bulletins.index', [
             ...$this->sharedViewData(),
             'bulletins' => $bulletins,
+            'search' => $search,
             'hero' => $this->listingHero('bulletins', [
                 'small_label' => 'Bulletins',
                 'title' => 'Bulletins',
@@ -58,6 +64,18 @@ class BulletinController extends Controller
             ->whereNotNull('bulletin_date')
             ->orderByDesc('bulletin_date')
             ->latest();
+    }
+
+    private function searchBulletins(Builder $query, string $search): Builder
+    {
+        $like = "%{$search}%";
+
+        return $query->where(function (Builder $query) use ($like): void {
+            $query
+                ->where('title', 'like', $like)
+                ->orWhere('extracted_html', 'like', $like)
+                ->orWhere('bulletin_date', 'like', $like);
+        });
     }
 
     private function sharedViewData(): array

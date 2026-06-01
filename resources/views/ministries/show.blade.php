@@ -11,6 +11,8 @@
     @include('home.partials.header')
 
     <main>
+        @php($hasLeaderContact = $ministry->leader_name || $ministry->leader_email || $ministry->leader_phone)
+
         <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
             @if ($heroImageUrl)
                 <div class="page-hero__image" style="background-image: url('{{ $heroImageUrl }}')"></div>
@@ -23,10 +25,30 @@
                 @if ($ministry->short_summary)
                     <p>{{ $ministry->short_summary }}</p>
                 @endif
+
+                @if ($hasLeaderContact)
+                    <div class="ministry-hero-contact" aria-label="Ministry leader contact">
+                        <span>Ministry Leader</span>
+
+                        @if ($ministry->leader_name)
+                            <strong>{{ $ministry->leader_name }}</strong>
+                        @endif
+
+                        <div>
+                            @if ($ministry->leader_email)
+                                <a href="mailto:{{ $ministry->leader_email }}">{{ $ministry->leader_email }}</a>
+                            @endif
+
+                            @if ($ministry->leader_phone)
+                                <a href="tel:{{ preg_replace('/\D+/', '', $ministry->leader_phone) }}">{{ $ministry->leader_phone }}</a>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             </div>
         </section>
 
-        @php($hasSidebar = $detailItems->count() || $ministry->leader_email || $ministry->one_church_url)
+        @php($hasSidebar = $detailItems->count() || $ministry->one_church_url)
 
         @if (count($contentBlocks))
             @include('pages.partials.content-blocks')
@@ -65,10 +87,6 @@
                                     </div>
                                 @endforeach
                             </dl>
-                        @endif
-
-                        @if ($ministry->leader_email)
-                            <a class="page-block__button" href="mailto:{{ $ministry->leader_email }}">Contact {{ $ministry->leader_name ?: 'this ministry' }}</a>
                         @endif
 
                         @if ($ministry->one_church_url)

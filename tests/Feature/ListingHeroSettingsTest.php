@@ -152,12 +152,38 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('Helping kids know Jesus.')
             ->assertSee('Kids gather during Sunday services.', false)
             ->assertSee('/storage/ministries/hero-images/kids.jpg')
+            ->assertSee('ministry-hero-contact', false)
+            ->assertSee('Ministry Leader')
             ->assertSee('Sundays at 10am')
             ->assertSee('Kids Wing')
             ->assertSee('Jane Doe')
             ->assertSee('814-555-1212')
             ->assertSee('mailto:jane@example.com')
+            ->assertSee('tel:8145551212')
             ->assertSee('https://example.com/kids');
+    }
+
+    public function test_ministries_listing_can_be_searched(): void
+    {
+        Ministry::query()->create([
+            'name' => 'Kids Ministry',
+            'slug' => 'kids-ministry',
+            'short_summary' => 'Helping kids know Jesus.',
+            'is_published' => true,
+        ]);
+
+        Ministry::query()->create([
+            'name' => 'Care Team',
+            'slug' => 'care-team',
+            'short_summary' => 'Prayer and care.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/ministry?search=kids')
+            ->assertOk()
+            ->assertSee('Search ministries')
+            ->assertSee('Kids Ministry')
+            ->assertDontSee('Care Team');
     }
 
     public function test_ministry_detail_renders_content_blocks_before_legacy_description(): void

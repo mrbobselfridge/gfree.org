@@ -80,6 +80,29 @@ class PublicBulletinTest extends TestCase
             ->assertSee('page-hero--image');
     }
 
+    public function test_bulletins_listing_can_be_searched(): void
+    {
+        Bulletin::query()->create([
+            'title' => 'Mission Sunday Bulletin',
+            'bulletin_date' => '2026-05-31',
+            'extracted_html' => '<p>Mission trip details.</p>',
+            'is_published' => true,
+        ]);
+
+        Bulletin::query()->create([
+            'title' => 'Regular Sunday Bulletin',
+            'bulletin_date' => '2026-05-24',
+            'extracted_html' => '<p>Regular service details.</p>',
+            'is_published' => true,
+        ]);
+
+        $this->get('/bulletins?search=Mission')
+            ->assertOk()
+            ->assertSee('Search bulletins')
+            ->assertSee('Mission Sunday Bulletin')
+            ->assertDontSee('Regular Sunday Bulletin');
+    }
+
     public function test_bulletin_detail_uses_selected_date_slug_and_shows_html_and_pdf_link(): void
     {
         SiteSetting::query()->create([

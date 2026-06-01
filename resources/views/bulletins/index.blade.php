@@ -30,6 +30,8 @@
         </section>
 
         <section class="announcement-index">
+            <x-listing-search :search="$search" placeholder="Search bulletins" />
+
             @if ($bulletins->count())
                 <div class="announcement-grid">
                     @foreach ($bulletins as $bulletin)
@@ -53,7 +55,7 @@
                 {{ $bulletins->links() }}
             @else
                 <div class="page-content">
-                    <p>There are no current bulletins.</p>
+                    <p>{{ filled($search) ? 'No bulletins match your search.' : 'There are no current bulletins.' }}</p>
                 </div>
             @endif
         </section>
