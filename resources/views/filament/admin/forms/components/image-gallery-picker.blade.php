@@ -148,6 +148,12 @@
                             <span class="gfree-image-picker-card__meta">
                                 {{ collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])->filter()->implode(' | ') }}
                             </span>
+                            <span @class([
+                                'gfree-image-picker-card__meta',
+                                'font-semibold' => ($image['usage_count'] ?? 0) === 0,
+                            ])>
+                                {{ $image['usage_summary'] ?? 'Unused' }}
+                            </span>
                         </span>
                     </span>
                 </label>

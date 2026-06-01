@@ -16,7 +16,7 @@ class MediaLibrary
     {
         $disk = Storage::disk('public');
 
-        return collect($disk->allFiles())
+        $images = collect($disk->allFiles())
             ->filter(fn (string $path): bool => self::isImage($path))
             ->map(function (string $path) use ($disk): array {
                 $absolutePath = method_exists($disk, 'path') ? $disk->path($path) : null;
@@ -36,6 +36,19 @@ class MediaLibrary
             })
             ->sortByDesc('modified')
             ->values();
+
+        $usage = MediaUsage::forImages($images->pluck('path')->all());
+
+        return $images
+            ->map(function (array $image) use ($usage): array {
+                $image['usage'] = $usage[$image['path']] ?? [];
+                $image['usage_count'] = count($image['usage']);
+                $image['usage_summary'] = $image['usage_count'] > 0
+                    ? self::usageSummary($image['usage'])
+                    : 'Unused';
+
+                return $image;
+            });
     }
 
     public static function imageOptions(): array
@@ -73,9 +86,22 @@ class MediaLibrary
                     <span class="block truncate font-medium">{$name}</span>
                     <span class="block truncate text-xs text-gray-500">{$path}</span>
                     <span class="block truncate text-xs text-gray-400">{$meta}</span>
+                    <span class="block truncate text-xs text-gray-500">{$image['usage_summary']}</span>
                 </span>
             </span>
         HTML;
+    }
+
+    /**
+     * @param  array<int, array<string, string>>  $usage
+     */
+    private static function usageSummary(array $usage): string
+    {
+        $first = collect($usage)->first();
+        $summary = ($first['label'] ?? 'Used').' - '.($first['detail'] ?? 'Image');
+        $remaining = count($usage) - 1;
+
+        return $remaining > 0 ? "{$summary} + {$remaining} more" : $summary;
     }
 
     private static function isImage(string $path): bool

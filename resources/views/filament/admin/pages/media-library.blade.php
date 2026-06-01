@@ -164,6 +164,33 @@
                                 </div>
                             </dl>
 
+                            <div class="mt-3 rounded-lg bg-gray-50 p-2 text-xs text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+                                <p class="font-semibold text-gray-800 dark:text-gray-100">
+                                    {{ $image['usage_count'] > 0 ? 'Used in' : 'Unused' }}
+                                </p>
+
+                                @if ($image['usage_count'] > 0)
+                                    <ul class="mt-1 space-y-1">
+                                        @foreach (array_slice($image['usage'], 0, 4) as $usage)
+                                            <li>
+                                                <span class="font-medium">{{ $usage['label'] }}</span>
+                                                <span class="text-gray-500 dark:text-gray-400">| {{ $usage['detail'] }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+
+                                    @if ($image['usage_count'] > 4)
+                                        <p class="mt-1 text-gray-500 dark:text-gray-400">
+                                            + {{ $image['usage_count'] - 4 }} more
+                                        </p>
+                                    @endif
+                                @else
+                                    <p class="mt-1 text-gray-500 dark:text-gray-400">
+                                        This image is not currently selected in any tracked image field or content block.
+                                    </p>
+                                @endif
+                            </div>
+
                             <div class="gfree-media-card__actions">
                                 <a
                                     href="{{ $image['url'] }}"
