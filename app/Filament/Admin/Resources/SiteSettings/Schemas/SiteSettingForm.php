@@ -4,8 +4,10 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Support\AiContentPrompt;
 use App\Support\YoutubeFeedUrl;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
@@ -40,6 +42,15 @@ class SiteSettingForm
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
+                    ->columnSpanFull(),
+                Section::make('AI Settings')
+                    ->schema([
+                        Textarea::make('ai_content_prompt')
+                            ->label('AI Content Prompt')
+                            ->default(AiContentPrompt::DEFAULT)
+                            ->rows(8)
+                            ->columnSpanFull(),
+                    ])
                     ->columnSpanFull(),
                 Section::make('Social and Video URLs')
                     ->schema([

@@ -23,6 +23,8 @@ class SiteSettingsAdminTest extends TestCase
             ->get("/admin/site-settings/{$settings->getKey()}/edit")
             ->assertOk()
             ->assertSee('Organizational Information')
+            ->assertSee('AI Settings')
+            ->assertSee('AI Content Prompt')
             ->assertSee('Social and Video URLs')
             ->assertSee('Announcements Settings')
             ->assertSee('Can also be managed in the Announcements area.')
@@ -53,5 +55,23 @@ class SiteSettingsAdminTest extends TestCase
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
             ->set('data.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCSiteSettingsChannelId/videos')
             ->assertSet('data.sermons_youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSiteSettingsChannelId');
+    }
+
+    public function test_site_settings_ai_content_prompt_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.ai_content_prompt', 'Rewrite this for local church visitors.')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'ai_content_prompt' => 'Rewrite this for local church visitors.',
+        ]);
     }
 }

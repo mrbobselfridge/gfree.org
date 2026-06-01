@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
     'phone',
     'email',
     'office_hours',
+    'ai_content_prompt',
     'livestream_url',
     'giving_url',
     'one_church_url',
