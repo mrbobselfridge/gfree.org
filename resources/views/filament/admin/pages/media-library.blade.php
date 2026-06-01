@@ -159,8 +159,10 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.25rem;
+            justify-content: center;
             margin-top: 0.45rem;
             font-size: 0.75rem;
+            text-align: center;
         }
 
         .gfree-media-card__actions a,
