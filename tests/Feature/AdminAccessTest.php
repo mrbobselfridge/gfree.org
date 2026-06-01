@@ -133,6 +133,7 @@ class AdminAccessTest extends TestCase
             ->set('data.email', 'editor@example.com')
             ->set('data.password', 'password')
             ->set('data.role', User::ROLE_EDITOR)
+            ->set('data.admin_permissions.tool_groups.content', [AdminAccess::MEDIA_LIBRARY])
             ->set('data.admin_permissions.tool_groups.sitewide', [AdminAccess::SITE_SETTINGS])
             ->set('data.admin_permissions.records.ministries', [(string) $ministry->getKey()])
             ->call('create')
@@ -141,8 +142,12 @@ class AdminAccessTest extends TestCase
         $editor = User::query()->where('email', 'editor@example.com')->firstOrFail();
 
         $this->assertSame(User::ROLE_EDITOR, $editor->role);
-        $this->assertSame([AdminAccess::SITE_SETTINGS], $editor->admin_permissions['tools']);
+        $this->assertSame([AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS], $editor->admin_permissions['tools']);
         $this->assertEquals([(string) $ministry->getKey()], $editor->admin_permissions['records']['ministries']);
+
+        $this->actingAs($editor)
+            ->get('/admin/media-library')
+            ->assertOk();
     }
 
     public function test_editor_with_individual_ministry_access_only_sees_assigned_ministries(): void
