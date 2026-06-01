@@ -12,10 +12,10 @@ class OpenAiBulletinExtractor
 {
     public function extract(Bulletin $bulletin): string
     {
-        $apiKey = config('services.openai.api_key');
+        $apiKey = OpenAiSiteSettings::apiKey();
 
         if (blank($apiKey)) {
-            throw new RuntimeException('OpenAI API key is not configured. Add OPENAI_API_KEY to your .env file.');
+            throw new RuntimeException('OpenAI API key is not configured. Add it in Site Settings under AI Settings.');
         }
 
         if (blank($bulletin->pdf_path)) {
@@ -32,7 +32,7 @@ class OpenAiBulletinExtractor
             ->acceptJson()
             ->timeout(120)
             ->post('https://api.openai.com/v1/responses', [
-                'model' => config('services.openai.bulletin_model', 'gpt-5-mini'),
+                'model' => OpenAiSiteSettings::bulletinModel(),
                 'input' => [
                     [
                         'role' => 'user',

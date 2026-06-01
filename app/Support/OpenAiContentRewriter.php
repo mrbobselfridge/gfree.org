@@ -10,10 +10,10 @@ class OpenAiContentRewriter
 {
     public function rewrite(string $html, string $prompt): string
     {
-        $apiKey = config('services.openai.api_key');
+        $apiKey = OpenAiSiteSettings::apiKey();
 
         if (blank($apiKey)) {
-            throw new RuntimeException('OpenAI API key is not configured. Add OPENAI_API_KEY to your .env file.');
+            throw new RuntimeException('OpenAI API key is not configured. Add it in Site Settings under AI Settings.');
         }
 
         if (blank(strip_tags($html))) {
@@ -24,7 +24,7 @@ class OpenAiContentRewriter
             ->acceptJson()
             ->timeout(120)
             ->post('https://api.openai.com/v1/responses', [
-                'model' => config('services.openai.content_model', 'gpt-5-mini'),
+                'model' => OpenAiSiteSettings::contentModel(),
                 'input' => [
                     [
                         'role' => 'user',

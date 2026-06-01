@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Forms\RichContentPlugins\AiContentRewritePlugin;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Models\SiteSetting;
 use App\Support\OpenAiContentRewriter;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,8 +18,13 @@ class OpenAiContentRewriteTest extends TestCase
 
     public function test_openai_content_rewriter_sends_prompt_and_rich_text_html(): void
     {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-5-mini',
+        ]);
+
         config([
-            'services.openai.api_key' => 'test-key',
             'services.openai.content_model' => 'gpt-5-mini',
         ]);
 

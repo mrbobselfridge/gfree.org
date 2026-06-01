@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
     'phone',
     'email',
     'office_hours',
+    'openai_api_key',
+    'openai_bulletin_model',
     'ai_content_prompt',
     'livestream_url',
     'giving_url',

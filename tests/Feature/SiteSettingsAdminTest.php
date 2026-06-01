@@ -24,6 +24,9 @@ class SiteSettingsAdminTest extends TestCase
             ->assertOk()
             ->assertSee('Organizational Information')
             ->assertSee('AI Settings')
+            ->assertSee('OpenAI API key')
+            ->assertSee('OpenAI bulletin model')
+            ->assertSee('GPT-5 Nano')
             ->assertSee('AI Content Prompt')
             ->assertSee('Social and Video URLs')
             ->assertSee('Announcements Settings')
@@ -72,6 +75,26 @@ class SiteSettingsAdminTest extends TestCase
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
             'ai_content_prompt' => 'Rewrite this for local church visitors.',
+        ]);
+    }
+
+    public function test_site_settings_openai_fields_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.openai_api_key', 'test-openai-key')
+            ->set('data.openai_bulletin_model', 'gpt-5-mini')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'openai_api_key' => 'test-openai-key',
+            'openai_bulletin_model' => 'gpt-5-mini',
         ]);
     }
 }

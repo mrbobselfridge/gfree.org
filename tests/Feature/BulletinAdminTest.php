@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
 use App\Models\Bulletin;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AdminAccess;
 use App\Support\OpenAiBulletinExtractor;
@@ -62,9 +63,10 @@ class BulletinAdminTest extends TestCase
         Storage::fake('public');
         Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
 
-        config([
-            'services.openai.api_key' => 'test-key',
-            'services.openai.bulletin_model' => 'gpt-4o-mini',
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-4o-mini',
         ]);
 
         Http::fake([
@@ -102,9 +104,10 @@ class BulletinAdminTest extends TestCase
         Storage::fake('public');
         Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
 
-        config([
-            'services.openai.api_key' => 'test-key',
-            'services.openai.bulletin_model' => 'gpt-4o-mini',
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-4o-mini',
         ]);
 
         Http::fake([

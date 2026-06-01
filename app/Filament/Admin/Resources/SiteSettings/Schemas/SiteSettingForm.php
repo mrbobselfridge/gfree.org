@@ -5,8 +5,10 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Support\AiContentPrompt;
+use App\Support\OpenAiSiteSettings;
 use App\Support\YoutubeFeedUrl;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -45,12 +47,26 @@ class SiteSettingForm
                     ->columnSpanFull(),
                 Section::make('AI Settings')
                     ->schema([
+                        TextInput::make('openai_api_key')
+                            ->label('OpenAI API key')
+                            ->password()
+                            ->revealable()
+                            ->autocomplete('new-password')
+                            ->maxLength(1000)
+                            ->helperText('Used for AI rewrite tools and bulletin PDF extraction.'),
+                        Select::make('openai_bulletin_model')
+                            ->label('OpenAI bulletin model')
+                            ->options(OpenAiSiteSettings::modelOptions())
+                            ->default(OpenAiSiteSettings::DEFAULT_MODEL)
+                            ->required()
+                            ->native(false),
                         Textarea::make('ai_content_prompt')
                             ->label('AI Content Prompt')
                             ->default(AiContentPrompt::DEFAULT)
                             ->rows(8)
                             ->columnSpanFull(),
                     ])
+                    ->columns(2)
                     ->columnSpanFull(),
                 Section::make('Social and Video URLs')
                     ->schema([

@@ -40,9 +40,9 @@ return [
     ],
 
     'openai' => [
-        'api_key' => env('OPENAI_API_KEY'),
-        'bulletin_model' => env('OPENAI_BULLETIN_MODEL', 'gpt-5-mini'),
-        'content_model' => env('OPENAI_CONTENT_MODEL', env('OPENAI_BULLETIN_MODEL', 'gpt-5-mini')),
+        'api_key' => null,
+        'bulletin_model' => 'gpt-5-nano',
+        'content_model' => env('OPENAI_CONTENT_MODEL', 'gpt-5-nano'),
     ],
 
 ];
