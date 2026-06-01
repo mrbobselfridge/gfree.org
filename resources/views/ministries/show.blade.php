@@ -72,7 +72,7 @@
                         @endif
 
                         @if ($ministry->one_church_url)
-                            <a class="page-block__button ministry-detail__secondary-button" href="{{ $ministry->one_church_url }}">Open in One Church</a>
+                            <a class="page-block__button ministry-detail__secondary-button" href="{{ $ministry->one_church_url }}"{!! \App\Support\LinkAttributes::externalAttributes($ministry->one_church_url) !!}>Open in One Church</a>
                         @endif
                     </aside>
                 @endif

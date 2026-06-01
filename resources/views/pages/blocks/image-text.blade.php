@@ -49,7 +49,7 @@
             @endif
 
             @if (filled($data['button_label'] ?? null) && filled($data['button_url'] ?? null))
-                <a class="page-block__button" href="{{ $data['button_url'] }}">{{ $data['button_label'] }}</a>
+                <a class="page-block__button" href="{{ $data['button_url'] }}"{!! \App\Support\LinkAttributes::externalAttributes($data['button_url']) !!}>{{ $data['button_label'] }}</a>
             @endif
         </div>
         @endif

@@ -187,6 +187,43 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Legacy fallback text.');
     }
 
+    public function test_external_cta_buttons_open_in_new_tabs_and_local_ctas_do_not(): void
+    {
+        Page::query()->create([
+            'title' => 'Connect',
+            'slug' => 'connect',
+            'content_blocks' => [
+                [
+                    'type' => 'cta',
+                    'data' => [
+                        'heading' => 'External form',
+                        'button_label' => 'Open Form',
+                        'button_url' => 'https://forms.example.com/connect',
+                        'background' => 'white',
+                    ],
+                ],
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'heading' => 'Local page',
+                        'button_label' => 'Contact Us',
+                        'button_url' => '/contact',
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $content = $this->get('/connect')
+            ->assertOk()
+            ->assertSee('<a class="page-block__button" href="https://forms.example.com/connect" target="_blank" rel="noopener noreferrer">Open Form</a>', false)
+            ->assertSee('<a class="page-block__button" href="/contact">Contact Us</a>', false)
+            ->content();
+
+        $this->assertStringNotContainsString('href="/contact" target="_blank"', $content);
+    }
+
     public function test_structured_blocks_can_render_without_headings(): void
     {
         Page::query()->create([

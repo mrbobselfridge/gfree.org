@@ -29,9 +29,6 @@ class PagesTable
                 TextColumn::make('seo_title')
                     ->label('SEO title')
                     ->searchable(),
-                TextColumn::make('sort_order')
-                    ->numeric()
-                    ->sortable(),
                 IconColumn::make('is_published')
                     ->label('Live')
                     ->boolean(),
@@ -47,7 +44,7 @@ class PagesTable
             ->filters([
                 //
             ])
-            ->defaultSort('sort_order')
+            ->defaultSort('title')
             ->recordAction(null)
             ->recordUrl(null)
             ->recordActions(StandardTableActions::make(), position: RecordActionsPosition::BeforeColumns)

@@ -25,7 +25,9 @@ class MinistryForm
                     ->required()
                     ->live(onBlur: true)
                     ->maxLength(255)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                    ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
+                        ? $set('slug', Str::slug($state))
+                        : null),
                 ToggleButtons::make('is_published')
                     ->label('Make Ministry Live')
                     ->boolean()

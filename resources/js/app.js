@@ -1,3 +1,28 @@
+const setLinkTarget = (link, url) => {
+    if (! link) {
+        return;
+    }
+
+    let isExternal = false;
+
+    try {
+        const parsed = new URL(url, window.location.href);
+        isExternal = ['http:', 'https:'].includes(parsed.protocol) && parsed.host !== window.location.host;
+    } catch {
+        isExternal = false;
+    }
+
+    if (isExternal) {
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+
+        return;
+    }
+
+    link.removeAttribute('target');
+    link.removeAttribute('rel');
+};
+
 const updateHeroSlide = (carousel, slides, index) => {
     const slide = slides[index];
 
@@ -20,10 +45,12 @@ const updateHeroSlide = (carousel, slides, index) => {
 
     primary.textContent = primaryLabel;
     primary.href = slide.primary_url;
+    setLinkTarget(primary, slide.primary_url);
     primary.hidden = ! primaryLabel;
 
     secondary.textContent = secondaryLabel;
     secondary.href = slide.secondary_url;
+    setLinkTarget(secondary, slide.secondary_url);
     secondary.hidden = ! secondaryLabel;
 
 };

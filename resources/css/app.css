@@ -693,8 +693,9 @@
 .page-image-text img {
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .page-block--image-full .page-image-text,
@@ -720,7 +721,6 @@
 
 .page-block--image-full .page-image-text img {
     width: 100%;
-    aspect-ratio: 16 / 7;
 }
 
 .page-block--image-screenwidth .page-block__inner {
@@ -729,7 +729,6 @@
 
 .page-block--image-screenwidth .page-image-text img {
     width: 100%;
-    aspect-ratio: 16 / 7;
     border-radius: 0;
 }
 
@@ -1368,11 +1367,6 @@
 
     .page-block--image-right .page-image-text img {
         order: initial;
-    }
-
-    .page-block--image-full .page-image-text img,
-    .page-block--image-screenwidth .page-image-text img {
-        aspect-ratio: 4 / 3;
     }
 
     .page-cta {

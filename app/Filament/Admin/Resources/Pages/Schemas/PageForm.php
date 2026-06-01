@@ -23,7 +23,9 @@ class PageForm
                     ->required()
                     ->live(onBlur: true)
                     ->maxLength(255)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                    ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
+                        ? $set('slug', Str::slug($state))
+                        : null),
                 ToggleButtons::make('is_published')
                     ->label('Make Page Live')
                     ->boolean()
@@ -52,10 +54,6 @@ class PageForm
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
                     ->icon(Heroicon::OutlinedRectangleGroup)

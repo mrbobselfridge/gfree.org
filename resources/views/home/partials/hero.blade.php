@@ -16,6 +16,7 @@
                 href="{{ $hero['primary_url'] }}"
                 class="concept-button concept-button--primary"
                 data-hero-primary
+                @if (\App\Support\LinkAttributes::isExternal($hero['primary_url'] ?? null)) target="_blank" rel="noopener noreferrer" @endif
                 @if (blank($primaryLabel)) hidden @endif
             >
                 {{ $primaryLabel }}
@@ -25,6 +26,7 @@
                 href="{{ $hero['secondary_url'] }}"
                 class="concept-button concept-button--secondary"
                 data-hero-secondary
+                @if (\App\Support\LinkAttributes::isExternal($hero['secondary_url'] ?? null)) target="_blank" rel="noopener noreferrer" @endif
                 @if (blank($secondaryLabel)) hidden @endif
             >
                 {{ $secondaryLabel }}

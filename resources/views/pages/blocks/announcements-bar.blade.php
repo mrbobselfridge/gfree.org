@@ -12,7 +12,7 @@
                 <h2>{{ $data['heading'] ?? 'Latest at gFree' }}</h2>
 
                 @if (filled($data['link_label'] ?? null) && filled($data['link_url'] ?? null))
-                    <a href="{{ $data['link_url'] }}">{{ $data['link_label'] }}</a>
+                    <a href="{{ $data['link_url'] }}"{!! \App\Support\LinkAttributes::externalAttributes($data['link_url']) !!}>{{ $data['link_label'] }}</a>
                 @endif
             </div>
 
@@ -27,7 +27,7 @@
                             <p>{{ $update['type'] }}</p>
                             <h3>{{ $update['title'] }}</h3>
                             <span>{{ $update['summary'] }}</span>
-                            <a href="{{ $update['url'] }}" aria-label="Open {{ $update['title'] }}"></a>
+                            <a href="{{ $update['url'] }}" aria-label="Open {{ $update['title'] }}"{!! \App\Support\LinkAttributes::externalAttributes($update['url'] ?? null) !!}></a>
                         </div>
                     </article>
                 @endforeach

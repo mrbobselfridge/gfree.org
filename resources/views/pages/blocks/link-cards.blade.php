@@ -12,7 +12,7 @@
 
         <div class="page-link-cards">
             @foreach (($data['cards'] ?? []) as $card)
-                <a href="{{ $card['url'] ?? '#' }}">
+                <a href="{{ $card['url'] ?? '#' }}"{!! \App\Support\LinkAttributes::externalAttributes($card['url'] ?? null) !!}>
                     <h3>{{ $card['title'] ?? '' }}</h3>
 
                     @if (filled($card['summary'] ?? null))

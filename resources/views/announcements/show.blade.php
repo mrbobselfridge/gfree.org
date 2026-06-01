@@ -38,7 +38,7 @@
                 @endif
 
                 @if ($announcement->cta_label && $announcement->cta_url)
-                    <a class="page-block__button" href="{{ $announcement->cta_url }}">{{ $announcement->cta_label }}</a>
+                    <a class="page-block__button" href="{{ $announcement->cta_url }}"{!! \App\Support\LinkAttributes::externalAttributes($announcement->cta_url) !!}>{{ $announcement->cta_label }}</a>
                 @endif
             </div>
         </article>

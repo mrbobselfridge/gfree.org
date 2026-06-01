@@ -129,6 +129,21 @@ class PublicAnnouncementTest extends TestCase
             ->assertDontSee('Legacy announcement body.');
     }
 
+    public function test_external_announcement_cta_opens_in_new_tab(): void
+    {
+        Announcement::query()->create([
+            'title' => 'External Signup',
+            'slug' => 'external-signup',
+            'cta_label' => 'Sign up',
+            'cta_url' => 'https://events.example.com/signup',
+            'is_published' => true,
+        ]);
+
+        $this->get('/announcements/external-signup')
+            ->assertOk()
+            ->assertSee('<a class="page-block__button" href="https://events.example.com/signup" target="_blank" rel="noopener noreferrer">Sign up</a>', false);
+    }
+
     public function test_announcement_detail_uses_landing_image_when_record_image_is_missing(): void
     {
         SiteSetting::query()->create([

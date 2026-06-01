@@ -23,7 +23,9 @@ class StaffMemberForm
                 TextInput::make('name')
                     ->required()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
+                        ? $set('slug', Str::slug($state))
+                        : null)
                     ->maxLength(255),
                 ToggleButtons::make('is_published')
                     ->label('Make Leader Live')

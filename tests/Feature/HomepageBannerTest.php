@@ -106,6 +106,31 @@ class HomepageBannerTest extends TestCase
         $this->assertMatchesRegularExpression('/data-hero-secondary\s+hidden/s', $content);
     }
 
+    public function test_external_homepage_banner_buttons_open_in_new_tabs(): void
+    {
+        HomepageBanner::query()->create([
+            'title' => 'Register Online',
+            'button_label' => 'Register',
+            'button_url' => 'https://events.example.com/register',
+            'secondary_button_label' => 'Details',
+            'secondary_button_url' => '/details',
+            'is_published' => true,
+        ]);
+
+        $content = $this->get('/')
+            ->assertOk()
+            ->assertSee('Register Online')
+            ->assertSee('target="_blank"', false)
+            ->assertSee('rel="noopener noreferrer"', false)
+            ->content();
+
+        $this->assertMatchesRegularExpression(
+            '/href="https:\/\/events\.example\.com\/register"\s+class="concept-button concept-button--primary"\s+data-hero-primary\s+target="_blank" rel="noopener noreferrer"/s',
+            $content,
+        );
+        $this->assertStringNotContainsString('href="/details" target="_blank"', $content);
+    }
+
     public function test_homepage_uses_random_active_published_banner(): void
     {
         HomepageBanner::query()->create([
