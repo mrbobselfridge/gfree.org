@@ -98,7 +98,7 @@ class MediaLibrary
     private static function usageSummary(array $usage): string
     {
         $first = collect($usage)->first();
-        $summary = ($first['label'] ?? 'Used').' - '.($first['detail'] ?? 'Image');
+        $summary = ($first['short_label'] ?? $first['label'] ?? 'Used').' - '.($first['detail'] ?? 'Image');
         $remaining = count($usage) - 1;
 
         return $remaining > 0 ? "{$summary} + {$remaining} more" : $summary;

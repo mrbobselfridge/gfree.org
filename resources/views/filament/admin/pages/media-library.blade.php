@@ -93,6 +93,34 @@
             color: rgb(209 213 219);
         }
 
+        .gfree-media-card__usage {
+            margin-top: 0.625rem;
+            padding: 0;
+            color: rgb(107 114 128);
+            font-size: 0.6875rem;
+            line-height: 1.2;
+        }
+
+        .gfree-media-card__usage-list {
+            margin: 0;
+            padding-left: 0.875rem;
+            list-style: disc;
+        }
+
+        .gfree-media-card__usage li,
+        .gfree-media-card__usage p {
+            margin: 0;
+            font-size: inherit;
+            line-height: inherit;
+        }
+
+        .gfree-media-card__usage-line {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .gfree-media-card__actions {
             display: flex;
             flex-wrap: wrap;
@@ -164,13 +192,14 @@
                                 </div>
                             </dl>
 
-                            <div class="mt-3 rounded-lg bg-gray-50 p-2 text-[0.6875rem] leading-tight text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+                            <div class="gfree-media-card__usage">
                                 @if ($image['usage_count'] > 0)
-                                    <ul class="list-disc space-y-1 pl-4">
+                                    <ul class="gfree-media-card__usage-list">
                                         @foreach (array_slice($image['usage'], 0, 4) as $usage)
-                                            @php($usageText = "{$usage['label']} | {$usage['detail']}")
+                                            @php($fullUsageText = "{$usage['label']} | {$usage['detail']}")
+                                            @php($shortUsageText = "{$usage['short_label']} | {$usage['detail']}")
                                             <li>
-                                                <span title="{{ $usageText }}">{{ str($usageText)->limit(30) }}</span>
+                                                <span class="gfree-media-card__usage-line" title="{{ $fullUsageText }}">{{ str($shortUsageText)->limit(30) }}</span>
                                             </li>
                                         @endforeach
                                     </ul>

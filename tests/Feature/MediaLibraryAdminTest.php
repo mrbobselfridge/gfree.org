@@ -45,7 +45,7 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('picnic.jpg')
             ->assertSee('announcements/picnic.jpg')
             ->assertSee('Announcement: Church Picnic | Announcement image', false)
-            ->assertSee('Announcement: Church Picnic |..')
+            ->assertSee('An: Church Picnic | Announceme..')
             ->assertSee('unused.jpg')
             ->assertSee('Unused')
             ->assertDontSee('bulletin.pdf');
@@ -96,6 +96,6 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame(1, $image['usage_count']);
         $this->assertSame('Page: Students', $image['usage'][0]['label']);
         $this->assertSame('Content image', $image['usage'][0]['detail']);
-        $this->assertSame('Page: Students - Content image', $image['usage_summary']);
+        $this->assertSame('Pg: Students - Content image', $image['usage_summary']);
     }
 }

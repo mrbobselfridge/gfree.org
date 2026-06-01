@@ -267,7 +267,22 @@ class MediaUsage
     {
         return [
             'label' => "{$recordLabel}: {$recordTitle}",
+            'short_label' => self::shortRecordLabel($recordLabel).": {$recordTitle}",
             'detail' => $fieldLabel,
         ];
+    }
+
+    private static function shortRecordLabel(string $recordLabel): string
+    {
+        return match ($recordLabel) {
+            'Ministry' => 'Mn',
+            'Announcement' => 'An',
+            'Leader' => 'Ld',
+            'Site Settings' => 'Ss',
+            'Homepage Banner' => 'Hb',
+            'Homepage Content' => 'Hc',
+            'Page' => 'Pg',
+            default => $recordLabel,
+        };
     }
 }
