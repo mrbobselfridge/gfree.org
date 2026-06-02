@@ -15,6 +15,14 @@
                     </a>
                 @endif
 
+                <span
+                    class="gfree-dashboard-widget-count"
+                    title="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
+                    aria-label="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
+                >
+                    {{ $itemCount }}
+                </span>
+
                 <button
                     type="button"
                     class="gfree-dashboard-widget-collapse"
@@ -46,14 +54,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
                     </svg>
                 </button>
-
-                <span
-                    class="gfree-dashboard-widget-count"
-                    title="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
-                    aria-label="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
-                >
-                    {{ $itemCount }}
-                </span>
 
                 <button
                     type="button"

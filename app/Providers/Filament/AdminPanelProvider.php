@@ -312,7 +312,9 @@ class AdminPanelProvider extends PanelProvider
                             width: 2rem;
                             height: 2rem;
                             padding: 0;
-                            color: rgb(75 85 99);
+                            border-color: rgb(14 116 144 / 0.42);
+                            background: rgb(236 254 255);
+                            color: rgb(21 94 117);
                             cursor: default;
                         }
 
@@ -343,12 +345,17 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .dark .gfree-dashboard-widget-action,
-                        .dark .gfree-dashboard-widget-count,
                         .dark .gfree-dashboard-widget-drag-handle,
                         .dark .gfree-dashboard-widget-collapse {
                             border-color: rgb(75 85 99);
                             background: rgb(17 24 39);
                             color: rgb(229 231 235);
+                        }
+
+                        .dark .gfree-dashboard-widget-count {
+                            border-color: rgb(34 211 238 / 0.34);
+                            background: rgb(8 47 73 / 0.65);
+                            color: rgb(165 243 252);
                         }
 
                         .gfree-dashboard-widget-action {
