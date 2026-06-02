@@ -21,13 +21,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
 {
     protected static ?int $sort = 10;
 
-    protected int|string|array $columnSpan = [
-        'default' => 1,
-        'md' => 2,
-        'xl' => 2,
-        '2xl' => 2,
-    ];
-
     protected function heading(): string
     {
         return 'Needs Attention';

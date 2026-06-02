@@ -10,9 +10,7 @@ class CmsDashboard extends Dashboard
     {
         return [
             'default' => 1,
-            'md' => 2,
-            'xl' => 3,
-            '2xl' => 4,
+            'lg' => 2,
         ];
     }
 }
