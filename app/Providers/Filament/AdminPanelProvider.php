@@ -137,18 +137,19 @@ class AdminPanelProvider extends PanelProvider
                             pointer-events: none;
                         }
 
-                        .gfree-cms-dashboard {
+                        .gfree-dashboard-global-controls-host {
                             position: relative;
                         }
 
                         .gfree-dashboard-global-controls {
                             position: absolute;
-                            top: 0;
+                            top: 50%;
                             inset-inline-end: 0;
                             display: flex;
                             align-items: center;
                             justify-content: flex-end;
                             gap: 0.5rem;
+                            transform: translateY(-50%);
                             z-index: 3;
                         }
 
@@ -517,6 +518,7 @@ class AdminPanelProvider extends PanelProvider
                                 position: static;
                                 justify-content: flex-start;
                                 margin-bottom: 1rem;
+                                transform: none;
                             }
 
                             .gfree-content-block-builder-field > .fi-fo-field-label-col {
@@ -777,10 +779,13 @@ class AdminPanelProvider extends PanelProvider
 
                             const ensureDashboardGlobalControls = () => {
                                 const dashboard = document.querySelector('.gfree-cms-dashboard');
+                                const host = dashboard?.querySelector('.fi-header') ?? dashboard;
 
-                                if (! dashboard || dashboard.querySelector('.gfree-dashboard-global-controls')) {
+                                if (! host || host.querySelector('.gfree-dashboard-global-controls')) {
                                     return;
                                 }
+
+                                host.classList.add('gfree-dashboard-global-controls-host');
 
                                 const controls = document.createElement('div');
                                 controls.className = 'gfree-dashboard-global-controls';
@@ -800,7 +805,7 @@ class AdminPanelProvider extends PanelProvider
                                 collapseButton.addEventListener('click', () => setAllCollapsed(true));
 
                                 controls.append(expandButton, collapseButton);
-                                dashboard.prepend(controls);
+                                host.append(controls);
                             };
 
                             const applyCollapsedState = (widget, collapsed) => {
