@@ -52,6 +52,7 @@
                     class="gfree-dashboard-widget-drag-handle"
                     title="Move {{ $heading }}"
                     aria-label="Move {{ $heading }}"
+                    data-gfree-dashboard-widget-drag-handle
                 >
                     <svg
                         class="gfree-dashboard-widget-control-icon"

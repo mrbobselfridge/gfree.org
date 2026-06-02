@@ -891,15 +891,13 @@ class AdminPanelProvider extends PanelProvider
                                 }
 
                                 event.preventDefault();
+                                event.stopPropagation();
 
-                                const dragHandle = event.currentTarget;
                                 const rect = widget.getBoundingClientRect();
                                 const placeholder = document.createElement('div');
                                 placeholder.className = 'gfree-dashboard-widget-placeholder';
                                 placeholder.style.height = rect.height + 'px';
                                 widget.after(placeholder);
-
-                                dragHandle?.setPointerCapture?.(event.pointerId);
 
                                 const offsetX = event.clientX - rect.left;
                                 const offsetY = event.clientY - rect.top;
@@ -962,7 +960,6 @@ class AdminPanelProvider extends PanelProvider
                                     document.removeEventListener('pointermove', onPointerMove);
                                     document.removeEventListener('pointerup', onPointerUp);
                                     document.removeEventListener('pointercancel', onPointerUp);
-                                    dragHandle?.releasePointerCapture?.(event.pointerId);
 
                                     placeholder.replaceWith(widget);
                                     clearDragStyles(widget);
@@ -985,7 +982,7 @@ class AdminPanelProvider extends PanelProvider
                                     const key = widget.dataset.gfreeDashboardWidget;
                                     const heading = widgetHeading(widget);
                                     const collapseButton = widget.querySelector('[data-gfree-dashboard-widget-collapse]');
-                                    const dragHandle = widget.querySelector('.gfree-dashboard-widget-drag-handle');
+                                    const dragHandle = widget.querySelector('[data-gfree-dashboard-widget-drag-handle]');
 
                                     applyCollapsedState(widget, Boolean(state.collapsed[key]));
 
