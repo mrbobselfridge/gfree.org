@@ -151,6 +151,72 @@ class AdminPanelProvider extends PanelProvider
                             page-break-inside: avoid;
                         }
 
+                        .gfree-dashboard-widget {
+                            transition: opacity 120ms ease, outline-color 120ms ease;
+                        }
+
+                        .gfree-dashboard-widget-drag-handle,
+                        .gfree-dashboard-widget-collapse {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 1.75rem;
+                            border: 1px solid rgb(209 213 219);
+                            border-radius: 0.375rem;
+                            background: white;
+                            color: rgb(55 65 81);
+                            font-size: 0.75rem;
+                            font-weight: 700;
+                            line-height: 1;
+                            padding: 0.35rem 0.5rem;
+                        }
+
+                        .dark .gfree-dashboard-widget-drag-handle,
+                        .dark .gfree-dashboard-widget-collapse {
+                            border-color: rgb(75 85 99);
+                            background: rgb(17 24 39);
+                            color: rgb(229 231 235);
+                        }
+
+                        .gfree-dashboard-widget-drag-handle {
+                            cursor: grab;
+                        }
+
+                        .gfree-dashboard-widget-drag-handle:active {
+                            cursor: grabbing;
+                        }
+
+                        .gfree-dashboard-widget-drag-handle:hover,
+                        .gfree-dashboard-widget-drag-handle:focus,
+                        .gfree-dashboard-widget-collapse:hover,
+                        .gfree-dashboard-widget-collapse:focus {
+                            border-color: rgb(245 158 11);
+                            color: rgb(217 119 6);
+                            outline: none;
+                        }
+
+                        .dark .gfree-dashboard-widget-drag-handle:hover,
+                        .dark .gfree-dashboard-widget-drag-handle:focus,
+                        .dark .gfree-dashboard-widget-collapse:hover,
+                        .dark .gfree-dashboard-widget-collapse:focus {
+                            border-color: rgb(245 158 11);
+                            color: rgb(251 191 36);
+                        }
+
+                        .gfree-dashboard-widget.gfree-dashboard-widget-dragging {
+                            opacity: 0.5;
+                        }
+
+                        .gfree-dashboard-widget.gfree-dashboard-widget-drag-over {
+                            outline: 2px solid rgb(245 158 11);
+                            outline-offset: 4px;
+                        }
+
+                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed [data-gfree-dashboard-widget-body],
+                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed [data-gfree-dashboard-widget-description] {
+                            display: none;
+                        }
+
                         @media (min-width: 1024px) {
                             .gfree-cms-dashboard-widgets > .fi-sc {
                                 column-count: 2;
@@ -329,6 +395,210 @@ class AdminPanelProvider extends PanelProvider
                                     ?.focus()
                             }, 75)
                         })
+                    </script>
+                HTML),
+            )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): HtmlString => new HtmlString(<<<'HTML'
+                    <script>
+                        (() => {
+                            const storageKey = 'gfree.admin.dashboard.widgets.v1';
+
+                            const dashboardContainer = () => document.querySelector('.gfree-cms-dashboard-widgets > .fi-sc');
+
+                            const dashboardWidgets = () => {
+                                const container = dashboardContainer();
+
+                                if (! container) {
+                                    return [];
+                                }
+
+                                return Array.from(container.querySelectorAll(':scope > .gfree-dashboard-widget[data-gfree-dashboard-widget]'));
+                            };
+
+                            const readState = () => {
+                                try {
+                                    const state = JSON.parse(window.localStorage.getItem(storageKey) || '{}');
+
+                                    return {
+                                        order: Array.isArray(state.order) ? state.order : [],
+                                        collapsed: state.collapsed && (typeof state.collapsed === 'object') ? state.collapsed : {},
+                                    };
+                                } catch (error) {
+                                    return { order: [], collapsed: {} };
+                                }
+                            };
+
+                            const writeState = (state) => {
+                                try {
+                                    window.localStorage.setItem(storageKey, JSON.stringify(state));
+                                } catch (error) {
+                                    // Browser storage may be unavailable; dashboard controls can still work for this page view.
+                                }
+                            };
+
+                            const widgetHeading = (widget) => widget.querySelector('h2')?.textContent?.replace(/\s+/g, ' ').trim() || 'dashboard box';
+
+                            const applyCollapsedState = (widget, collapsed) => {
+                                const heading = widgetHeading(widget);
+                                const button = widget.querySelector('[data-gfree-dashboard-widget-collapse]');
+
+                                widget.classList.toggle('gfree-dashboard-widget-collapsed', collapsed);
+
+                                if (! button) {
+                                    return;
+                                }
+
+                                button.textContent = collapsed ? 'Expand' : 'Collapse';
+                                button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                                button.setAttribute('aria-label', (collapsed ? 'Expand ' : 'Collapse ') + heading);
+                                button.setAttribute('title', (collapsed ? 'Expand ' : 'Collapse ') + heading);
+                            };
+
+                            const applySavedOrder = () => {
+                                const container = dashboardContainer();
+
+                                if (! container) {
+                                    return;
+                                }
+
+                                const state = readState();
+                                const widgets = dashboardWidgets();
+                                const byKey = new Map(widgets.map((widget) => [widget.dataset.gfreeDashboardWidget, widget]));
+                                const ordered = [];
+
+                                state.order.forEach((key) => {
+                                    if (byKey.has(key)) {
+                                        ordered.push(byKey.get(key));
+                                        byKey.delete(key);
+                                    }
+                                });
+
+                                [...ordered, ...byKey.values()].forEach((widget) => container.appendChild(widget));
+                            };
+
+                            const saveCurrentOrder = () => {
+                                const state = readState();
+                                state.order = dashboardWidgets().map((widget) => widget.dataset.gfreeDashboardWidget);
+                                writeState(state);
+                            };
+
+                            const initializeDashboardWidgets = () => {
+                                applySavedOrder();
+
+                                const state = readState();
+                                let draggedWidget = null;
+
+                                dashboardWidgets().forEach((widget) => {
+                                    const key = widget.dataset.gfreeDashboardWidget;
+                                    const heading = widgetHeading(widget);
+                                    const collapseButton = widget.querySelector('[data-gfree-dashboard-widget-collapse]');
+                                    const dragHandle = widget.querySelector('.gfree-dashboard-widget-drag-handle');
+
+                                    applyCollapsedState(widget, Boolean(state.collapsed[key]));
+
+                                    if (widget.dataset.gfreeDashboardReady === 'true') {
+                                        return;
+                                    }
+
+                                    widget.dataset.gfreeDashboardReady = 'true';
+                                    widget.draggable = false;
+
+                                    if (dragHandle) {
+                                        dragHandle.addEventListener('mousedown', () => {
+                                            widget.draggable = true;
+                                        });
+
+                                        dragHandle.addEventListener('mouseup', () => {
+                                            widget.draggable = false;
+                                        });
+
+                                        dragHandle.addEventListener('touchstart', () => {
+                                            widget.draggable = true;
+                                        }, { passive: true });
+                                    }
+
+                                    if (collapseButton) {
+                                        collapseButton.addEventListener('click', () => {
+                                            const nextState = readState();
+                                            const shouldCollapse = ! widget.classList.contains('gfree-dashboard-widget-collapsed');
+
+                                            nextState.collapsed[key] = shouldCollapse;
+                                            writeState(nextState);
+                                            applyCollapsedState(widget, shouldCollapse);
+                                        });
+                                    }
+
+                                    widget.addEventListener('dragstart', (event) => {
+                                        if (! event.target.closest('.gfree-dashboard-widget-drag-handle')) {
+                                            event.preventDefault();
+                                            return;
+                                        }
+
+                                        draggedWidget = widget;
+                                        widget.classList.add('gfree-dashboard-widget-dragging');
+                                        event.dataTransfer.effectAllowed = 'move';
+                                        event.dataTransfer.setData('text/plain', key);
+                                    });
+
+                                    widget.addEventListener('dragend', () => {
+                                        widget.draggable = false;
+                                        widget.classList.remove('gfree-dashboard-widget-dragging');
+                                        document.querySelectorAll('.gfree-dashboard-widget-drag-over').forEach((target) => {
+                                            target.classList.remove('gfree-dashboard-widget-drag-over');
+                                        });
+                                        draggedWidget = null;
+                                        saveCurrentOrder();
+                                    });
+
+                                    widget.addEventListener('dragover', (event) => {
+                                        if (! draggedWidget || (draggedWidget === widget)) {
+                                            return;
+                                        }
+
+                                        event.preventDefault();
+                                        event.dataTransfer.dropEffect = 'move';
+                                        widget.classList.add('gfree-dashboard-widget-drag-over');
+                                    });
+
+                                    widget.addEventListener('dragleave', () => {
+                                        widget.classList.remove('gfree-dashboard-widget-drag-over');
+                                    });
+
+                                    widget.addEventListener('drop', (event) => {
+                                        if (! draggedWidget || (draggedWidget === widget)) {
+                                            return;
+                                        }
+
+                                        event.preventDefault();
+                                        widget.classList.remove('gfree-dashboard-widget-drag-over');
+
+                                        const container = dashboardContainer();
+                                        const rect = widget.getBoundingClientRect();
+                                        const shouldPlaceAfter = event.clientY > (rect.top + (rect.height / 2));
+
+                                        if (shouldPlaceAfter) {
+                                            container.insertBefore(draggedWidget, widget.nextSibling);
+                                        } else {
+                                            container.insertBefore(draggedWidget, widget);
+                                        }
+
+                                        saveCurrentOrder();
+                                    });
+
+                                    if (dragHandle) {
+                                        dragHandle.setAttribute('title', 'Move ' + heading);
+                                        dragHandle.setAttribute('aria-label', 'Move ' + heading);
+                                    }
+                                });
+                            };
+
+                            document.addEventListener('DOMContentLoaded', initializeDashboardWidgets);
+                            document.addEventListener('livewire:navigated', initializeDashboardWidgets);
+                            document.addEventListener('livewire:initialized', initializeDashboardWidgets);
+                            window.setTimeout(initializeDashboardWidgets, 150);
+                        })();
                     </script>
                 HTML),
             )

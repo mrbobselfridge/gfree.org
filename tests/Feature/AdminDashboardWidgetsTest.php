@@ -87,6 +87,10 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertDontSee('fi-account-widget', false)
             ->assertDontSee('fi-filament-info-widget', false)
             ->assertSee('Needs Attention')
+            ->assertSee('data-gfree-dashboard-widget="needs-attention-widget"', false)
+            ->assertSee('data-gfree-dashboard-widget-collapse', false)
+            ->assertSee('Move')
+            ->assertSee('Collapse')
             ->assertSee('Announcement')
             ->assertSee('Bulletin')
             ->assertSee('Ministry')
@@ -114,7 +118,8 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('google.com')
             ->assertSee('Browsers / Devices')
             ->assertSee('Chrome')
-            ->assertSee('Mobile');
+            ->assertSee('Mobile')
+            ->assertSee('gfree.admin.dashboard.widgets.v1');
     }
 
     public function test_dashboard_widgets_respect_editor_admin_permissions(): void

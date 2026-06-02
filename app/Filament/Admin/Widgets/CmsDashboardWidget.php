@@ -8,6 +8,7 @@ use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 abstract class CmsDashboardWidget extends Widget
 {
@@ -50,6 +51,7 @@ abstract class CmsDashboardWidget extends Widget
             'emptyMessage' => $this->emptyMessage(),
             'actionLabel' => $this->actionLabel(),
             'actionUrl' => $this->actionUrl(),
+            'widgetKey' => Str::kebab(class_basename(static::class)),
         ];
     }
 

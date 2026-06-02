@@ -1,30 +1,60 @@
-<x-filament-widgets::widget>
+<x-filament-widgets::widget
+    class="gfree-dashboard-widget"
+    data-gfree-dashboard-widget="{{ $widgetKey }}"
+>
     <x-filament::section>
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <h2 class="text-base font-semibold leading-6 text-gray-950 dark:text-white">
-                    {{ $heading }}
-                </h2>
+        <div class="gfree-dashboard-widget-header flex items-start justify-between gap-4">
+            <div class="min-w-0">
+                <div class="flex min-w-0 items-center gap-2">
+                    <button
+                        type="button"
+                        class="gfree-dashboard-widget-drag-handle shrink-0"
+                        title="Move {{ $heading }}"
+                        aria-label="Move {{ $heading }}"
+                    >
+                        Move
+                    </button>
+
+                    <h2 class="min-w-0 text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                        {{ $heading }}
+                    </h2>
+                </div>
 
                 @if (filled($description))
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p
+                        class="mt-1 text-sm text-gray-500 dark:text-gray-400"
+                        data-gfree-dashboard-widget-description
+                    >
                         {{ $description }}
                     </p>
                 @endif
             </div>
 
-            @if (filled($actionLabel) && filled($actionUrl))
-                <a
-                    href="{{ $actionUrl }}"
-                    class="shrink-0 text-sm font-semibold text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-                    wire:navigate
+            <div class="flex shrink-0 items-center gap-2">
+                @if (filled($actionLabel) && filled($actionUrl))
+                    <a
+                        href="{{ $actionUrl }}"
+                        class="text-sm font-semibold text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                        wire:navigate
+                    >
+                        {{ $actionLabel }}
+                    </a>
+                @endif
+
+                <button
+                    type="button"
+                    class="gfree-dashboard-widget-collapse"
+                    title="Collapse {{ $heading }}"
+                    aria-label="Collapse {{ $heading }}"
+                    aria-expanded="true"
+                    data-gfree-dashboard-widget-collapse
                 >
-                    {{ $actionLabel }}
-                </a>
-            @endif
+                    Collapse
+                </button>
+            </div>
         </div>
 
-        <div class="mt-4 divide-y divide-gray-200 dark:divide-gray-800">
+        <div class="mt-4 divide-y divide-gray-200 dark:divide-gray-800" data-gfree-dashboard-widget-body>
             @forelse ($rows as $row)
                 <div class="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
                     @if (filled($row['imageUrl'] ?? null))
