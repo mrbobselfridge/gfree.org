@@ -156,6 +156,7 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-dashboard-widget .fi-section {
+                            position: relative;
                             overflow: hidden;
                             border-color: rgb(229 231 235);
                             background: linear-gradient(180deg, rgb(255 255 255), rgb(249 250 251));
@@ -174,20 +175,30 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-dashboard-widget-controls {
+                            position: absolute;
+                            top: 0.875rem;
+                            inset-inline: 0.875rem;
                             display: flex;
                             align-items: center;
                             justify-content: space-between;
                             gap: 0.75rem;
-                            padding-bottom: 0.75rem;
-                            border-bottom: 1px solid rgb(229 231 235);
+                            pointer-events: none;
+                            z-index: 2;
                         }
 
-                        .dark .gfree-dashboard-widget-controls {
-                            border-bottom-color: rgb(55 65 81);
+                        .gfree-dashboard-widget-controls > * {
+                            pointer-events: auto;
                         }
 
                         .gfree-dashboard-widget-header {
                             min-width: 0;
+                            padding-top: 2.75rem;
+                            padding-bottom: 0.875rem;
+                            border-bottom: 1px solid rgb(229 231 235);
+                        }
+
+                        .dark .gfree-dashboard-widget-header {
+                            border-bottom-color: rgb(55 65 81);
                         }
 
                         .gfree-dashboard-widget-title {
@@ -249,16 +260,6 @@ class AdminPanelProvider extends PanelProvider
                             height: 1rem;
                             flex-shrink: 0;
                             pointer-events: none;
-                        }
-
-                        .gfree-dashboard-widget-control-label {
-                            position: absolute;
-                            width: 1px;
-                            height: 1px;
-                            overflow: hidden;
-                            clip: rect(0, 0, 0, 0);
-                            white-space: nowrap;
-                            clip-path: inset(50%);
                         }
 
                         .gfree-dashboard-widget-collapse-icon-collapsed {
@@ -681,12 +682,6 @@ class AdminPanelProvider extends PanelProvider
 
                                 if (! button) {
                                     return;
-                                }
-
-                                const label = button.querySelector('.gfree-dashboard-widget-control-label');
-
-                                if (label) {
-                                    label.textContent = collapsed ? 'Expand' : 'Collapse';
                                 }
 
                                 button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
