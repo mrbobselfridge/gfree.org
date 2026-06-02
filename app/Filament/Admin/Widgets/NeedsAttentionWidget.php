@@ -42,6 +42,44 @@ class NeedsAttentionWidget extends CmsDashboardWidget
         return 'No draft, incomplete, or missing setup items found.';
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return array<int, array{value: int, tone: string, label: string}>
+     */
+    protected function countBadges(array $rows): array
+    {
+        $counts = [
+            'danger' => 0,
+            'warning' => 0,
+            'success' => 0,
+        ];
+
+        foreach ($rows as $row) {
+            $counts[$this->attentionTone($row)]++;
+        }
+
+        return collect([
+            [
+                'value' => $counts['danger'],
+                'tone' => 'danger',
+                'label' => $counts['danger'].' high priority '.str('item')->plural($counts['danger']),
+            ],
+            [
+                'value' => $counts['warning'],
+                'tone' => 'warning',
+                'label' => $counts['warning'].' medium priority '.str('item')->plural($counts['warning']),
+            ],
+            [
+                'value' => $counts['success'],
+                'tone' => 'success',
+                'label' => $counts['success'].' low priority '.str('item')->plural($counts['success']),
+            ],
+        ])
+            ->filter(fn (array $badge): bool => $badge['value'] > 0)
+            ->values()
+            ->all();
+    }
+
     protected function rows(): array
     {
         return collect([
@@ -59,6 +97,25 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             ->map(fn (array $row): array => $row['display'])
             ->values()
             ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    private function attentionTone(array $row): string
+    {
+        $statusColor = str((string) ($row['statusColor'] ?? ''))->lower()->toString();
+        $status = str((string) ($row['status'] ?? ''))->lower()->toString();
+
+        if (in_array($statusColor, ['danger', 'error'], true) || str($status)->contains(['missing', 'error', 'extract', 'high'])) {
+            return 'danger';
+        }
+
+        if (in_array($statusColor, ['warning'], true) || str($status)->contains(['draft', 'review', 'warning', 'warn', 'medium'])) {
+            return 'warning';
+        }
+
+        return 'success';
     }
 
     /**

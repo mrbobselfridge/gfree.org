@@ -115,6 +115,8 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Announcements Landing Page')
             ->assertSee('Bulletins Landing Page')
             ->assertSee('Ministry Landing Page')
+            ->assertSee('4 high priority items')
+            ->assertSee('4 medium priority items')
             ->assertSee('Recent Updates')
             ->assertSee('Announcements')
             ->assertSee('Publishes')
