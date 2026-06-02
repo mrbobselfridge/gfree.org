@@ -917,37 +917,38 @@ class AdminPanelProvider extends PanelProvider
                                 };
 
                                 const movePlaceholder = (clientX, clientY) => {
-                                    const element = document.elementFromPoint(clientX, clientY);
+                                    const columns = dashboardColumns();
 
-                                    if (element?.closest?.('.gfree-dashboard-widget-placeholder')) {
+                                    if (! columns.length) {
                                         return;
                                     }
 
-                                    const target = element?.closest?.('.gfree-dashboard-widget[data-gfree-dashboard-widget]');
+                                    const column = columns.find((candidate) => {
+                                        const rect = candidate.getBoundingClientRect();
 
-                                    if (! target || (target === widget) || ! container.contains(target)) {
-                                        const column = element?.closest?.('.gfree-dashboard-widget-column');
+                                        return clientX >= rect.left && clientX <= rect.right;
+                                    }) ?? columns.reduce((closest, candidate) => {
+                                        const closestRect = closest.getBoundingClientRect();
+                                        const candidateRect = candidate.getBoundingClientRect();
+                                        const closestDistance = Math.abs(clientX - (closestRect.left + (closestRect.width / 2)));
+                                        const candidateDistance = Math.abs(clientX - (candidateRect.left + (candidateRect.width / 2)));
 
-                                        if (column && container.contains(column)) {
-                                            column.appendChild(placeholder);
-                                        } else if (element && container.contains(element)) {
-                                            const columns = dashboardColumns();
+                                        return candidateDistance < closestDistance ? candidate : closest;
+                                    }, columns[0]);
 
-                                            if (columns.length) {
-                                                shortestColumn(columns).appendChild(placeholder);
-                                            }
-                                        }
+                                    const targets = Array.from(column.querySelectorAll(':scope > .gfree-dashboard-widget[data-gfree-dashboard-widget]'))
+                                        .filter((candidate) => candidate !== widget);
 
-                                        return;
-                                    }
+                                    const target = targets.find((candidate) => {
+                                        const rect = candidate.getBoundingClientRect();
 
-                                    const targetRect = target.getBoundingClientRect();
-                                    const shouldPlaceAfter = clientY > (targetRect.top + (targetRect.height / 2));
+                                        return clientY < rect.top + (rect.height / 2);
+                                    });
 
-                                    if (shouldPlaceAfter) {
-                                        target.after(placeholder);
-                                    } else {
+                                    if (target) {
                                         target.before(placeholder);
+                                    } else {
+                                        column.appendChild(placeholder);
                                     }
                                 };
 
