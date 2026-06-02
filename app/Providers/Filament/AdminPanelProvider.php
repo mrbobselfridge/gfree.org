@@ -100,9 +100,10 @@ class AdminPanelProvider extends PanelProvider
                             width: 1.375rem;
                             height: 1.375rem;
                             margin-inline-start: auto;
-                            border: 1px solid rgb(217 119 6 / 0.55);
-                            border-radius: 9999px;
-                            color: rgb(217 119 6);
+                            border: 1px solid rgb(156 163 175 / 0.7);
+                            border-radius: 0.3125rem;
+                            background: rgb(249 250 251);
+                            color: rgb(107 114 128);
                             font-size: 0.8125rem;
                             font-weight: 700;
                             line-height: 1;
@@ -110,12 +111,25 @@ class AdminPanelProvider extends PanelProvider
                             flex-shrink: 0;
                         }
 
+                        .dark .gfree-sidebar-help {
+                            border-color: rgb(107 114 128 / 0.75);
+                            background: rgb(31 41 55 / 0.72);
+                            color: rgb(209 213 219);
+                        }
+
                         .gfree-sidebar-help:hover,
                         .gfree-sidebar-help:focus {
-                            border-color: rgb(245 158 11);
-                            background: rgb(245 158 11 / 0.14);
-                            color: rgb(245 158 11);
+                            border-color: rgb(34 197 94);
+                            background: rgb(34 197 94 / 0.14);
+                            color: rgb(22 163 74);
                             outline: none;
+                        }
+
+                        .dark .gfree-sidebar-help:hover,
+                        .dark .gfree-sidebar-help:focus {
+                            border-color: rgb(74 222 128);
+                            background: rgb(34 197 94 / 0.18);
+                            color: rgb(134 239 172);
                         }
 
                         .fi-sidebar:not(.fi-sidebar-open) .gfree-sidebar-help {
