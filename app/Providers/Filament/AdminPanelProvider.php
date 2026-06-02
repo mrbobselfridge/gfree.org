@@ -137,6 +137,26 @@ class AdminPanelProvider extends PanelProvider
                             pointer-events: none;
                         }
 
+                        .gfree-cms-dashboard-widgets > .fi-sc {
+                            display: block !important;
+                            column-count: 1;
+                            column-gap: 1.5rem;
+                        }
+
+                        .gfree-cms-dashboard-widgets > .fi-sc > .fi-wi-widget {
+                            display: inline-block;
+                            width: 100%;
+                            margin-bottom: 1.5rem;
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+
+                        @media (min-width: 1024px) {
+                            .gfree-cms-dashboard-widgets > .fi-sc {
+                                column-count: 2;
+                            }
+                        }
+
                         @media (max-width: 640px) {
                             .gfree-content-block-builder-field > .fi-fo-field-label-col {
                                 padding-inline-end: 0;
