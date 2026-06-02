@@ -180,7 +180,7 @@ class AdminPanelProvider extends PanelProvider
                             inset-inline: 0.875rem;
                             display: flex;
                             align-items: center;
-                            justify-content: space-between;
+                            justify-content: flex-end;
                             gap: 0.75rem;
                             pointer-events: none;
                             z-index: 2;
@@ -190,9 +190,18 @@ class AdminPanelProvider extends PanelProvider
                             pointer-events: auto;
                         }
 
+                        .gfree-dashboard-widget-controls > .gfree-dashboard-widget-drag-handle {
+                            order: 2;
+                        }
+
+                        .gfree-dashboard-widget-controls > div {
+                            order: 1;
+                        }
+
                         .gfree-dashboard-widget-header {
                             min-width: 0;
-                            padding-top: 2.75rem;
+                            padding-top: 0;
+                            padding-inline-end: 5.5rem;
                             padding-bottom: 0.875rem;
                             border-bottom: 1px solid rgb(229 231 235);
                         }
@@ -358,17 +367,13 @@ class AdminPanelProvider extends PanelProvider
                         .gfree-dashboard-widget-type {
                             display: inline-flex;
                             align-items: center;
-                            border-radius: 9999px;
-                            background: rgb(245 158 11 / 0.12);
                             color: rgb(146 64 14);
-                            font-size: 0.6875rem;
+                            font-size: 0.825rem;
                             font-weight: 800;
                             line-height: 1;
-                            padding: 0.25rem 0.5rem;
                         }
 
                         .dark .gfree-dashboard-widget-type {
-                            background: rgb(245 158 11 / 0.14);
                             color: rgb(251 191 36);
                         }
 
