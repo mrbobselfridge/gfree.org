@@ -90,7 +90,7 @@ class AdminDashboardWidgetsTest extends TestCase
             'viewed_at' => now()->subDay(),
         ]);
 
-        $this->actingAs(User::factory()->create())
+        $response = $this->actingAs(User::factory()->create())
             ->get('/admin')
             ->assertOk()
             ->assertDontSee('fi-account-widget', false)
@@ -148,6 +148,25 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertDontSeeText('Page Views')
             ->assertDontSee('class="gfree-dashboard-widget-type">Analytics', false)
             ->assertSee('gfree.admin.dashboard.widgets.v1');
+
+        $content = $response->getContent();
+
+        foreach ([
+            'analytics-overview-widget',
+            'top-pages-widget',
+            'top-referrers-widget',
+            'browsers-devices-widget',
+        ] as $widgetKey) {
+            $start = strpos($content, 'data-gfree-dashboard-widget="'.$widgetKey.'"');
+
+            $this->assertIsInt($start);
+            $nextWidgetStart = strpos($content, 'data-gfree-dashboard-widget="', $start + 1);
+            $widgetMarkup = $nextWidgetStart === false
+                ? substr($content, $start)
+                : substr($content, $start, $nextWidgetStart - $start);
+
+            $this->assertStringNotContainsString('gfree-dashboard-widget-count', $widgetMarkup);
+        }
     }
 
     public function test_dashboard_widgets_respect_editor_admin_permissions(): void

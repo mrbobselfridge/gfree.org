@@ -21,4 +21,9 @@ abstract class AnalyticsDashboardWidget extends CmsDashboardWidget
     {
         return AnalyticsPageView::query();
     }
+
+    protected function countBadges(array $rows): array
+    {
+        return [];
+    }
 }
