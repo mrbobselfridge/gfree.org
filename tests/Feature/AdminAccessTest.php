@@ -36,6 +36,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('Leaders')
             ->assertSee('Sermons')
             ->assertSee('Site Settings')
+            ->assertSee('Analytics')
             ->assertSee('Media Library')
             ->assertSee('Navigation Links')
             ->assertSee('Users')

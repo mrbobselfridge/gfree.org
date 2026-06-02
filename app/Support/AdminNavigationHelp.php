@@ -20,6 +20,7 @@ class AdminNavigationHelp
             'Pages' => 'Create and edit general website pages such as New Here or About.',
             'Leaders' => 'Manage leadership profiles, photos, and public leader detail pages.',
             'Sermons' => 'Manage sermon landing page text and YouTube feed settings.',
+            'Analytics' => 'Review site traffic, top pages, referrers, devices, browsers, and recent page views.',
             'Site Settings' => 'Edit church-wide contact details, social links, AI settings, and page defaults.',
             'Navigation Links' => 'Control the public website header navigation links and dropdowns.',
             'Users' => 'Manage admin and editor accounts and their allowed admin areas.',

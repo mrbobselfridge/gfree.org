@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Announcement;
 use App\Models\AnalyticsPageView;
+use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\Ministry;
 use App\Models\Page;
@@ -123,7 +123,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Mobile')
             ->assertSee('gfree-dashboard-widget-count')
             ->assertDontSeeText('Page Views')
-            ->assertDontSeeText('Analytics')
+            ->assertDontSee('class="gfree-dashboard-widget-type">Analytics', false)
             ->assertSee('gfree.admin.dashboard.widgets.v1');
     }
 

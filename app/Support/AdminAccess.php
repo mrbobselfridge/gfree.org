@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Filament\Admin\Pages\Analytics;
 use App\Filament\Admin\Pages\HomepageContent;
 use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Pages\Sermons;
@@ -50,6 +51,8 @@ class AdminAccess
     public const SERMONS = 'sermons';
 
     public const SITE_SETTINGS = 'site_settings';
+
+    public const ANALYTICS = 'analytics';
 
     public const MEDIA_LIBRARY = 'media_library';
 
@@ -111,6 +114,11 @@ class AdminAccess
                 'group' => 'Sitewide',
                 'model' => SiteSetting::class,
                 'resource' => SiteSettingResource::class,
+            ],
+            self::ANALYTICS => [
+                'label' => 'Analytics',
+                'group' => 'Sitewide',
+                'page' => Analytics::class,
             ],
             self::MEDIA_LIBRARY => [
                 'label' => 'Media Library',

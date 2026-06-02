@@ -11,7 +11,10 @@ abstract class AnalyticsDashboardWidget extends CmsDashboardWidget
 {
     public static function canView(): bool
     {
-        return AdminAccess::canAccessTool(Filament::auth()->user(), AdminAccess::SITE_SETTINGS);
+        $user = Filament::auth()->user();
+
+        return AdminAccess::canAccessTool($user, AdminAccess::SITE_SETTINGS)
+            || AdminAccess::canAccessTool($user, AdminAccess::ANALYTICS);
     }
 
     protected function analyticsQuery(): Builder
