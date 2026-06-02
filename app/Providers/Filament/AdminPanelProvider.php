@@ -138,17 +138,16 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-cms-dashboard-widgets > .fi-sc {
-                            display: block !important;
-                            column-count: 1;
-                            column-gap: 1.5rem;
+                            display: grid !important;
+                            grid-template-columns: minmax(0, 1fr);
+                            align-items: start;
+                            gap: 1.5rem;
                         }
 
                         .gfree-cms-dashboard-widgets > .fi-sc > .fi-wi-widget {
-                            display: inline-block;
+                            display: block;
                             width: 100%;
-                            margin-bottom: 1.5rem;
-                            break-inside: avoid;
-                            page-break-inside: avoid;
+                            min-width: 0;
                         }
 
                         .gfree-dashboard-widget {
@@ -451,11 +450,8 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-dashboard-widget-placeholder {
-                            display: inline-block;
+                            display: block;
                             width: 100%;
-                            margin-bottom: 1.5rem;
-                            break-inside: avoid;
-                            page-break-inside: avoid;
                             border: 2px dashed rgb(245 158 11);
                             border-radius: 0.75rem;
                             background: rgb(245 158 11 / 0.09);
@@ -468,13 +464,13 @@ class AdminPanelProvider extends PanelProvider
 
                         @media (min-width: 1024px) {
                             .gfree-cms-dashboard-widgets > .fi-sc {
-                                column-count: 2;
+                                grid-template-columns: repeat(2, minmax(0, 1fr));
                             }
                         }
 
                         @media (min-width: 1536px) {
                             .gfree-cms-dashboard-widgets > .fi-sc {
-                                column-count: 3;
+                                grid-template-columns: repeat(3, minmax(0, 1fr));
                             }
                         }
 
