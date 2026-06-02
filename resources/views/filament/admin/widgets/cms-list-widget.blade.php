@@ -3,72 +3,72 @@
     data-gfree-dashboard-widget="{{ $widgetKey }}"
 >
     <x-filament::section>
-        <div class="gfree-dashboard-widget-header flex items-start justify-between gap-4">
-            <div class="min-w-0">
-                <div class="flex min-w-0 items-center gap-2">
+        <div class="gfree-dashboard-widget-shell">
+            <div class="gfree-dashboard-widget-controls flex items-center justify-between gap-3">
+                <button
+                    type="button"
+                    class="gfree-dashboard-widget-drag-handle"
+                    title="Move {{ $heading }}"
+                    aria-label="Move {{ $heading }}"
+                >
+                    Move
+                </button>
+
+                <div class="flex shrink-0 items-center gap-2">
+                    @if (filled($actionLabel) && filled($actionUrl))
+                        <a
+                            href="{{ $actionUrl }}"
+                            class="gfree-dashboard-widget-action"
+                            wire:navigate
+                        >
+                            {{ $actionLabel }}
+                        </a>
+                    @endif
+
                     <button
                         type="button"
-                        class="gfree-dashboard-widget-drag-handle shrink-0"
-                        title="Move {{ $heading }}"
-                        aria-label="Move {{ $heading }}"
+                        class="gfree-dashboard-widget-collapse"
+                        title="Collapse {{ $heading }}"
+                        aria-label="Collapse {{ $heading }}"
+                        aria-expanded="true"
+                        data-gfree-dashboard-widget-collapse
                     >
-                        Move
+                        Collapse
                     </button>
-
-                    <h2 class="min-w-0 text-base font-semibold leading-6 text-gray-950 dark:text-white">
-                        {{ $heading }}
-                    </h2>
                 </div>
+            </div>
+
+            <div class="gfree-dashboard-widget-header">
+                <h2 class="gfree-dashboard-widget-title">
+                    {{ $heading }}
+                </h2>
 
                 @if (filled($description))
                     <p
-                        class="mt-1 text-sm text-gray-500 dark:text-gray-400"
+                        class="gfree-dashboard-widget-description"
                         data-gfree-dashboard-widget-description
                     >
                         {{ $description }}
                     </p>
                 @endif
             </div>
-
-            <div class="flex shrink-0 items-center gap-2">
-                @if (filled($actionLabel) && filled($actionUrl))
-                    <a
-                        href="{{ $actionUrl }}"
-                        class="text-sm font-semibold text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-                        wire:navigate
-                    >
-                        {{ $actionLabel }}
-                    </a>
-                @endif
-
-                <button
-                    type="button"
-                    class="gfree-dashboard-widget-collapse"
-                    title="Collapse {{ $heading }}"
-                    aria-label="Collapse {{ $heading }}"
-                    aria-expanded="true"
-                    data-gfree-dashboard-widget-collapse
-                >
-                    Collapse
-                </button>
-            </div>
         </div>
 
-        <div class="mt-4 divide-y divide-gray-200 dark:divide-gray-800" data-gfree-dashboard-widget-body>
+        <div class="gfree-dashboard-widget-body" data-gfree-dashboard-widget-body>
             @forelse ($rows as $row)
-                <div class="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
+                <div class="gfree-dashboard-widget-row">
                     @if (filled($row['imageUrl'] ?? null))
                         <img
                             src="{{ $row['imageUrl'] }}"
                             alt=""
-                            class="h-12 w-16 shrink-0 rounded-md object-cover ring-1 ring-gray-950/10 dark:ring-white/10"
+                            class="gfree-dashboard-widget-row-image"
                             loading="lazy"
                         >
                     @endif
 
                     <div class="min-w-0 flex-1">
-                        <div class="mb-1">
-                            <span class="inline-flex rounded-md bg-primary-50 px-2 py-0.5 text-[0.6875rem] font-bold uppercase tracking-wide text-primary-700 ring-1 ring-primary-600/15 dark:bg-primary-400/10 dark:text-primary-300 dark:ring-primary-400/20">
+                        <div class="mb-1.5">
+                            <span class="gfree-dashboard-widget-type">
                                 {{ $row['type'] }}
                             </span>
                         </div>
@@ -77,20 +77,20 @@
                             @if (filled($row['url'] ?? null))
                                 <a
                                     href="{{ $row['url'] }}"
-                                    class="block truncate text-sm font-semibold text-gray-950 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
+                                    class="gfree-dashboard-widget-row-title"
                                     wire:navigate
                                 >
                                     {{ $row['title'] }}
                                 </a>
                             @else
-                                <span class="block truncate text-sm font-semibold text-gray-950 dark:text-white">
+                                <span class="gfree-dashboard-widget-row-title">
                                     {{ $row['title'] }}
                                 </span>
                             @endif
                         </h3>
 
                         @if (filled($row['meta'] ?? null))
-                            <p class="mt-1 truncate text-xs text-gray-500 dark:text-gray-400" title="{{ $row['meta'] }}">
+                            <p class="gfree-dashboard-widget-row-meta" title="{{ $row['meta'] }}">
                                 {{ $row['meta'] }}
                             </p>
                         @endif
@@ -111,7 +111,7 @@
                     @endif
                 </div>
             @empty
-                <p class="py-4 text-sm text-gray-500 dark:text-gray-400">
+                <p class="gfree-dashboard-widget-empty">
                     {{ $emptyMessage }}
                 </p>
             @endforelse
