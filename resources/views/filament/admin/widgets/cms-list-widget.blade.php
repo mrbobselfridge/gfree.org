@@ -11,7 +11,18 @@
                     title="Move {{ $heading }}"
                     aria-label="Move {{ $heading }}"
                 >
-                    Move
+                    <svg
+                        class="gfree-dashboard-widget-control-icon"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-18 3 3m-3-3-3 3m3 15 3-3m-3 3-3-3M3 12h18m-18 0 3-3m-3 3 3 3m15-3-3-3m3 3-3 3" />
+                    </svg>
+                    <span class="gfree-dashboard-widget-control-label">Move</span>
                 </button>
 
                 <div class="flex shrink-0 items-center gap-2">
@@ -33,7 +44,29 @@
                         aria-expanded="true"
                         data-gfree-dashboard-widget-collapse
                     >
-                        Collapse
+                        <svg
+                            class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-expanded"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m18 15-6-6-6 6" />
+                        </svg>
+                        <svg
+                            class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-collapsed"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                        </svg>
+                        <span class="gfree-dashboard-widget-control-label">Collapse</span>
                     </button>
                 </div>
             </div>

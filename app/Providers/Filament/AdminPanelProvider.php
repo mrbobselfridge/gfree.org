@@ -174,6 +174,10 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-dashboard-widget-controls {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 0.75rem;
                             padding-bottom: 0.75rem;
                             border-bottom: 1px solid rgb(229 231 235);
                         }
@@ -216,7 +220,6 @@ class AdminPanelProvider extends PanelProvider
                             display: inline-flex;
                             align-items: center;
                             justify-content: center;
-                            min-height: 1.875rem;
                             border: 1px solid rgb(209 213 219);
                             border-radius: 0.375rem;
                             background: rgb(255 255 255);
@@ -227,6 +230,47 @@ class AdminPanelProvider extends PanelProvider
                             padding: 0.4rem 0.6rem;
                             text-decoration: none;
                             white-space: nowrap;
+                        }
+
+                        .gfree-dashboard-widget-action {
+                            min-height: 1.875rem;
+                            padding: 0.4rem 0.6rem;
+                        }
+
+                        .gfree-dashboard-widget-drag-handle,
+                        .gfree-dashboard-widget-collapse {
+                            width: 2rem;
+                            height: 2rem;
+                            padding: 0;
+                        }
+
+                        .gfree-dashboard-widget-control-icon {
+                            width: 1rem;
+                            height: 1rem;
+                            flex-shrink: 0;
+                            pointer-events: none;
+                        }
+
+                        .gfree-dashboard-widget-control-label {
+                            position: absolute;
+                            width: 1px;
+                            height: 1px;
+                            overflow: hidden;
+                            clip: rect(0, 0, 0, 0);
+                            white-space: nowrap;
+                            clip-path: inset(50%);
+                        }
+
+                        .gfree-dashboard-widget-collapse-icon-collapsed {
+                            display: none;
+                        }
+
+                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed .gfree-dashboard-widget-collapse-icon-expanded {
+                            display: none;
+                        }
+
+                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed .gfree-dashboard-widget-collapse-icon-collapsed {
+                            display: block;
                         }
 
                         .dark .gfree-dashboard-widget-action,
@@ -639,7 +683,12 @@ class AdminPanelProvider extends PanelProvider
                                     return;
                                 }
 
-                                button.textContent = collapsed ? 'Expand' : 'Collapse';
+                                const label = button.querySelector('.gfree-dashboard-widget-control-label');
+
+                                if (label) {
+                                    label.textContent = collapsed ? 'Expand' : 'Collapse';
+                                }
+
                                 button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
                                 button.setAttribute('aria-label', (collapsed ? 'Expand ' : 'Collapse ') + heading);
                                 button.setAttribute('title', (collapsed ? 'Expand ' : 'Collapse ') + heading);
