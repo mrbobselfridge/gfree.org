@@ -187,21 +187,13 @@ class AdminPanelProvider extends PanelProvider
                             display: flex;
                             align-items: center;
                             justify-content: flex-end;
-                            gap: 0.75rem;
+                            gap: 0.5rem;
                             pointer-events: none;
                             z-index: 2;
                         }
 
                         .gfree-dashboard-widget-controls > * {
                             pointer-events: auto;
-                        }
-
-                        .gfree-dashboard-widget-controls > .gfree-dashboard-widget-drag-handle {
-                            order: 2;
-                        }
-
-                        .gfree-dashboard-widget-controls > div {
-                            order: 1;
                         }
 
                         .gfree-dashboard-widget-header {
@@ -253,14 +245,13 @@ class AdminPanelProvider extends PanelProvider
                             font-size: 0.75rem;
                             font-weight: 800;
                             line-height: 1;
-                            padding: 0.4rem 0.6rem;
                             text-decoration: none;
                             white-space: nowrap;
                         }
 
                         .gfree-dashboard-widget-action {
-                            min-height: 1.875rem;
-                            padding: 0.4rem 0.6rem;
+                            height: 2rem;
+                            padding-inline: 0.625rem;
                         }
 
                         .gfree-dashboard-widget-drag-handle,
@@ -797,11 +788,14 @@ class AdminPanelProvider extends PanelProvider
 
                                 event.preventDefault();
 
+                                const dragHandle = event.currentTarget;
                                 const rect = widget.getBoundingClientRect();
                                 const placeholder = document.createElement('div');
                                 placeholder.className = 'gfree-dashboard-widget-placeholder';
                                 placeholder.style.height = rect.height + 'px';
                                 widget.after(placeholder);
+
+                                dragHandle?.setPointerCapture?.(event.pointerId);
 
                                 const offsetX = event.clientX - rect.left;
                                 const offsetY = event.clientY - rect.top;
@@ -861,9 +855,10 @@ class AdminPanelProvider extends PanelProvider
                                 };
 
                                 const onPointerUp = () => {
-                                    window.removeEventListener('pointermove', onPointerMove);
-                                    window.removeEventListener('pointerup', onPointerUp);
-                                    window.removeEventListener('pointercancel', onPointerUp);
+                                    document.removeEventListener('pointermove', onPointerMove);
+                                    document.removeEventListener('pointerup', onPointerUp);
+                                    document.removeEventListener('pointercancel', onPointerUp);
+                                    dragHandle?.releasePointerCapture?.(event.pointerId);
 
                                     placeholder.replaceWith(widget);
                                     clearDragStyles(widget);
@@ -871,9 +866,9 @@ class AdminPanelProvider extends PanelProvider
                                 };
 
                                 moveWidget(event.clientX, event.clientY);
-                                window.addEventListener('pointermove', onPointerMove);
-                                window.addEventListener('pointerup', onPointerUp);
-                                window.addEventListener('pointercancel', onPointerUp);
+                                document.addEventListener('pointermove', onPointerMove);
+                                document.addEventListener('pointerup', onPointerUp);
+                                document.addEventListener('pointercancel', onPointerUp);
                             };
 
                             const initializeDashboardWidgets = () => {

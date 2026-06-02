@@ -4,7 +4,49 @@
 >
     <x-filament::section>
         <div class="gfree-dashboard-widget-shell">
-            <div class="gfree-dashboard-widget-controls flex items-center justify-between gap-3">
+            <div class="gfree-dashboard-widget-controls">
+                @if (filled($actionLabel) && filled($actionUrl))
+                    <a
+                        href="{{ $actionUrl }}"
+                        class="gfree-dashboard-widget-action"
+                        wire:navigate
+                    >
+                        {{ $actionLabel }}
+                    </a>
+                @endif
+
+                <button
+                    type="button"
+                    class="gfree-dashboard-widget-collapse"
+                    title="Collapse {{ $heading }}"
+                    aria-label="Collapse {{ $heading }}"
+                    aria-expanded="true"
+                    data-gfree-dashboard-widget-collapse
+                >
+                    <svg
+                        class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-expanded"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m18 15-6-6-6 6" />
+                    </svg>
+                    <svg
+                        class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-collapsed"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                    </svg>
+                </button>
+
                 <button
                     type="button"
                     class="gfree-dashboard-widget-drag-handle"
@@ -23,50 +65,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-18 3 3m-3-3-3 3m3 15 3-3m-3 3-3-3M3 12h18m-18 0 3-3m-3 3 3 3m15-3-3-3m3 3-3 3" />
                     </svg>
                 </button>
-
-                <div class="flex shrink-0 items-center gap-2">
-                    @if (filled($actionLabel) && filled($actionUrl))
-                        <a
-                            href="{{ $actionUrl }}"
-                            class="gfree-dashboard-widget-action"
-                            wire:navigate
-                        >
-                            {{ $actionLabel }}
-                        </a>
-                    @endif
-
-                    <button
-                        type="button"
-                        class="gfree-dashboard-widget-collapse"
-                        title="Collapse {{ $heading }}"
-                        aria-label="Collapse {{ $heading }}"
-                        aria-expanded="true"
-                        data-gfree-dashboard-widget-collapse
-                    >
-                        <svg
-                            class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-expanded"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.8"
-                            stroke="currentColor"
-                        >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m18 15-6-6-6 6" />
-                        </svg>
-                        <svg
-                            class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-collapsed"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.8"
-                            stroke="currentColor"
-                        >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
-                        </svg>
-                    </button>
-                </div>
             </div>
 
             <div class="gfree-dashboard-widget-header">
