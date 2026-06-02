@@ -138,13 +138,20 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-cms-dashboard-widgets > .fi-sc {
-                            display: grid !important;
-                            grid-template-columns: minmax(0, 1fr);
-                            align-items: start;
+                            display: flex !important;
+                            align-items: flex-start;
                             gap: 1.5rem;
                         }
 
-                        .gfree-cms-dashboard-widgets > .fi-sc > .fi-wi-widget {
+                        .gfree-dashboard-widget-column {
+                            display: grid;
+                            flex: 1 1 0;
+                            gap: 1.5rem;
+                            min-width: 0;
+                        }
+
+                        .gfree-cms-dashboard-widgets > .fi-sc > .fi-wi-widget,
+                        .gfree-dashboard-widget-column > .fi-wi-widget {
                             display: block;
                             width: 100%;
                             min-width: 0;
@@ -462,18 +469,6 @@ class AdminPanelProvider extends PanelProvider
                             display: none;
                         }
 
-                        @media (min-width: 1024px) {
-                            .gfree-cms-dashboard-widgets > .fi-sc {
-                                grid-template-columns: repeat(2, minmax(0, 1fr));
-                            }
-                        }
-
-                        @media (min-width: 1536px) {
-                            .gfree-cms-dashboard-widgets > .fi-sc {
-                                grid-template-columns: repeat(3, minmax(0, 1fr));
-                            }
-                        }
-
                         @media (max-width: 640px) {
                             .gfree-content-block-builder-field > .fi-fo-field-label-col {
                                 padding-inline-end: 0;
@@ -665,8 +660,35 @@ class AdminPanelProvider extends PanelProvider
                                     return [];
                                 }
 
-                                return Array.from(container.querySelectorAll(':scope > .gfree-dashboard-widget[data-gfree-dashboard-widget]'));
+                                return Array.from(container.querySelectorAll('.gfree-dashboard-widget[data-gfree-dashboard-widget]'));
                             };
+
+                            const dashboardColumnCount = () => {
+                                if (window.matchMedia('(min-width: 1536px)').matches) {
+                                    return 3;
+                                }
+
+                                if (window.matchMedia('(min-width: 1024px)').matches) {
+                                    return 2;
+                                }
+
+                                return 1;
+                            };
+
+                            const dashboardColumns = () => {
+                                const container = dashboardContainer();
+
+                                if (! container) {
+                                    return [];
+                                }
+
+                                return Array.from(container.querySelectorAll(':scope > .gfree-dashboard-widget-column'));
+                            };
+
+                            const shortestColumn = (columns) => columns.reduce(
+                                (shortest, column) => column.getBoundingClientRect().height < shortest.getBoundingClientRect().height ? column : shortest,
+                                columns[0],
+                            );
 
                             const readState = () => {
                                 try {
@@ -725,12 +747,28 @@ class AdminPanelProvider extends PanelProvider
                                     }
                                 });
 
-                                [...ordered, ...byKey.values()].forEach((widget) => container.appendChild(widget));
+                                const columns = Array.from({ length: dashboardColumnCount() }, () => {
+                                    const column = document.createElement('div');
+                                    column.className = 'gfree-dashboard-widget-column';
+
+                                    return column;
+                                });
+
+                                container.replaceChildren(...columns);
+
+                                [...ordered, ...byKey.values()].forEach((widget) => {
+                                    shortestColumn(columns).appendChild(widget);
+                                });
                             };
 
                             const saveCurrentOrder = () => {
                                 const state = readState();
-                                state.order = dashboardWidgets().map((widget) => widget.dataset.gfreeDashboardWidget);
+                                const columns = dashboardColumns();
+                                const widgets = columns.length
+                                    ? columns.flatMap((column) => Array.from(column.querySelectorAll(':scope > .gfree-dashboard-widget[data-gfree-dashboard-widget]')))
+                                    : dashboardWidgets();
+
+                                state.order = widgets.map((widget) => widget.dataset.gfreeDashboardWidget);
                                 writeState(state);
                             };
 
@@ -792,8 +830,16 @@ class AdminPanelProvider extends PanelProvider
                                     const target = element?.closest?.('.gfree-dashboard-widget[data-gfree-dashboard-widget]');
 
                                     if (! target || (target === widget) || ! container.contains(target)) {
-                                        if (element && container.contains(element)) {
-                                            container.appendChild(placeholder);
+                                        const column = element?.closest?.('.gfree-dashboard-widget-column');
+
+                                        if (column && container.contains(column)) {
+                                            column.appendChild(placeholder);
+                                        } else if (element && container.contains(element)) {
+                                            const columns = dashboardColumns();
+
+                                            if (columns.length) {
+                                                shortestColumn(columns).appendChild(placeholder);
+                                            }
                                         }
 
                                         return;
@@ -871,9 +917,16 @@ class AdminPanelProvider extends PanelProvider
                                 });
                             };
 
+                            let resizeTimer = null;
+                            const initializeDashboardWidgetsAfterResize = () => {
+                                window.clearTimeout(resizeTimer);
+                                resizeTimer = window.setTimeout(initializeDashboardWidgets, 150);
+                            };
+
                             document.addEventListener('DOMContentLoaded', initializeDashboardWidgets);
                             document.addEventListener('livewire:navigated', initializeDashboardWidgets);
                             document.addEventListener('livewire:initialized', initializeDashboardWidgets);
+                            window.addEventListener('resize', initializeDashboardWidgetsAfterResize);
                             window.setTimeout(initializeDashboardWidgets, 150);
                         })();
                     </script>
