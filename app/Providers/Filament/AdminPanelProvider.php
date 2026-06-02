@@ -350,6 +350,15 @@ class AdminPanelProvider extends PanelProvider
                             padding: 0.75rem;
                         }
 
+                        .gfree-dashboard-widget-row > .min-w-0.flex-1 {
+                            flex: 1 1 auto;
+                        }
+
+                        .gfree-dashboard-widget-row-status {
+                            margin-inline-start: auto;
+                            flex-shrink: 0;
+                        }
+
                         .dark .gfree-dashboard-widget-row {
                             border-color: rgb(55 65 81);
                             background: rgb(3 7 18 / 0.38);
@@ -459,6 +468,12 @@ class AdminPanelProvider extends PanelProvider
                         @media (min-width: 1024px) {
                             .gfree-cms-dashboard-widgets > .fi-sc {
                                 column-count: 2;
+                            }
+                        }
+
+                        @media (min-width: 1536px) {
+                            .gfree-cms-dashboard-widgets > .fi-sc {
+                                column-count: 3;
                             }
                         }
 

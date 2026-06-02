@@ -109,7 +109,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
             ->assertSee('Header navigation')
-            ->assertSee('/admin/site-settings/1/edit" class="shrink-0" wire:navigate', false)
+            ->assertSee('/admin/site-settings/1/edit" class="gfree-dashboard-widget-row-status" wire:navigate', false)
             ->assertSee('Web Traffic Overview')
             ->assertSee('Views today')
             ->assertSee('Top Pages')

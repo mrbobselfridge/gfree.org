@@ -129,13 +129,13 @@
 
                     @if (filled($row['status'] ?? null))
                         @if (filled($row['url'] ?? null))
-                            <a href="{{ $row['url'] }}" class="shrink-0" wire:navigate>
+                            <a href="{{ $row['url'] }}" class="gfree-dashboard-widget-row-status" wire:navigate>
                                 <x-filament::badge :color="$row['statusColor'] ?? 'gray'">
                                     {{ $row['status'] }}
                                 </x-filament::badge>
                             </a>
                         @else
-                            <x-filament::badge :color="$row['statusColor'] ?? 'gray'" class="shrink-0">
+                            <x-filament::badge :color="$row['statusColor'] ?? 'gray'" class="gfree-dashboard-widget-row-status">
                                 {{ $row['status'] }}
                             </x-filament::badge>
                         @endif
