@@ -137,6 +137,58 @@ class AdminPanelProvider extends PanelProvider
                             pointer-events: none;
                         }
 
+                        .gfree-cms-dashboard {
+                            position: relative;
+                        }
+
+                        .gfree-dashboard-global-controls {
+                            position: absolute;
+                            top: 0;
+                            inset-inline-end: 0;
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-end;
+                            gap: 0.5rem;
+                            z-index: 3;
+                        }
+
+                        .gfree-dashboard-global-control {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 2rem;
+                            border: 1px solid rgb(245 158 11 / 0.45);
+                            border-radius: 0.375rem;
+                            background: rgb(255 255 255);
+                            color: rgb(180 83 9);
+                            font-size: 0.75rem;
+                            font-weight: 800;
+                            line-height: 1;
+                            padding-inline: 0.625rem;
+                            white-space: nowrap;
+                        }
+
+                        .dark .gfree-dashboard-global-control {
+                            border-color: rgb(245 158 11 / 0.5);
+                            background: rgb(17 24 39);
+                            color: rgb(251 191 36);
+                        }
+
+                        .gfree-dashboard-global-control:hover,
+                        .gfree-dashboard-global-control:focus {
+                            border-color: rgb(245 158 11);
+                            background: rgb(255 251 235);
+                            color: rgb(180 83 9);
+                            outline: none;
+                        }
+
+                        .dark .gfree-dashboard-global-control:hover,
+                        .dark .gfree-dashboard-global-control:focus {
+                            border-color: rgb(245 158 11);
+                            background: rgb(69 26 3 / 0.3);
+                            color: rgb(251 191 36);
+                        }
+
                         .gfree-cms-dashboard-widgets > .fi-sc {
                             display: flex !important;
                             align-items: flex-start;
@@ -461,6 +513,12 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         @media (max-width: 640px) {
+                            .gfree-dashboard-global-controls {
+                                position: static;
+                                justify-content: flex-start;
+                                margin-bottom: 1rem;
+                            }
+
                             .gfree-content-block-builder-field > .fi-fo-field-label-col {
                                 padding-inline-end: 0;
                             }
@@ -704,6 +762,47 @@ class AdminPanelProvider extends PanelProvider
 
                             const widgetHeading = (widget) => widget.querySelector('h2')?.textContent?.replace(/\s+/g, ' ').trim() || 'dashboard box';
 
+                            const setAllCollapsed = (collapsed) => {
+                                const state = readState();
+
+                                dashboardWidgets().forEach((widget) => {
+                                    const key = widget.dataset.gfreeDashboardWidget;
+
+                                    state.collapsed[key] = collapsed;
+                                    applyCollapsedState(widget, collapsed);
+                                });
+
+                                writeState(state);
+                            };
+
+                            const ensureDashboardGlobalControls = () => {
+                                const dashboard = document.querySelector('.gfree-cms-dashboard');
+
+                                if (! dashboard || dashboard.querySelector('.gfree-dashboard-global-controls')) {
+                                    return;
+                                }
+
+                                const controls = document.createElement('div');
+                                controls.className = 'gfree-dashboard-global-controls';
+
+                                const expandButton = document.createElement('button');
+                                expandButton.type = 'button';
+                                expandButton.className = 'gfree-dashboard-global-control';
+                                expandButton.textContent = 'Expand All';
+                                expandButton.setAttribute('aria-label', 'Expand all dashboard boxes');
+                                expandButton.addEventListener('click', () => setAllCollapsed(false));
+
+                                const collapseButton = document.createElement('button');
+                                collapseButton.type = 'button';
+                                collapseButton.className = 'gfree-dashboard-global-control';
+                                collapseButton.textContent = 'Collapse All';
+                                collapseButton.setAttribute('aria-label', 'Collapse all dashboard boxes');
+                                collapseButton.addEventListener('click', () => setAllCollapsed(true));
+
+                                controls.append(expandButton, collapseButton);
+                                dashboard.prepend(controls);
+                            };
+
                             const applyCollapsedState = (widget, collapsed) => {
                                 const heading = widgetHeading(widget);
                                 const button = widget.querySelector('[data-gfree-dashboard-widget-collapse]');
@@ -872,6 +971,7 @@ class AdminPanelProvider extends PanelProvider
                             };
 
                             const initializeDashboardWidgets = () => {
+                                ensureDashboardGlobalControls();
                                 applySavedOrder();
 
                                 const state = readState();
