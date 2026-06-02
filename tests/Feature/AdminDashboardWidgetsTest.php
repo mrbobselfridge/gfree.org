@@ -101,7 +101,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Sunday bulletin')
             ->assertSee('Draft ministry')
             ->assertSee('Recent Updates')
-            ->assertSee('Upcoming / Expiring Announcements')
+            ->assertSee('Announcements')
             ->assertSee('Publishes')
             ->assertSee('Expires')
             ->assertSee('New Media')

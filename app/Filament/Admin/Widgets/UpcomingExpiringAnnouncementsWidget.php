@@ -13,7 +13,7 @@ class UpcomingExpiringAnnouncementsWidget extends CmsDashboardWidget
 
     protected function heading(): string
     {
-        return 'Upcoming / Expiring Announcements';
+        return 'Announcements';
     }
 
     protected function description(): ?string
