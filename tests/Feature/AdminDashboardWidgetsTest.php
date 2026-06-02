@@ -105,7 +105,8 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Publishes')
             ->assertSee('Expires')
             ->assertSee('New Media')
-            ->assertSee('Uploaded image')
+            ->assertSee('target="_blank"', false)
+            ->assertDontSeeText('Uploaded image')
             ->assertDontSeeText('welcome.jpg')
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
@@ -120,6 +121,9 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Browsers / Devices')
             ->assertSee('Chrome')
             ->assertSee('Mobile')
+            ->assertSee('gfree-dashboard-widget-count')
+            ->assertDontSeeText('Page Views')
+            ->assertDontSeeText('Analytics')
             ->assertSee('gfree.admin.dashboard.widgets.v1');
     }
 

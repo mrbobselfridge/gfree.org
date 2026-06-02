@@ -44,20 +44,23 @@ class NewMediaWidget extends CmsDashboardWidget
 
         return MediaLibrary::images()
             ->take(6)
-            ->map(fn (array $image): array => $this->row(
-                type: 'Media Library',
-                title: 'Uploaded image',
-                meta: collect([
-                    $image['size_for_humans'] ?? null,
-                    $image['dimensions_for_humans'] ?? null,
-                    'Uploaded '.Carbon::createFromTimestamp((int) $image['modified'])->diffForHumans(),
-                    $image['usage_summary'] ?? null,
-                ])->filter()->implode(' | '),
-                url: MediaLibraryPage::getUrl(),
-                status: ($image['usage_count'] ?? 0) > 0 ? 'Used' : 'Unused',
-                statusColor: ($image['usage_count'] ?? 0) > 0 ? 'success' : 'gray',
-                imageUrl: $image['url'] ?? null,
-            ))
+            ->map(fn (array $image): array => [
+                ...$this->row(
+                    type: '',
+                    title: '',
+                    meta: collect([
+                        $image['size_for_humans'] ?? null,
+                        $image['dimensions_for_humans'] ?? null,
+                        'Uploaded '.Carbon::createFromTimestamp((int) $image['modified'])->diffForHumans(),
+                        $image['usage_summary'] ?? null,
+                    ])->filter()->implode(' | '),
+                    status: ($image['usage_count'] ?? 0) > 0 ? 'Used' : 'Unused',
+                    statusColor: ($image['usage_count'] ?? 0) > 0 ? 'success' : 'gray',
+                    imageUrl: $image['url'] ?? null,
+                ),
+                'imageLinkUrl' => $image['url'] ?? null,
+                'imageLinkTarget' => '_blank',
+            ])
             ->values()
             ->all();
     }

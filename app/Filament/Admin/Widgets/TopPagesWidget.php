@@ -31,7 +31,7 @@ class TopPagesWidget extends AnalyticsDashboardWidget
             ->limit(8)
             ->get()
             ->map(fn ($page): array => $this->row(
-                type: 'Page Views',
+                type: '',
                 title: $page->page_title ?: $page->path,
                 meta: "{$page->path} | ".number_format((int) $page->visitors).' visitors',
                 status: number_format((int) $page->views),

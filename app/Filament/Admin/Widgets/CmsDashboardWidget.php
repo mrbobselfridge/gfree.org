@@ -44,10 +44,13 @@ abstract class CmsDashboardWidget extends Widget
 
     protected function getViewData(): array
     {
+        $rows = $this->rows();
+
         return [
             'heading' => $this->heading(),
             'description' => $this->description(),
-            'rows' => $this->rows(),
+            'rows' => $rows,
+            'itemCount' => count($rows),
             'emptyMessage' => $this->emptyMessage(),
             'actionLabel' => $this->actionLabel(),
             'actionUrl' => $this->actionUrl(),

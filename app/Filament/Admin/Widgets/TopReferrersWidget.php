@@ -40,7 +40,7 @@ class TopReferrersWidget extends AnalyticsDashboardWidget
             ->limit(7)
             ->get()
             ->map(fn (AnalyticsPageView $referrer): array => $this->row(
-                type: 'Referrer',
+                type: '',
                 title: $referrer->referrer_domain,
                 meta: 'External referring domain',
                 status: number_format((int) $referrer->views),
@@ -49,7 +49,7 @@ class TopReferrersWidget extends AnalyticsDashboardWidget
 
         if ($directViews > 0) {
             $rows->prepend($this->row(
-                type: 'Referrer',
+                type: '',
                 title: 'Direct / unknown',
                 meta: 'No external referrer was sent.',
                 status: number_format($directViews),

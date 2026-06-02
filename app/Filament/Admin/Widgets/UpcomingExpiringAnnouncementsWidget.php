@@ -74,7 +74,7 @@ class UpcomingExpiringAnnouncementsWidget extends CmsDashboardWidget
             ->map(fn (Announcement $announcement): array => [
                 'sortDate' => $announcement->getAttribute($field),
                 'display' => $this->row(
-                    type: 'Announcement',
+                    type: '',
                     title: $announcement->title,
                     meta: $status.' '.$this->formatDate($announcement->getAttribute($field)),
                     url: $this->editUrl(AnnouncementResource::class, $announcement),

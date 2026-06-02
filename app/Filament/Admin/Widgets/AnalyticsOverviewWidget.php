@@ -33,28 +33,28 @@ class AnalyticsOverviewWidget extends AnalyticsDashboardWidget
 
         return [
             $this->row(
-                type: 'Analytics',
+                type: '',
                 title: 'Views today',
                 meta: 'Public HTML page views since midnight.',
                 status: number_format($this->analyticsQuery()->where('viewed_at', '>=', $today)->count()),
                 statusColor: 'info',
             ),
             $this->row(
-                type: 'Analytics',
+                type: '',
                 title: 'Views last 7 days',
                 meta: 'All tracked public page views in the last week.',
                 status: number_format($this->analyticsQuery()->where('viewed_at', '>=', $sevenDaysAgo)->count()),
                 statusColor: 'info',
             ),
             $this->row(
-                type: 'Analytics',
+                type: '',
                 title: 'Unique visitors last 7 days',
                 meta: 'Counted by distinct session hash.',
                 status: number_format($this->analyticsQuery()->where('viewed_at', '>=', $sevenDaysAgo)->distinct('session_hash')->count('session_hash')),
                 statusColor: 'success',
             ),
             $this->row(
-                type: 'Analytics',
+                type: '',
                 title: 'Unique visitors last 30 days',
                 meta: 'Counted by distinct session hash.',
                 status: number_format($this->analyticsQuery()->where('viewed_at', '>=', $thirtyDaysAgo)->distinct('session_hash')->count('session_hash')),

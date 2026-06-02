@@ -286,6 +286,7 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .gfree-dashboard-widget-action,
+                        .gfree-dashboard-widget-count,
                         .gfree-dashboard-widget-drag-handle,
                         .gfree-dashboard-widget-collapse {
                             display: inline-flex;
@@ -305,6 +306,14 @@ class AdminPanelProvider extends PanelProvider
                         .gfree-dashboard-widget-action {
                             height: 2rem;
                             padding-inline: 0.625rem;
+                        }
+
+                        .gfree-dashboard-widget-count {
+                            width: 2rem;
+                            height: 2rem;
+                            padding: 0;
+                            color: rgb(75 85 99);
+                            cursor: default;
                         }
 
                         .gfree-dashboard-widget-drag-handle,
@@ -334,6 +343,7 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .dark .gfree-dashboard-widget-action,
+                        .dark .gfree-dashboard-widget-count,
                         .dark .gfree-dashboard-widget-drag-handle,
                         .dark .gfree-dashboard-widget-collapse {
                             border-color: rgb(75 85 99);
@@ -422,6 +432,18 @@ class AdminPanelProvider extends PanelProvider
                             border-radius: 0.5rem;
                             object-fit: cover;
                             box-shadow: inset 0 0 0 1px rgb(15 23 42 / 0.1);
+                        }
+
+                        .gfree-dashboard-widget-row-image-link {
+                            display: block;
+                            flex-shrink: 0;
+                            border-radius: 0.5rem;
+                            outline: none;
+                        }
+
+                        .gfree-dashboard-widget-row-image-link:hover .gfree-dashboard-widget-row-image,
+                        .gfree-dashboard-widget-row-image-link:focus .gfree-dashboard-widget-row-image {
+                            box-shadow: 0 0 0 2px rgb(245 158 11 / 0.75);
                         }
 
                         .gfree-dashboard-widget-type {

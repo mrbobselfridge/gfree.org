@@ -47,6 +47,14 @@
                     </svg>
                 </button>
 
+                <span
+                    class="gfree-dashboard-widget-count"
+                    title="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
+                    aria-label="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
+                >
+                    {{ $itemCount }}
+                </span>
+
                 <button
                     type="button"
                     class="gfree-dashboard-widget-drag-handle"
@@ -88,36 +96,56 @@
             @forelse ($rows as $row)
                 <div class="gfree-dashboard-widget-row">
                     @if (filled($row['imageUrl'] ?? null))
-                        <img
-                            src="{{ $row['imageUrl'] }}"
-                            alt=""
-                            class="gfree-dashboard-widget-row-image"
-                            loading="lazy"
-                        >
+                        @if (filled($row['imageLinkUrl'] ?? null))
+                            <a
+                                href="{{ $row['imageLinkUrl'] }}"
+                                target="{{ $row['imageLinkTarget'] ?? '_self' }}"
+                                rel="{{ ($row['imageLinkTarget'] ?? null) === '_blank' ? 'noopener noreferrer' : null }}"
+                                class="gfree-dashboard-widget-row-image-link"
+                            >
+                                <img
+                                    src="{{ $row['imageUrl'] }}"
+                                    alt=""
+                                    class="gfree-dashboard-widget-row-image"
+                                    loading="lazy"
+                                >
+                            </a>
+                        @else
+                            <img
+                                src="{{ $row['imageUrl'] }}"
+                                alt=""
+                                class="gfree-dashboard-widget-row-image"
+                                loading="lazy"
+                            >
+                        @endif
                     @endif
 
                     <div class="min-w-0 flex-1">
-                        <div class="mb-1.5">
-                            <span class="gfree-dashboard-widget-type">
-                                {{ $row['type'] }}
-                            </span>
-                        </div>
-
-                        <h3 class="min-w-0">
-                            @if (filled($row['url'] ?? null))
-                                <a
-                                    href="{{ $row['url'] }}"
-                                    class="gfree-dashboard-widget-row-title"
-                                    wire:navigate
-                                >
-                                    {{ $row['title'] }}
-                                </a>
-                            @else
-                                <span class="gfree-dashboard-widget-row-title">
-                                    {{ $row['title'] }}
+                        @if (filled($row['type'] ?? null))
+                            <div class="mb-1.5">
+                                <span class="gfree-dashboard-widget-type">
+                                    {{ $row['type'] }}
                                 </span>
-                            @endif
-                        </h3>
+                            </div>
+                        @endif
+
+                        @if (filled($row['title'] ?? null))
+                            <h3 class="min-w-0">
+                                @if (filled($row['url'] ?? null))
+                                    <a
+                                        href="{{ $row['url'] }}"
+                                        class="gfree-dashboard-widget-row-title"
+                                        wire:navigate
+                                    >
+                                        {{ $row['title'] }}
+                                    </a>
+                                @else
+                                    <span class="gfree-dashboard-widget-row-title">
+                                        {{ $row['title'] }}
+                                    </span>
+                                @endif
+                            </h3>
+                        @endif
 
                         @if (filled($row['meta'] ?? null))
                             <p class="gfree-dashboard-widget-row-meta" title="{{ $row['meta'] }}">
