@@ -55,6 +55,8 @@ class AdminDashboardWidgetsTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get('/admin')
             ->assertOk()
+            ->assertDontSee('fi-account-widget', false)
+            ->assertDontSee('fi-filament-info-widget', false)
             ->assertSee('Needs Attention')
             ->assertSee('Announcement')
             ->assertSee('Bulletin')
