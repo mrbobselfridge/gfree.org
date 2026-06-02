@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Announcement;
+use App\Models\AnalyticsPageView;
 use App\Models\Bulletin;
 use App\Models\Ministry;
 use App\Models\Page;
@@ -52,6 +53,34 @@ class AdminDashboardWidgetsTest extends TestCase
             'is_published' => false,
         ]);
 
+        AnalyticsPageView::query()->create([
+            'url' => 'https://gfree.org/',
+            'path' => '/',
+            'route_name' => 'home',
+            'page_title' => 'Home',
+            'referrer_domain' => null,
+            'browser' => 'Chrome',
+            'platform' => 'Windows',
+            'device_type' => 'Desktop',
+            'visitor_hash' => 'visitor-one',
+            'session_hash' => 'session-one',
+            'viewed_at' => now(),
+        ]);
+
+        AnalyticsPageView::query()->create([
+            'url' => 'https://gfree.org/ministry',
+            'path' => '/ministry',
+            'route_name' => 'ministries.index',
+            'page_title' => 'Ministries',
+            'referrer_domain' => 'google.com',
+            'browser' => 'Safari',
+            'platform' => 'iOS',
+            'device_type' => 'Mobile',
+            'visitor_hash' => 'visitor-two',
+            'session_hash' => 'session-two',
+            'viewed_at' => now()->subDay(),
+        ]);
+
         $this->actingAs(User::factory()->create())
             ->get('/admin')
             ->assertOk()
@@ -76,7 +105,16 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
             ->assertSee('Header navigation')
-            ->assertSee('/admin/site-settings/1/edit" class="shrink-0" wire:navigate', false);
+            ->assertSee('/admin/site-settings/1/edit" class="shrink-0" wire:navigate', false)
+            ->assertSee('Web Traffic Overview')
+            ->assertSee('Views today')
+            ->assertSee('Top Pages')
+            ->assertSee('Referrer Traffic')
+            ->assertSee('Direct / unknown')
+            ->assertSee('google.com')
+            ->assertSee('Browsers / Devices')
+            ->assertSee('Chrome')
+            ->assertSee('Mobile');
     }
 
     public function test_dashboard_widgets_respect_editor_admin_permissions(): void
