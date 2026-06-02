@@ -43,14 +43,14 @@ class RecentUpdatesWidget extends CmsDashboardWidget
     protected function rows(): array
     {
         return collect([
-            ...$this->recentRows(AdminAccess::ANNOUNCEMENTS, Announcement::class, AnnouncementResource::class, 'An', 'title'),
-            ...$this->recentRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bt', 'title'),
-            ...$this->recentRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Mn', 'name'),
-            ...$this->recentRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Pg', 'title'),
-            ...$this->recentRows(AdminAccess::LEADERS, StaffMember::class, StaffMemberResource::class, 'Ld', 'name'),
-            ...$this->recentRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Hb', 'title'),
-            ...$this->recentRows(AdminAccess::NAVIGATION_LINKS, NavigationLink::class, NavigationLinkResource::class, 'Nv', 'label'),
-            ...$this->recentRows(AdminAccess::SITE_SETTINGS, SiteSetting::class, SiteSettingResource::class, 'Ss', 'church_name'),
+            ...$this->recentRows(AdminAccess::ANNOUNCEMENTS, Announcement::class, AnnouncementResource::class, 'Announcement', 'title'),
+            ...$this->recentRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bulletin', 'title'),
+            ...$this->recentRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
+            ...$this->recentRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
+            ...$this->recentRows(AdminAccess::LEADERS, StaffMember::class, StaffMemberResource::class, 'Leader', 'name'),
+            ...$this->recentRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
+            ...$this->recentRows(AdminAccess::NAVIGATION_LINKS, NavigationLink::class, NavigationLinkResource::class, 'Navigation Link', 'label'),
+            ...$this->recentRows(AdminAccess::SITE_SETTINGS, SiteSetting::class, SiteSettingResource::class, 'Site Settings', 'church_name'),
         ])
             ->sortByDesc('sortDate')
             ->take(8)

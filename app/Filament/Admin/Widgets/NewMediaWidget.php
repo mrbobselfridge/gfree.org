@@ -46,7 +46,7 @@ class NewMediaWidget extends CmsDashboardWidget
         return MediaLibrary::images()
             ->take(6)
             ->map(fn (array $image): array => $this->row(
-                type: 'Img',
+                type: 'Media Library',
                 title: Str::limit((string) $image['name'], 40),
                 meta: collect([
                     $image['size_for_humans'] ?? null,

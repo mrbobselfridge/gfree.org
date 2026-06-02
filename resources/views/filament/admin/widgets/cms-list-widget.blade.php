@@ -26,7 +26,7 @@
 
         <div class="mt-4 divide-y divide-gray-200 dark:divide-gray-800">
             @forelse ($rows as $row)
-                <div class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                <div class="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
                     @if (filled($row['imageUrl'] ?? null))
                         <img
                             src="{{ $row['imageUrl'] }}"
@@ -37,25 +37,27 @@
                     @endif
 
                     <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2">
-                            <span class="shrink-0 rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wide text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <div class="mb-1">
+                            <span class="inline-flex rounded-md bg-primary-50 px-2 py-0.5 text-[0.6875rem] font-bold uppercase tracking-wide text-primary-700 ring-1 ring-primary-600/15 dark:bg-primary-400/10 dark:text-primary-300 dark:ring-primary-400/20">
                                 {{ $row['type'] }}
                             </span>
+                        </div>
 
+                        <h3 class="min-w-0">
                             @if (filled($row['url'] ?? null))
                                 <a
                                     href="{{ $row['url'] }}"
-                                    class="truncate text-sm font-semibold text-gray-950 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
+                                    class="block truncate text-sm font-semibold text-gray-950 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
                                     wire:navigate
                                 >
                                     {{ $row['title'] }}
                                 </a>
                             @else
-                                <span class="truncate text-sm font-semibold text-gray-950 dark:text-white">
+                                <span class="block truncate text-sm font-semibold text-gray-950 dark:text-white">
                                     {{ $row['title'] }}
                                 </span>
                             @endif
-                        </div>
+                        </h3>
 
                         @if (filled($row['meta'] ?? null))
                             <p class="mt-1 truncate text-xs text-gray-500 dark:text-gray-400" title="{{ $row['meta'] }}">
@@ -65,9 +67,17 @@
                     </div>
 
                     @if (filled($row['status'] ?? null))
-                        <x-filament::badge :color="$row['statusColor'] ?? 'gray'" class="shrink-0">
-                            {{ $row['status'] }}
-                        </x-filament::badge>
+                        @if (filled($row['url'] ?? null))
+                            <a href="{{ $row['url'] }}" class="shrink-0" wire:navigate>
+                                <x-filament::badge :color="$row['statusColor'] ?? 'gray'">
+                                    {{ $row['status'] }}
+                                </x-filament::badge>
+                            </a>
+                        @else
+                            <x-filament::badge :color="$row['statusColor'] ?? 'gray'" class="shrink-0">
+                                {{ $row['status'] }}
+                            </x-filament::badge>
+                        @endif
                     @endif
                 </div>
             @empty

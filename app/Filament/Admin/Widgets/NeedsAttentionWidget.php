@@ -41,12 +41,12 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     protected function rows(): array
     {
         return collect([
-            ...$this->unpublishedRows(AdminAccess::ANNOUNCEMENTS, Announcement::class, AnnouncementResource::class, 'An', 'title'),
-            ...$this->unpublishedRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bt', 'title'),
-            ...$this->unpublishedRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Mn', 'name'),
-            ...$this->unpublishedRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Pg', 'title'),
-            ...$this->unpublishedRows(AdminAccess::LEADERS, StaffMember::class, StaffMemberResource::class, 'Ld', 'name'),
-            ...$this->unpublishedRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Hb', 'title'),
+            ...$this->unpublishedRows(AdminAccess::ANNOUNCEMENTS, Announcement::class, AnnouncementResource::class, 'Announcement', 'title'),
+            ...$this->unpublishedRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bulletin', 'title'),
+            ...$this->unpublishedRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
+            ...$this->unpublishedRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
+            ...$this->unpublishedRows(AdminAccess::LEADERS, StaffMember::class, StaffMemberResource::class, 'Leader', 'name'),
+            ...$this->unpublishedRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
             ...$this->bulletinsMissingExtraction(),
         ])
             ->sortByDesc('sortDate')
@@ -103,7 +103,7 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             ->map(fn (Bulletin $bulletin): array => [
                 'sortDate' => $bulletin->updated_at ?? $bulletin->created_at,
                 'display' => $this->row(
-                    type: 'Bt',
+                    type: 'Bulletin',
                     title: $bulletin->title,
                     meta: 'PDF uploaded but no extracted HTML has been saved.',
                     url: $this->editUrl(BulletinResource::class, $bulletin),

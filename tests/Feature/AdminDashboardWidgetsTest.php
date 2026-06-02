@@ -56,6 +56,12 @@ class AdminDashboardWidgetsTest extends TestCase
             ->get('/admin')
             ->assertOk()
             ->assertSee('Needs Attention')
+            ->assertSee('Announcement')
+            ->assertSee('Bulletin')
+            ->assertSee('Ministry')
+            ->assertSee('Page')
+            ->assertSee('Site Settings')
+            ->assertSee('Media Library')
             ->assertSee('Draft announcement')
             ->assertSee('Sunday bulletin')
             ->assertSee('Draft ministry')
@@ -67,7 +73,8 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('welcome.jpg')
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
-            ->assertSee('Header navigation');
+            ->assertSee('Header navigation')
+            ->assertSee('/admin/site-settings/1/edit" class="shrink-0" wire:navigate', false);
     }
 
     public function test_dashboard_widgets_respect_editor_admin_permissions(): void

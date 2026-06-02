@@ -41,7 +41,7 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         if ($rows === [] && $this->canAccessTool(AdminAccess::SITE_SETTINGS)) {
             $rows[] = $this->row(
-                type: 'Ok',
+                type: 'Site Health',
                 title: 'CMS setup',
                 meta: 'The baseline site settings checks look good.',
                 url: $this->resourceUrl(SiteSettingResource::class),
@@ -69,7 +69,7 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         if (! $settings) {
             return [
-                $this->row('Ss', 'Site Settings record', 'Create the site settings record before relying on public defaults.', $url, 'Missing', 'danger'),
+                $this->row('Site Settings', 'Site Settings record', 'Create the site settings record before relying on public defaults.', $url, 'Missing', 'danger'),
             ];
         }
 
@@ -86,7 +86,7 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
             ->implode(', ');
 
         if (filled($missingContact)) {
-            $rows[] = $this->row('Ss', 'Organizational information', 'Missing '.$missingContact.'.', $url, 'Review', 'warning');
+            $rows[] = $this->row('Site Settings', 'Organizational information', 'Missing '.$missingContact.'.', $url, 'Review', 'warning');
         }
 
         $hasSocialOrVideoUrl = collect([
@@ -99,11 +99,11 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         ])->contains(fn (?string $value): bool => filled($value));
 
         if (! $hasSocialOrVideoUrl) {
-            $rows[] = $this->row('Ss', 'Social and video URLs', 'No social, giving, livestream, or video links are filled in.', $url, 'Review', 'warning');
+            $rows[] = $this->row('Site Settings', 'Social and video URLs', 'No social, giving, livestream, or video links are filled in.', $url, 'Review', 'warning');
         }
 
         if (blank($settings->openai_api_key)) {
-            $rows[] = $this->row('AI', 'OpenAI API key', 'AI rewrite and bulletin extraction need an API key in Site Settings.', $url, 'Missing', 'danger');
+            $rows[] = $this->row('AI Settings', 'OpenAI API key', 'AI rewrite and bulletin extraction need an API key in Site Settings.', $url, 'Missing', 'danger');
         }
 
         $missingLandingImages = collect([
@@ -118,7 +118,7 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
             ->implode(', ');
 
         if (filled($missingLandingImages)) {
-            $rows[] = $this->row('Ss', 'Landing page images', 'Missing images for '.$missingLandingImages.'.', $url, 'Review', 'warning');
+            $rows[] = $this->row('Site Settings', 'Landing page images', 'Missing images for '.$missingLandingImages.'.', $url, 'Review', 'warning');
         }
 
         return $rows;
@@ -140,12 +140,12 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         if ($activeHeaderLinks > 0) {
             return [
-                $this->row('Nv', 'Header navigation', "{$activeHeaderLinks} active header links are available.", $this->resourceUrl(NavigationLinkResource::class), 'Good', 'success'),
+                $this->row('Navigation Links', 'Header navigation', "{$activeHeaderLinks} active header links are available.", $this->resourceUrl(NavigationLinkResource::class), 'Good', 'success'),
             ];
         }
 
         return [
-            $this->row('Nv', 'Header navigation', 'No active header navigation links are currently available.', $this->resourceUrl(NavigationLinkResource::class), 'Missing', 'danger'),
+            $this->row('Navigation Links', 'Header navigation', 'No active header navigation links are currently available.', $this->resourceUrl(NavigationLinkResource::class), 'Missing', 'danger'),
         ];
     }
 
@@ -162,12 +162,12 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         if ($settings && (filled($settings->sermons_youtube_channel_url) || filled($settings->sermons_youtube_feed_url))) {
             return [
-                $this->row('Sr', 'Sermons YouTube source', 'A YouTube channel or feed URL is configured.', Sermons::getUrl(), 'Good', 'success'),
+                $this->row('Sermons', 'Sermons YouTube source', 'A YouTube channel or feed URL is configured.', Sermons::getUrl(), 'Good', 'success'),
             ];
         }
 
         return [
-            $this->row('Sr', 'Sermons YouTube source', 'No sermon YouTube channel or RSS feed URL is configured.', Sermons::getUrl(), 'Review', 'warning'),
+            $this->row('Sermons', 'Sermons YouTube source', 'No sermon YouTube channel or RSS feed URL is configured.', Sermons::getUrl(), 'Review', 'warning'),
         ];
     }
 
@@ -185,12 +185,12 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         if ($unusedCount === 0) {
             return [
-                $this->row('Img', 'Media usage', 'All tracked images are currently used somewhere.', MediaLibraryPage::getUrl(), 'Good', 'success'),
+                $this->row('Media Library', 'Media usage', 'All tracked images are currently used somewhere.', MediaLibraryPage::getUrl(), 'Good', 'success'),
             ];
         }
 
         return [
-            $this->row('Img', 'Unused images', "{$unusedCount} uploaded images are not currently used in tracked content.", MediaLibraryPage::getUrl(), 'Review', 'warning'),
+            $this->row('Media Library', 'Unused images', "{$unusedCount} uploaded images are not currently used in tracked content.", MediaLibraryPage::getUrl(), 'Review', 'warning'),
         ];
     }
 }
