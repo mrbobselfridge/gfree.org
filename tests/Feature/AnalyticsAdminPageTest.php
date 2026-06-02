@@ -20,7 +20,7 @@ class AnalyticsAdminPageTest extends TestCase
 
         $this->trackView('/ministries', 'Ministries', 'google.com', 'Desktop', 'Chrome', 'macOS', 'visitor-1', 'session-1', now()->subDays(2));
         $this->trackView('/ministries', 'Ministries', 'google.com', 'Mobile', 'Safari', 'iOS', 'visitor-2', 'session-2', now()->subDay());
-        $this->trackView('/give', 'Giving', null, 'Desktop', 'Firefox', 'Windows', 'visitor-1', 'session-1', now()->subHours(2));
+        $this->trackView('/give', 'Giving', null, 'Desktop', 'Firefox', 'Windows', 'visitor-1', 'session-1', now()->subHours(2), 'Greensburg');
 
         $this->actingAs($admin)
             ->get('/admin/analytics')
@@ -31,12 +31,18 @@ class AnalyticsAdminPageTest extends TestCase
             ->assertSee('Devices')
             ->assertSee('Browsers')
             ->assertSee('Platforms')
+            ->assertSee('Countries')
+            ->assertSee('Regions')
+            ->assertSee('Cities')
             ->assertSee('Recent Page Views')
             ->assertSee('Ministries')
             ->assertSee('/ministries')
             ->assertSee('google.com')
             ->assertSee('Desktop')
-            ->assertSee('Chrome');
+            ->assertSee('Chrome')
+            ->assertSee('United States')
+            ->assertSee('Pennsylvania')
+            ->assertSee('Greensburg');
     }
 
     public function test_editor_can_access_analytics_when_granted_the_analytics_tool(): void
@@ -80,6 +86,7 @@ class AnalyticsAdminPageTest extends TestCase
         string $visitor,
         string $session,
         mixed $viewedAt,
+        string $city = 'Pittsburgh',
     ): void {
         AnalyticsPageView::query()->create([
             'url' => "https://gfree.org{$path}",
@@ -95,6 +102,16 @@ class AnalyticsAdminPageTest extends TestCase
             'ip_hash' => "{$visitor}-ip",
             'visitor_hash' => $visitor,
             'session_hash' => $session,
+            'country_code' => 'US',
+            'country_name' => 'United States',
+            'region_code' => 'PA',
+            'region_name' => 'Pennsylvania',
+            'city_name' => $city,
+            'postal_code' => '15222',
+            'timezone' => 'America/New_York',
+            'latitude' => '40.4406000',
+            'longitude' => '-79.9959000',
+            'location_driver' => 'fake',
             'viewed_at' => $viewedAt,
         ]);
     }

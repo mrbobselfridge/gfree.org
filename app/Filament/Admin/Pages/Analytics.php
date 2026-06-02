@@ -37,6 +37,8 @@ class Analytics extends Page
 
     public string $device = 'all';
 
+    public string $country = 'all';
+
     public function rangeOptions(): array
     {
         return [
@@ -65,6 +67,17 @@ class Analytics extends Page
             ->distinct()
             ->orderBy('device_type')
             ->pluck('device_type', 'device_type')
+            ->all();
+    }
+
+    public function countryOptions(): array
+    {
+        return ['all' => 'All countries'] + AnalyticsPageView::query()
+            ->whereNotNull('country_code')
+            ->selectRaw('country_code, COALESCE(country_name, country_code) as label')
+            ->distinct()
+            ->orderBy('label')
+            ->pluck('label', 'country_code')
             ->all();
     }
 
@@ -191,6 +204,21 @@ class Analytics extends Page
         return $this->breakdown('platform');
     }
 
+    public function countryBreakdown(): Collection
+    {
+        return $this->breakdown('country_name');
+    }
+
+    public function regionBreakdown(): Collection
+    {
+        return $this->breakdown('region_name');
+    }
+
+    public function cityBreakdown(): Collection
+    {
+        return $this->breakdown('city_name');
+    }
+
     public function recentViews(): Collection
     {
         return (clone $this->analyticsQuery())
@@ -231,6 +259,10 @@ class Analytics extends Page
 
         if ($this->device !== 'all') {
             $query->where('device_type', $this->device);
+        }
+
+        if ($this->country !== 'all') {
+            $query->where('country_code', $this->country);
         }
 
         return $query;

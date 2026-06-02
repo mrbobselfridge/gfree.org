@@ -6,6 +6,8 @@ use App\Models\AnalyticsPageView;
 use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Stevebauman\Location\Facades\Location;
+use Stevebauman\Location\Position;
 use Tests\TestCase;
 
 class AnalyticsTrackingTest extends TestCase
@@ -18,6 +20,21 @@ class AnalyticsTrackingTest extends TestCase
             'title' => 'About gFree',
             'slug' => 'about',
             'is_published' => true,
+        ]);
+
+        Location::fake([
+            '*' => Position::make([
+                'driver' => 'fake',
+                'country_code' => 'US',
+                'country_name' => 'United States',
+                'region_code' => 'PA',
+                'region_name' => 'Pennsylvania',
+                'city_name' => 'Pittsburgh',
+                'postal_code' => '15222',
+                'timezone' => 'America/New_York',
+                'latitude' => '40.4406000',
+                'longitude' => '-79.9959000',
+            ]),
         ]);
 
         $this
@@ -36,6 +53,14 @@ class AnalyticsTrackingTest extends TestCase
             'browser' => 'Chrome',
             'platform' => 'Windows',
             'device_type' => 'Desktop',
+            'country_code' => 'US',
+            'country_name' => 'United States',
+            'region_code' => 'PA',
+            'region_name' => 'Pennsylvania',
+            'city_name' => 'Pittsburgh',
+            'postal_code' => '15222',
+            'timezone' => 'America/New_York',
+            'location_driver' => 'fake',
         ]);
 
         $view = AnalyticsPageView::query()->firstOrFail();

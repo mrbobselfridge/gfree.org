@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Stevebauman\Location\Facades\Location;
+use Stevebauman\Location\Position;
 use Symfony\Component\HttpFoundation\Response;
 
 class TrackPublicPageView
@@ -71,6 +73,7 @@ class TrackPublicPageView
         $sessionId = $request->hasSession() ? $request->session()->getId() : null;
         $ipHash = $this->hash($request->ip());
         $sessionHash = $this->hash($sessionId);
+        $location = $this->locationFields($request);
 
         AnalyticsPageView::query()->create([
             'url' => $request->fullUrl(),
@@ -87,7 +90,33 @@ class TrackPublicPageView
             'visitor_hash' => $this->hash(implode('|', array_filter([$request->ip(), $userAgent]))),
             'session_hash' => $sessionHash,
             'viewed_at' => now(),
-        ]);
+        ] + $location);
+    }
+
+    private function locationFields(Request $request): array
+    {
+        $position = rescue(
+            fn (): Position|bool => Location::get($request->ip()),
+            false,
+            false,
+        );
+
+        if (! $position instanceof Position || $position->isEmpty()) {
+            return [];
+        }
+
+        return [
+            'country_code' => $this->limit($position->countryCode, 2),
+            'country_name' => $this->limit($position->countryName),
+            'region_code' => $this->limit($position->regionCode),
+            'region_name' => $this->limit($position->regionName),
+            'city_name' => $this->limit($position->cityName),
+            'postal_code' => $this->limit($position->postalCode ?? $position->zipCode),
+            'timezone' => $this->limit($position->timezone),
+            'latitude' => $this->decimal($position->latitude),
+            'longitude' => $this->decimal($position->longitude),
+            'location_driver' => $this->limit($position->driver),
+        ];
     }
 
     private function pageTitle(Response $response): ?string
@@ -162,5 +191,15 @@ class TrackPublicPageView
         }
 
         return hash_hmac('sha256', $value, (string) config('app.key'));
+    }
+
+    private function limit(?string $value, int $limit = 255): ?string
+    {
+        return filled($value) ? Str::limit($value, $limit, '') : null;
+    }
+
+    private function decimal(?string $value): ?float
+    {
+        return is_numeric($value) ? (float) $value : null;
     }
 }

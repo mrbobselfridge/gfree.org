@@ -19,6 +19,16 @@ use Illuminate\Database\Eloquent\Model;
     'ip_hash',
     'visitor_hash',
     'session_hash',
+    'country_code',
+    'country_name',
+    'region_code',
+    'region_name',
+    'city_name',
+    'postal_code',
+    'timezone',
+    'latitude',
+    'longitude',
+    'location_driver',
     'viewed_at',
 ])]
 class AnalyticsPageView extends Model
@@ -26,6 +36,8 @@ class AnalyticsPageView extends Model
     protected function casts(): array
     {
         return [
+            'latitude' => 'decimal:7',
+            'longitude' => 'decimal:7',
             'viewed_at' => 'datetime',
         ];
     }

@@ -7,6 +7,9 @@
         $devices = $this->deviceBreakdown();
         $browsers = $this->browserBreakdown();
         $platforms = $this->platformBreakdown();
+        $countries = $this->countryBreakdown();
+        $regions = $this->regionBreakdown();
+        $cities = $this->cityBreakdown();
         $recentViews = $this->recentViews();
         $maxTrendViews = $this->maxValue($trend, 'views');
         $maxPageViews = $this->maxValue($topPages, 'views');
@@ -45,7 +48,7 @@
 
         .gfree-analytics-controls {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 0.75rem;
         }
 
@@ -277,6 +280,15 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="gfree-analytics-control">
+                    <label for="analytics-country">Country</label>
+                    <select id="analytics-country" wire:model.live="country">
+                        @foreach ($this->countryOptions() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -409,6 +421,39 @@
             @endforeach
         </div>
 
+        <div class="gfree-analytics-breakdowns">
+            @foreach ([
+                'Countries' => $countries,
+                'Regions' => $regions,
+                'Cities' => $cities,
+            ] as $label => $rows)
+                @php($maxBreakdownViews = $this->maxValue($rows, 'views'))
+                <div class="gfree-analytics-card">
+                    <h2 class="text-base font-semibold text-gray-950 dark:text-white">{{ $label }}</h2>
+                    @if ($rows->isEmpty())
+                        <div class="gfree-analytics-empty mt-4">No geo data yet.</div>
+                    @else
+                        <div class="mt-3">
+                            @foreach ($rows as $row)
+                                <div class="gfree-analytics-breakdown-row">
+                                    <div class="min-w-0">
+                                        <div class="gfree-analytics-kicker">{{ $row->label }}</div>
+                                        <div class="gfree-analytics-mini-bar mt-1">
+                                            <span style="width: {{ $this->percentageWidth($row->views, $maxBreakdownViews) }}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="gfree-analytics-stat">
+                                        <strong>{{ number_format($row->views) }}</strong>
+                                        <span class="text-xs gfree-analytics-muted">Views</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
         <div class="gfree-analytics-card">
             <h2 class="text-base font-semibold text-gray-950 dark:text-white">Recent Page Views</h2>
             <p class="mb-4 text-sm gfree-analytics-muted">Latest tracked public HTML page views matching the filters.</p>
@@ -424,6 +469,11 @@
                                 <div class="text-sm gfree-analytics-muted">{{ $view->path }}</div>
                                 @if ($view->referrer_domain)
                                     <div class="text-xs gfree-analytics-muted">From {{ $view->referrer_domain }}</div>
+                                @endif
+                                @if ($view->city_name || $view->region_name || $view->country_name)
+                                    <div class="text-xs gfree-analytics-muted">
+                                        {{ collect([$view->city_name, $view->region_name, $view->country_name])->filter()->implode(', ') }}
+                                    </div>
                                 @endif
                             </div>
                             <div class="gfree-analytics-stat">
