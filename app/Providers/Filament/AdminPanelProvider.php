@@ -352,6 +352,7 @@ class AdminPanelProvider extends PanelProvider
 
                         .gfree-dashboard-widget-row > .min-w-0.flex-1 {
                             flex: 1 1 auto;
+                            min-width: 0;
                         }
 
                         .gfree-dashboard-widget-row-status {
@@ -376,10 +377,12 @@ class AdminPanelProvider extends PanelProvider
                         .gfree-dashboard-widget-type {
                             display: inline-flex;
                             align-items: center;
+                            max-width: 100%;
                             color: rgb(146 64 14);
                             font-size: 0.825rem;
                             font-weight: 800;
                             line-height: 1;
+                            overflow-wrap: anywhere;
                         }
 
                         .dark .gfree-dashboard-widget-type {
@@ -388,14 +391,13 @@ class AdminPanelProvider extends PanelProvider
 
                         .gfree-dashboard-widget-row-title {
                             display: block;
-                            overflow: hidden;
                             color: rgb(17 24 39);
                             font-size: 0.875rem;
                             font-weight: 750;
                             line-height: 1.35;
                             text-decoration: none;
-                            text-overflow: ellipsis;
-                            white-space: nowrap;
+                            overflow-wrap: anywhere;
+                            white-space: normal;
                         }
 
                         .dark .gfree-dashboard-widget-row-title {
@@ -415,13 +417,12 @@ class AdminPanelProvider extends PanelProvider
 
                         .gfree-dashboard-widget-row-meta {
                             margin-top: 0.25rem;
-                            overflow: hidden;
                             color: rgb(107 114 128);
                             font-size: 0.75rem;
                             font-weight: 500;
                             line-height: 1.35;
-                            text-overflow: ellipsis;
-                            white-space: nowrap;
+                            overflow-wrap: anywhere;
+                            white-space: normal;
                         }
 
                         .dark .gfree-dashboard-widget-row-meta {

@@ -6,7 +6,6 @@ use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Support\AdminAccess;
 use App\Support\MediaLibrary;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class NewMediaWidget extends CmsDashboardWidget
 {
@@ -47,7 +46,7 @@ class NewMediaWidget extends CmsDashboardWidget
             ->take(6)
             ->map(fn (array $image): array => $this->row(
                 type: 'Media Library',
-                title: Str::limit((string) $image['name'], 40),
+                title: 'Uploaded image',
                 meta: collect([
                     $image['size_for_humans'] ?? null,
                     $image['dimensions_for_humans'] ?? null,
