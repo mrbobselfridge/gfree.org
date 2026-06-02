@@ -15,13 +15,15 @@
                     </a>
                 @endif
 
-                <span
-                    class="gfree-dashboard-widget-count"
-                    title="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
-                    aria-label="{{ $itemCount }} {{ \Illuminate\Support\Str::plural('item', $itemCount) }}"
-                >
-                    {{ $itemCount }}
-                </span>
+                @foreach ($countBadges as $badge)
+                    <span
+                        class="gfree-dashboard-widget-count gfree-dashboard-widget-count--{{ $badge['tone'] }}"
+                        title="{{ $badge['label'] }}"
+                        aria-label="{{ $badge['label'] }}"
+                    >
+                        {{ $badge['value'] }}
+                    </span>
+                @endforeach
 
                 <button
                     type="button"

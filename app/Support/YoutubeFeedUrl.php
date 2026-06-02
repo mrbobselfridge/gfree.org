@@ -36,6 +36,10 @@ class YoutubeFeedUrl
 
     private static function channelIdFromPage(string $channelUrl): ?string
     {
+        if (! in_array(parse_url($channelUrl, PHP_URL_SCHEME), ['http', 'https'], true)) {
+            return null;
+        }
+
         $response = Http::timeout(8)->get($channelUrl);
 
         if (! $response->successful()) {

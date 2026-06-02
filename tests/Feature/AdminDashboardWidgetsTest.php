@@ -6,6 +6,7 @@ use App\Models\AnalyticsPageView;
 use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\Ministry;
+use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -25,6 +26,14 @@ class AdminDashboardWidgetsTest extends TestCase
 
         SiteSetting::query()->create([
             'church_name' => 'gFree Church',
+            'sermons_youtube_channel_url' => 'https://www.youtube.com/@gfreesermons9521',
+        ]);
+
+        NavigationLink::query()->create([
+            'label' => 'Home',
+            'url' => '/',
+            'location' => 'header',
+            'is_published' => true,
         ]);
 
         Announcement::query()->create([
@@ -111,6 +120,12 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
             ->assertSee('Header navigation')
+            ->assertSee('gfree-dashboard-widget-count--danger', false)
+            ->assertSee('gfree-dashboard-widget-count--warning', false)
+            ->assertSee('gfree-dashboard-widget-count--success', false)
+            ->assertSee('1 high priority item')
+            ->assertSee('4 review items')
+            ->assertSee('2 good items')
             ->assertSee('/admin/site-settings/1/edit" class="gfree-dashboard-widget-row-status" wire:navigate', false)
             ->assertSee('Web Traffic Overview')
             ->assertSee('Views today')

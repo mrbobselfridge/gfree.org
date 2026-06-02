@@ -51,10 +51,26 @@ abstract class CmsDashboardWidget extends Widget
             'description' => $this->description(),
             'rows' => $rows,
             'itemCount' => count($rows),
+            'countBadges' => $this->countBadges($rows),
             'emptyMessage' => $this->emptyMessage(),
             'actionLabel' => $this->actionLabel(),
             'actionUrl' => $this->actionUrl(),
             'widgetKey' => Str::kebab(class_basename(static::class)),
+        ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return array<int, array{value: int, tone: string, label: string}>
+     */
+    protected function countBadges(array $rows): array
+    {
+        return [
+            [
+                'value' => count($rows),
+                'tone' => 'info',
+                'label' => count($rows).' '.Str::plural('item', count($rows)),
+            ],
         ];
     }
 

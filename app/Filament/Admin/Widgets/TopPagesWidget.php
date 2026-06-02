@@ -13,7 +13,7 @@ class TopPagesWidget extends AnalyticsDashboardWidget
 
     protected function description(): ?string
     {
-        return 'Most-viewed public pages in the last 30 days.';
+        return 'Top 10 most-viewed public pages in the last 30 days.';
     }
 
     protected function emptyMessage(): string
@@ -28,7 +28,7 @@ class TopPagesWidget extends AnalyticsDashboardWidget
             ->where('viewed_at', '>=', now()->subDays(30))
             ->groupBy('path', 'page_title')
             ->orderByDesc('views')
-            ->limit(8)
+            ->limit(10)
             ->get()
             ->map(fn ($page): array => $this->row(
                 type: '',

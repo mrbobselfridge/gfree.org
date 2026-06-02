@@ -30,6 +30,48 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         return 'No health checks are available for your assigned admin areas.';
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return array<int, array{value: int, tone: string, label: string}>
+     */
+    protected function countBadges(array $rows): array
+    {
+        $counts = [
+            'danger' => 0,
+            'warning' => 0,
+            'success' => 0,
+        ];
+
+        foreach ($rows as $row) {
+            $tone = $this->healthTone($row);
+
+            if ($tone) {
+                $counts[$tone]++;
+            }
+        }
+
+        return collect([
+            [
+                'value' => $counts['danger'],
+                'tone' => 'danger',
+                'label' => $counts['danger'].' high priority '.str('item')->plural($counts['danger']),
+            ],
+            [
+                'value' => $counts['warning'],
+                'tone' => 'warning',
+                'label' => $counts['warning'].' review '.str('item')->plural($counts['warning']),
+            ],
+            [
+                'value' => $counts['success'],
+                'tone' => 'success',
+                'label' => $counts['success'].' good '.str('item')->plural($counts['success']),
+            ],
+        ])
+            ->filter(fn (array $badge): bool => $badge['value'] > 0)
+            ->values()
+            ->all();
+    }
+
     protected function rows(): array
     {
         $rows = [
@@ -51,6 +93,29 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         }
 
         return array_slice($rows, 0, 8);
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    private function healthTone(array $row): ?string
+    {
+        $statusColor = str((string) ($row['statusColor'] ?? ''))->lower()->toString();
+        $status = str((string) ($row['status'] ?? ''))->lower()->toString();
+
+        if (in_array($statusColor, ['danger', 'error'], true) || str($status)->contains(['missing', 'error', 'concern', 'high'])) {
+            return 'danger';
+        }
+
+        if (in_array($statusColor, ['warning'], true) || str($status)->contains(['review', 'warning', 'warn', 'medium'])) {
+            return 'warning';
+        }
+
+        if (in_array($statusColor, ['success'], true) || str($status)->contains(['good', 'ok', 'okay'])) {
+            return 'success';
+        }
+
+        return null;
     }
 
     /**

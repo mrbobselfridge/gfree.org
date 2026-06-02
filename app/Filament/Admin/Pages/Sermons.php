@@ -6,6 +6,7 @@ use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Resources\Concerns\ManagesListingPageSettings;
+use App\Rules\HttpOrRelativeUrl;
 use App\Support\YoutubeFeedUrl;
 use BackedEnum;
 use Filament\Forms\Components\RichEditor;
@@ -87,7 +88,7 @@ class Sermons extends Page
             TextInput::make('sermons_youtube_channel_url')
                 ->label('Sermons YouTube channel URL')
                 ->helperText('Optional. Used for the View on YouTube link when the feed source changes. The RSS feed URL is filled automatically when a channel ID can be found.')
-                ->url()
+                ->rules([new HttpOrRelativeUrl])
                 ->live(onBlur: true)
                 ->afterStateUpdated(function (Set $set, ?string $state): void {
                     $feedUrl = YoutubeFeedUrl::fromChannelUrl($state);
@@ -99,7 +100,7 @@ class Sermons extends Page
             TextInput::make('sermons_youtube_feed_url')
                 ->label('Sermons YouTube feed URL')
                 ->helperText('Optional. Paste a YouTube RSS feed URL to replace the default sermon channel feed.')
-                ->url(),
+                ->rules([new HttpOrRelativeUrl]),
             TextInput::make('sermons_youtube_link_label')
                 ->label('View on YouTube text')
                 ->maxLength(255),

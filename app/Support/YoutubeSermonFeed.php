@@ -31,6 +31,10 @@ class YoutubeSermonFeed
 
     private function fetchLatest(int $limit, ?string $feedUrl, ?string $channelId): array
     {
+        if (filled($feedUrl) && ! in_array(parse_url((string) $feedUrl, PHP_URL_SCHEME), ['http', 'https'], true)) {
+            return [];
+        }
+
         $request = Http::timeout(8)->accept('application/xml');
 
         $response = filled($feedUrl)

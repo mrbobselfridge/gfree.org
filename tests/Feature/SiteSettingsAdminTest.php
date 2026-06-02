@@ -97,4 +97,49 @@ class SiteSettingsAdminTest extends TestCase
             'openai_bulletin_model' => 'gpt-5-mini',
         ]);
     }
+
+    public function test_site_settings_url_fields_accept_external_urls_and_local_paths(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.livestream_url', 'https://live.example.com/gfree')
+            ->set('data.giving_url', '/give')
+            ->set('data.one_church_url', '/connect-card?source=site')
+            ->set('data.facebook_url', 'http://facebook.example/gfree')
+            ->set('data.instagram_url', '/instagram')
+            ->set('data.youtube_url', '/sermons')
+            ->set('data.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCSiteSettingsLocalUrlTest')
+            ->set('data.sermons_youtube_feed_url', '/sermons-feed')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'livestream_url' => 'https://live.example.com/gfree',
+            'giving_url' => '/give',
+            'one_church_url' => '/connect-card?source=site',
+            'facebook_url' => 'http://facebook.example/gfree',
+            'instagram_url' => '/instagram',
+            'youtube_url' => '/sermons',
+            'sermons_youtube_channel_url' => 'https://www.youtube.com/channel/UCSiteSettingsLocalUrlTest',
+            'sermons_youtube_feed_url' => '/sermons-feed',
+        ]);
+    }
+
+    public function test_site_settings_url_fields_reject_non_url_text(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.giving_url', 'give page')
+            ->call('save')
+            ->assertHasFormErrors(['giving_url']);
+    }
 }

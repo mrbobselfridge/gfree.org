@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiSiteSettings;
 use App\Support\YoutubeFeedUrl;
@@ -71,23 +72,23 @@ class SiteSettingForm
                 Section::make('Social and Video URLs')
                     ->schema([
                         TextInput::make('livestream_url')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('giving_url')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('one_church_url')
                             ->label('One Church URL')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('facebook_url')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('instagram_url')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('youtube_url')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                     ])
                     ->columns(2)
@@ -153,7 +154,7 @@ class SiteSettingForm
                         TextInput::make('sermons_youtube_channel_url')
                             ->label('Sermons YouTube channel URL')
                             ->helperText('Optional. Used for the View on YouTube link when the feed source changes. The RSS feed URL is filled automatically when a channel ID can be found.')
-                            ->url()
+                            ->rules([new HttpOrRelativeUrl])
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Set $set, ?string $state): void {
                                 $feedUrl = YoutubeFeedUrl::fromChannelUrl($state);
@@ -165,7 +166,7 @@ class SiteSettingForm
                         TextInput::make('sermons_youtube_feed_url')
                             ->label('Sermons YouTube feed URL')
                             ->helperText('Optional. Paste a YouTube RSS feed URL to replace the default sermon channel feed.')
-                            ->url(),
+                            ->rules([new HttpOrRelativeUrl]),
                         TextInput::make('sermons_youtube_link_label')
                             ->label('View on YouTube text')
                             ->maxLength(255),

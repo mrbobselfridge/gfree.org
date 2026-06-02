@@ -332,6 +332,24 @@ class AdminPanelProvider extends PanelProvider
                             cursor: default;
                         }
 
+                        .gfree-dashboard-widget-count--danger {
+                            border-color: rgb(220 38 38 / 0.55);
+                            background: rgb(254 226 226);
+                            color: rgb(153 27 27);
+                        }
+
+                        .gfree-dashboard-widget-count--warning {
+                            border-color: rgb(217 119 6 / 0.55);
+                            background: rgb(254 243 199);
+                            color: rgb(146 64 14);
+                        }
+
+                        .gfree-dashboard-widget-count--success {
+                            border-color: rgb(22 163 74 / 0.55);
+                            background: rgb(220 252 231);
+                            color: rgb(21 128 61);
+                        }
+
                         .gfree-dashboard-widget-drag-handle,
                         .gfree-dashboard-widget-collapse {
                             width: 2rem;
@@ -370,6 +388,24 @@ class AdminPanelProvider extends PanelProvider
                             border-color: rgb(34 211 238 / 0.34);
                             background: rgb(8 47 73 / 0.65);
                             color: rgb(165 243 252);
+                        }
+
+                        .dark .gfree-dashboard-widget-count--danger {
+                            border-color: rgb(248 113 113 / 0.48);
+                            background: rgb(127 29 29 / 0.56);
+                            color: rgb(254 202 202);
+                        }
+
+                        .dark .gfree-dashboard-widget-count--warning {
+                            border-color: rgb(251 191 36 / 0.48);
+                            background: rgb(120 53 15 / 0.5);
+                            color: rgb(253 230 138);
+                        }
+
+                        .dark .gfree-dashboard-widget-count--success {
+                            border-color: rgb(74 222 128 / 0.45);
+                            background: rgb(20 83 45 / 0.55);
+                            color: rgb(187 247 208);
                         }
 
                         .gfree-dashboard-widget-action {
