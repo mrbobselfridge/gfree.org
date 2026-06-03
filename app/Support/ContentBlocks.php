@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 
 class ContentBlocks
 {
+    public const FEATURED_ANNOUNCEMENT_LIMIT = 9;
+
     public static function prepare(?array $blocks, ?SiteSetting $settings = null, ?Collection $updates = null): array
     {
         return collect($blocks ?? [])
@@ -60,7 +62,7 @@ class ContentBlocks
             ->where(fn ($query) => $query->whereNull('feature_expires_at')->orWhere('feature_expires_at', '>=', $now))
             ->orderByRaw('COALESCE(featured_at, publish_at, created_at) DESC')
             ->latest()
-            ->limit(3)
+            ->limit(self::FEATURED_ANNOUNCEMENT_LIMIT)
             ->get()
             ->map(fn (Announcement $announcement) => [
                 'type' => $announcement->is_featured ? 'Featured' : 'Announcement',

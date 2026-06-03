@@ -33,6 +33,28 @@ class HomeAnnouncementTest extends TestCase
             ->assertDontSee('https://example.com/signup');
     }
 
+    public function test_homepage_announcements_bar_shows_up_to_ten_featured_announcements(): void
+    {
+        foreach (range(1, 11) as $index) {
+            Announcement::query()->create([
+                'title' => "Featured Update {$index}",
+                'slug' => "featured-update-{$index}",
+                'summary' => "Homepage update {$index}.",
+                'featured_at' => now()->subMinutes($index),
+                'is_featured' => true,
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Featured Update 1')
+            ->assertSee('Featured Update 10')
+            ->assertDontSee('Featured Update 11')
+            ->assertSee('Homepage update 10.')
+            ->assertDontSee('Homepage update 11.');
+    }
+
     public function test_homepage_only_shows_announcements_inside_feature_window(): void
     {
         Announcement::query()->create([

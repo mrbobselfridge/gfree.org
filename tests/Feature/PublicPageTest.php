@@ -360,14 +360,17 @@ class PublicPageTest extends TestCase
 
     public function test_page_announcements_bar_renders_featured_announcements(): void
     {
-        Announcement::query()->create([
-            'title' => 'Page Announcement',
-            'slug' => 'page-announcement',
-            'summary' => 'This should appear on a page.',
-            'image_path' => 'announcements/page.jpg',
-            'is_featured' => true,
-            'is_published' => true,
-        ]);
+        foreach (range(1, 11) as $index) {
+            Announcement::query()->create([
+                'title' => "Page Announcement {$index}",
+                'slug' => "page-announcement-{$index}",
+                'summary' => "This should appear on a page {$index}.",
+                'image_path' => $index === 1 ? 'announcements/page.jpg' : null,
+                'featured_at' => now()->subMinutes($index),
+                'is_featured' => true,
+                'is_published' => true,
+            ]);
+        }
 
         Page::query()->create([
             'title' => 'Visit',
@@ -393,10 +396,16 @@ class PublicPageTest extends TestCase
             ->assertSee('concept-updates--bg-teal', false)
             ->assertSee('Page News')
             ->assertSee('All announcements')
-            ->assertSee('Page Announcement')
-            ->assertSee('This should appear on a page.')
+            ->assertSee('Page Announcement 1')
+            ->assertSee('Page Announcement 10')
+            ->assertDontSee('Page Announcement 11')
+            ->assertSee('This should appear on a page 1.')
+            ->assertSee('This should appear on a page 10.')
+            ->assertDontSee('This should appear on a page 11.')
             ->assertSee('/storage/announcements/page.jpg')
-            ->assertSee('/announcements/page-announcement');
+            ->assertSee('/announcements/page-announcement-1')
+            ->assertSee('/announcements/page-announcement-10')
+            ->assertDontSee('/announcements/page-announcement-11');
     }
 
     public function test_embed_blocks_render_raw_provider_code_on_public_pages(): void

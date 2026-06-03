@@ -8,6 +8,7 @@ use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
+use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 
@@ -47,7 +48,7 @@ class HomeController extends Controller
             ->where(fn ($query) => $query->whereNull('feature_expires_at')->orWhere('feature_expires_at', '>=', $now))
             ->orderByRaw('COALESCE(featured_at, publish_at, created_at) DESC')
             ->latest()
-            ->limit(3)
+            ->limit(ContentBlocks::FEATURED_ANNOUNCEMENT_LIMIT)
             ->get();
         $updates = $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']);
 
