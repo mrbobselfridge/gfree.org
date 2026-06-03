@@ -15,13 +15,25 @@
 
         <div class="page-link-cards">
             @foreach ($cards as $card)
-                <a href="{{ $card['url'] ?? '#' }}"{!! \App\Support\LinkAttributes::externalAttributes($card['url'] ?? null) !!}>
-                    <h3>{{ $card['title'] ?? '' }}</h3>
+                @php($url = trim((string) ($card['url'] ?? '')))
 
-                    @if (filled($card['summary'] ?? null))
-                        <p>{{ $card['summary'] }}</p>
-                    @endif
-                </a>
+                @if (filled($url))
+                    <a class="page-link-card" href="{{ $url }}"{!! \App\Support\LinkAttributes::externalAttributes($url) !!}>
+                        <h3>{{ $card['title'] ?? '' }}</h3>
+
+                        @if (filled($card['summary'] ?? null))
+                            <p>{{ $card['summary'] }}</p>
+                        @endif
+                    </a>
+                @else
+                    <div class="page-link-card">
+                        <h3>{{ $card['title'] ?? '' }}</h3>
+
+                        @if (filled($card['summary'] ?? null))
+                            <p>{{ $card['summary'] }}</p>
+                        @endif
+                    </div>
+                @endif
             @endforeach
         </div>
     </div>

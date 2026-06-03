@@ -899,7 +899,7 @@
     margin-top: 40px;
 }
 
-.page-link-cards a {
+.page-link-card {
     flex: 0 1 calc((100% - 32px) / 3);
     min-height: 220px;
     padding: 28px;
@@ -1471,7 +1471,7 @@
         grid-template-columns: 1fr;
     }
 
-    .page-link-cards a {
+    .page-link-card {
         flex-basis: 100%;
     }
 
@@ -1633,7 +1633,7 @@
         font-size: 1.04rem;
     }
 
-    .page-link-cards a {
+    .page-link-card {
         min-height: 0;
     }
 

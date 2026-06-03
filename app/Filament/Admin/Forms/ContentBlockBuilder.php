@@ -178,9 +178,10 @@ class ContentBlockBuilder
                                     ->maxLength(160),
                                 Textarea::make('summary')
                                     ->rows(2),
-                                TextInput::make('url')
-                                    ->required()
-                                    ->maxLength(255),
+                                Textarea::make('url')
+                                    ->label('URL / href')
+                                    ->rows(2)
+                                    ->helperText('Optional. Leave blank for a non-linked card. If filled, it is used exactly as the href.'),
                             ])
                             ->addActionLabel('Add card')
                             ->columns(3)

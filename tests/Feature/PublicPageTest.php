@@ -246,7 +246,7 @@ class PublicPageTest extends TestCase
                             [
                                 'title' => 'Welcome',
                                 'summary' => 'Make Sunday clear for guests.',
-                                'url' => '/welcome',
+                                'url' => 'javascript:void(0)',
                             ],
                             [
                                 'title' => 'Care',
@@ -256,7 +256,7 @@ class PublicPageTest extends TestCase
                             [
                                 'title' => 'Production',
                                 'summary' => 'Help services run clearly.',
-                                'url' => '/production',
+                                'url' => '',
                             ],
                         ],
                     ],
@@ -269,6 +269,11 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('Serving teams')
             ->assertSee('class="page-link-cards"', false)
+            ->assertSee('<a class="page-link-card" href="/kids">', false)
+            ->assertSee('<a class="page-link-card" href="javascript:void(0)">', false)
+            ->assertSee('<div class="page-link-card">', false)
+            ->assertDontSee('href="/production"', false)
+            ->assertDontSee('href="#"', false)
             ->assertSee('Kids')
             ->assertSee('Welcome')
             ->assertSee('Care')
