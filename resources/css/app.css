@@ -859,25 +859,16 @@
 }
 
 .page-link-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
     gap: 16px;
     margin-top: 40px;
 }
 
-.page-link-cards--centered {
-    justify-content: center;
-}
-
-.page-link-cards--count-1 {
-    grid-template-columns: minmax(0, calc((100% - 32px) / 3));
-}
-
-.page-link-cards--count-2 {
-    grid-template-columns: repeat(2, minmax(0, calc((100% - 32px) / 3)));
-}
-
 .page-link-cards a {
+    flex: 0 1 calc((100% - 32px) / 3);
     min-height: 220px;
     padding: 28px;
     color: var(--page-block-card-fg);
@@ -1504,6 +1495,10 @@
     .page-link-cards,
     .page-process {
         grid-template-columns: 1fr;
+    }
+
+    .page-link-cards a {
+        flex-basis: 100%;
     }
 
     .page-hero--ministry-detail .page-hero__content {

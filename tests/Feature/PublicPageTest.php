@@ -226,7 +226,7 @@ class PublicPageTest extends TestCase
         $this->assertStringNotContainsString('href="/contact" target="_blank"', $content);
     }
 
-    public function test_short_link_card_rows_are_centered(): void
+    public function test_link_card_rows_wrap_for_centered_short_rows(): void
     {
         Page::query()->create([
             'title' => 'Serve',
@@ -248,6 +248,16 @@ class PublicPageTest extends TestCase
                                 'summary' => 'Make Sunday clear for guests.',
                                 'url' => '/welcome',
                             ],
+                            [
+                                'title' => 'Care',
+                                'summary' => 'Support people through hard seasons.',
+                                'url' => '/care',
+                            ],
+                            [
+                                'title' => 'Production',
+                                'summary' => 'Help services run clearly.',
+                                'url' => '/production',
+                            ],
                         ],
                     ],
                 ],
@@ -258,10 +268,11 @@ class PublicPageTest extends TestCase
         $this->get('/serve')
             ->assertOk()
             ->assertSee('Serving teams')
-            ->assertSee('page-link-cards--centered', false)
-            ->assertSee('page-link-cards--count-2', false)
+            ->assertSee('class="page-link-cards"', false)
             ->assertSee('Kids')
-            ->assertSee('Welcome');
+            ->assertSee('Welcome')
+            ->assertSee('Care')
+            ->assertSee('Production');
     }
 
     public function test_structured_blocks_can_render_without_headings(): void
