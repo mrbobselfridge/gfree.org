@@ -1,4 +1,8 @@
-@php($background = $data['background'] ?? 'white')
+@php
+    $background = $data['background'] ?? 'white';
+    $cards = $data['cards'] ?? [];
+    $cardCount = count($cards);
+@endphp
 
 <section @class(['page-block', 'page-block--link-cards', 'page-block--bg-' . $background])>
     <div class="page-block__inner">
@@ -10,8 +14,12 @@
             <h2>{{ $data['heading'] }}</h2>
         @endif
 
-        <div class="page-link-cards">
-            @foreach (($data['cards'] ?? []) as $card)
+        <div @class([
+            'page-link-cards',
+            'page-link-cards--centered' => $cardCount > 0 && $cardCount < 3,
+            'page-link-cards--count-' . $cardCount => $cardCount > 0 && $cardCount < 3,
+        ])>
+            @foreach ($cards as $card)
                 <a href="{{ $card['url'] ?? '#' }}"{!! \App\Support\LinkAttributes::externalAttributes($card['url'] ?? null) !!}>
                     <h3>{{ $card['title'] ?? '' }}</h3>
 
