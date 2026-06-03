@@ -246,6 +246,7 @@ class PublicPageTest extends TestCase
 
         $this->get('/students')
             ->assertOk()
+            ->assertSee('page-block__inner--text-medium', false)
             ->assertSee('Student ministry details.')
             ->assertDontSee('Admin only name');
     }

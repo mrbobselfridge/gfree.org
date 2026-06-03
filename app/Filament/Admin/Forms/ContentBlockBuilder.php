@@ -46,7 +46,12 @@ class ContentBlockBuilder
                         Select::make('content_width')
                             ->label('Content width')
                             ->options(self::textWidthOptions())
-                            ->default('normal')
+                            ->default('medium')
+                            ->afterStateHydrated(function (Select $component, ?string $state): void {
+                                if (blank($state) || $state === 'normal') {
+                                    $component->state('medium');
+                                }
+                            })
                             ->required(),
                         Select::make('background')
                             ->options(self::backgroundOptions())
@@ -321,7 +326,7 @@ class ContentBlockBuilder
                 'type' => 'text',
                 'data' => [
                     'background' => 'white',
-                    'content_width' => 'normal',
+                    'content_width' => 'medium',
                 ],
             ],
         ];
@@ -365,7 +370,7 @@ class ContentBlockBuilder
     {
         return [
             'small' => 'Small (600px)',
-            'normal' => 'Normal (880px)',
+            'medium' => 'Medium (880px)',
             'wide' => 'Wide (1180px)',
         ];
     }

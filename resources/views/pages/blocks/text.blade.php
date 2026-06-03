@@ -5,10 +5,11 @@
         default => $data['background'] ?? 'white',
     };
 
-    $contentWidth = match ($data['content_width'] ?? 'normal') {
+    $contentWidth = match ($data['content_width'] ?? 'medium') {
         'small' => 'small',
         'wide' => 'wide',
-        default => 'normal',
+        'normal', 'medium' => 'medium',
+        default => 'medium',
     };
 @endphp
 

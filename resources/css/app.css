@@ -475,12 +475,24 @@
     width: min(600px, calc(100% - 32px));
 }
 
-.page-block__inner--text-normal {
+.page-block__inner--text-medium {
     width: min(880px, calc(100% - 32px));
 }
 
 .page-block__inner--text-wide {
     width: min(1180px, calc(100% - 32px));
+}
+
+.page-block--text .page-block__eyebrow,
+.page-block--text h2,
+.page-block--text .page-rich-text {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.page-block--text h2,
+.page-block--text .page-rich-text {
+    max-width: 100%;
 }
 
 .page-block__eyebrow {
