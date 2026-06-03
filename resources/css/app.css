@@ -408,6 +408,15 @@
     border-top: 1px solid var(--page-block-border);
 }
 
+.page-block--bg-white + .page-block--bg-white,
+.page-block--bg-black + .page-block--bg-black,
+.page-block--bg-teal + .page-block--bg-teal,
+.page-block--bg-gold + .page-block--bg-gold,
+.page-block--bg-forest + .page-block--bg-forest,
+.page-block--bg-clay + .page-block--bg-clay {
+    border-top: 0;
+}
+
 .public-page .page-blocks .page-block {
     padding: 20px 0;
 }
