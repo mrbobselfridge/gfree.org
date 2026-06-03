@@ -367,6 +367,7 @@ class PublicPageTest extends TestCase
                 'summary' => "This should appear on a page {$index}.",
                 'image_path' => $index === 1 ? 'announcements/page.jpg' : null,
                 'featured_at' => now()->subMinutes($index),
+                'feature_expires_at' => now()->addDays($index),
                 'is_featured' => true,
                 'is_published' => true,
             ]);
@@ -406,6 +407,115 @@ class PublicPageTest extends TestCase
             ->assertSee('/announcements/page-announcement-1')
             ->assertSee('/announcements/page-announcement-10')
             ->assertDontSee('/announcements/page-announcement-11');
+    }
+
+    public function test_page_announcements_bar_uses_public_sort_order(): void
+    {
+        $samePublishAt = now()->subDays(3);
+
+        foreach ([
+            [
+                'title' => 'Content Feature Expires Soon',
+                'slug' => 'content-feature-expires-soon',
+                'feature_expires_at' => now()->addDay(),
+                'featured_at' => now()->subDays(5),
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDays(20),
+            ],
+            [
+                'title' => 'Content Feature Expires Later',
+                'slug' => 'content-feature-expires-later',
+                'feature_expires_at' => now()->addDays(5),
+                'featured_at' => now()->subHour(),
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDays(20),
+            ],
+            [
+                'title' => 'Content Featured Recently',
+                'slug' => 'content-featured-recently',
+                'featured_at' => now()->subHour(),
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDays(20),
+            ],
+            [
+                'title' => 'Content Featured Earlier',
+                'slug' => 'content-featured-earlier',
+                'featured_at' => now()->subDays(2),
+                'publish_at' => now()->subHour(),
+                'expires_at' => now()->addDays(20),
+            ],
+            [
+                'title' => 'Content Overall Deadline Soon',
+                'slug' => 'content-overall-deadline-soon',
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'title' => 'Content Overall Deadline Later',
+                'slug' => 'content-overall-deadline-later',
+                'publish_at' => now()->subHour(),
+                'expires_at' => now()->addDays(5),
+            ],
+            [
+                'title' => 'Content Publish Latest',
+                'slug' => 'content-publish-latest',
+                'publish_at' => now()->subHour(),
+            ],
+            [
+                'title' => 'Content Publish Older',
+                'slug' => 'content-publish-older',
+                'publish_at' => now()->subDays(2),
+            ],
+            [
+                'title' => 'Content Alpha Title Tie',
+                'slug' => 'content-alpha-title-tie',
+                'publish_at' => $samePublishAt,
+            ],
+            [
+                'title' => 'Content Zulu Title Tie',
+                'slug' => 'content-zulu-title-tie',
+                'publish_at' => $samePublishAt,
+            ],
+        ] as $announcement) {
+            Announcement::query()->create([
+                'summary' => $announcement['title'].' summary.',
+                'is_featured' => true,
+                'is_published' => true,
+                ...$announcement,
+            ]);
+        }
+
+        Page::query()->create([
+            'title' => 'Visit',
+            'slug' => 'visit',
+            'content_blocks' => [
+                [
+                    'type' => 'announcements_bar',
+                    'data' => [
+                        'is_visible' => true,
+                        'heading' => 'Page News',
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->assertStringOrder(
+            $this->get('/visit')->assertOk()->content(),
+            [
+                'Content Feature Expires Soon',
+                'Content Feature Expires Later',
+                'Content Featured Recently',
+                'Content Featured Earlier',
+                'Content Overall Deadline Soon',
+                'Content Overall Deadline Later',
+                'Content Publish Latest',
+                'Content Publish Older',
+                'Content Alpha Title Tie',
+                'Content Zulu Title Tie',
+            ],
+        );
     }
 
     public function test_embed_blocks_render_raw_provider_code_on_public_pages(): void
@@ -466,5 +576,19 @@ class PublicPageTest extends TestCase
             ->assertSee('Start with three steps.')
             ->assertSee('Fill out the form')
             ->assertSee('Find a team that fits your gifts.');
+    }
+
+    private function assertStringOrder(string $content, array $values): void
+    {
+        $previousPosition = -1;
+
+        foreach ($values as $value) {
+            $position = strpos($content, $value);
+
+            $this->assertNotFalse($position, "Failed asserting that [{$value}] appears in the response.");
+            $this->assertGreaterThan($previousPosition, $position, "Failed asserting that [{$value}] appears in the expected order.");
+
+            $previousPosition = $position;
+        }
     }
 }

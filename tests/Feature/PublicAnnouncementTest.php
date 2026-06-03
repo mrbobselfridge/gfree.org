@@ -60,6 +60,116 @@ class PublicAnnouncementTest extends TestCase
             ->assertDontSee('Church Picnic');
     }
 
+    public function test_announcements_listing_uses_public_sort_order(): void
+    {
+        $samePublishAt = now()->subDays(8);
+
+        foreach ([
+            [
+                'title' => 'Feature Expires Soon',
+                'slug' => 'feature-expires-soon',
+                'feature_expires_at' => now()->addDay(),
+                'featured_at' => now()->subDays(5),
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDays(20),
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Feature Expires Later',
+                'slug' => 'feature-expires-later',
+                'feature_expires_at' => now()->addDays(5),
+                'featured_at' => now()->subHour(),
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDays(20),
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Featured Recently',
+                'slug' => 'featured-recently',
+                'featured_at' => now()->subHour(),
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDays(20),
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Featured Earlier',
+                'slug' => 'featured-earlier',
+                'featured_at' => now()->subDays(2),
+                'publish_at' => now()->subHour(),
+                'expires_at' => now()->addDays(20),
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Overall Deadline Soon',
+                'slug' => 'overall-deadline-soon',
+                'publish_at' => now()->subDays(10),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'title' => 'Overall Deadline Later',
+                'slug' => 'overall-deadline-later',
+                'publish_at' => now()->subHour(),
+                'expires_at' => now()->addDays(5),
+            ],
+            [
+                'title' => 'Publish Latest',
+                'slug' => 'publish-latest',
+                'publish_at' => now()->subHour(),
+            ],
+            [
+                'title' => 'Publish Older',
+                'slug' => 'publish-older',
+                'publish_at' => now()->subDays(2),
+            ],
+            [
+                'title' => 'Featured Tie',
+                'slug' => 'featured-tie',
+                'publish_at' => $samePublishAt,
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Middle Announcement Tie',
+                'slug' => 'middle-announcement-tie',
+                'publish_at' => $samePublishAt,
+            ],
+            [
+                'title' => 'Alpha Title Tie',
+                'slug' => 'alpha-title-tie',
+                'publish_at' => $samePublishAt,
+            ],
+            [
+                'title' => 'Zulu Title Tie',
+                'slug' => 'zulu-title-tie',
+                'publish_at' => $samePublishAt,
+            ],
+        ] as $announcement) {
+            Announcement::query()->create([
+                'summary' => $announcement['title'].' summary.',
+                'is_published' => true,
+                'is_featured' => false,
+                ...$announcement,
+            ]);
+        }
+
+        $this->assertStringOrder(
+            $this->get('/announcements')->assertOk()->content(),
+            [
+                'Feature Expires Soon',
+                'Feature Expires Later',
+                'Featured Recently',
+                'Featured Earlier',
+                'Overall Deadline Soon',
+                'Overall Deadline Later',
+                'Publish Latest',
+                'Publish Older',
+                'Featured Tie',
+                'Alpha Title Tie',
+                'Middle Announcement Tie',
+                'Zulu Title Tie',
+            ],
+        );
+    }
+
     public function test_announcement_detail_requires_current_published_record(): void
     {
         Announcement::query()->create([
@@ -184,5 +294,19 @@ class PublicAnnouncementTest extends TestCase
             ->assertOk()
             ->assertSee('/storage/site-settings/announcements/default.jpg')
             ->assertSee('page-hero--image');
+    }
+
+    private function assertStringOrder(string $content, array $values): void
+    {
+        $previousPosition = -1;
+
+        foreach ($values as $value) {
+            $position = strpos($content, $value);
+
+            $this->assertNotFalse($position, "Failed asserting that [{$value}] appears in the response.");
+            $this->assertGreaterThan($previousPosition, $position, "Failed asserting that [{$value}] appears in the expected order.");
+
+            $previousPosition = $position;
+        }
     }
 }

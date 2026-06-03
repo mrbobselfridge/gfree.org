@@ -41,6 +41,7 @@ class HomeAnnouncementTest extends TestCase
                 'slug' => "featured-update-{$index}",
                 'summary' => "Homepage update {$index}.",
                 'featured_at' => now()->subMinutes($index),
+                'feature_expires_at' => now()->addDays($index),
                 'is_featured' => true,
                 'is_published' => true,
             ]);

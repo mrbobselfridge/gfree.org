@@ -46,8 +46,7 @@ class HomeController extends Controller
             ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
             ->where(fn ($query) => $query->whereNull('featured_at')->orWhere('featured_at', '<=', $now))
             ->where(fn ($query) => $query->whereNull('feature_expires_at')->orWhere('feature_expires_at', '>=', $now))
-            ->orderByRaw('COALESCE(featured_at, publish_at, created_at) DESC')
-            ->latest()
+            ->publicListingOrder()
             ->limit(ContentBlocks::FEATURED_ANNOUNCEMENT_LIMIT)
             ->get();
         $updates = $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']);

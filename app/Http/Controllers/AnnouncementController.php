@@ -60,9 +60,7 @@ class AnnouncementController extends Controller
             ->where('is_published', true)
             ->where(fn ($query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
             ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
-            ->orderByDesc('is_featured')
-            ->orderByDesc('publish_at')
-            ->latest();
+            ->publicListingOrder();
     }
 
     private function searchAnnouncements(Builder $query, string $search): Builder
