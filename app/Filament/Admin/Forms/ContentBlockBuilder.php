@@ -43,6 +43,11 @@ class ContentBlockBuilder
                         RichEditorDefaults::configure(RichEditor::make('body'))
                             ->required()
                             ->columnSpanFull(),
+                        Select::make('content_width')
+                            ->label('Content width')
+                            ->options(self::textWidthOptions())
+                            ->default('normal')
+                            ->required(),
                         Select::make('background')
                             ->options(self::backgroundOptions())
                             ->default('white')
@@ -316,6 +321,7 @@ class ContentBlockBuilder
                 'type' => 'text',
                 'data' => [
                     'background' => 'white',
+                    'content_width' => 'normal',
                 ],
             ],
         ];
@@ -352,6 +358,15 @@ class ContentBlockBuilder
             'gold' => 'Gold',
             'forest' => 'Forest',
             'clay' => 'Clay',
+        ];
+    }
+
+    private static function textWidthOptions(): array
+    {
+        return [
+            'small' => 'Small (600px)',
+            'normal' => 'Normal (880px)',
+            'wide' => 'Wide (1180px)',
         ];
     }
 }

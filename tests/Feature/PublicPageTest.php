@@ -158,6 +158,7 @@ class PublicPageTest extends TestCase
                         'heading' => 'Plan your visit',
                         'body' => '<p>Everything you need for Sunday.</p>',
                         'background' => 'light',
+                        'content_width' => 'wide',
                     ],
                 ],
                 [
@@ -179,6 +180,7 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('Start Here')
             ->assertSee('Plan your visit')
+            ->assertSee('page-block__inner--text-wide', false)
             ->assertSee('Everything you need for Sunday.')
             ->assertSee('Ready to connect?')
             ->assertSee('page-block--cta-button-bottom', false)

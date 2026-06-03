@@ -471,6 +471,18 @@
     width: min(880px, calc(100% - 32px));
 }
 
+.page-block__inner--text-small {
+    width: min(600px, calc(100% - 32px));
+}
+
+.page-block__inner--text-normal {
+    width: min(880px, calc(100% - 32px));
+}
+
+.page-block__inner--text-wide {
+    width: min(1180px, calc(100% - 32px));
+}
+
 .page-block__eyebrow {
     margin: 0 0 16px;
     color: var(--page-block-eyebrow);

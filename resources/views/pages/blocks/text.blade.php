@@ -4,6 +4,12 @@
         'light' => 'white',
         default => $data['background'] ?? 'white',
     };
+
+    $contentWidth = match ($data['content_width'] ?? 'normal') {
+        'small' => 'small',
+        'wide' => 'wide',
+        default => 'normal',
+    };
 @endphp
 
 <section @class([
@@ -11,7 +17,10 @@
     'page-block--text',
     'page-block--bg-' . $background,
 ])>
-    <div class="page-block__inner page-block__inner--narrow">
+    <div @class([
+        'page-block__inner',
+        'page-block__inner--text-' . $contentWidth,
+    ])>
         @if (filled($data['eyebrow'] ?? null))
             <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>
         @endif
