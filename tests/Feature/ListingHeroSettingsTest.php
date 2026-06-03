@@ -163,7 +163,7 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('814-555-1212')
             ->assertSee('mailto:jane@example.com')
             ->assertSee('tel:8145551212')
-            ->assertSee('<iframe src="https://example.com/embed"></iframe>', false)
+            ->assertDontSee('<iframe src="https://example.com/embed"></iframe>', false)
             ->assertSee('https://example.com/kids');
     }
 

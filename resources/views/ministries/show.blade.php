@@ -75,19 +75,6 @@
         @if (count($contentBlocks))
             @include('pages.partials.content-blocks')
         @endif
-
-        @if ($ministry->embed_code)
-        <article class="ministry-detail page-block page-block--bg-white">
-
-            <div class="page-block__inner ministry-detail__layout ministry-detail__layout--single">
-                <div class="ministry-detail__main">
-                    <div class="ministry-detail__embed">
-                        {!! $ministry->embed_code !!}
-                    </div>
-                </div>
-            </div>
-        </article>
-        @endif
     </main>
 
     @include('home.partials.footer')

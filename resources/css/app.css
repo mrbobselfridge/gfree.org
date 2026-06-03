@@ -1135,63 +1135,6 @@
     margin: 0 0 1.5em;
 }
 
-.ministry-detail__layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
-    gap: 56px;
-    align-items: start;
-}
-
-.ministry-detail__layout--single {
-    grid-template-columns: minmax(0, 880px);
-}
-
-.ministry-detail__main .page-rich-text {
-    margin-top: 0;
-}
-
-.ministry-detail__embed {
-    margin-top: 40px;
-}
-
-.ministry-detail__embed iframe {
-    width: 100%;
-    max-width: 100%;
-}
-
-.ministry-detail__sidebar {
-    padding: 28px;
-    background: var(--site-paper);
-    border: 1px solid var(--site-line);
-}
-
-.ministry-detail__sidebar dl {
-    display: grid;
-    gap: 22px;
-    margin: 0;
-}
-
-.ministry-detail__sidebar dt {
-    margin-bottom: 8px;
-    color: var(--site-accent-text);
-    font-size: 0.95rem;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.ministry-detail__sidebar dd {
-    margin: 0;
-    color: var(--site-ink);
-    font-size: 1.08rem;
-    line-height: 1.45;
-}
-
-.ministry-detail__secondary-button {
-    color: var(--site-ink);
-    background: white;
-    border: 1px solid var(--site-line);
-}
-
 .site-service-strip {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1522,7 +1465,6 @@
     .leadership-grid,
     .ministry-grid,
     .sermon-grid,
-    .ministry-detail__layout,
     .page-image-text,
     .page-link-cards,
     .page-process {

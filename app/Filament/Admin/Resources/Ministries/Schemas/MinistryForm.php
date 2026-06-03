@@ -71,10 +71,6 @@ class MinistryForm
                     ->label('One Church URL')
                     ->url()
                     ->maxLength(255),
-                Textarea::make('embed_code')
-                    ->label('Embed code')
-                    ->rows(5)
-                    ->columnSpanFull(),
                 TextInput::make('sort_order')
                     ->required()
                     ->numeric()
