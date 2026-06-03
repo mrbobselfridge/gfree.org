@@ -12,11 +12,12 @@
 
     <main>
         @php($hasLeaderContact = $ministry->leader_name || $ministry->leader_email || $ministry->leader_phone)
+        @php($hasHeroDetails = $hasLeaderContact || $detailItems->count() || $ministry->one_church_url)
 
         <section @class([
             'page-hero',
             'page-hero--image' => filled($heroImageUrl),
-            'page-hero--ministry-detail' => $hasLeaderContact,
+            'page-hero--ministry-detail' => $hasHeroDetails,
         ])>
             @if ($heroImageUrl)
                 <div class="page-hero__image" style="background-image: url('{{ $heroImageUrl }}')"></div>
@@ -32,50 +33,28 @@
                     @endif
                 </div>
 
-                @if ($hasLeaderContact)
-                    <div class="ministry-hero-contact" aria-label="Ministry leader contact">
-                        <span>Ministry Leader</span>
+                @if ($hasHeroDetails)
+                    <div class="ministry-hero-contact" aria-label="Ministry details">
+                        <span>{{ $hasLeaderContact ? 'Ministry Leader' : 'Ministry Details' }}</span>
 
                         @if ($ministry->leader_name)
                             <strong>{{ $ministry->leader_name }}</strong>
                         @endif
 
-                        <div>
-                            @if ($ministry->leader_email)
-                                <a href="mailto:{{ $ministry->leader_email }}">{{ $ministry->leader_email }}</a>
-                            @endif
+                        @if ($ministry->leader_email || $ministry->leader_phone)
+                            <div class="ministry-hero-contact__links">
+                                @if ($ministry->leader_email)
+                                    <a href="mailto:{{ $ministry->leader_email }}">{{ $ministry->leader_email }}</a>
+                                @endif
 
-                            @if ($ministry->leader_phone)
-                                <a href="tel:{{ preg_replace('/\D+/', '', $ministry->leader_phone) }}">{{ $ministry->leader_phone }}</a>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </section>
+                                @if ($ministry->leader_phone)
+                                    <a href="tel:{{ preg_replace('/\D+/', '', $ministry->leader_phone) }}">{{ $ministry->leader_phone }}</a>
+                                @endif
+                            </div>
+                        @endif
 
-        @php($hasSidebar = $detailItems->count() || $ministry->one_church_url)
-
-        @if (count($contentBlocks))
-            @include('pages.partials.content-blocks')
-        @endif
-
-        @if ($hasSidebar || $ministry->embed_code)
-        <article class="ministry-detail page-block page-block--bg-white">
-
-            <div @class(['page-block__inner', 'ministry-detail__layout', 'ministry-detail__layout--single' => ! ($hasSidebar && $ministry->embed_code)])>
-                @if ($ministry->embed_code)
-                    <div class="ministry-detail__main">
-                        <div class="ministry-detail__embed">
-                            {!! $ministry->embed_code !!}
-                        </div>
-                    </div>
-                @endif
-
-                @if ($hasSidebar)
-                    <aside class="ministry-detail__sidebar" aria-label="Ministry details">
                         @if ($detailItems->count())
-                            <dl>
+                            <dl class="ministry-hero-contact__details">
                                 @foreach ($detailItems as $item)
                                     <div>
                                         <dt>{{ $item['label'] }}</dt>
@@ -86,10 +65,26 @@
                         @endif
 
                         @if ($ministry->one_church_url)
-                            <a class="page-block__button ministry-detail__secondary-button" href="{{ $ministry->one_church_url }}"{!! \App\Support\LinkAttributes::externalAttributes($ministry->one_church_url) !!}>Open in One Church</a>
+                            <a class="page-block__button ministry-hero-contact__button" href="{{ $ministry->one_church_url }}"{!! \App\Support\LinkAttributes::externalAttributes($ministry->one_church_url) !!}>Open in One Church</a>
                         @endif
-                    </aside>
+                    </div>
                 @endif
+            </div>
+        </section>
+
+        @if (count($contentBlocks))
+            @include('pages.partials.content-blocks')
+        @endif
+
+        @if ($ministry->embed_code)
+        <article class="ministry-detail page-block page-block--bg-white">
+
+            <div class="page-block__inner ministry-detail__layout ministry-detail__layout--single">
+                <div class="ministry-detail__main">
+                    <div class="ministry-detail__embed">
+                        {!! $ministry->embed_code !!}
+                    </div>
+                </div>
             </div>
         </article>
         @endif

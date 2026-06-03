@@ -142,6 +142,7 @@ class ListingHeroSettingsTest extends TestCase
             'leader_email' => 'jane@example.com',
             'leader_phone' => '814-555-1212',
             'one_church_url' => 'https://example.com/kids',
+            'embed_code' => '<iframe src="https://example.com/embed"></iframe>',
             'is_published' => true,
         ]);
 
@@ -153,13 +154,16 @@ class ListingHeroSettingsTest extends TestCase
             ->assertDontSee('Kids gather during Sunday services.', false)
             ->assertSee('/storage/ministries/hero-images/kids.jpg')
             ->assertSee('ministry-hero-contact', false)
+            ->assertDontSee('ministry-detail__sidebar', false)
             ->assertSee('Ministry Leader')
+            ->assertSeeInOrder(['Ministry Leader', 'Jane Doe', 'When', 'Sundays at 10am', 'Where', 'Kids Wing', 'Open in One Church'])
             ->assertSee('Sundays at 10am')
             ->assertSee('Kids Wing')
             ->assertSee('Jane Doe')
             ->assertSee('814-555-1212')
             ->assertSee('mailto:jane@example.com')
             ->assertSee('tel:8145551212')
+            ->assertSee('<iframe src="https://example.com/embed"></iframe>', false)
             ->assertSee('https://example.com/kids');
     }
 

@@ -326,7 +326,7 @@
     line-height: 1.15;
 }
 
-.ministry-hero-contact div {
+.ministry-hero-contact__links {
     display: flex;
     flex-wrap: wrap;
     gap: 10px 18px;
@@ -335,6 +335,38 @@
 .ministry-hero-contact a {
     color: inherit;
     font-weight: 850;
+}
+
+.ministry-hero-contact__details {
+    display: grid;
+    gap: 16px;
+    margin: 10px 0 0;
+}
+
+.ministry-hero-contact__details div {
+    display: grid;
+    gap: 5px;
+}
+
+.ministry-hero-contact__details dt {
+    color: var(--site-accent-text);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.ministry-hero-contact__details dd {
+    margin: 0;
+    font-size: 1.04rem;
+    line-height: 1.4;
+}
+
+.ministry-hero-contact__button {
+    width: fit-content;
+    margin-top: 8px;
+    color: var(--site-ink);
+    background: white;
+    border: 1px solid var(--site-line);
 }
 
 .page-content {
