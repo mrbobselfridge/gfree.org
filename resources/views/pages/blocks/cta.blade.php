@@ -6,6 +6,11 @@
     };
 
     $layout = $data['layout'] ?? 'content_left';
+    $contentWidth = match ($data['content_width'] ?? 'medium') {
+        'small' => 'small',
+        'wide', 'large' => 'wide',
+        default => 'medium',
+    };
     $body = $data['body'] ?? null;
     $bodyHasHtml = filled($body) && $body !== strip_tags($body);
 @endphp
@@ -18,7 +23,7 @@
     'page-block--cta-button-top' => $layout === 'button_top',
     'page-block--cta-button-bottom' => $layout === 'button_bottom',
 ])>
-    <div class="page-block__inner page-cta">
+    <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth, 'page-cta'])>
         <div>
             @if (filled($data['eyebrow'] ?? null))
                 <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>

@@ -155,6 +155,16 @@ class ContentBlockBuilder
                             ])
                             ->default('content_left')
                             ->required(),
+                        Select::make('content_width')
+                            ->label('Content width')
+                            ->options(self::textWidthOptions())
+                            ->default('medium')
+                            ->afterStateHydrated(function (Select $component, ?string $state): void {
+                                if (blank($state) || $state === 'normal') {
+                                    $component->state('medium');
+                                }
+                            })
+                            ->required(),
                     ])
                     ->columns(2),
                 Block::make('link_cards')
@@ -372,7 +382,7 @@ class ContentBlockBuilder
         return [
             'small' => 'Small (600px)',
             'medium' => 'Medium (880px)',
-            'wide' => 'Wide (1180px)',
+            'wide' => 'Large (1180px)',
         ];
     }
 }

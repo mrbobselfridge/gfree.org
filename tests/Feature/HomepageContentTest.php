@@ -138,6 +138,7 @@ class HomepageContentTest extends TestCase
             ->assertSee('Pick a first step.')
             ->assertSee('page-block--bg-gold', false)
             ->assertSee('page-block--cta-button-top', false)
+            ->assertSee('page-block__inner--text-medium', false)
             ->assertSee('Take a next step')
             ->assertSee('<strong>simple</strong>', false)
             ->assertSee('Get Started')

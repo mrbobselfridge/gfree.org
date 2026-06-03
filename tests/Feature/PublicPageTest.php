@@ -170,6 +170,7 @@ class PublicPageTest extends TestCase
                         'button_url' => '/contact',
                         'style' => 'dark',
                         'layout' => 'button_bottom',
+                        'content_width' => 'small',
                     ],
                 ],
             ],
@@ -184,6 +185,7 @@ class PublicPageTest extends TestCase
             ->assertSee('Everything you need for Sunday.')
             ->assertSee('Ready to connect?')
             ->assertSee('page-block--cta-button-bottom', false)
+            ->assertSee('page-block__inner--text-small', false)
             ->assertSee('<strong>note</strong>', false)
             ->assertSee('Contact Us')
             ->assertDontSee('Legacy fallback text.');
