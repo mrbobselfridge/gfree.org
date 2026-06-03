@@ -7,6 +7,7 @@ use App\Http\Controllers\LeadershipController;
 use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SermonController;
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -26,6 +27,13 @@ Route::get('/ministry', [MinistryController::class, 'index'])->name('ministries.
 Route::get('/ministry/{slug}', [MinistryController::class, 'show'])->name('ministries.show');
 
 Route::get('/sermons', SermonController::class)->name('sermons.index');
+
+Route::get('/manual', function () {
+    return view('manual', [
+        'settings' => SiteSetting::query()->first(),
+        'updatedAt' => 'June 3, 2026',
+    ]);
+})->name('manual');
 
 Route::get('/concepts', function () {
     return view('concepts.index', [
@@ -481,5 +489,5 @@ Route::get('/concepts/{concept}', function (string $concept) {
 });
 
 Route::get('/{slug}', PageController::class)
-    ->where('slug', '^(?!admin$|concepts$|concept-screens$|build$|storage$|livewire$)[A-Za-z0-9-]+$')
+    ->where('slug', '^(?!admin$|manual$|concepts$|concept-screens$|build$|storage$|livewire$)[A-Za-z0-9-]+$')
     ->name('pages.show');

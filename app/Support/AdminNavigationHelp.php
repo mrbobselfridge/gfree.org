@@ -24,6 +24,7 @@ class AdminNavigationHelp
             'Site Settings' => 'Edit church-wide contact details, social links, AI settings, and page defaults.',
             'Navigation Links' => 'Control the public website header navigation links and dropdowns.',
             'Users' => 'Manage admin and editor accounts and their allowed admin areas.',
+            'User Manual' => 'Open the printable website and admin manual.',
         ];
     }
 }
