@@ -14,14 +14,14 @@ class PublicPageActions
     {
         return Action::make('viewPublicPage')
             ->label('View')
-            ->tooltip('View public page')
+            ->tooltip('View')
             ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
             ->iconButton()
             ->url(fn (Model $record): ?string => PublicPageUrls::forRecord($record), true)
             ->hidden(fn (Model $record): bool => blank(PublicPageUrls::forRecord($record)));
     }
 
-    public static function button(string $name, ?string $url, string $label = 'View Public Page'): ?Action
+    public static function button(string $name, ?string $url, string $label = 'View'): ?Action
     {
         if (blank($url)) {
             return null;
@@ -41,7 +41,7 @@ class PublicPageActions
         }
 
         return Action::make('viewPublicPage')
-            ->label('View public page')
+            ->label('View')
             ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
             ->url($url, true);
     }

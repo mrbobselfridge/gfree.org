@@ -20,8 +20,6 @@ class StandardTableActions
     public static function make(): array
     {
         return [
-            PublicPageActions::tableAction(),
-
             EditAction::make()
                 ->label('Edit')
                 ->iconButton()
@@ -66,6 +64,8 @@ class StandardTableActions
                 ->modalDescription(fn (Model $record): string => 'Are you sure you want to delete: '.self::recordLabel($record).'?')
                 ->modalSubmitActionLabel('Yes')
                 ->modalCancelActionLabel('No'),
+
+            PublicPageActions::tableAction(),
         ];
     }
 

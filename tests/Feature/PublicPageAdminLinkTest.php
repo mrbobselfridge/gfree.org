@@ -48,6 +48,7 @@ class PublicPageAdminLinkTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(ListPages::class)
+            ->assertTableActionsExistInOrder(['edit', 'copy', 'delete', 'viewPublicPage'])
             ->assertTableActionHasUrl('viewPublicPage', $page->publicUrl(), $page)
             ->assertTableActionShouldOpenUrlInNewTab('viewPublicPage', $page);
     }
@@ -87,13 +88,17 @@ class PublicPageAdminLinkTest extends TestCase
     {
         Livewire::actingAs(User::factory()->create())
             ->test(ListAnnouncements::class)
-            ->assertSee('View Public Page')
+            ->assertSee('View')
+            ->assertDontSee('View Public Page')
+            ->assertDontSee('View public page')
             ->assertFormComponentActionHasUrl('listing-settings-actions', 'viewPublicListingPage', route('announcements.index'), formName: 'listingSettingsForm')
             ->assertFormComponentActionShouldOpenUrlInNewTab('listing-settings-actions', 'viewPublicListingPage', formName: 'listingSettingsForm');
 
         Livewire::actingAs(User::factory()->create())
             ->test(SermonsPage::class)
-            ->assertSee('View Public Page')
+            ->assertSee('View')
+            ->assertDontSee('View Public Page')
+            ->assertDontSee('View public page')
             ->assertFormComponentActionHasUrl('listing-settings-actions', 'viewPublicListingPage', route('sermons.index'), formName: 'listingSettingsForm')
             ->assertFormComponentActionShouldOpenUrlInNewTab('listing-settings-actions', 'viewPublicListingPage', formName: 'listingSettingsForm');
     }
@@ -102,7 +107,9 @@ class PublicPageAdminLinkTest extends TestCase
     {
         Livewire::actingAs(User::factory()->create())
             ->test(HomepageContent::class)
-            ->assertSee('View Public Page')
+            ->assertSee('View')
+            ->assertDontSee('View Public Page')
+            ->assertDontSee('View public page')
             ->assertActionHasUrl('viewPublicPage', route('home'))
             ->assertActionShouldOpenUrlInNewTab('viewPublicPage');
     }
