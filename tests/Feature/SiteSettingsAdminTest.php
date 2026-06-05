@@ -29,6 +29,9 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('GPT-5 Nano')
             ->assertSee('AI Content Prompt')
             ->assertSee('Social and Video URLs')
+            ->assertSee('Google Tracking')
+            ->assertSee('Google Tag Manager container ID')
+            ->assertSee('Google Analytics measurement ID')
             ->assertSee('Announcements Settings')
             ->assertSee('Can also be managed in the Announcements area.')
             ->assertSee('Ministries Settings')
@@ -141,5 +144,42 @@ class SiteSettingsAdminTest extends TestCase
             ->set('data.giving_url', 'give page')
             ->call('save')
             ->assertHasFormErrors(['giving_url']);
+    }
+
+    public function test_site_settings_google_tracking_fields_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.google_tag_manager_id', 'gtm-church1')
+            ->set('data.google_analytics_measurement_id', 'g-churchga1')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'google_tag_manager_id' => 'GTM-CHURCH1',
+            'google_analytics_measurement_id' => 'G-CHURCHGA1',
+        ]);
+    }
+
+    public function test_site_settings_google_tracking_fields_reject_invalid_ids(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.google_tag_manager_id', 'G-CHURCHGA1')
+            ->set('data.google_analytics_measurement_id', 'GTM-CHURCH1')
+            ->call('save')
+            ->assertHasFormErrors([
+                'google_tag_manager_id',
+                'google_analytics_measurement_id',
+            ]);
     }
 }

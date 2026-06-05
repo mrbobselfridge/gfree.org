@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.analytics-head')
     <title>{{ $page->seo_title ?: $page->title }} | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
     <meta name="description" content="{{ $page->seo_description ?: $page->intro ?: $settings?->tagline }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -19,6 +20,8 @@
     'public-page--with-page-header' => $page->show_page_header,
     'public-page--without-page-header' => ! $page->show_page_header,
 ])>
+    @include('partials.analytics-body')
+
     @if ($page->show_site_chrome)
         @include('home.partials.header')
     @endif

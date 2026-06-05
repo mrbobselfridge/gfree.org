@@ -3,11 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.analytics-head')
     <title>{{ $bulletin->title }} | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
     <meta name="description" content="Bulletin for {{ $bulletin->bulletin_date->format('F j, Y') }} from gFree Church.">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
+    @include('partials.analytics-body')
+
     @include('home.partials.header')
 
     <main>

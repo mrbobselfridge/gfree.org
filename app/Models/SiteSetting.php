@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
     'facebook_url',
     'instagram_url',
     'youtube_url',
+    'google_tag_manager_id',
+    'google_analytics_measurement_id',
     'announcements_small_label',
     'announcements_title',
     'announcements_subtitle',
@@ -47,4 +49,26 @@ use Illuminate\Database\Eloquent\Model;
     'bulletins_subtitle',
     'bulletins_image_path',
 ])]
-class SiteSetting extends Model {}
+class SiteSetting extends Model
+{
+    public function normalizedGoogleTagManagerId(): ?string
+    {
+        return $this->normalizeTrackingId($this->google_tag_manager_id, '/^GTM-[A-Z0-9]+$/');
+    }
+
+    public function normalizedGoogleAnalyticsMeasurementId(): ?string
+    {
+        return $this->normalizeTrackingId($this->google_analytics_measurement_id, '/^G-[A-Z0-9]+$/');
+    }
+
+    private function normalizeTrackingId(?string $value, string $pattern): ?string
+    {
+        $value = strtoupper(trim((string) $value));
+
+        if (! preg_match($pattern, $value)) {
+            return null;
+        }
+
+        return $value;
+    }
+}

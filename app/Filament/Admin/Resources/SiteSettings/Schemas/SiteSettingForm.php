@@ -93,6 +93,32 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
+                Section::make('Google Tracking')
+                    ->description('Optional. Use Google Tag Manager for the most flexibility. If both are filled in, only Google Tag Manager is rendered to avoid duplicate Analytics page views.')
+                    ->schema([
+                        TextInput::make('google_tag_manager_id')
+                            ->label('Google Tag Manager container ID')
+                            ->helperText('Example: GTM-XXXXXXX. This renders the GTM head script and body noscript on public pages.')
+                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? strtoupper(trim($state)) : null)
+                            ->rule('nullable')
+                            ->rule('regex:/^GTM-[A-Z0-9]+$/i')
+                            ->validationMessages([
+                                'regex' => 'Enter a valid Google Tag Manager ID, such as GTM-XXXXXXX.',
+                            ])
+                            ->maxLength(255),
+                        TextInput::make('google_analytics_measurement_id')
+                            ->label('Google Analytics measurement ID')
+                            ->helperText('Example: G-XXXXXXXXXX. Used only when no Google Tag Manager ID is set.')
+                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? strtoupper(trim($state)) : null)
+                            ->rule('nullable')
+                            ->rule('regex:/^G-[A-Z0-9]+$/i')
+                            ->validationMessages([
+                                'regex' => 'Enter a valid Google Analytics measurement ID, such as G-XXXXXXXXXX.',
+                            ])
+                            ->maxLength(255),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
                 Section::make('Announcements Settings')
                     ->description('Can also be managed in the Announcements area.')
                     ->schema([
