@@ -38,6 +38,11 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->navigationGroups([
+                'Homepage',
+                'Content',
+                'Sitewide',
+            ])
             ->navigationItems([
                 NavigationItem::make('User Manual')
                     ->group('Sitewide')
