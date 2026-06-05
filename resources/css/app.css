@@ -422,21 +422,21 @@
 }
 
 .public-page--without-site-chrome.public-page--with-page-header .page-hero {
-    min-height: 340px;
-    padding-top: clamp(48px, 8vw, 84px);
-    padding-bottom: 56px;
+    min-height: 280px;
+    padding-top: clamp(18px, 3vw, 32px);
+    padding-bottom: 42px;
 }
 
 .public-page--without-site-chrome.public-page--with-page-header .page-hero--image {
-    min-height: 430px;
+    min-height: 330px;
 }
 
 .public-page--with-site-chrome.public-page--without-page-header .page-blocks > .page-block:first-child {
-    padding-top: clamp(48px, 6vw, 80px);
+    padding-top: clamp(96px, 8vw, 132px);
 }
 
 .public-page--with-site-chrome.public-page--without-page-header .page-content {
-    padding-top: clamp(64px, 7vw, 96px);
+    padding-top: clamp(108px, 9vw, 144px);
 }
 
 .page-block--light,
