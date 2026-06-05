@@ -7,12 +7,23 @@
     <meta name="description" content="{{ $page->seo_description ?: $page->intro ?: $settings?->tagline }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="site-page public-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
+<body @class([
+    'site-page',
+    'public-page',
+    'concept-page',
+    'concept-page--editorial',
+    'concept-page--editorial-white-header',
+    'concept-page--accent-color-bands',
+    'public-page--with-site-chrome' => $page->show_site_chrome,
+    'public-page--without-site-chrome' => ! $page->show_site_chrome,
+    'public-page--with-page-header' => $page->show_page_header,
+    'public-page--without-page-header' => ! $page->show_page_header,
+])>
     @if ($page->show_site_chrome)
         @include('home.partials.header')
     @endif
 
-    <main>
+    <main class="public-page__main">
         @if ($page->show_page_header)
             <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
                 @if ($heroImageUrl)

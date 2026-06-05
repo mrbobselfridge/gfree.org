@@ -48,6 +48,8 @@ class PublicPageTest extends TestCase
             ->assertSee('Mobile Landing')
             ->assertSee('A focused landing page.')
             ->assertSee('Only the page content should show.')
+            ->assertSee('public-page--without-site-chrome', false)
+            ->assertSee('public-page--with-page-header', false)
             ->assertDontSee('concept-header', false)
             ->assertDontSee('site-footer', false);
     }
@@ -111,10 +113,44 @@ class PublicPageTest extends TestCase
         $this->get('/content-only-landing')
             ->assertOk()
             ->assertSee('Only this body content should show.')
+            ->assertSee('public-page--without-site-chrome', false)
+            ->assertSee('public-page--without-page-header', false)
             ->assertDontSee('concept-header', false)
             ->assertDontSee('site-footer', false)
             ->assertDontSee('page-hero', false)
             ->assertDontSee('<h1>Content Only Landing</h1>', false)
+            ->assertDontSee('<p>This intro belongs to the hidden page header.</p>', false);
+    }
+
+    public function test_page_can_hide_page_header_while_keeping_site_chrome(): void
+    {
+        Page::query()->create([
+            'title' => 'Embedded Sermon',
+            'slug' => 'embedded-sermon',
+            'intro' => 'This intro belongs to the hidden page header.',
+            'show_page_header' => false,
+            'content_blocks' => [
+                [
+                    'type' => 'embed',
+                    'data' => [
+                        'background' => 'white',
+                        'embed_code' => '<iframe src="https://www.youtube.com/embed/example"></iframe>',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/embedded-sermon')
+            ->assertOk()
+            ->assertSee('concept-header', false)
+            ->assertSee('site-footer', false)
+            ->assertSee('public-page--with-site-chrome', false)
+            ->assertSee('public-page--without-page-header', false)
+            ->assertSee('public-page__main', false)
+            ->assertSee('page-block--embed', false)
+            ->assertDontSee('page-hero', false)
+            ->assertDontSee('<h1>Embedded Sermon</h1>', false)
             ->assertDontSee('<p>This intro belongs to the hidden page header.</p>', false);
     }
 
