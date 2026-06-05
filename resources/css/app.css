@@ -4051,6 +4051,14 @@
         display: grid;
     }
 
+    .concept-nav__item:hover .concept-nav__dropdown,
+    .concept-nav__item:focus-within .concept-nav__dropdown {
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+        visibility: visible;
+    }
+
     .concept-nav__dropdown::before {
         display: none;
     }
