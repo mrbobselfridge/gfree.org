@@ -91,6 +91,11 @@ class NavigationLinkTest extends TestCase
 
         $this->get('/')
             ->assertOk()
+            ->assertSee('data-nav-toggle', false)
+            ->assertSee('aria-controls="primary-navigation"', false)
+            ->assertSee('data-subnav-toggle', false)
+            ->assertSee('aria-controls="primary-navigation-submenu-0"', false)
+            ->assertSee('data-subnav-panel', false)
             ->assertSee('Ministries')
             ->assertSee('Kids')
             ->assertDontSee('Future Students');

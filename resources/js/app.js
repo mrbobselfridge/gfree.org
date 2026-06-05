@@ -23,6 +23,74 @@ const setLinkTarget = (link, url) => {
     link.removeAttribute('rel');
 };
 
+document.querySelectorAll('[data-site-header]').forEach((header) => {
+    const navToggle = header.querySelector('[data-nav-toggle]');
+    const navMenu = header.querySelector('[data-nav-menu]');
+    const submenuToggles = Array.from(header.querySelectorAll('[data-subnav-toggle]'));
+    const mobileQuery = window.matchMedia('(max-width: 860px)');
+
+    if (! navToggle || ! navMenu) {
+        return;
+    }
+
+    const closeSubmenus = (except = null) => {
+        submenuToggles.forEach((toggle) => {
+            if (toggle === except) {
+                return;
+            }
+
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.closest('.concept-nav__item')?.classList.remove('is-subnav-open');
+        });
+    };
+
+    const setMenuOpen = (isOpen) => {
+        header.classList.toggle('is-nav-open', isOpen);
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+
+        if (! isOpen) {
+            closeSubmenus();
+        }
+    };
+
+    navToggle.addEventListener('click', () => {
+        setMenuOpen(! header.classList.contains('is-nav-open'));
+    });
+
+    submenuToggles.forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+            const item = toggle.closest('.concept-nav__item');
+            const shouldOpen = toggle.getAttribute('aria-expanded') !== 'true';
+
+            closeSubmenus(toggle);
+            toggle.setAttribute('aria-expanded', String(shouldOpen));
+            item?.classList.toggle('is-subnav-open', shouldOpen);
+        });
+    });
+
+    navMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+            if (mobileQuery.matches) {
+                setMenuOpen(false);
+            }
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (! mobileQuery.matches || header.contains(event.target)) {
+            return;
+        }
+
+        setMenuOpen(false);
+    });
+
+    mobileQuery.addEventListener('change', (event) => {
+        if (! event.matches) {
+            setMenuOpen(false);
+        }
+    });
+});
+
 const updateHeroSlide = (carousel, slides, index) => {
     const slide = slides[index];
 
