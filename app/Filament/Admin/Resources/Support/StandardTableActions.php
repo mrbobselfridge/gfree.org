@@ -4,7 +4,9 @@ namespace App\Filament\Admin\Resources\Support;
 
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\NavigationLink;
+use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
+use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -49,6 +51,11 @@ class StandardTableActions
                     $copy->save();
                     self::copyRelatedRecords($record, $copy);
 
+                    app(WorkflowNotificationService::class)->automaticForRecord(
+                        $copy,
+                        WorkflowNotificationRule::TRIGGER_CREATED,
+                    );
+
                     Notification::make()
                         ->success()
                         ->title('Copied')
@@ -63,7 +70,11 @@ class StandardTableActions
                 ->modalHeading('Delete item?')
                 ->modalDescription(fn (Model $record): string => 'Are you sure you want to delete: '.self::recordLabel($record).'?')
                 ->modalSubmitActionLabel('Yes')
-                ->modalCancelActionLabel('No'),
+                ->modalCancelActionLabel('No')
+                ->after(fn (Model $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                    $record,
+                    WorkflowNotificationRule::TRIGGER_DELETED,
+                )),
 
             PublicPageActions::tableAction(),
         ];

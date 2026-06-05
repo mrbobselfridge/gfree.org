@@ -3,7 +3,10 @@
 namespace App\Filament\Admin\Resources\Concerns;
 
 use App\Filament\Admin\Support\PublicPageActions;
+use App\Filament\Admin\Support\WorkflowNotificationActions;
+use App\Models\WorkflowNotificationRule;
 use App\Support\PublicPageUrls;
+use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
@@ -15,7 +18,8 @@ trait UsesStandardEditActions
         return [
             $this->getHeaderCancelAction(),
             ...$this->getHeaderViewPublicPageActions(),
-            DeleteAction::make(),
+            ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
+            $this->getHeaderDeleteAction(),
             $this->getHeaderSaveAndCloseAction(),
             $this->getHeaderSaveAction(),
         ];
@@ -57,7 +61,11 @@ trait UsesStandardEditActions
     protected function getDeleteFormAction(): DeleteAction
     {
         return DeleteAction::make('deleteFromForm')
-            ->label('Delete');
+            ->label('Delete')
+            ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                $this->getRecord(),
+                WorkflowNotificationRule::TRIGGER_DELETED,
+            ));
     }
 
     protected function getCancelFormAction(): Action
@@ -76,6 +84,15 @@ trait UsesStandardEditActions
             ->color('primary');
     }
 
+    protected function getHeaderDeleteAction(): DeleteAction
+    {
+        return DeleteAction::make()
+            ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                $this->getRecord(),
+                WorkflowNotificationRule::TRIGGER_DELETED,
+            ));
+    }
+
     protected function getHeaderSaveAndCloseAction(): Action
     {
         return Action::make('headerSaveAndClose')
@@ -90,6 +107,14 @@ trait UsesStandardEditActions
             ->label('Save')
             ->action('save')
             ->color('success');
+    }
+
+    protected function afterSave(): void
+    {
+        app(WorkflowNotificationService::class)->automaticForRecord(
+            $this->getRecord(),
+            WorkflowNotificationRule::TRIGGER_UPDATED,
+        );
     }
 
     protected function getHeaderViewPublicPageActions(): array

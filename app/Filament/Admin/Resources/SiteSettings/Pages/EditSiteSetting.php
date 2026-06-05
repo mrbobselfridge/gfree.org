@@ -3,6 +3,9 @@
 namespace App\Filament\Admin\Resources\SiteSettings\Pages;
 
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
+use App\Filament\Admin\Support\WorkflowNotificationActions;
+use App\Models\WorkflowNotificationRule;
+use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
@@ -14,6 +17,7 @@ class EditSiteSetting extends EditRecord
     {
         return [
             $this->getCancelHeaderAction(),
+            ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             Action::make('save')
                 ->label('Save')
                 ->action('save')
@@ -56,5 +60,13 @@ class EditSiteSetting extends EditRecord
     protected function getRedirectUrl(): ?string
     {
         return null;
+    }
+
+    protected function afterSave(): void
+    {
+        app(WorkflowNotificationService::class)->automaticForRecord(
+            $this->getRecord(),
+            WorkflowNotificationRule::TRIGGER_UPDATED,
+        );
     }
 }

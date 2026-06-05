@@ -4,9 +4,9 @@ namespace App\Filament\Admin\Resources\Bulletins\Pages;
 
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\Concerns\UsesStandardEditActions;
+use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Support\OpenAiBulletinExtractor;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
@@ -23,8 +23,9 @@ class EditBulletin extends EditRecord
         return [
             $this->getHeaderCancelAction(),
             ...$this->getHeaderViewPublicPageActions(),
+            ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             $this->getExtractPdfAction(),
-            DeleteAction::make(),
+            $this->getHeaderDeleteAction(),
             $this->getHeaderSaveAndCloseAction(),
             $this->getHeaderSaveAction(),
         ];

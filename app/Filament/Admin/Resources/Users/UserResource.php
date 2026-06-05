@@ -7,7 +7,9 @@ use App\Filament\Admin\Resources\Users\Pages\CreateUser;
 use App\Filament\Admin\Resources\Users\Pages\EditUser;
 use App\Filament\Admin\Resources\Users\Pages\ListUsers;
 use App\Models\User;
+use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
+use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -172,7 +174,11 @@ class UserResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->after(fn (User $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                        $record,
+                        WorkflowNotificationRule::TRIGGER_DELETED,
+                    )),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

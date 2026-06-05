@@ -3,8 +3,12 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
+use App\Filament\Admin\Support\WorkflowNotificationActions;
+use App\Models\WorkflowNotificationRule;
+use App\Support\AdminAccess;
 use App\Support\MediaLibrary as MediaLibrarySupport;
 use App\Support\MediaUsage;
+use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -79,6 +83,12 @@ class MediaLibrary extends Page
     protected function getHeaderActions(): array
     {
         return [
+            ...WorkflowNotificationActions::notifyTeamForAreaActions(
+                AdminAccess::MEDIA_LIBRARY,
+                'media-library',
+                'Media Library',
+                static::getUrl(),
+            ),
             Action::make('uploadImages')
                 ->label('Upload new')
                 ->icon(Heroicon::OutlinedArrowUpTray)
@@ -94,6 +104,16 @@ class MediaLibrary extends Page
                 ])
                 ->action(function (array $data): void {
                     $count = count($data['images'] ?? []);
+
+                    collect($data['images'] ?? [])
+                        ->map(fn (mixed $path): string => (string) $path)
+                        ->each(fn (string $path): mixed => app(WorkflowNotificationService::class)->automatic(
+                            area: AdminAccess::MEDIA_LIBRARY,
+                            trigger: WorkflowNotificationRule::TRIGGER_CREATED,
+                            recordKey: 'media-library:'.$path,
+                            recordLabel: basename($path),
+                            adminUrl: static::getUrl(),
+                        ));
 
                     Notification::make()
                         ->title($count === 1 ? 'Image uploaded' : "{$count} images uploaded")
@@ -131,6 +151,14 @@ class MediaLibrary extends Page
                 $updated = MediaUsage::replaceImagePath($oldPath, (string) $newPath);
                 Storage::disk('public')->delete($oldPath);
 
+                app(WorkflowNotificationService::class)->automatic(
+                    area: AdminAccess::MEDIA_LIBRARY,
+                    trigger: WorkflowNotificationRule::TRIGGER_UPDATED,
+                    recordKey: 'media-library:'.$oldPath,
+                    recordLabel: basename($oldPath),
+                    adminUrl: static::getUrl(),
+                );
+
                 Notification::make()
                     ->title('Image replaced')
                     ->body("Updated {$updated} tracked ".str('location')->plural($updated).'.')
@@ -157,6 +185,14 @@ class MediaLibrary extends Page
                 }
 
                 Storage::disk('public')->delete($path);
+
+                app(WorkflowNotificationService::class)->automatic(
+                    area: AdminAccess::MEDIA_LIBRARY,
+                    trigger: WorkflowNotificationRule::TRIGGER_DELETED,
+                    recordKey: 'media-library:'.$path,
+                    recordLabel: basename($path),
+                    adminUrl: static::getUrl(),
+                );
 
                 Notification::make()
                     ->title('Image deleted')

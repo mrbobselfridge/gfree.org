@@ -3,7 +3,9 @@
 namespace App\Filament\Admin\Resources\Concerns;
 
 use App\Filament\Admin\Support\PublicPageActions;
+use App\Models\WorkflowNotificationRule;
 use App\Support\PublicPageUrls;
+use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 
@@ -78,6 +80,14 @@ trait UsesStandardCreateActions
         $this->create(another: true);
 
         $this->dispatch('gfree-focus-first-form-field');
+    }
+
+    protected function afterCreate(): void
+    {
+        app(WorkflowNotificationService::class)->automaticForRecord(
+            $this->getRecord(),
+            WorkflowNotificationRule::TRIGGER_CREATED,
+        );
     }
 
     protected function getCreatedNotification(): ?Notification

@@ -5,8 +5,11 @@ namespace App\Filament\Admin\Pages;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\PublicPageActions;
+use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\HomepageContent as HomepageContentModel;
 use App\Models\SiteSetting;
+use App\Models\WorkflowNotificationRule;
+use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -69,6 +72,11 @@ class HomepageContent extends Page
 
         $this->record->update($data);
 
+        app(WorkflowNotificationService::class)->automaticForRecord(
+            $this->record,
+            WorkflowNotificationRule::TRIGGER_UPDATED,
+        );
+
         Notification::make()
             ->success()
             ->title('Saved')
@@ -83,6 +91,7 @@ class HomepageContent extends Page
     {
         return [
             PublicPageActions::button('viewPublicPage', route('home')),
+            ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
             Action::make('save')
                 ->label('Save')
                 ->action('save')
@@ -132,6 +141,7 @@ class HomepageContent extends Page
                         ->color('success')
                         ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
                     PublicPageActions::button('viewPublicPageFooter', route('home')),
+                    ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
                 ])
                     ->alignment(Alignment::Start)
                     ->key('form-actions'),
