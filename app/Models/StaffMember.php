@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,8 +17,17 @@ use Illuminate\Database\Eloquent\Model;
     'sort_order',
     'is_published',
 ])]
-class StaffMember extends Model
+class StaffMember extends Model implements HasPublicUrl
 {
+    public function publicUrl(): ?string
+    {
+        if (blank($this->slug)) {
+            return null;
+        }
+
+        return route('leadership.show', ['slug' => $this->slug]);
+    }
+
     protected function casts(): array
     {
         return [

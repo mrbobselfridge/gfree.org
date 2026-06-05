@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -23,8 +24,17 @@ use Illuminate\Database\Eloquent\Model;
     'is_featured',
     'is_published',
 ])]
-class Announcement extends Model
+class Announcement extends Model implements HasPublicUrl
 {
+    public function publicUrl(): ?string
+    {
+        if (blank($this->slug)) {
+            return null;
+        }
+
+        return route('announcements.show', ['slug' => $this->slug]);
+    }
+
     public function scopePublicListingOrder(Builder $query): Builder
     {
         return $query

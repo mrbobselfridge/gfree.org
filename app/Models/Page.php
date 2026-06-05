@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,8 +21,17 @@ use Illuminate\Database\Eloquent\Model;
     'show_site_chrome',
     'show_page_header',
 ])]
-class Page extends Model
+class Page extends Model implements HasPublicUrl
 {
+    public function publicUrl(): ?string
+    {
+        if (blank($this->slug)) {
+            return null;
+        }
+
+        return url('/'.ltrim((string) $this->slug, '/'));
+    }
+
     protected function casts(): array
     {
         return [

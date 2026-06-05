@@ -22,6 +22,7 @@ class EditBulletin extends EditRecord
     {
         return [
             $this->getHeaderCancelAction(),
+            ...$this->getHeaderViewPublicPageActions(),
             $this->getExtractPdfAction(),
             DeleteAction::make(),
             $this->getHeaderSaveAndCloseAction(),

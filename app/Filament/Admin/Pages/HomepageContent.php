@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
+use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\HomepageContent as HomepageContentModel;
 use App\Models\SiteSetting;
 use BackedEnum;
@@ -71,12 +72,17 @@ class HomepageContent extends Page
         Notification::make()
             ->success()
             ->title('Saved')
+            ->duration(10000)
+            ->actions([
+                PublicPageActions::notificationAction(route('home')),
+            ])
             ->send();
     }
 
     protected function getHeaderActions(): array
     {
         return [
+            PublicPageActions::button('viewPublicPage', route('home')),
             Action::make('save')
                 ->label('Save')
                 ->action('save')
@@ -125,6 +131,7 @@ class HomepageContent extends Page
                         ->submit('save')
                         ->color('success')
                         ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                    PublicPageActions::button('viewPublicPageFooter', route('home')),
                 ])
                     ->alignment(Alignment::Start)
                     ->key('form-actions'),

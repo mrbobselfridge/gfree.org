@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPublicUrl;
+use App\Support\PublicPageUrls;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'parent_id',
@@ -19,8 +21,13 @@ use Illuminate\Database\Eloquent\Model;
     'opens_in_new_tab',
     'is_published',
 ])]
-class NavigationLink extends Model
+class NavigationLink extends Model implements HasPublicUrl
 {
+    public function publicUrl(): ?string
+    {
+        return PublicPageUrls::normalize($this->url);
+    }
+
     protected function casts(): array
     {
         return [

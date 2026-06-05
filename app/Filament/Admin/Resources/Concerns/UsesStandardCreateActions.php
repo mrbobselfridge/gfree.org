@@ -2,7 +2,10 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Support\PublicPageActions;
+use App\Support\PublicPageUrls;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 
 trait UsesStandardCreateActions
 {
@@ -77,8 +80,28 @@ trait UsesStandardCreateActions
         $this->dispatch('gfree-focus-first-form-field');
     }
 
+    protected function getCreatedNotification(): ?Notification
+    {
+        $notification = parent::getCreatedNotification();
+
+        if (! $notification) {
+            return null;
+        }
+
+        return PublicPageActions::withNotificationAction(
+            $notification,
+            PublicPageUrls::forRecord($this->getRecord()),
+        );
+    }
+
     protected function getRedirectUrl(): string
     {
-        return $this->getResourceUrl();
+        $resource = static::getResource();
+
+        if ($resource::hasPage('edit') && $resource::canEdit($this->getRecord())) {
+            return $this->getResourceUrl('edit', $this->getRedirectUrlParameters());
+        }
+
+        return parent::getRedirectUrl();
     }
 }

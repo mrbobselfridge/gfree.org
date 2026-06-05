@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,8 +19,13 @@ use Illuminate\Database\Eloquent\Model;
     'ends_at',
     'is_published',
 ])]
-class HomepageBanner extends Model
+class HomepageBanner extends Model implements HasPublicUrl
 {
+    public function publicUrl(): ?string
+    {
+        return route('home');
+    }
+
     protected function casts(): array
     {
         return [

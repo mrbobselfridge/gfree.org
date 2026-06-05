@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Concerns;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\SiteSetting;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
@@ -45,10 +46,13 @@ trait ManagesListingPageSettings
     {
         $this->listingSettingsRecord->update($this->getSchema('listingSettingsForm')?->getState() ?? []);
 
-        Notification::make()
+        $notification = Notification::make()
             ->success()
-            ->title($this->getListingSettingsSavedNotificationTitle())
-            ->send();
+            ->title($this->getListingSettingsSavedNotificationTitle());
+
+        $notification = PublicPageActions::withNotificationAction($notification, $this->getListingSettingsPublicUrl());
+
+        $notification->send();
     }
 
     public function listingSettingsForm(Schema $schema): Schema
@@ -163,8 +167,32 @@ trait ManagesListingPageSettings
                 ->submit('saveListingSettings')
                 ->color('success')
                 ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+            ...$this->getListingSettingsViewPublicPageActions(),
         ])
             ->alignment(Alignment::Start)
+            ->key('listing-settings-actions')
             ->columnSpanFull();
+    }
+
+    protected function getListingSettingsPublicUrl(): ?string
+    {
+        return match ($this->getListingSettingsPrefix()) {
+            'announcements' => route('announcements.index'),
+            'bulletins' => route('bulletins.index'),
+            'leadership' => route('leadership.index'),
+            'ministry' => route('ministries.index'),
+            'sermons' => route('sermons.index'),
+            default => null,
+        };
+    }
+
+    protected function getListingSettingsViewPublicPageActions(): array
+    {
+        $action = PublicPageActions::button(
+            'viewPublicListingPage',
+            $this->getListingSettingsPublicUrl(),
+        );
+
+        return $action ? [$action] : [];
     }
 }

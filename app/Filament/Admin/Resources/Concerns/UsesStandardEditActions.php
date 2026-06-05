@@ -2,8 +2,11 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Support\PublicPageActions;
+use App\Support\PublicPageUrls;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Notifications\Notification;
 
 trait UsesStandardEditActions
 {
@@ -11,6 +14,7 @@ trait UsesStandardEditActions
     {
         return [
             $this->getHeaderCancelAction(),
+            ...$this->getHeaderViewPublicPageActions(),
             DeleteAction::make(),
             $this->getHeaderSaveAndCloseAction(),
             $this->getHeaderSaveAction(),
@@ -86,6 +90,29 @@ trait UsesStandardEditActions
             ->label('Save')
             ->action('save')
             ->color('success');
+    }
+
+    protected function getHeaderViewPublicPageActions(): array
+    {
+        $action = PublicPageActions::button('headerViewPublicPage', $this->getPublicPageUrl());
+
+        return $action ? [$action] : [];
+    }
+
+    protected function getPublicPageUrl(): ?string
+    {
+        return PublicPageUrls::forRecord($this->getRecord());
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        $notification = parent::getSavedNotification();
+
+        if (! $notification) {
+            return null;
+        }
+
+        return PublicPageActions::withNotificationAction($notification, $this->getPublicPageUrl());
     }
 
     protected function getRedirectUrl(): ?string

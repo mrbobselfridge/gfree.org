@@ -2,12 +2,13 @@
 
 namespace App\Filament\Admin\Resources\Support;
 
-use App\Support\AdminAccess;
+use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\NavigationLink;
-use Filament\Facades\Filament;
+use App\Support\AdminAccess;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,8 @@ class StandardTableActions
     public static function make(): array
     {
         return [
+            PublicPageActions::tableAction(),
+
             EditAction::make()
                 ->label('Edit')
                 ->iconButton()
