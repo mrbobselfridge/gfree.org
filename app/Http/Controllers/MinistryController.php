@@ -21,7 +21,7 @@ class MinistryController extends Controller
             ->where('is_published', true)
             ->when($search !== '', fn (Builder $query) => $this->searchMinistries($query, $search))
             ->orderBy('sort_order')
-            ->orderBy('name')
+            ->inRandomOrder()
             ->get()
             ->map(function (Ministry $ministry): Ministry {
                 $ministry->image_url = $this->imageUrl($ministry->card_image_path ?: $ministry->hero_image_path);

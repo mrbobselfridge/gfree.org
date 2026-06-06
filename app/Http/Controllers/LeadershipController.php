@@ -22,7 +22,7 @@ class LeadershipController extends Controller
             ->whereNotNull('slug')
             ->when($search !== '', fn (Builder $query) => $this->searchLeaders($query, $search))
             ->orderBy('sort_order')
-            ->orderBy('name')
+            ->inRandomOrder()
             ->get()
             ->map(function (StaffMember $leader): StaffMember {
                 $leader->photo_url = $this->imageUrl($leader->photo_path);

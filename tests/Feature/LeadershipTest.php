@@ -61,6 +61,30 @@ class LeadershipTest extends TestCase
             ->assertDontSee('Sam Teacher');
     }
 
+    public function test_leadership_listing_groups_by_sort_order_before_randomizing_ties(): void
+    {
+        StaffMember::query()->create([
+            'name' => 'Second Sort Leader',
+            'slug' => 'second-sort-leader',
+            'sort_order' => 20,
+            'is_published' => true,
+        ]);
+
+        StaffMember::query()->create([
+            'name' => 'First Sort Leader',
+            'slug' => 'first-sort-leader',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+
+        $this->get('/leadership')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'First Sort Leader',
+                'Second Sort Leader',
+            ]);
+    }
+
     public function test_leader_profile_renders_photo_and_email_without_legacy_bio(): void
     {
         StaffMember::query()->create([

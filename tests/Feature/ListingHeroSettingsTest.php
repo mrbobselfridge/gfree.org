@@ -190,6 +190,32 @@ class ListingHeroSettingsTest extends TestCase
             ->assertDontSee('Care Team');
     }
 
+    public function test_ministry_listing_groups_by_sort_order_before_randomizing_ties(): void
+    {
+        Ministry::query()->create([
+            'name' => 'Second Sort Ministry',
+            'slug' => 'second-sort-ministry',
+            'short_summary' => 'Appears after the first sort group.',
+            'sort_order' => 20,
+            'is_published' => true,
+        ]);
+
+        Ministry::query()->create([
+            'name' => 'First Sort Ministry',
+            'slug' => 'first-sort-ministry',
+            'short_summary' => 'Appears before the second sort group.',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+
+        $this->get('/ministry')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'First Sort Ministry',
+                'Second Sort Ministry',
+            ]);
+    }
+
     public function test_ministry_detail_renders_content_blocks_before_legacy_description(): void
     {
         Ministry::query()->create([

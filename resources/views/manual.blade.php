@@ -341,6 +341,7 @@
                 <li><a href="#navigation">Navigation Links</a></li>
                 <li><a href="#settings">Site Settings</a></li>
                 <li><a href="#analytics">Analytics</a></li>
+                <li><a href="#workflow-notifications">Workflow Notifications and Email</a></li>
                 <li><a href="#users">Users</a></li>
                 <li><a href="#publishing">Publishing Checklist</a></li>
                 <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -376,10 +377,15 @@
                 <li>Check required fields, dates, images, links, and publication status.</li>
                 <li>Save the record.</li>
                 <li>Open the public page and confirm it looks right.</li>
+                <li>If a workflow rule exists for the area, use <strong>Notify</strong> when another person or team should be emailed manually.</li>
             </ol>
             <div class="manual-note">
                 <strong>Best practice</strong>
                 <p>Use clear titles, short summaries, and real links. If a page is important for visitors, test it on a phone-sized screen before considering it done.</p>
+            </div>
+            <div class="manual-note">
+                <strong>Admin buttons</strong>
+                <p>Many admin buttons are icon-only to save space. Hover over an icon to see its label, such as Save, Save &amp; close, View, Notify, Delete, Create, or Cancel.</p>
             </div>
         </section>
 
@@ -656,6 +662,7 @@
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
                 <li>AI rewrite and bulletin extraction settings when enabled.</li>
                 <li>Sermons page defaults and YouTube feed settings.</li>
+                <li>Google Tag Manager and Google Analytics tracking IDs.</li>
             </ul>
             <div class="manual-note">
                 <strong>Sitewide caution</strong>
@@ -675,6 +682,92 @@
             <p>Analytics is useful for decisions, but it should not replace pastoral or ministry judgment. Use it as one signal.</p>
         </section>
 
+        <section class="manual-section" id="workflow-notifications">
+            <h2>Workflow Notifications and Email</h2>
+            <p>Workflow Notifications let the CMS email people when important content is created, updated, deleted, or manually sent for review. Use them for handoffs such as asking another team to review a bulletin, update matching announcements, check media, or approve public content.</p>
+
+            <h3>Where To Find Them</h3>
+            <ul>
+                <li>Open <strong>Workflow Notification Rules</strong> in the admin sidebar.</li>
+                <li>Create a rule for one content area, such as Bulletins, Announcements, Pages, Media Library, Site Settings, Users, Leaders, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
+                <li>Each rule can be enabled or disabled without deleting it.</li>
+            </ul>
+
+            <h3>Triggers</h3>
+            <table class="manual-table">
+                <thead>
+                    <tr>
+                        <th>Trigger</th>
+                        <th>When it sends</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Created</td>
+                        <td>After a new item is created in the selected content area.</td>
+                    </tr>
+                    <tr>
+                        <td>Updated</td>
+                        <td>After an existing item is saved in the selected content area.</td>
+                    </tr>
+                    <tr>
+                        <td>Deleted</td>
+                        <td>After an item is deleted in the selected content area.</td>
+                    </tr>
+                    <tr>
+                        <td>Manual</td>
+                        <td>Adds a <strong>Notify</strong> action to matching edit screens or admin pages. The editor chooses when to send it.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Automatic Send Delay</h3>
+            <p>The automatic send delay controls how long the system waits before sending automatic Created, Updated, or Deleted emails. Available choices are Immediately, 15 minutes, 30 minutes, or 60 minutes after the last change.</p>
+            <div class="manual-note">
+                <strong>Why delays matter</strong>
+                <p>If the same item is saved more than once during the delay, the pending email is updated instead of sending several separate emails. This keeps people from receiving a burst of messages while an editor is still working.</p>
+            </div>
+
+            <h3>Manual Notify</h3>
+            <ol>
+                <li>Create or edit a workflow rule with the <strong>Manual</strong> trigger.</li>
+                <li>Open a matching content item, such as a bulletin or announcement.</li>
+                <li>Click the bell-shaped <strong>Notify</strong> action.</li>
+                <li>Choose the workflow message or messages to send.</li>
+                <li>Send the notification.</li>
+            </ol>
+            <p>Manual notifications are sent right away. If a matching automatic notification is still pending for the same item, the manual send cancels that pending automatic notification for that item.</p>
+
+            <h3>Recipients</h3>
+            <ul>
+                <li><strong>All admins:</strong> Sends to every admin account.</li>
+                <li><strong>All admins and users:</strong> Sends to every CMS user account.</li>
+                <li><strong>Selected users:</strong> Sends only to the chosen user accounts.</li>
+                <li><strong>Extra email addresses:</strong> Sends to addresses typed into the rule. Separate addresses with commas, semicolons, or new lines.</li>
+            </ul>
+            <p>A rule can combine recipient choices. Duplicate email addresses are removed before sending.</p>
+
+            <h3>Email Content</h3>
+            <ul>
+                <li><strong>Subject:</strong> The email subject line.</li>
+                <li><strong>Message:</strong> The main note recipients see at the top of the email.</li>
+                <li>The email also includes the content area, action, item name, person who made the change when known, and links to view the public page or open the item in admin when available.</li>
+            </ul>
+
+            <h3>Recommended Uses</h3>
+            <ul>
+                <li>Notify communications when a bulletin is ready to turn into announcements.</li>
+                <li>Notify ministry leaders when their page, leader profile, or announcement changes.</li>
+                <li>Notify admins when users, site settings, navigation, or homepage content changes.</li>
+                <li>Use manual notifications for review requests and automatic notifications for accountability or routine handoffs.</li>
+            </ul>
+
+            <div class="manual-note">
+                <strong>Email caution</strong>
+                <p>Only add recipients who need the message. Disable old rules instead of deleting them if you may reuse the workflow later.</p>
+            </div>
+        </section>
+
         <section class="manual-section" id="users">
             <h2>Users</h2>
             <p>Users manages admin and editor accounts.</p>
@@ -683,6 +776,7 @@
                 <li>Grant the least access that lets someone do their job.</li>
                 <li>Use area permissions for broad access, such as all announcements or all pages.</li>
                 <li>Use record-level permissions for specific ministries, pages, or leaders when appropriate.</li>
+                <li>Users can also be selected as recipients in Workflow Notification Rules.</li>
                 <li>Remove or reduce access when someone no longer needs it.</li>
             </ul>
             <div class="manual-note">
@@ -731,6 +825,16 @@
                 <li>Internal site paths should usually begin with <code>/</code>, such as <code>/announcements</code>.</li>
                 <li>External links should include the full <code>https://</code> address.</li>
                 <li>After saving, click the public link to test it.</li>
+            </ul>
+
+            <h3>A workflow email did not send.</h3>
+            <ul>
+                <li>Confirm the workflow rule is enabled.</li>
+                <li>Confirm the rule's content area matches the item being edited.</li>
+                <li>Confirm the needed trigger is selected: Created, Updated, Deleted, or Manual.</li>
+                <li>Check that the rule has at least one valid recipient.</li>
+                <li>If the rule has a delay, wait until the delay period has passed after the last change.</li>
+                <li>For manual emails, use the <strong>Notify</strong> action on the matching edit screen.</li>
             </ul>
 
             <h3>The page layout feels uneven.</h3>

@@ -31,7 +31,7 @@ Route::get('/sermons', SermonController::class)->name('sermons.index');
 Route::get('/manual', function () {
     return view('manual', [
         'settings' => SiteSetting::query()->first(),
-        'updatedAt' => 'June 3, 2026',
+        'updatedAt' => 'June 6, 2026',
     ]);
 })->name('manual');
 
