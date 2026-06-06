@@ -16,6 +16,7 @@ use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Filament\Admin\Resources\Users\UserResource;
+use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\FileDocument;
@@ -26,6 +27,7 @@ use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\StaffMember;
 use App\Models\User;
+use App\Models\WorkflowNotificationRule;
 use Filament\Pages\Page as FilamentPage;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
@@ -66,17 +68,19 @@ class AdminAccess
 
     public const USERS = 'users';
 
+    public const WORKFLOW_NOTIFICATIONS = 'workflow_notifications';
+
     public static function toolDefinitions(): array
     {
         return [
             self::HOMEPAGE_CONTENT => [
                 'label' => 'Homepage Content',
-                'group' => 'Homepage',
+                'group' => 'Content',
                 'page' => HomepageContent::class,
             ],
             self::HOMEPAGE_BANNERS => [
                 'label' => 'Homepage Banners',
-                'group' => 'Homepage',
+                'group' => 'Content',
                 'model' => HomepageBanner::class,
                 'resource' => HomepageBannerResource::class,
             ],
@@ -132,7 +136,7 @@ class AdminAccess
             ],
             self::MEDIA_LIBRARY => [
                 'label' => 'Media Library',
-                'group' => 'Content',
+                'group' => 'Sitewide',
                 'page' => MediaLibrary::class,
             ],
             self::FILE_LIBRARY => [
@@ -152,6 +156,12 @@ class AdminAccess
                 'group' => 'Sitewide',
                 'model' => User::class,
                 'resource' => UserResource::class,
+            ],
+            self::WORKFLOW_NOTIFICATIONS => [
+                'label' => 'Workflow Notifications',
+                'group' => 'Sitewide',
+                'model' => WorkflowNotificationRule::class,
+                'resource' => WorkflowNotificationRuleResource::class,
             ],
         ];
     }

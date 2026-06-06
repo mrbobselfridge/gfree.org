@@ -38,11 +38,21 @@ class AdminAccessTest extends TestCase
             ->assertSee('Site Settings')
             ->assertSee('Analytics')
             ->assertSee('Media Library')
+            ->assertSee('Workflow Notifications')
             ->assertSee('Navigation Links')
             ->assertSee('Users')
             ->assertSee('Individual Ministry Entries')
             ->assertSee('Individual Page Entries')
             ->assertSee('Individual Leader Entries');
+
+        $this->assertSame([], AdminAccess::toolOptionsForGroup('Homepage'));
+        $this->assertSame(
+            [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::HOMEPAGE_BANNERS],
+            array_slice(array_keys(AdminAccess::toolOptionsForGroup('Content')), 0, 2),
+        );
+        $this->assertArrayHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertArrayHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertArrayNotHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::additionalToolOptions());
     }
 
     public function test_editor_only_accesses_selected_admin_areas(): void
@@ -134,8 +144,8 @@ class AdminAccessTest extends TestCase
             ->set('data.email', 'editor@example.com')
             ->set('data.password', 'password')
             ->set('data.role', User::ROLE_EDITOR)
-            ->set('data.admin_permissions.tool_groups.content', [AdminAccess::MEDIA_LIBRARY])
-            ->set('data.admin_permissions.tool_groups.sitewide', [AdminAccess::SITE_SETTINGS])
+            ->set('data.admin_permissions.tool_groups.content', [AdminAccess::HOMEPAGE_CONTENT])
+            ->set('data.admin_permissions.tool_groups.sitewide', [AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS])
             ->set('data.admin_permissions.records.ministries', [(string) $ministry->getKey()])
             ->call('create')
             ->assertHasNoErrors();
@@ -143,7 +153,7 @@ class AdminAccessTest extends TestCase
         $editor = User::query()->where('email', 'editor@example.com')->firstOrFail();
 
         $this->assertSame(User::ROLE_EDITOR, $editor->role);
-        $this->assertSame([AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS], $editor->admin_permissions['tools']);
+        $this->assertSame([AdminAccess::HOMEPAGE_CONTENT, AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS], $editor->admin_permissions['tools']);
         $this->assertEquals([(string) $ministry->getKey()], $editor->admin_permissions['records']['ministries']);
 
         $this->actingAs($editor)

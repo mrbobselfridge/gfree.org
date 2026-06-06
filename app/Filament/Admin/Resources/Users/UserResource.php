@@ -89,6 +89,7 @@ class UserResource extends Resource
                         CheckboxList::make('admin_permissions.tool_groups.homepage')
                             ->label(self::permissionGroupLabel('Homepage'))
                             ->options(AdminAccess::toolOptionsForGroup('Homepage'))
+                            ->visible(fn (): bool => count(AdminAccess::toolOptionsForGroup('Homepage')) > 0)
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
