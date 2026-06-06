@@ -7,6 +7,7 @@ use App\Models\FileDocument;
 use App\Models\FileDocumentVersion;
 use App\Support\FileLibrary;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -77,6 +78,14 @@ class VersionsRelationManager extends RelationManager
                                 ->send();
                         }),
                     Heroicon::OutlinedArrowPath,
+                ),
+                IconOnlyAction::make(
+                    DeleteAction::make('deleteVersion')
+                        ->label('Delete')
+                        ->modalHeading('Delete this file version?')
+                        ->modalDescription('This removes the selected old version and its stored file. The current version cannot be deleted here.')
+                        ->visible(fn (FileDocumentVersion $record): bool => $record->getKey() !== $this->getOwnerRecord()->current_version_id),
+                    Heroicon::OutlinedTrash,
                 ),
             ]);
     }

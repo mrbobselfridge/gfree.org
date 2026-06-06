@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
+use App\Filament\Admin\Resources\FileDocuments\RelationManagers\VersionsRelationManager;
 use App\Models\FileDocument;
 use App\Models\User;
 use App\Support\AdminAccess;
@@ -184,5 +185,43 @@ class FileLibraryTest extends TestCase
 
         Storage::disk(FileLibrary::DISK)->assertMissing('file-library/documents/poster-v1.pdf');
         Storage::disk(FileLibrary::DISK)->assertMissing('file-library/documents/poster-v2.pdf');
+    }
+
+    public function test_old_file_versions_can_be_deleted_from_version_history(): void
+    {
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $document = FileDocument::query()->create([
+            'title' => 'Poster',
+            'file_name' => 'poster',
+            'category' => 'Poster',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        Storage::disk(FileLibrary::DISK)->put('file-library/documents/poster-v1.pdf', 'v1');
+        Storage::disk(FileLibrary::DISK)->put('file-library/documents/poster-v2.pdf', 'v2');
+
+        $oldVersion = FileLibrary::createVersion($document, 'file-library/documents/poster-v1.pdf', 'poster-v1.pdf', $admin);
+        $currentVersion = FileLibrary::createVersion($document->refresh(), 'file-library/documents/poster-v2.pdf', 'poster-v2.pdf', $admin);
+
+        Livewire::actingAs($admin)
+            ->test(VersionsRelationManager::class, [
+                'ownerRecord' => $document->refresh(),
+                'pageClass' => EditFileDocument::class,
+            ])
+            ->assertTableActionVisible('deleteVersion', $oldVersion)
+            ->assertTableActionHidden('deleteVersion', $currentVersion)
+            ->callTableAction('deleteVersion', $oldVersion)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseMissing('file_document_versions', ['id' => $oldVersion->getKey()]);
+        $this->assertDatabaseHas('file_document_versions', ['id' => $currentVersion->getKey()]);
+        $this->assertSame($currentVersion->getKey(), $document->refresh()->current_version_id);
+        Storage::disk(FileLibrary::DISK)->assertMissing('file-library/documents/poster-v1.pdf');
+        Storage::disk(FileLibrary::DISK)->assertExists('file-library/documents/poster-v2.pdf');
     }
 }

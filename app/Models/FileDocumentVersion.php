@@ -20,6 +20,13 @@ use Illuminate\Support\Number;
 ])]
 class FileDocumentVersion extends Model
 {
+    protected static function booted(): void
+    {
+        static::deleting(function (self $version): void {
+            Storage::disk($version->disk)->delete($version->path);
+        });
+    }
+
     public function document(): BelongsTo
     {
         return $this->belongsTo(FileDocument::class, 'file_document_id');
