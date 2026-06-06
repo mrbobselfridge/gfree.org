@@ -65,16 +65,10 @@ class WorkflowNotificationRuleForm
                     ->schema([
                         Toggle::make('notify_admins')
                             ->label('All admins')
-                            ->helperText('When enabled, every ADMIN account receives this notification.')
-                            ->inline()
-                            ->boolean()
-                            ->default(false),
+                            ->helperText('When enabled, every ADMIN account receives this notification.'),
                         Toggle::make('notify_all_users')
                             ->label('All admins and users')
-                            ->helperText('When enabled, every ADMIN and USER account receives this notification.')
-                            ->inline()
-                            ->boolean()
-                            ->default(false),
+                            ->helperText('When enabled, every ADMIN and USER account receives this notification.'),
                         Select::make('selected_user_ids')
                             ->label('Selected users')
                             ->multiple()
