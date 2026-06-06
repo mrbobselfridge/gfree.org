@@ -39,9 +39,9 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('sunday_service_times')),
                         RichEditorDefaults::configure(RichEditor::make('address')),
-                        RichEditorDefaults::configure(RichEditor::make('office_hours')),
                         ImageUpload::make('site_logo_path', 'site-settings/logo', 'Site logo')
                             ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
+                        RichEditorDefaults::configure(RichEditor::make('office_hours')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
