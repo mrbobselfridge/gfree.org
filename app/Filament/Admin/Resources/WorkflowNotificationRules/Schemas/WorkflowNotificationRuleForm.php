@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -20,10 +21,12 @@ class WorkflowNotificationRuleForm
             ->components([
                 Section::make('Rule')
                     ->schema([
-                        Toggle::make('is_enabled')
-                            ->label('Enabled')
-                            ->default(true)
+                        ToggleButtons::make('is_enabled')
+                            ->boolean()
+                            ->inline()
+                            ->default(false)
                             ->required(),
+
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255),
