@@ -85,7 +85,7 @@ class LeadershipTest extends TestCase
             ]);
     }
 
-    public function test_leader_profile_renders_photo_and_email_without_legacy_bio(): void
+    public function test_leader_profile_renders_photo_without_email_or_legacy_bio(): void
     {
         StaffMember::query()->create([
             'name' => 'John Shepherd',
@@ -105,8 +105,8 @@ class LeadershipTest extends TestCase
             ->assertSee('/storage/leadership/john.jpg')
             ->assertDontSee('<p>John helps people find care.</p>', false)
             ->assertDontSee('<li>Prayer</li>', false)
-            ->assertSee('mailto:john@example.com')
-            ->assertSee('Email John Shepherd');
+            ->assertDontSee('mailto:john@example.com')
+            ->assertDontSee('Email John Shepherd');
     }
 
     public function test_leader_profile_renders_content_blocks_before_legacy_bio(): void

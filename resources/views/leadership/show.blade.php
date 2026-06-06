@@ -32,14 +32,6 @@
         @if (count($contentBlocks))
             @include('pages.partials.content-blocks')
         @endif
-
-        @if ($leader->email)
-        <article class="leadership-detail page-block page-block--bg-white">
-            <div class="page-block__inner page-block__inner--narrow">
-                <a class="page-block__button" href="mailto:{{ $leader->email }}">Email {{ $leader->name }}</a>
-            </div>
-        </article>
-        @endif
     </main>
 
     @include('home.partials.footer')
