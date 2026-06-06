@@ -37,7 +37,7 @@
 
                 @if ($hasLeaderContact)
                     <div class="ministry-hero-contact leadership-hero-contact" aria-label="Leader contact details">
-                        <span>Leader Contact</span>
+                        <span>Leadership Contact Info</span>
                         <strong>{{ $leader->name }}</strong>
 
                         @if ($leader->email || $leader->phone_number)

@@ -122,7 +122,7 @@ class LeadershipTest extends TestCase
             ->assertDontSee('<li>Prayer</li>', false)
             ->assertSee('page-hero--leader-detail', false)
             ->assertSee('leadership-hero-contact', false)
-            ->assertSee('Leader Contact')
+            ->assertSee('Leadership Contact Info')
             ->assertSee('mailto:john@example.com')
             ->assertSee('john@example.com')
             ->assertSee('(814) 555-1313')
