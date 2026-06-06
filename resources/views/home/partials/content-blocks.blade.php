@@ -28,6 +28,14 @@
                     @include('pages.blocks.info-strip')
                     @break
 
+                @case('embed')
+                    @include('pages.blocks.embed')
+                    @break
+
+                @case('code')
+                    @include('pages.blocks.code')
+                    @break
+
                 @case('announcements_bar')
                     @include('pages.blocks.announcements-bar')
                     @break

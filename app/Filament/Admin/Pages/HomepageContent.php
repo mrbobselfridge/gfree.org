@@ -10,6 +10,7 @@ use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\HomepageContent as HomepageContentModel;
 use App\Models\SiteSetting;
 use App\Models\WorkflowNotificationRule;
+use App\Support\CodeBlockAccess;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -69,7 +70,10 @@ class HomepageContent extends Page
     public function save(): void
     {
         $data = $this->form->getState();
-        $data['content_blocks'] = $this->normalizeContentBlocks($data['content_blocks'] ?? []);
+        $data['content_blocks'] = CodeBlockAccess::protectBlocks(
+            $this->normalizeContentBlocks($data['content_blocks'] ?? []),
+            $this->record->content_blocks,
+        );
 
         $this->record->update($data);
 

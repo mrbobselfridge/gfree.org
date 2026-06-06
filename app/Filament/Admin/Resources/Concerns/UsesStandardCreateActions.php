@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Concerns;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\WorkflowNotificationRule;
+use App\Support\CodeBlockAccess;
 use App\Support\PublicPageUrls;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
@@ -108,6 +109,11 @@ trait UsesStandardCreateActions
             $this->getRecord(),
             WorkflowNotificationRule::TRIGGER_CREATED,
         );
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return CodeBlockAccess::protectFormData($data);
     }
 
     protected function getCreatedNotification(): ?Notification

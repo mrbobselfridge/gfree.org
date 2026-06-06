@@ -25,6 +25,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 
@@ -173,22 +174,25 @@ class UserResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
-                IconOnlyAction::make(
-                    EditAction::make()
-                        ->label('Edit'),
-                    Heroicon::OutlinedPencilSquare,
-                ),
-                IconOnlyAction::make(
-                    DeleteAction::make()
-                        ->label('Delete')
-                        ->after(fn (User $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
-                            $record,
-                            WorkflowNotificationRule::TRIGGER_DELETED,
-                        )),
-                    Heroicon::OutlinedTrash,
-                ),
-            ])
+            ->recordActions(
+                [
+                    IconOnlyAction::make(
+                        EditAction::make()
+                            ->label('Edit'),
+                        Heroicon::OutlinedPencilSquare,
+                    ),
+                    IconOnlyAction::make(
+                        DeleteAction::make()
+                            ->label('Delete')
+                            ->after(fn (User $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                                $record,
+                                WorkflowNotificationRule::TRIGGER_DELETED,
+                            )),
+                        Heroicon::OutlinedTrash,
+                    ),
+                ],
+                position: RecordActionsPosition::BeforeColumns,
+            )
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

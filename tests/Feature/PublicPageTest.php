@@ -345,6 +345,49 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Admin only name');
     }
 
+    public function test_code_blocks_render_raw_code_with_and_without_page_block_wrapper(): void
+    {
+        Page::query()->create([
+            'title' => 'Interactive',
+            'slug' => 'interactive',
+            'content_blocks' => [
+                [
+                    'type' => 'code',
+                    'data' => [
+                        'title' => 'Visible feature',
+                        'background' => 'teal',
+                        'content_width' => 'full',
+                        'code' => '<div id="full-code-feature"><script>window.fullCodeFeature = true;</script></div>',
+                    ],
+                ],
+                [
+                    'type' => 'code',
+                    'data' => [
+                        'title' => 'Script only',
+                        'background' => 'gold',
+                        'content_width' => 'none',
+                        'code' => '<script>window.scriptOnlyCodeBlock = true;</script>',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $content = $this->get('/interactive')
+            ->assertOk()
+            ->assertSee('page-block--code', false)
+            ->assertSee('page-block--bg-teal', false)
+            ->assertSee('page-block__inner--full', false)
+            ->assertSee('<script>window.fullCodeFeature = true;</script>', false)
+            ->assertSee('<script>window.scriptOnlyCodeBlock = true;</script>', false)
+            ->assertDontSee('Visible feature')
+            ->assertDontSee('Script only')
+            ->content();
+
+        $this->assertStringNotContainsString('page-block--bg-gold', $content);
+        $this->assertSame(1, substr_count($content, 'page-block--code'));
+    }
+
     public function test_image_blocks_do_not_require_body_content(): void
     {
         Page::query()->create([

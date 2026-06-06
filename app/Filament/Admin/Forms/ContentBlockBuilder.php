@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms;
 
+use App\Support\CodeBlockAccess;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
@@ -253,6 +254,37 @@ class ContentBlockBuilder
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
+                Block::make('code')
+                    ->label(fn (?array $state): string => self::blockLabel('Code', $state))
+                    ->maxItems(fn (): ?int => CodeBlockAccess::canManage() ? null : 0)
+                    ->schema([
+                        TextInput::make('title')
+                            ->helperText('Admin label only. This is not shown on the public page.')
+                            ->live(onBlur: true)
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->maxLength(255),
+                        Select::make('background')
+                            ->label('Background color')
+                            ->options(self::backgroundOptions())
+                            ->default('white')
+                            ->helperText('Ignored when Content width is None.')
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->required(),
+                        Select::make('content_width')
+                            ->label('Content width')
+                            ->options(self::codeWidthOptions())
+                            ->default('medium')
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->required(),
+                        Textarea::make('code')
+                            ->label('Code')
+                            ->rows(14)
+                            ->required()
+                            ->helperText('Trusted raw HTML, CSS, or JavaScript. It is rendered directly on the public page.')
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
                 Block::make('announcements_bar')
                     ->label(fn (?array $state): string => self::blockLabel('Announcements', $state))
                     ->schema([
@@ -285,6 +317,7 @@ class ContentBlockBuilder
             ->cloneAction(fn (Action $action): Action => $action
                 ->label('Copy')
                 ->icon(Heroicon::OutlinedSquare2Stack)
+                ->visible(fn (array $arguments, Builder $component): bool => self::canUseBuilderActionForItem($component, $arguments['item'] ?? null))
                 ->action(function (array $arguments, Builder $component): void {
                     $items = $component->getRawState();
                     $itemKey = $arguments['item'] ?? null;
@@ -308,6 +341,8 @@ class ContentBlockBuilder
 
                     $component->shouldPartiallyRenderAfterActionsCalled() ? $component->partiallyRender() : null;
                 }))
+            ->deleteAction(fn (Action $action): Action => $action
+                ->visible(fn (array $arguments, Builder $component): bool => self::canUseBuilderActionForItem($component, $arguments['item'] ?? null)))
             ->extraFieldWrapperAttributes([
                 'class' => 'twyxtco-content-block-builder-field',
             ])
@@ -349,6 +384,7 @@ class ContentBlockBuilder
             $type,
             $state['eyebrow'] ?? null,
             $state['heading'] ?? null,
+            $state['title'] ?? null,
         ], filled(...));
 
         return implode(' - ', $parts);
@@ -384,5 +420,24 @@ class ContentBlockBuilder
             'medium' => 'Medium (880px)',
             'wide' => 'Large (1180px)',
         ];
+    }
+
+    private static function codeWidthOptions(): array
+    {
+        return [
+            'small' => 'Small (600px)',
+            'medium' => 'Medium (880px)',
+            'wide' => 'Large (1180px)',
+            'full' => 'Full (screen width)',
+            'none' => 'None (raw output only)',
+        ];
+    }
+
+    private static function canUseBuilderActionForItem(Builder $component, int|string|null $itemKey): bool
+    {
+        $items = $component->getRawState();
+        $type = $itemKey !== null ? ($items[$itemKey]['type'] ?? null) : null;
+
+        return $type !== 'code' || CodeBlockAccess::canManage();
     }
 }

@@ -50,6 +50,8 @@ class AdminAccess
 
     public const SERMONS = 'sermons';
 
+    public const CODE_BLOCKS = 'code_blocks';
+
     public const SITE_SETTINGS = 'site_settings';
 
     public const ANALYTICS = 'analytics';
@@ -108,6 +110,10 @@ class AdminAccess
                 'label' => 'Sermons',
                 'group' => 'Content',
                 'page' => Sermons::class,
+            ],
+            self::CODE_BLOCKS => [
+                'label' => 'Code Blocks',
+                'group' => 'Content',
             ],
             self::SITE_SETTINGS => [
                 'label' => 'Site Settings',

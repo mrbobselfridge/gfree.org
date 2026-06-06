@@ -544,6 +544,14 @@
     width: min(1180px, calc(100% - 32px));
 }
 
+.page-block__inner--full {
+    width: 100%;
+}
+
+.page-code-block {
+    max-width: 100%;
+}
+
 .page-block--text .page-block__eyebrow,
 .page-block--text h2,
 .page-block--text .page-rich-text {

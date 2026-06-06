@@ -6,6 +6,7 @@ use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
+use App\Support\CodeBlockAccess;
 use App\Support\PublicPageUrls;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
@@ -140,6 +141,14 @@ trait UsesStandardEditActions
         app(WorkflowNotificationService::class)->automaticForRecord(
             $this->getRecord(),
             WorkflowNotificationRule::TRIGGER_UPDATED,
+        );
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return CodeBlockAccess::protectFormData(
+            $data,
+            $this->getRecord()->content_blocks ?? null,
         );
     }
 
