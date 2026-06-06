@@ -10,7 +10,9 @@ use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class HomeController extends Controller
 {
@@ -57,7 +59,7 @@ class HomeController extends Controller
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'hero' => $this->hero($defaults['hero'], $heroBanners->first()),
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
-            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $updates),
+            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $updates, $now),
             'socialLinks' => $this->socialLinks($settings),
         ]);
     }
@@ -127,7 +129,7 @@ class HomeController extends Controller
         ];
     }
 
-    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries, $updates): array
+    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries, $updates, $now): array
     {
         $blocks = $content?->content_blocks;
 
@@ -142,6 +144,7 @@ class HomeController extends Controller
         $blocks = $this->normalizeHomepageBlocks($blocks);
 
         return collect($blocks)
+            ->filter(fn (array $block): bool => $this->isHomepageBlockVisible($block, $now))
             ->map(function (array $block) use ($settings, $updates): array {
                 $type = $block['type'] ?? null;
                 $data = $block['data'] ?? [];
@@ -174,6 +177,36 @@ class HomeController extends Controller
             ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || filled($block['data']['updates'] ?? []))
             ->values()
             ->all();
+    }
+
+    private function isHomepageBlockVisible(array $block, $now): bool
+    {
+        $data = $block['data'] ?? [];
+        $publishAt = $data['publish_at'] ?? null;
+        $expiresAt = $data['expires_at'] ?? null;
+
+        if (filled($publishAt) && $this->scheduleDate($publishAt)?->isAfter($now)) {
+            return false;
+        }
+
+        if (filled($expiresAt) && $this->scheduleDate($expiresAt)?->isBefore($now)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function scheduleDate(mixed $value): ?Carbon
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value);
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     private function infoStripItems(array $items, ?SiteSetting $settings): array

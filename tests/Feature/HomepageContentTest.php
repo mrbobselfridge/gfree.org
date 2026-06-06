@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\HomepageContent;
 use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class HomepageContentTest extends TestCase
@@ -143,6 +144,59 @@ class HomepageContentTest extends TestCase
             ->assertSee('<strong>simple</strong>', false)
             ->assertSee('Get Started')
             ->assertSee('/next-step');
+    }
+
+    public function test_homepage_content_blocks_respect_publish_and_expire_dates(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-06 12:00:00'));
+
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'Always Visible Block',
+                        'body' => '<p>This block has no schedule.</p>',
+                        'background' => 'white',
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'Currently Visible Block',
+                        'body' => '<p>This block is inside the schedule window.</p>',
+                        'background' => 'white',
+                        'publish_at' => '2026-06-06 08:00:00',
+                        'expires_at' => '2026-06-06 17:00:00',
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'Future Hidden Block',
+                        'body' => '<p>This block should not be shown yet.</p>',
+                        'background' => 'white',
+                        'publish_at' => '2026-06-07 08:00:00',
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'Expired Hidden Block',
+                        'body' => '<p>This block should no longer be shown.</p>',
+                        'background' => 'white',
+                        'expires_at' => '2026-06-06 08:00:00',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Always Visible Block')
+            ->assertSee('Currently Visible Block')
+            ->assertDontSee('Future Hidden Block')
+            ->assertDontSee('Expired Hidden Block');
     }
 
     public function test_homepage_content_renders_rich_text_embeds(): void

@@ -6,13 +6,17 @@ use App\Support\CodeBlockAccess;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Carbon;
+use Throwable;
 
 class ContentBlockBuilder
 {
@@ -21,6 +25,7 @@ class ContentBlockBuilder
         string $imageDirectory = 'pages/content-images',
         string $label = 'Page Content',
         bool $withStarterTextBlock = false,
+        bool $withScheduleFields = false,
     ): Builder {
         $builder = Builder::make($field);
 
@@ -57,6 +62,7 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('image_text')
@@ -93,6 +99,7 @@ class ContentBlockBuilder
                             ])
                             ->default('left')
                             ->required(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('process_steps')
@@ -122,6 +129,7 @@ class ContentBlockBuilder
                             ->columns(2)
                             ->minItems(1)
                             ->columnSpanFull(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('cta')
@@ -165,6 +173,7 @@ class ContentBlockBuilder
                                 }
                             })
                             ->required(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('link_cards')
@@ -197,6 +206,7 @@ class ContentBlockBuilder
                             ->columns(3)
                             ->minItems(1)
                             ->columnSpanFull(),
+                        ...self::scheduleFields($withScheduleFields),
                     ]),
                 Block::make('info_strip')
                     ->label(fn (?array $state): string => self::blockLabel('Info Strip', $state))
@@ -233,6 +243,7 @@ class ContentBlockBuilder
                             ->minItems(1)
                             ->maxItems(5)
                             ->columnSpanFull(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('embed')
@@ -251,6 +262,7 @@ class ContentBlockBuilder
                             ->required()
                             ->helperText('Paste trusted embed code, including script tags when the provider requires them.')
                             ->columnSpanFull(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('code')
@@ -282,6 +294,7 @@ class ContentBlockBuilder
                             ->helperText('Trusted raw HTML, CSS, or JavaScript. It is rendered directly on the public page.')
                             ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
                             ->columnSpanFull(),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('announcements_bar')
@@ -307,6 +320,7 @@ class ContentBlockBuilder
                         TextInput::make('link_url')
                             ->default('/announcements')
                             ->maxLength(255),
+                        ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2)
                     ->maxItems(1),
@@ -384,9 +398,57 @@ class ContentBlockBuilder
             $state['eyebrow'] ?? null,
             $state['heading'] ?? null,
             $state['title'] ?? null,
+            self::scheduleLabel($state),
         ], filled(...));
 
         return implode(' - ', $parts);
+    }
+
+    private static function scheduleFields(bool $withScheduleFields): array
+    {
+        if (! $withScheduleFields) {
+            return [];
+        }
+
+        return [
+            DateTimePicker::make('publish_at')
+                ->label('Publish at')
+                ->helperText('Optional. Leave empty to show this block immediately.'),
+            DateTimePicker::make('expires_at')
+                ->label('Expire at')
+                ->helperText('Optional. Leave empty to keep this block visible indefinitely.')
+                ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+        ];
+    }
+
+    private static function scheduleLabel(?array $state): ?string
+    {
+        $publishAt = self::formatScheduleDate($state['publish_at'] ?? null);
+        $expiresAt = self::formatScheduleDate($state['expires_at'] ?? null);
+
+        if (! $publishAt && ! $expiresAt) {
+            return null;
+        }
+
+        return collect([
+            $publishAt ? 'Publish: '.$publishAt : null,
+            $expiresAt ? 'Expire: '.$expiresAt : null,
+        ])
+            ->filter()
+            ->implode(' / ');
+    }
+
+    private static function formatScheduleDate(mixed $value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value)->format('M j, Y g:i A');
+        } catch (Throwable) {
+            return (string) $value;
+        }
     }
 
     private static function markCopiedItem(array $item): array
