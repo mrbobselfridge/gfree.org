@@ -44,18 +44,18 @@ class WorkflowNotificationRuleForm
                             ->columns(4)
                             ->required(),
 
-                        Placeholder::make('delay_minutes_help')
-                            ->label('')
-                            ->content(new HtmlString(
-                                'Automatic send delay controls how long the system waits before sending an automatic notification. During that delay, repeated saves to the same item update the pending notification instead of sending multiple emails.'
-                            )),
-
                         Select::make('delay_minutes')
                             ->label('Automatic send delay')
                             ->options(WorkflowNotificationAreas::delayOptions())
                             ->default(15)
                             ->native(false)
                             ->required(),
+
+                        Placeholder::make('delay_minutes_help')
+                            ->content(new HtmlString(
+                                'Automatic send delay controls how long the system waits before sending an automatic notification. During that delay, repeated saves to the same item update the pending notification instead of sending multiple emails.'
+                            )),
+
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
