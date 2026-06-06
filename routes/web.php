@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BulletinController;
+use App\Http\Controllers\FileDocumentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadershipController;
 use App\Http\Controllers\MinistryController;
@@ -19,6 +20,18 @@ Route::get('/bulletins', [BulletinController::class, 'index'])->name('bulletins.
 Route::get('/bulletins/{date}', [BulletinController::class, 'show'])
     ->where('date', '\d{4}-\d{2}-\d{2}')
     ->name('bulletins.show');
+
+Route::get('/files/{fileName}', [FileDocumentController::class, 'show'])
+    ->where('fileName', '[A-Za-z0-9\\-]+')
+    ->name('files.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/files/{fileDocument}/download', [FileDocumentController::class, 'download'])
+        ->name('admin.files.download');
+
+    Route::get('/admin/files/versions/{fileDocumentVersion}/download', [FileDocumentController::class, 'downloadVersion'])
+        ->name('admin.files.versions.download');
+});
 
 Route::get('/leadership', [LeadershipController::class, 'index'])->name('leadership.index');
 Route::get('/leadership/{slug}', [LeadershipController::class, 'show'])->name('leadership.show');

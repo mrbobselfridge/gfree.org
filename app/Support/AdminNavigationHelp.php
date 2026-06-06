@@ -16,6 +16,7 @@ class AdminNavigationHelp
             'Announcements' => 'Create and manage public announcements, events, and church updates.',
             'Bulletins' => 'Upload weekly bulletin PDFs and manage their public bulletin pages.',
             'Media Library' => 'Browse, upload, reuse, replace, or delete images used across the site.',
+            'File Library' => 'Manage public and private PDFs, documents, spreadsheets, forms, posters, and handouts.',
             'Ministries' => 'Manage ministry listing cards and individual ministry detail pages.',
             'Pages' => 'Create and edit general website pages such as New Here or About.',
             'Leaders' => 'Manage leadership profiles, photos, and public leader detail pages.',

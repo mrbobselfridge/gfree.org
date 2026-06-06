@@ -15,6 +15,7 @@ use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Models\Announcement;
 use App\Models\Bulletin;
+use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
@@ -40,6 +41,7 @@ class WorkflowNotificationAreas
             AdminAccess::LEADERS => 'Leaders',
             AdminAccess::NAVIGATION_LINKS => 'Navigation Links',
             AdminAccess::MEDIA_LIBRARY => 'Media Library',
+            AdminAccess::FILE_LIBRARY => 'File Library',
             AdminAccess::SITE_SETTINGS => 'Site Settings',
             AdminAccess::USERS => 'Users',
         ];
@@ -78,6 +80,7 @@ class WorkflowNotificationAreas
             Ministry::class => AdminAccess::MINISTRIES,
             StaffMember::class => AdminAccess::LEADERS,
             NavigationLink::class => AdminAccess::NAVIGATION_LINKS,
+            FileDocument::class => AdminAccess::FILE_LIBRARY,
             SiteSetting::class => AdminAccess::SITE_SETTINGS,
             User::class => AdminAccess::USERS,
             default => null,

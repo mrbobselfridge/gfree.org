@@ -8,6 +8,7 @@ use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
@@ -17,6 +18,7 @@ use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Models\Announcement;
 use App\Models\Bulletin;
+use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
@@ -57,6 +59,8 @@ class AdminAccess
     public const ANALYTICS = 'analytics';
 
     public const MEDIA_LIBRARY = 'media_library';
+
+    public const FILE_LIBRARY = 'file_library';
 
     public const NAVIGATION_LINKS = 'navigation_links';
 
@@ -130,6 +134,12 @@ class AdminAccess
                 'label' => 'Media Library',
                 'group' => 'Content',
                 'page' => MediaLibrary::class,
+            ],
+            self::FILE_LIBRARY => [
+                'label' => 'File Library',
+                'group' => 'Sitewide',
+                'model' => FileDocument::class,
+                'resource' => FileDocumentResource::class,
             ],
             self::NAVIGATION_LINKS => [
                 'label' => 'Navigation Links',
