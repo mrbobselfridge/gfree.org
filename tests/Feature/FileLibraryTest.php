@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
+use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
 use App\Models\FileDocument;
 use App\Models\User;
 use App\Support\AdminAccess;
@@ -121,6 +122,35 @@ class FileLibraryTest extends TestCase
             ->get(route('admin.files.download', ['fileDocument' => $document]))
             ->assertOk()
             ->assertHeader('content-disposition', 'attachment; filename=internal-policy.pdf');
+    }
+
+    public function test_edit_file_document_shows_current_file_and_replace_upload(): void
+    {
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $document = FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        Storage::disk(FileLibrary::DISK)->put('file-library/documents/connection-card.pdf', 'document');
+        FileLibrary::createVersion($document, 'file-library/documents/connection-card.pdf', 'connection-card.pdf', $admin);
+
+        Livewire::actingAs($admin)
+            ->test(EditFileDocument::class, ['record' => $document->getKey()])
+            ->assertSet('data.current_file', fn (array $state): bool => in_array('file-library/documents/connection-card.pdf', $state, true));
+
+        $this->actingAs($admin)
+            ->get("/admin/file-documents/{$document->getKey()}/edit")
+            ->assertOk()
+            ->assertSee('Current file')
+            ->assertSee('Replace file');
     }
 
     public function test_versions_can_be_restored_and_files_are_deleted_with_document(): void

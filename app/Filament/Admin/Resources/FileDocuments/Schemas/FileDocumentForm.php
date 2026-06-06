@@ -94,9 +94,29 @@ class FileDocumentForm
                             ->storeFileNamesIn('pending_original_name')
                             ->required(fn (?string $operation): bool => $operation === 'create')
                             ->downloadable()
+                            ->visible(fn (?string $operation): bool => $operation === 'create')
                             ->columnSpanFull(),
                         TextInput::make('pending_original_name')
                             ->hidden(),
+                        FileUpload::make('current_file')
+                            ->label('Current file')
+                            ->disk(FileLibrary::DISK)
+                            ->afterStateHydrated(fn (FileUpload $component, ?FileDocument $record): mixed => $component->state($record?->currentVersion?->path))
+                            ->getUploadedFileUsing(fn (?FileDocument $record): ?array => $record?->currentVersion ? [
+                                'name' => $record->currentVersion->original_name,
+                                'size' => $record->currentVersion->size,
+                                'type' => $record->currentVersion->mime_type,
+                                'url' => $record->downloadUrl(),
+                            ] : null)
+                            ->getDownloadableFileUrlUsing(fn (?FileDocument $record): ?string => $record?->downloadUrl())
+                            ->getOpenableFileUrlUsing(fn (?FileDocument $record): ?string => $record?->downloadUrl())
+                            ->downloadable()
+                            ->openable()
+                            ->maxFiles(1)
+                            ->deletable(false)
+                            ->dehydrated(false)
+                            ->visible(fn (?string $operation, ?FileDocument $record): bool => $operation === 'edit' && $record?->currentVersion !== null)
+                            ->columnSpanFull(),
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
                             ->helperText('Optional. Uploading a replacement creates a new version and keeps older versions available below.')
