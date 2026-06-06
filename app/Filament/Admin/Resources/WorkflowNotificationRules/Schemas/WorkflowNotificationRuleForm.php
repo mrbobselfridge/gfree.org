@@ -28,8 +28,8 @@ class WorkflowNotificationRuleForm
                             ->maxLength(255),
 
                         ToggleButtons::make('is_enabled')
-                            ->boolean()
                             ->inline()
+                            ->boolean()
                             ->default(false)
                             ->required(),
 
@@ -66,11 +66,15 @@ class WorkflowNotificationRuleForm
                         Toggle::make('notify_admins')
                             ->label('All admins')
                             ->helperText('When enabled, every ADMIN account receives this notification.')
-                            ->inline(),
+                            ->inline()
+                            ->boolean()
+                            ->default(false),
                         Toggle::make('notify_all_users')
                             ->label('All admins and users')
                             ->helperText('When enabled, every ADMIN and USER account receives this notification.')
-                            ->inline(),
+                            ->inline()
+                            ->boolean()
+                            ->default(false),
                         Select::make('selected_user_ids')
                             ->label('Selected users')
                             ->multiple()
