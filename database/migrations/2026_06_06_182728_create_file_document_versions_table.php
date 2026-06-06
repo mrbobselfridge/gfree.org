@@ -23,7 +23,6 @@ return new class extends Migration
             $table->foreignId('uploaded_by_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
-
     }
 
     /**
