@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\StaffMembers\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\SlugRebuildAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
@@ -47,6 +48,7 @@ class StaffMemberForm
                     ->prefix('/leadership/')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->suffixAction(SlugRebuildAction::make('name'))
                     ->maxLength(255),
                 TextInput::make('sort_order')
                     ->required()

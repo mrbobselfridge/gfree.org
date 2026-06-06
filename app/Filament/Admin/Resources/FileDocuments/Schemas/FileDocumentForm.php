@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\FileDocuments\Schemas;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -17,6 +18,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 
 class FileDocumentForm
@@ -42,6 +44,17 @@ class FileDocumentForm
                             ->maxLength(255)
                             ->rule('alpha_dash')
                             ->unique(ignoreRecord: true)
+                            ->suffixAction(
+                                Action::make('rebuildFileName')
+                                    ->label('Rebuild slug')
+                                    ->tooltip('Rebuild slug')
+                                    ->icon(Heroicon::OutlinedArrowPath)
+                                    ->color('gray')
+                                    ->action(fn (Get $get, Set $set, ?FileDocument $record): mixed => $set(
+                                        'file_name',
+                                        FileDocument::makeUniqueFileName($get('title'), $record),
+                                    )),
+                            )
                             ->dehydrateStateUsing(fn (?string $state, Get $get, ?FileDocument $record): string => filled($state)
                                 ? Str::slug($state)
                                 : FileDocument::makeUniqueFileName($get('title'), $record)),

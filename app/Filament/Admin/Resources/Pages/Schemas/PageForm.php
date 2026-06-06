@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Pages\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\SlugRebuildAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -53,6 +54,7 @@ class PageForm
                     ->prefix('/')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255),
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')

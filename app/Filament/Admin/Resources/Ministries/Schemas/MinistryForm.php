@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Ministries\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\SlugRebuildAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -38,6 +39,7 @@ class MinistryForm
                     ->prefix('/ministry/')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->suffixAction(SlugRebuildAction::make('name'))
                     ->dehydrateStateUsing(fn (?string $state) => Str::slug($state))
                     ->maxLength(255),
                 Section::make('Ministry Content Blocks')

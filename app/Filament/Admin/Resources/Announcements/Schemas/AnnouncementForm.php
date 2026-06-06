@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Announcements\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\SlugRebuildAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -53,6 +54,7 @@ class AnnouncementForm
                     ->prefix('/announcements/')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255),
                 Select::make('background')
                     ->options([
