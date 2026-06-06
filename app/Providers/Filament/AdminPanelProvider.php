@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Admin\CmsDashboard;
+use App\Models\SiteSetting;
 use App\Support\AdminNavigationHelp;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -20,6 +21,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Js;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -32,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName(fn (): string => $this->brandName())
             ->login()
             ->passwordReset()
             ->sidebarCollapsibleOnDesktop()
@@ -1155,5 +1158,14 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+
+    private function brandName(): string
+    {
+        if (! Schema::hasTable('site_settings')) {
+            return 'TwyxtCo Church';
+        }
+
+        return SiteSetting::query()->value('church_name') ?: 'TwyxtCo Church';
     }
 }

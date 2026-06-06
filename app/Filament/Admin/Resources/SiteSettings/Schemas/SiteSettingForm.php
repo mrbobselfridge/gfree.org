@@ -28,8 +28,6 @@ class SiteSettingForm
                             ->required()
                             ->default('TwyxtCo Church')
                             ->maxLength(255),
-                        ImageUpload::make('site_logo_path', 'site-settings/logo', 'Site logo')
-                            ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
                         TextInput::make('phone')
                             ->maxLength(255)
                             ->tel(),
@@ -39,12 +37,11 @@ class SiteSettingForm
                             ->maxLength(255),
                         TextInput::make('tagline')
                             ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('sunday_service_times'))
-                            ->columnSpanFull(),
-                        RichEditorDefaults::configure(RichEditor::make('office_hours'))
-                            ->columnSpanFull(),
-                        RichEditorDefaults::configure(RichEditor::make('address'))
-                            ->columnSpanFull(),
+                        RichEditorDefaults::configure(RichEditor::make('sunday_service_times')),
+                        RichEditorDefaults::configure(RichEditor::make('address')),
+                        RichEditorDefaults::configure(RichEditor::make('office_hours')),
+                        ImageUpload::make('site_logo_path', 'site-settings/logo', 'Site logo')
+                            ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

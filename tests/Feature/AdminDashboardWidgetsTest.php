@@ -19,6 +19,18 @@ class AdminDashboardWidgetsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_brand_uses_site_settings_church_name(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'Custom Church Name',
+        ]);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('Custom Church Name');
+    }
+
     public function test_admin_dashboard_shows_cms_widgets_with_relevant_content(): void
     {
         Storage::fake('public');
