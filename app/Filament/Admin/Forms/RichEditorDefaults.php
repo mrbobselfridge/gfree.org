@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Forms;
 
 use App\Filament\Admin\Forms\RichContentBlocks\EmbedBlock;
 use App\Filament\Admin\Forms\RichContentPlugins\AiContentRewritePlugin;
+use App\Filament\Admin\Forms\RichContentPlugins\FileLibraryLinkPlugin;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\RichEditor\RichEditorTool;
 use Filament\Support\Icons\Heroicon;
@@ -15,6 +16,7 @@ class RichEditorDefaults
         return $editor
             ->plugins([
                 new AiContentRewritePlugin,
+                new FileLibraryLinkPlugin,
             ])
             ->customBlocks([
                 EmbedBlock::class,
@@ -31,7 +33,7 @@ class RichEditorDefaults
                 ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
                 ['alignStart', 'alignCenter', 'alignEnd'],
                 ['blockquote', 'bulletList', 'orderedList'],
-                ['table', 'horizontalRule', 'embed', 'aiRewrite'],
+                ['table', 'horizontalRule', 'embed', 'fileLibrary', 'aiRewrite'],
                 ['undo', 'redo'],
             ]);
     }
