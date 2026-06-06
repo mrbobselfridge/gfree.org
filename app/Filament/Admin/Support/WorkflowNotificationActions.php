@@ -21,30 +21,32 @@ class WorkflowNotificationActions
             return null;
         }
 
-        return Action::make('notifyTeam')
-            ->label('Notify Team')
-            ->icon(Heroicon::OutlinedBell)
-            ->color('gray')
-            ->modalHeading('Notify team')
-            ->modalSubmitActionLabel('Send notification')
-            ->fillForm([
-                'rule_ids' => array_keys($options),
-            ])
-            ->schema([
-                CheckboxList::make('rule_ids')
-                    ->label('Workflow messages')
-                    ->options($options)
-                    ->required()
-                    ->columns(1),
-            ])
-            ->action(function (array $data) use ($record, $service): void {
-                $count = $service->manualForRecord($record, $data['rule_ids'] ?? []);
+        return IconOnlyAction::make(
+            Action::make('notifyTeam')
+                ->label('Notify')
+                ->color('gray')
+                ->modalHeading('Notify team')
+                ->modalSubmitActionLabel('Send notification')
+                ->fillForm([
+                    'rule_ids' => array_keys($options),
+                ])
+                ->schema([
+                    CheckboxList::make('rule_ids')
+                        ->label('Workflow messages')
+                        ->options($options)
+                        ->required()
+                        ->columns(1),
+                ])
+                ->action(function (array $data) use ($record, $service): void {
+                    $count = $service->manualForRecord($record, $data['rule_ids'] ?? []);
 
-                Notification::make()
-                    ->title($count === 1 ? 'Workflow notification sent' : "{$count} workflow notifications sent")
-                    ->success()
-                    ->send();
-            });
+                    Notification::make()
+                        ->title($count === 1 ? 'Workflow notification sent' : "{$count} workflow notifications sent")
+                        ->success()
+                        ->send();
+                }),
+            Heroicon::OutlinedBell,
+        );
     }
 
     public static function notifyTeamForRecordActions(Model $record): array
@@ -70,37 +72,39 @@ class WorkflowNotificationActions
             return null;
         }
 
-        return Action::make('notifyTeam')
-            ->label('Notify Team')
-            ->icon(Heroicon::OutlinedBell)
-            ->color('gray')
-            ->modalHeading('Notify team')
-            ->modalSubmitActionLabel('Send notification')
-            ->fillForm([
-                'rule_ids' => array_keys($options),
-            ])
-            ->schema([
-                CheckboxList::make('rule_ids')
-                    ->label('Workflow messages')
-                    ->options($options)
-                    ->required()
-                    ->columns(1),
-            ])
-            ->action(function (array $data) use ($area, $recordKey, $recordLabel, $adminUrl, $publicUrl, $service): void {
-                $count = $service->manual(
-                    area: $area,
-                    ruleIds: $data['rule_ids'] ?? [],
-                    recordKey: $recordKey,
-                    recordLabel: $recordLabel,
-                    adminUrl: $adminUrl,
-                    publicUrl: $publicUrl,
-                );
+        return IconOnlyAction::make(
+            Action::make('notifyTeam')
+                ->label('Notify')
+                ->color('gray')
+                ->modalHeading('Notify team')
+                ->modalSubmitActionLabel('Send notification')
+                ->fillForm([
+                    'rule_ids' => array_keys($options),
+                ])
+                ->schema([
+                    CheckboxList::make('rule_ids')
+                        ->label('Workflow messages')
+                        ->options($options)
+                        ->required()
+                        ->columns(1),
+                ])
+                ->action(function (array $data) use ($area, $recordKey, $recordLabel, $adminUrl, $publicUrl, $service): void {
+                    $count = $service->manual(
+                        area: $area,
+                        ruleIds: $data['rule_ids'] ?? [],
+                        recordKey: $recordKey,
+                        recordLabel: $recordLabel,
+                        adminUrl: $adminUrl,
+                        publicUrl: $publicUrl,
+                    );
 
-                Notification::make()
-                    ->title($count === 1 ? 'Workflow notification sent' : "{$count} workflow notifications sent")
-                    ->success()
-                    ->send();
-            });
+                    Notification::make()
+                        ->title($count === 1 ? 'Workflow notification sent' : "{$count} workflow notifications sent")
+                        ->success()
+                        ->send();
+                }),
+            Heroicon::OutlinedBell,
+        );
     }
 
     public static function notifyTeamForAreaActions(

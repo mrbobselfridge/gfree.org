@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Support;
 
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\NavigationLink;
 use App\Models\WorkflowNotificationRule;
@@ -22,59 +23,62 @@ class StandardTableActions
     public static function make(): array
     {
         return [
-            EditAction::make()
-                ->label('Edit')
-                ->iconButton()
-                ->icon(Heroicon::OutlinedPencilSquare),
+            IconOnlyAction::make(
+                EditAction::make()
+                    ->label('Edit'),
+                Heroicon::OutlinedPencilSquare,
+            ),
 
-            Action::make('copy')
-                ->label('Copy')
-                ->icon(Heroicon::OutlinedSquare2Stack)
-                ->iconButton()
-                ->authorize(fn (Model $record): bool => self::canCopy($record))
-                ->action(function (Model $record): void {
-                    $copy = $record->replicate();
-                    $labelField = self::labelField($record);
-                    $timestamp = now();
+            IconOnlyAction::make(
+                Action::make('copy')
+                    ->label('Copy')
+                    ->authorize(fn (Model $record): bool => self::canCopy($record))
+                    ->action(function (Model $record): void {
+                        $copy = $record->replicate();
+                        $labelField = self::labelField($record);
+                        $timestamp = now();
 
-                    if ($labelField) {
-                        $copy->{$labelField} = self::copyLabel($record, $labelField, $timestamp->format('Y-m-d H:i:s'));
-                    }
+                        if ($labelField) {
+                            $copy->{$labelField} = self::copyLabel($record, $labelField, $timestamp->format('Y-m-d H:i:s'));
+                        }
 
-                    if (array_key_exists('slug', $record->getAttributes())) {
-                        $copy->slug = self::uniqueSlug(
-                            $record,
-                            filled($record->slug) ? $record->slug : ($labelField ? $record->{$labelField} : null),
+                        if (array_key_exists('slug', $record->getAttributes())) {
+                            $copy->slug = self::uniqueSlug(
+                                $record,
+                                filled($record->slug) ? $record->slug : ($labelField ? $record->{$labelField} : null),
+                            );
+                        }
+
+                        $copy->save();
+                        self::copyRelatedRecords($record, $copy);
+
+                        app(WorkflowNotificationService::class)->automaticForRecord(
+                            $copy,
+                            WorkflowNotificationRule::TRIGGER_CREATED,
                         );
-                    }
 
-                    $copy->save();
-                    self::copyRelatedRecords($record, $copy);
+                        Notification::make()
+                            ->success()
+                            ->title('Copied')
+                            ->body(self::recordLabel($record).' was copied.')
+                            ->send();
+                    }),
+                Heroicon::OutlinedSquare2Stack,
+            ),
 
-                    app(WorkflowNotificationService::class)->automaticForRecord(
-                        $copy,
-                        WorkflowNotificationRule::TRIGGER_CREATED,
-                    );
-
-                    Notification::make()
-                        ->success()
-                        ->title('Copied')
-                        ->body(self::recordLabel($record).' was copied.')
-                        ->send();
-                }),
-
-            DeleteAction::make()
-                ->label('Delete')
-                ->iconButton()
-                ->icon(Heroicon::OutlinedTrash)
-                ->modalHeading('Delete item?')
-                ->modalDescription(fn (Model $record): string => 'Are you sure you want to delete: '.self::recordLabel($record).'?')
-                ->modalSubmitActionLabel('Yes')
-                ->modalCancelActionLabel('No')
-                ->after(fn (Model $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
-                    $record,
-                    WorkflowNotificationRule::TRIGGER_DELETED,
-                )),
+            IconOnlyAction::make(
+                DeleteAction::make()
+                    ->label('Delete')
+                    ->modalHeading('Delete item?')
+                    ->modalDescription(fn (Model $record): string => 'Are you sure you want to delete: '.self::recordLabel($record).'?')
+                    ->modalSubmitActionLabel('Yes')
+                    ->modalCancelActionLabel('No')
+                    ->after(fn (Model $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                        $record,
+                        WorkflowNotificationRule::TRIGGER_DELETED,
+                    )),
+                Heroicon::OutlinedTrash,
+            ),
 
             PublicPageActions::tableAction(),
         ];

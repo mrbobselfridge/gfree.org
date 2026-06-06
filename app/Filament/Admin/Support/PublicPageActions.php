@@ -12,13 +12,13 @@ class PublicPageActions
 {
     public static function tableAction(): Action
     {
-        return Action::make('viewPublicPage')
-            ->label('View')
-            ->tooltip('View')
-            ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
-            ->iconButton()
-            ->url(fn (Model $record): ?string => PublicPageUrls::forRecord($record), true)
-            ->hidden(fn (Model $record): bool => blank(PublicPageUrls::forRecord($record)));
+        return IconOnlyAction::make(
+            Action::make('viewPublicPage')
+                ->label('View')
+                ->url(fn (Model $record): ?string => PublicPageUrls::forRecord($record), true)
+                ->hidden(fn (Model $record): bool => blank(PublicPageUrls::forRecord($record))),
+            Heroicon::OutlinedArrowTopRightOnSquare,
+        );
     }
 
     public static function button(string $name, ?string $url, string $label = 'View'): ?Action
@@ -27,11 +27,13 @@ class PublicPageActions
             return null;
         }
 
-        return Action::make($name)
-            ->label($label)
-            ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
-            ->url($url, true)
-            ->color('gray');
+        return IconOnlyAction::make(
+            Action::make($name)
+                ->label($label)
+                ->url($url, true)
+                ->color('gray'),
+            Heroicon::OutlinedArrowTopRightOnSquare,
+        );
     }
 
     public static function notificationAction(?string $url): ?Action

@@ -2,12 +2,14 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\WorkflowNotificationRule;
 use App\Support\PublicPageUrls;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 
 trait UsesStandardCreateActions
 {
@@ -31,48 +33,66 @@ trait UsesStandardCreateActions
 
     protected function getCreateFormAction(): Action
     {
-        return parent::getCreateFormAction()
-            ->label('Create')
-            ->color('success');
+        return IconOnlyAction::make(
+            parent::getCreateFormAction()
+                ->label('Create')
+                ->color('success'),
+            Heroicon::OutlinedPlus,
+        );
     }
 
     protected function getCreateAnotherFormAction(): Action
     {
-        return parent::getCreateAnotherFormAction()
-            ->label('Create & add more')
-            ->color('success');
+        return IconOnlyAction::make(
+            parent::getCreateAnotherFormAction()
+                ->label('Create & add another')
+                ->color('success'),
+            Heroicon::OutlinedSquaresPlus,
+        );
     }
 
     protected function getCancelFormAction(): Action
     {
-        return Action::make('cancel')
-            ->label('Cancel')
-            ->url($this->getResourceUrl())
-            ->color('primary');
+        return IconOnlyAction::make(
+            Action::make('cancel')
+                ->label('Cancel')
+                ->url($this->getResourceUrl())
+                ->color('primary'),
+            Heroicon::OutlinedXMark,
+        );
     }
 
     protected function getHeaderCancelAction(): Action
     {
-        return Action::make('headerCancel')
-            ->label('Cancel')
-            ->url($this->getResourceUrl())
-            ->color('primary');
+        return IconOnlyAction::make(
+            Action::make('headerCancel')
+                ->label('Cancel')
+                ->url($this->getResourceUrl())
+                ->color('primary'),
+            Heroicon::OutlinedXMark,
+        );
     }
 
     protected function getHeaderCreateAnotherAction(): Action
     {
-        return Action::make('headerCreateAnother')
-            ->label('Create & add more')
-            ->action('createAnother')
-            ->color('success');
+        return IconOnlyAction::make(
+            Action::make('headerCreateAnother')
+                ->label('Create & add another')
+                ->action('createAnother')
+                ->color('success'),
+            Heroicon::OutlinedSquaresPlus,
+        );
     }
 
     protected function getHeaderCreateAction(): Action
     {
-        return Action::make('headerCreate')
-            ->label('Create')
-            ->action('create')
-            ->color('success');
+        return IconOnlyAction::make(
+            Action::make('headerCreate')
+                ->label('Create')
+                ->action('create')
+                ->color('success'),
+            Heroicon::OutlinedPlus,
+        );
     }
 
     public function createAnother(): void

@@ -2,15 +2,23 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Support\IconOnlyAction;
 use Filament\Actions\CreateAction;
+use Filament\Support\Icons\Heroicon;
 
 trait UsesStandardListActions
 {
     protected function getHeaderActions(): array
     {
+        $resource = static::getResource();
+
         return [
-            CreateAction::make()
-                ->color('success'),
+            IconOnlyAction::make(
+                CreateAction::make()
+                    ->label('New '.$resource::getTitleCaseModelLabel())
+                    ->color('success'),
+                Heroicon::OutlinedPlus,
+            ),
         ];
     }
 }

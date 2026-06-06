@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\Users\Pages\CreateUser;
 use App\Filament\Admin\Resources\Users\Pages\EditUser;
 use App\Filament\Admin\Resources\Users\Pages\ListUsers;
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\User;
 use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
@@ -173,12 +174,20 @@ class UserResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make()
-                    ->after(fn (User $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
-                        $record,
-                        WorkflowNotificationRule::TRIGGER_DELETED,
-                    )),
+                IconOnlyAction::make(
+                    EditAction::make()
+                        ->label('Edit'),
+                    Heroicon::OutlinedPencilSquare,
+                ),
+                IconOnlyAction::make(
+                    DeleteAction::make()
+                        ->label('Delete')
+                        ->after(fn (User $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                            $record,
+                            WorkflowNotificationRule::TRIGGER_DELETED,
+                        )),
+                    Heroicon::OutlinedTrash,
+                ),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

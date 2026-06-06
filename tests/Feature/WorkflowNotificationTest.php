@@ -150,7 +150,7 @@ class WorkflowNotificationTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
             ->assertActionExists('notifyTeam')
-            ->assertActionHasLabel('notifyTeam', 'Notify Team');
+            ->assertActionHasLabel('notifyTeam', 'Notify');
     }
 
     public function test_create_record_hook_queues_matching_workflow_notification(): void

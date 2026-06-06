@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\HomepageContent as HomepageContentModel;
@@ -92,10 +93,13 @@ class HomepageContent extends Page
         return [
             PublicPageActions::button('viewPublicPage', route('home')),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
-            Action::make('save')
-                ->label('Save')
-                ->action('save')
-                ->color('success'),
+            IconOnlyAction::make(
+                Action::make('save')
+                    ->label('Save')
+                    ->action('save')
+                    ->color('success'),
+                Heroicon::OutlinedCheck,
+            ),
         ];
     }
 
@@ -135,11 +139,14 @@ class HomepageContent extends Page
             ->livewireSubmitHandler('save')
             ->footer([
                 Actions::make([
-                    Action::make('save')
-                        ->label('Save')
-                        ->submit('save')
-                        ->color('success')
-                        ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                    IconOnlyAction::make(
+                        Action::make('save')
+                            ->label('Save')
+                            ->submit('save')
+                            ->color('success')
+                            ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                        Heroicon::OutlinedCheck,
+                    ),
                     PublicPageActions::button('viewPublicPageFooter', route('home')),
                     ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
                 ])

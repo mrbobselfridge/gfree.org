@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
@@ -10,6 +11,7 @@ use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 
 trait UsesStandardEditActions
 {
@@ -44,69 +46,93 @@ trait UsesStandardEditActions
 
     protected function getSaveFormAction(): Action
     {
-        return parent::getSaveFormAction()
-            ->label('Save')
-            ->color('success')
-            ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']);
+        return IconOnlyAction::make(
+            parent::getSaveFormAction()
+                ->label('Save')
+                ->color('success')
+                ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+            Heroicon::OutlinedCheck,
+        );
     }
 
     protected function getSaveAndCloseFormAction(): Action
     {
-        return Action::make('saveAndClose')
-            ->label('Save & close')
-            ->action('saveAndClose')
-            ->color('success');
+        return IconOnlyAction::make(
+            Action::make('saveAndClose')
+                ->label('Save & close')
+                ->action('saveAndClose')
+                ->color('success'),
+            Heroicon::OutlinedDocumentCheck,
+        );
     }
 
     protected function getDeleteFormAction(): DeleteAction
     {
-        return DeleteAction::make('deleteFromForm')
-            ->label('Delete')
-            ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
-                $this->getRecord(),
-                WorkflowNotificationRule::TRIGGER_DELETED,
-            ));
+        return IconOnlyAction::make(
+            DeleteAction::make('deleteFromForm')
+                ->label('Delete')
+                ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                    $this->getRecord(),
+                    WorkflowNotificationRule::TRIGGER_DELETED,
+                )),
+            Heroicon::OutlinedTrash,
+        );
     }
 
     protected function getCancelFormAction(): Action
     {
-        return Action::make('cancel')
-            ->label('Cancel')
-            ->url($this->getResourceUrl())
-            ->color('primary');
+        return IconOnlyAction::make(
+            Action::make('cancel')
+                ->label('Cancel')
+                ->url($this->getResourceUrl())
+                ->color('primary'),
+            Heroicon::OutlinedXMark,
+        );
     }
 
     protected function getHeaderCancelAction(): Action
     {
-        return Action::make('headerCancel')
-            ->label('Cancel')
-            ->url($this->getResourceUrl())
-            ->color('primary');
+        return IconOnlyAction::make(
+            Action::make('headerCancel')
+                ->label('Cancel')
+                ->url($this->getResourceUrl())
+                ->color('primary'),
+            Heroicon::OutlinedXMark,
+        );
     }
 
     protected function getHeaderDeleteAction(): DeleteAction
     {
-        return DeleteAction::make()
-            ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
-                $this->getRecord(),
-                WorkflowNotificationRule::TRIGGER_DELETED,
-            ));
+        return IconOnlyAction::make(
+            DeleteAction::make()
+                ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
+                    $this->getRecord(),
+                    WorkflowNotificationRule::TRIGGER_DELETED,
+                )),
+            Heroicon::OutlinedTrash,
+        );
     }
 
     protected function getHeaderSaveAndCloseAction(): Action
     {
-        return Action::make('headerSaveAndClose')
-            ->label('Save & close')
-            ->action('saveAndClose')
-            ->color('success');
+        return IconOnlyAction::make(
+            Action::make('headerSaveAndClose')
+                ->label('Save & close')
+                ->action('saveAndClose')
+                ->color('success'),
+            Heroicon::OutlinedDocumentCheck,
+        );
     }
 
     protected function getHeaderSaveAction(): Action
     {
-        return Action::make('headerSave')
-            ->label('Save')
-            ->action('save')
-            ->color('success');
+        return IconOnlyAction::make(
+            Action::make('headerSave')
+                ->label('Save')
+                ->action('save')
+                ->color('success'),
+            Heroicon::OutlinedCheck,
+        );
     }
 
     protected function afterSave(): void

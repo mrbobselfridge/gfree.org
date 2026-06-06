@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Concerns;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\SiteSetting;
 use Filament\Actions\Action;
@@ -162,11 +163,14 @@ trait ManagesListingPageSettings
     private function getListingSettingsSaveAction(): Actions
     {
         return Actions::make([
-            Action::make('saveListingSettings')
-                ->label('Save Landing Page Settings')
-                ->submit('saveListingSettings')
-                ->color('success')
-                ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+            IconOnlyAction::make(
+                Action::make('saveListingSettings')
+                    ->label('Save Landing Page Settings')
+                    ->submit('saveListingSettings')
+                    ->color('success')
+                    ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                Heroicon::OutlinedCheck,
+            ),
             ...$this->getListingSettingsViewPublicPageActions(),
         ])
             ->alignment(Alignment::Start)

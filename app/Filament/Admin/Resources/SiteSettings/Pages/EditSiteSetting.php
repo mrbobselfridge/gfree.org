@@ -3,11 +3,13 @@
 namespace App\Filament\Admin\Resources\SiteSettings\Pages;
 
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 
 class EditSiteSetting extends EditRecord
 {
@@ -18,10 +20,13 @@ class EditSiteSetting extends EditRecord
         return [
             $this->getCancelHeaderAction(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
-            Action::make('save')
-                ->label('Save')
-                ->action('save')
-                ->color('success'),
+            IconOnlyAction::make(
+                Action::make('save')
+                    ->label('Save')
+                    ->action('save')
+                    ->color('success'),
+                Heroicon::OutlinedCheck,
+            ),
         ];
     }
 
@@ -35,26 +40,35 @@ class EditSiteSetting extends EditRecord
 
     protected function getSaveFormAction(): Action
     {
-        return parent::getSaveFormAction()
-            ->label('Save')
-            ->color('success')
-            ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']);
+        return IconOnlyAction::make(
+            parent::getSaveFormAction()
+                ->label('Save')
+                ->color('success')
+                ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+            Heroicon::OutlinedCheck,
+        );
     }
 
     protected function getCancelHeaderAction(): Action
     {
-        return Action::make('cancelHeader')
-            ->label('Cancel')
-            ->url(SiteSettingResource::getUrl('index'))
-            ->color('gray');
+        return IconOnlyAction::make(
+            Action::make('cancelHeader')
+                ->label('Cancel')
+                ->url(SiteSettingResource::getUrl('index'))
+                ->color('gray'),
+            Heroicon::OutlinedXMark,
+        );
     }
 
     protected function getCancelFormAction(): Action
     {
-        return Action::make('cancelForm')
-            ->label('Cancel')
-            ->url(SiteSettingResource::getUrl('index'))
-            ->color('gray');
+        return IconOnlyAction::make(
+            Action::make('cancelForm')
+                ->label('Cancel')
+                ->url(SiteSettingResource::getUrl('index'))
+                ->color('gray'),
+            Heroicon::OutlinedXMark,
+        );
     }
 
     protected function getRedirectUrl(): ?string
