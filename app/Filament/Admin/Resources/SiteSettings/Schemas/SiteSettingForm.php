@@ -28,6 +28,8 @@ class SiteSettingForm
                             ->required()
                             ->default('TwyxtCo Church')
                             ->maxLength(255),
+                        ImageUpload::make('site_logo_path', 'site-settings/logo', 'Site logo')
+                            ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
                         TextInput::make('phone')
                             ->maxLength(255)
                             ->tel(),

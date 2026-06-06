@@ -656,6 +656,7 @@
             <p>Site Settings control church-wide information and default public page settings.</p>
             <ul>
                 <li>Church name.</li>
+                <li>Site logo used in the public header and footer.</li>
                 <li>Address, email, phone, office hours, and Sunday service times.</li>
                 <li>Social media links.</li>
                 <li>One Church URL fallback.</li>

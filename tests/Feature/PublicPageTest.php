@@ -58,6 +58,7 @@ class PublicPageTest extends TestCase
     {
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
+            'site_logo_path' => 'site-settings/logo/custom-logo.png',
             'tagline' => 'This tagline should not be in the footer.',
             'address' => '<p>305 Keystone Hill Road</p>',
             'email' => 'hello@example.com',
@@ -78,6 +79,7 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('site-footer__brand', false)
             ->assertSee('<a href="'.url('/').'" aria-label="TwyxtCo Church home">', false)
+            ->assertSee('/storage/site-settings/logo/custom-logo.png')
             ->assertSee('site-footer__contact', false)
             ->assertSee('site-footer__social', false)
             ->assertSee('Address')

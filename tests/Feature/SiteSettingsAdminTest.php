@@ -23,6 +23,7 @@ class SiteSettingsAdminTest extends TestCase
             ->get("/admin/site-settings/{$settings->getKey()}/edit")
             ->assertOk()
             ->assertSee('Organizational Information')
+            ->assertSee('Site logo')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
             ->assertSee('OpenAI bulletin model')

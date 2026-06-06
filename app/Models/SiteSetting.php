@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'church_name',
+    'site_logo_path',
     'tagline',
     'sunday_service_times',
     'address',
@@ -51,6 +53,21 @@ use Illuminate\Database\Eloquent\Model;
 ])]
 class SiteSetting extends Model
 {
+    public function logoUrl(): string
+    {
+        if (blank($this->site_logo_path)) {
+            return asset('images/twyxtco-logo.png');
+        }
+
+        $path = (string) $this->site_logo_path;
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return Storage::disk('public')->url($path);
+    }
+
     public function normalizedGoogleTagManagerId(): ?string
     {
         return $this->normalizeTrackingId($this->google_tag_manager_id, '/^GTM-[A-Z0-9]+$/');
