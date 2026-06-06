@@ -1099,6 +1099,10 @@
     object-fit: cover;
 }
 
+.leadership-card img {
+    aspect-ratio: 1;
+}
+
 .listing-card__content {
     display: flex;
     flex: 1;

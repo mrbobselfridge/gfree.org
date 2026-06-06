@@ -25,7 +25,7 @@ class LeadershipController extends Controller
             ->inRandomOrder()
             ->get()
             ->map(function (StaffMember $leader): StaffMember {
-                $leader->photo_url = $this->imageUrl($leader->photo_path);
+                $leader->photo_url = $this->imageUrl($leader->card_image_path ?: $leader->photo_path);
 
                 return $leader;
             });

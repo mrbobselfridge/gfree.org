@@ -30,6 +30,10 @@ class StaffMembersTable
                     ->label('Photo')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),
+                ImageColumn::make('card_image_path')
+                    ->label('Card image')
+                    ->disk('public')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),

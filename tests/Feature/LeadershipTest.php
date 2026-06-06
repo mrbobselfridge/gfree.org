@@ -12,13 +12,14 @@ class LeadershipTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_leader_admin_form_includes_phone_number_and_availability(): void
+    public function test_leader_admin_form_includes_phone_number_availability_and_card_image(): void
     {
         $this->actingAs(User::factory()->create())
             ->get('/admin/staff-members/create')
             ->assertOk()
             ->assertSee('Phone Number')
-            ->assertSee('Availability');
+            ->assertSee('Availability')
+            ->assertSee('Card image');
     }
 
     public function test_published_leaders_show_on_leadership_index(): void
@@ -28,6 +29,7 @@ class LeadershipTest extends TestCase
             'slug' => 'jane-leader',
             'role' => 'Pastor',
             'photo_path' => 'leadership/jane.jpg',
+            'card_image_path' => 'leadership/card-images/jane-square.jpg',
             'is_published' => true,
         ]);
 
@@ -41,7 +43,8 @@ class LeadershipTest extends TestCase
             ->assertOk()
             ->assertSee('Jane Leader')
             ->assertSee('Pastor')
-            ->assertSee('/storage/leadership/jane.jpg')
+            ->assertSee('/storage/leadership/card-images/jane-square.jpg')
+            ->assertDontSee('/storage/leadership/jane.jpg')
             ->assertSee('/leadership/jane-leader')
             ->assertSee('listing-card__link', false)
             ->assertSee('listing-card__button', false)

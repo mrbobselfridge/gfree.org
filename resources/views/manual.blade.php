@@ -611,6 +611,7 @@
             <p>Leaders manage staff or leadership profiles shown on the leadership page and individual profile pages.</p>
             <ul>
                 <li>Use consistent names, roles, and image style.</li>
+                <li>Use the leadership image for the individual profile banner and the card image for the square image on the leadership listing page.</li>
                 <li>Use phone number and availability fields when those details should appear on the individual profile page.</li>
                 <li>Keep bios short and warm.</li>
                 <li>Use content blocks for richer profile pages when needed.</li>

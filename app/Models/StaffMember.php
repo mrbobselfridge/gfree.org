@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
     'bio',
     'content_blocks',
     'photo_path',
+    'card_image_path',
     'email',
     'phone_number',
     'availability',

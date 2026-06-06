@@ -103,6 +103,7 @@ class MediaUsage
                 'title' => 'name',
                 'fields' => [
                     'photo_path' => 'Leadership image',
+                    'card_image_path' => 'Leadership card image',
                 ],
             ],
             [
