@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\WorkflowNotificationRules\Schemas;
 use App\Models\User;
 use App\Support\WorkflowNotificationAreas;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class WorkflowNotificationRuleForm
 {
@@ -41,6 +43,13 @@ class WorkflowNotificationRuleForm
                             ->options(WorkflowNotificationAreas::triggerOptions())
                             ->columns(4)
                             ->required(),
+
+                        Placeholder::make('delay_minutes_help')
+                            ->label('')
+                            ->content(new HtmlString(
+                                'Automatic send delay controls how long the system waits before sending an automatic notification. During that delay, repeated saves to the same item update the pending notification instead of sending multiple emails.'
+                            )),
+
                         Select::make('delay_minutes')
                             ->label('Automatic send delay')
                             ->options(WorkflowNotificationAreas::delayOptions())
