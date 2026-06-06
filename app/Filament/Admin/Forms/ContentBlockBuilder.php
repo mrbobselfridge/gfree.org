@@ -25,7 +25,7 @@ class ContentBlockBuilder
         $builder = Builder::make($field);
 
         if ($withStarterTextBlock) {
-            $builder->default(self::defaultTextBlock());
+            $builder->default(fn (?string $operation): array => $operation === 'create' ? self::defaultTextBlock() : []);
         }
 
         return $builder
@@ -42,7 +42,6 @@ class ContentBlockBuilder
                             ->live(onBlur: true)
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('body'))
-                            ->required()
                             ->columnSpanFull(),
                         Select::make('content_width')
                             ->label('Content width')
@@ -348,7 +347,7 @@ class ContentBlockBuilder
             ])
             ->blockNumbers(false)
             ->collapsible()
-            ->collapsed()
+            ->collapsed(fn (?string $operation): bool => $operation !== 'create')
             ->extraAttributes([
                 'x-on:click.capture' => <<<'JS'
                     const header = $event.target.closest('.fi-fo-builder-item-header');
