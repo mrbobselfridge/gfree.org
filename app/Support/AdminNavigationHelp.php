@@ -23,6 +23,7 @@ class AdminNavigationHelp
             'Analytics' => 'Review site traffic, top pages, referrers, devices, browsers, and recent page views.',
             'Site Settings' => 'Edit church-wide contact details, social links, AI settings, and page defaults.',
             'Navigation Links' => 'Control the public website header navigation links and dropdowns.',
+            'Workflow Notifications' => 'Send automatic or manual email updates when selected content areas are created, changed, or deleted.',
             'Users' => 'Manage admin and editor accounts and their allowed admin areas.',
             'User Manual' => 'Open the printable website and admin manual.',
         ];
