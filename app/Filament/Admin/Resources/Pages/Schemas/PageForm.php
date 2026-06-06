@@ -77,5 +77,4 @@ class PageForm
                     ->rows(1),
             ]);
     }
-
 }

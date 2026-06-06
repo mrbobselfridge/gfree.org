@@ -54,26 +54,26 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::STYLES_AFTER,
                 fn (): HtmlString => new HtmlString(<<<'HTML'
                     <style>
-                        .gfree-content-block-builder-field {
+                        .twyxtco-content-block-builder-field {
                             position: relative;
                         }
 
-                        .gfree-content-block-builder-field > .fi-fo-field-label-col {
+                        .twyxtco-content-block-builder-field > .fi-fo-field-label-col {
                             padding-inline-end: 18rem;
                         }
 
-                        .gfree-content-block-builder-field .fi-fo-field-label-content {
+                        .twyxtco-content-block-builder-field .fi-fo-field-label-content {
                             color: var(--gray-950);
                             font-size: 1.125rem;
                             font-weight: 750;
                             line-height: 1.25;
                         }
 
-                        .dark .gfree-content-block-builder-field .fi-fo-field-label-content {
+                        .dark .twyxtco-content-block-builder-field .fi-fo-field-label-content {
                             color: white;
                         }
 
-                        .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions {
+                        .twyxtco-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions {
                             position: absolute;
                             top: 0;
                             inset-inline-end: 0;
@@ -81,45 +81,45 @@ class AdminPanelProvider extends PanelProvider
                             gap: 0;
                         }
 
-                        .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
+                        .twyxtco-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
                             margin-inline-start: 1.25rem;
                             padding-inline-start: 1.25rem;
                             border-inline-start: 1px solid var(--gray-300);
                         }
 
-                        .dark .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
+                        .dark .twyxtco-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions > span + span {
                             border-inline-start-color: var(--gray-700);
                         }
 
-                        .gfree-admin-icon-action.fi-icon-btn {
+                        .twyxtco-admin-icon-action.fi-icon-btn {
                             width: 3.75rem;
                             height: 3.75rem;
                             margin: -0.5rem;
                             border-radius: 0.75rem;
                         }
 
-                        .gfree-admin-icon-action.fi-icon-btn > .fi-icon {
+                        .twyxtco-admin-icon-action.fi-icon-btn > .fi-icon {
                             width: 1.875rem;
                             height: 1.875rem;
                         }
 
-                        .gfree-user-permission-list .fi-fo-checkbox-list-option-ctn {
+                        .twyxtco-user-permission-list .fi-fo-checkbox-list-option-ctn {
                             padding-inline-start: 1.25rem;
                         }
 
-                        .gfree-user-permission-list .fi-fo-checkbox-list-actions {
+                        .twyxtco-user-permission-list .fi-fo-checkbox-list-actions {
                             padding-inline-start: 1.25rem;
                         }
 
-                        .gfree-user-permission-list .fi-fo-checkbox-list-option {
+                        .twyxtco-user-permission-list .fi-fo-checkbox-list-option {
                             gap: 0.625rem;
                         }
 
-                        .fi-sidebar-item-btn.gfree-sidebar-help-ready {
+                        .fi-sidebar-item-btn.twyxtco-sidebar-help-ready {
                             gap: 0.75rem;
                         }
 
-                        .gfree-sidebar-help {
+                        .twyxtco-sidebar-help {
                             display: inline-flex;
                             align-items: center;
                             justify-content: center;
@@ -137,32 +137,32 @@ class AdminPanelProvider extends PanelProvider
                             flex-shrink: 0;
                         }
 
-                        .dark .gfree-sidebar-help {
+                        .dark .twyxtco-sidebar-help {
                             border-color: rgb(107 114 128 / 0.75);
                             background: rgb(31 41 55 / 0.72);
                             color: rgb(209 213 219);
                         }
 
-                        .gfree-sidebar-help:hover,
-                        .gfree-sidebar-help:focus {
+                        .twyxtco-sidebar-help:hover,
+                        .twyxtco-sidebar-help:focus {
                             border-color: rgb(34 197 94);
                             background: rgb(34 197 94 / 0.14);
                             color: rgb(22 163 74);
                             outline: none;
                         }
 
-                        .dark .gfree-sidebar-help:hover,
-                        .dark .gfree-sidebar-help:focus {
+                        .dark .twyxtco-sidebar-help:hover,
+                        .dark .twyxtco-sidebar-help:focus {
                             border-color: rgb(74 222 128);
                             background: rgb(34 197 94 / 0.18);
                             color: rgb(134 239 172);
                         }
 
-                        .fi-sidebar:not(.fi-sidebar-open) .gfree-sidebar-help {
+                        .fi-sidebar:not(.fi-sidebar-open) .twyxtco-sidebar-help {
                             display: none;
                         }
 
-                        .gfree-admin-nav-help-tooltip {
+                        .twyxtco-admin-nav-help-tooltip {
                             position: fixed;
                             z-index: 9999;
                             max-width: min(22rem, calc(100vw - 2rem));
@@ -177,11 +177,11 @@ class AdminPanelProvider extends PanelProvider
                             pointer-events: none;
                         }
 
-                        .gfree-dashboard-global-controls-host {
+                        .twyxtco-dashboard-global-controls-host {
                             position: relative;
                         }
 
-                        .gfree-dashboard-global-controls {
+                        .twyxtco-dashboard-global-controls {
                             position: absolute;
                             top: 50%;
                             inset-inline-end: 0;
@@ -193,7 +193,7 @@ class AdminPanelProvider extends PanelProvider
                             z-index: 3;
                         }
 
-                        .gfree-dashboard-global-control {
+                        .twyxtco-dashboard-global-control {
                             display: inline-flex;
                             align-items: center;
                             justify-content: center;
@@ -209,52 +209,52 @@ class AdminPanelProvider extends PanelProvider
                             white-space: nowrap;
                         }
 
-                        .dark .gfree-dashboard-global-control {
+                        .dark .twyxtco-dashboard-global-control {
                             border-color: rgb(245 158 11 / 0.5);
                             background: rgb(17 24 39);
                             color: rgb(251 191 36);
                         }
 
-                        .gfree-dashboard-global-control:hover,
-                        .gfree-dashboard-global-control:focus {
+                        .twyxtco-dashboard-global-control:hover,
+                        .twyxtco-dashboard-global-control:focus {
                             border-color: rgb(245 158 11);
                             background: rgb(255 251 235);
                             color: rgb(180 83 9);
                             outline: none;
                         }
 
-                        .dark .gfree-dashboard-global-control:hover,
-                        .dark .gfree-dashboard-global-control:focus {
+                        .dark .twyxtco-dashboard-global-control:hover,
+                        .dark .twyxtco-dashboard-global-control:focus {
                             border-color: rgb(245 158 11);
                             background: rgb(69 26 3 / 0.3);
                             color: rgb(251 191 36);
                         }
 
-                        .gfree-cms-dashboard-widgets > .fi-sc {
+                        .twyxtco-cms-dashboard-widgets > .fi-sc {
                             display: flex !important;
                             align-items: flex-start;
                             gap: 1.5rem;
                         }
 
-                        .gfree-dashboard-widget-column {
+                        .twyxtco-dashboard-widget-column {
                             display: grid;
                             flex: 1 1 0;
                             gap: 1.5rem;
                             min-width: 0;
                         }
 
-                        .gfree-cms-dashboard-widgets > .fi-sc > .fi-wi-widget,
-                        .gfree-dashboard-widget-column > .fi-wi-widget {
+                        .twyxtco-cms-dashboard-widgets > .fi-sc > .fi-wi-widget,
+                        .twyxtco-dashboard-widget-column > .fi-wi-widget {
                             display: block;
                             width: 100%;
                             min-width: 0;
                         }
 
-                        .gfree-dashboard-widget {
+                        .twyxtco-dashboard-widget {
                             transition: opacity 120ms ease, outline-color 120ms ease, transform 120ms ease;
                         }
 
-                        .gfree-dashboard-widget .fi-section {
+                        .twyxtco-dashboard-widget .fi-section {
                             position: relative;
                             overflow: hidden;
                             border-color: rgb(229 231 235);
@@ -262,18 +262,18 @@ class AdminPanelProvider extends PanelProvider
                             box-shadow: 0 12px 30px rgb(15 23 42 / 0.06);
                         }
 
-                        .dark .gfree-dashboard-widget .fi-section {
+                        .dark .twyxtco-dashboard-widget .fi-section {
                             border-color: rgb(31 41 55);
                             background: linear-gradient(180deg, rgb(24 24 27), rgb(17 24 39));
                             box-shadow: 0 18px 36px rgb(0 0 0 / 0.24);
                         }
 
-                        .gfree-dashboard-widget-shell {
+                        .twyxtco-dashboard-widget-shell {
                             display: grid;
                             gap: 0.875rem;
                         }
 
-                        .gfree-dashboard-widget-controls {
+                        .twyxtco-dashboard-widget-controls {
                             position: absolute;
                             top: 0.875rem;
                             inset-inline: 0.875rem;
@@ -285,11 +285,11 @@ class AdminPanelProvider extends PanelProvider
                             z-index: 2;
                         }
 
-                        .gfree-dashboard-widget-controls > * {
+                        .twyxtco-dashboard-widget-controls > * {
                             pointer-events: auto;
                         }
 
-                        .gfree-dashboard-widget-header {
+                        .twyxtco-dashboard-widget-header {
                             min-width: 0;
                             padding-top: 0;
                             padding-inline-end: 5.5rem;
@@ -297,11 +297,11 @@ class AdminPanelProvider extends PanelProvider
                             border-bottom: 1px solid rgb(229 231 235);
                         }
 
-                        .dark .gfree-dashboard-widget-header {
+                        .dark .twyxtco-dashboard-widget-header {
                             border-bottom-color: rgb(55 65 81);
                         }
 
-                        .gfree-dashboard-widget-title {
+                        .twyxtco-dashboard-widget-title {
                             margin: 0;
                             color: rgb(17 24 39);
                             font-size: 1.05rem;
@@ -309,11 +309,11 @@ class AdminPanelProvider extends PanelProvider
                             line-height: 1.2;
                         }
 
-                        .dark .gfree-dashboard-widget-title {
+                        .dark .twyxtco-dashboard-widget-title {
                             color: white;
                         }
 
-                        .gfree-dashboard-widget-description {
+                        .twyxtco-dashboard-widget-description {
                             margin-top: 0.35rem;
                             color: rgb(75 85 99);
                             font-size: 0.8125rem;
@@ -321,14 +321,14 @@ class AdminPanelProvider extends PanelProvider
                             line-height: 1.45;
                         }
 
-                        .dark .gfree-dashboard-widget-description {
+                        .dark .twyxtco-dashboard-widget-description {
                             color: rgb(156 163 175);
                         }
 
-                        .gfree-dashboard-widget-action,
-                        .gfree-dashboard-widget-count,
-                        .gfree-dashboard-widget-drag-handle,
-                        .gfree-dashboard-widget-collapse {
+                        .twyxtco-dashboard-widget-action,
+                        .twyxtco-dashboard-widget-count,
+                        .twyxtco-dashboard-widget-drag-handle,
+                        .twyxtco-dashboard-widget-collapse {
                             display: inline-flex;
                             align-items: center;
                             justify-content: center;
@@ -343,12 +343,12 @@ class AdminPanelProvider extends PanelProvider
                             white-space: nowrap;
                         }
 
-                        .gfree-dashboard-widget-action {
+                        .twyxtco-dashboard-widget-action {
                             height: 2rem;
                             padding-inline: 0.625rem;
                         }
 
-                        .gfree-dashboard-widget-count {
+                        .twyxtco-dashboard-widget-count {
                             width: 2rem;
                             height: 2rem;
                             padding: 0;
@@ -358,131 +358,131 @@ class AdminPanelProvider extends PanelProvider
                             cursor: default;
                         }
 
-                        .gfree-dashboard-widget-count--danger {
+                        .twyxtco-dashboard-widget-count--danger {
                             border-color: rgb(220 38 38 / 0.55);
                             background: rgb(254 226 226);
                             color: rgb(153 27 27);
                         }
 
-                        .gfree-dashboard-widget-count--warning {
+                        .twyxtco-dashboard-widget-count--warning {
                             border-color: rgb(217 119 6 / 0.55);
                             background: rgb(254 243 199);
                             color: rgb(146 64 14);
                         }
 
-                        .gfree-dashboard-widget-count--success {
+                        .twyxtco-dashboard-widget-count--success {
                             border-color: rgb(22 163 74 / 0.55);
                             background: rgb(220 252 231);
                             color: rgb(21 128 61);
                         }
 
-                        .gfree-dashboard-widget-drag-handle,
-                        .gfree-dashboard-widget-collapse {
+                        .twyxtco-dashboard-widget-drag-handle,
+                        .twyxtco-dashboard-widget-collapse {
                             width: 2rem;
                             height: 2rem;
                             padding: 0;
                         }
 
-                        .gfree-dashboard-widget-control-icon {
+                        .twyxtco-dashboard-widget-control-icon {
                             width: 1rem;
                             height: 1rem;
                             flex-shrink: 0;
                             pointer-events: none;
                         }
 
-                        .gfree-dashboard-widget-collapse-icon-collapsed {
+                        .twyxtco-dashboard-widget-collapse-icon-collapsed {
                             display: none;
                         }
 
-                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed .gfree-dashboard-widget-collapse-icon-expanded {
+                        .twyxtco-dashboard-widget.twyxtco-dashboard-widget-collapsed .twyxtco-dashboard-widget-collapse-icon-expanded {
                             display: none;
                         }
 
-                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed .gfree-dashboard-widget-collapse-icon-collapsed {
+                        .twyxtco-dashboard-widget.twyxtco-dashboard-widget-collapsed .twyxtco-dashboard-widget-collapse-icon-collapsed {
                             display: block;
                         }
 
-                        .dark .gfree-dashboard-widget-action,
-                        .dark .gfree-dashboard-widget-drag-handle,
-                        .dark .gfree-dashboard-widget-collapse {
+                        .dark .twyxtco-dashboard-widget-action,
+                        .dark .twyxtco-dashboard-widget-drag-handle,
+                        .dark .twyxtco-dashboard-widget-collapse {
                             border-color: rgb(75 85 99);
                             background: rgb(17 24 39);
                             color: rgb(229 231 235);
                         }
 
-                        .dark .gfree-dashboard-widget-count {
+                        .dark .twyxtco-dashboard-widget-count {
                             border-color: rgb(34 211 238 / 0.34);
                             background: rgb(8 47 73 / 0.65);
                             color: rgb(165 243 252);
                         }
 
-                        .dark .gfree-dashboard-widget-count--danger {
+                        .dark .twyxtco-dashboard-widget-count--danger {
                             border-color: rgb(248 113 113 / 0.48);
                             background: rgb(127 29 29 / 0.56);
                             color: rgb(254 202 202);
                         }
 
-                        .dark .gfree-dashboard-widget-count--warning {
+                        .dark .twyxtco-dashboard-widget-count--warning {
                             border-color: rgb(251 191 36 / 0.48);
                             background: rgb(120 53 15 / 0.5);
                             color: rgb(253 230 138);
                         }
 
-                        .dark .gfree-dashboard-widget-count--success {
+                        .dark .twyxtco-dashboard-widget-count--success {
                             border-color: rgb(74 222 128 / 0.45);
                             background: rgb(20 83 45 / 0.55);
                             color: rgb(187 247 208);
                         }
 
-                        .gfree-dashboard-widget-action {
+                        .twyxtco-dashboard-widget-action {
                             border-color: rgb(245 158 11 / 0.45);
                             color: rgb(180 83 9);
                         }
 
-                        .dark .gfree-dashboard-widget-action {
+                        .dark .twyxtco-dashboard-widget-action {
                             border-color: rgb(245 158 11 / 0.5);
                             color: rgb(251 191 36);
                         }
 
-                        .gfree-dashboard-widget-drag-handle {
+                        .twyxtco-dashboard-widget-drag-handle {
                             cursor: grab;
                             touch-action: none;
                         }
 
-                        .gfree-dashboard-widget-drag-handle:active {
+                        .twyxtco-dashboard-widget-drag-handle:active {
                             cursor: grabbing;
                         }
 
-                        .gfree-dashboard-widget-action:hover,
-                        .gfree-dashboard-widget-action:focus,
-                        .gfree-dashboard-widget-drag-handle:hover,
-                        .gfree-dashboard-widget-drag-handle:focus,
-                        .gfree-dashboard-widget-collapse:hover,
-                        .gfree-dashboard-widget-collapse:focus {
+                        .twyxtco-dashboard-widget-action:hover,
+                        .twyxtco-dashboard-widget-action:focus,
+                        .twyxtco-dashboard-widget-drag-handle:hover,
+                        .twyxtco-dashboard-widget-drag-handle:focus,
+                        .twyxtco-dashboard-widget-collapse:hover,
+                        .twyxtco-dashboard-widget-collapse:focus {
                             border-color: rgb(245 158 11);
                             background: rgb(255 251 235);
                             color: rgb(180 83 9);
                             outline: none;
                         }
 
-                        .dark .gfree-dashboard-widget-action:hover,
-                        .dark .gfree-dashboard-widget-action:focus,
-                        .dark .gfree-dashboard-widget-drag-handle:hover,
-                        .dark .gfree-dashboard-widget-drag-handle:focus,
-                        .dark .gfree-dashboard-widget-collapse:hover,
-                        .dark .gfree-dashboard-widget-collapse:focus {
+                        .dark .twyxtco-dashboard-widget-action:hover,
+                        .dark .twyxtco-dashboard-widget-action:focus,
+                        .dark .twyxtco-dashboard-widget-drag-handle:hover,
+                        .dark .twyxtco-dashboard-widget-drag-handle:focus,
+                        .dark .twyxtco-dashboard-widget-collapse:hover,
+                        .dark .twyxtco-dashboard-widget-collapse:focus {
                             border-color: rgb(245 158 11);
                             background: rgb(69 26 3 / 0.3);
                             color: rgb(251 191 36);
                         }
 
-                        .gfree-dashboard-widget-body {
+                        .twyxtco-dashboard-widget-body {
                             display: grid;
                             gap: 0.625rem;
                             margin-top: 1rem;
                         }
 
-                        .gfree-dashboard-widget-row {
+                        .twyxtco-dashboard-widget-row {
                             display: flex;
                             align-items: center;
                             gap: 0.875rem;
@@ -493,22 +493,22 @@ class AdminPanelProvider extends PanelProvider
                             padding: 0.75rem;
                         }
 
-                        .gfree-dashboard-widget-row > .min-w-0.flex-1 {
+                        .twyxtco-dashboard-widget-row > .min-w-0.flex-1 {
                             flex: 1 1 auto;
                             min-width: 0;
                         }
 
-                        .gfree-dashboard-widget-row-status {
+                        .twyxtco-dashboard-widget-row-status {
                             margin-inline-start: auto;
                             flex-shrink: 0;
                         }
 
-                        .dark .gfree-dashboard-widget-row {
+                        .dark .twyxtco-dashboard-widget-row {
                             border-color: rgb(55 65 81);
                             background: rgb(3 7 18 / 0.38);
                         }
 
-                        .gfree-dashboard-widget-row-image {
+                        .twyxtco-dashboard-widget-row-image {
                             width: 4.75rem;
                             height: 3.25rem;
                             flex-shrink: 0;
@@ -517,19 +517,19 @@ class AdminPanelProvider extends PanelProvider
                             box-shadow: inset 0 0 0 1px rgb(15 23 42 / 0.1);
                         }
 
-                        .gfree-dashboard-widget-row-image-link {
+                        .twyxtco-dashboard-widget-row-image-link {
                             display: block;
                             flex-shrink: 0;
                             border-radius: 0.5rem;
                             outline: none;
                         }
 
-                        .gfree-dashboard-widget-row-image-link:hover .gfree-dashboard-widget-row-image,
-                        .gfree-dashboard-widget-row-image-link:focus .gfree-dashboard-widget-row-image {
+                        .twyxtco-dashboard-widget-row-image-link:hover .twyxtco-dashboard-widget-row-image,
+                        .twyxtco-dashboard-widget-row-image-link:focus .twyxtco-dashboard-widget-row-image {
                             box-shadow: 0 0 0 2px rgb(245 158 11 / 0.75);
                         }
 
-                        .gfree-dashboard-widget-type {
+                        .twyxtco-dashboard-widget-type {
                             display: inline-flex;
                             align-items: center;
                             max-width: 100%;
@@ -540,11 +540,11 @@ class AdminPanelProvider extends PanelProvider
                             overflow-wrap: anywhere;
                         }
 
-                        .dark .gfree-dashboard-widget-type {
+                        .dark .twyxtco-dashboard-widget-type {
                             color: rgb(251 191 36);
                         }
 
-                        .gfree-dashboard-widget-row-title {
+                        .twyxtco-dashboard-widget-row-title {
                             display: block;
                             color: rgb(17 24 39);
                             font-size: 0.875rem;
@@ -555,22 +555,22 @@ class AdminPanelProvider extends PanelProvider
                             white-space: normal;
                         }
 
-                        .dark .gfree-dashboard-widget-row-title {
+                        .dark .twyxtco-dashboard-widget-row-title {
                             color: white;
                         }
 
-                        .gfree-dashboard-widget-row-title:hover,
-                        .gfree-dashboard-widget-row-title:focus {
+                        .twyxtco-dashboard-widget-row-title:hover,
+                        .twyxtco-dashboard-widget-row-title:focus {
                             color: rgb(217 119 6);
                             outline: none;
                         }
 
-                        .dark .gfree-dashboard-widget-row-title:hover,
-                        .dark .gfree-dashboard-widget-row-title:focus {
+                        .dark .twyxtco-dashboard-widget-row-title:hover,
+                        .dark .twyxtco-dashboard-widget-row-title:focus {
                             color: rgb(251 191 36);
                         }
 
-                        .gfree-dashboard-widget-row-meta {
+                        .twyxtco-dashboard-widget-row-meta {
                             margin-top: 0.25rem;
                             color: rgb(107 114 128);
                             font-size: 0.75rem;
@@ -580,11 +580,11 @@ class AdminPanelProvider extends PanelProvider
                             white-space: normal;
                         }
 
-                        .dark .gfree-dashboard-widget-row-meta {
+                        .dark .twyxtco-dashboard-widget-row-meta {
                             color: rgb(156 163 175);
                         }
 
-                        .gfree-dashboard-widget-empty {
+                        .twyxtco-dashboard-widget-empty {
                             border: 1px dashed rgb(209 213 219);
                             border-radius: 0.5rem;
                             color: rgb(107 114 128);
@@ -594,18 +594,18 @@ class AdminPanelProvider extends PanelProvider
                             padding: 0.875rem;
                         }
 
-                        .dark .gfree-dashboard-widget-empty {
+                        .dark .twyxtco-dashboard-widget-empty {
                             border-color: rgb(75 85 99);
                             color: rgb(156 163 175);
                         }
 
-                        .gfree-dashboard-widget.gfree-dashboard-widget-dragging {
+                        .twyxtco-dashboard-widget.twyxtco-dashboard-widget-dragging {
                             opacity: 0.92;
                             pointer-events: none;
                             transform: rotate(0.35deg);
                         }
 
-                        .gfree-dashboard-widget-placeholder {
+                        .twyxtco-dashboard-widget-placeholder {
                             display: block;
                             width: 100%;
                             border: 2px dashed rgb(245 158 11);
@@ -613,24 +613,24 @@ class AdminPanelProvider extends PanelProvider
                             background: rgb(245 158 11 / 0.09);
                         }
 
-                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed [data-gfree-dashboard-widget-body],
-                        .gfree-dashboard-widget.gfree-dashboard-widget-collapsed [data-gfree-dashboard-widget-description] {
+                        .twyxtco-dashboard-widget.twyxtco-dashboard-widget-collapsed [data-twyxtco-dashboard-widget-body],
+                        .twyxtco-dashboard-widget.twyxtco-dashboard-widget-collapsed [data-twyxtco-dashboard-widget-description] {
                             display: none;
                         }
 
                         @media (max-width: 640px) {
-                            .gfree-dashboard-global-controls {
+                            .twyxtco-dashboard-global-controls {
                                 position: static;
                                 justify-content: flex-start;
                                 margin-bottom: 1rem;
                                 transform: none;
                             }
 
-                            .gfree-content-block-builder-field > .fi-fo-field-label-col {
+                            .twyxtco-content-block-builder-field > .fi-fo-field-label-col {
                                 padding-inline-end: 0;
                             }
 
-                            .gfree-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions {
+                            .twyxtco-content-block-builder-field .fi-fo-builder > .fi-fo-builder-actions {
                                 position: static;
                                 justify-content: flex-start;
                                 margin-bottom: 0.75rem;
@@ -643,7 +643,7 @@ class AdminPanelProvider extends PanelProvider
                 TablesRenderHook::TOOLBAR_START,
                 fn (): HtmlString => request()->is('admin/ministries')
                     ? new HtmlString(<<<'HTML'
-                        <h2 class="gfree-ministry-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                        <h2 class="twyxtco-ministry-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
                             Individual Ministries
                         </h2>
                     HTML)
@@ -653,7 +653,7 @@ class AdminPanelProvider extends PanelProvider
                 TablesRenderHook::TOOLBAR_START,
                 fn (): HtmlString => request()->is('admin/staff-members')
                     ? new HtmlString(<<<'HTML'
-                        <h2 class="gfree-leadership-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                        <h2 class="twyxtco-leadership-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
                             Individual Leaders
                         </h2>
                     HTML)
@@ -663,7 +663,7 @@ class AdminPanelProvider extends PanelProvider
                 TablesRenderHook::TOOLBAR_START,
                 fn (): HtmlString => request()->is('admin/announcements')
                     ? new HtmlString(<<<'HTML'
-                        <h2 class="gfree-announcements-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                        <h2 class="twyxtco-announcements-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
                             Individual Announcements
                         </h2>
                     HTML)
@@ -688,7 +688,7 @@ class AdminPanelProvider extends PanelProvider
                                 }
 
                                 tooltip = document.createElement('div');
-                                tooltip.className = 'gfree-admin-nav-help-tooltip';
+                                tooltip.className = 'twyxtco-admin-nav-help-tooltip';
                                 tooltip.hidden = true;
                                 document.body.appendChild(tooltip);
 
@@ -702,7 +702,7 @@ class AdminPanelProvider extends PanelProvider
                             };
 
                             const showTooltip = (trigger) => {
-                                const content = trigger.dataset.gfreeHelp;
+                                const content = trigger.dataset.twyxtcoHelp;
 
                                 if (! content) {
                                     return;
@@ -730,7 +730,7 @@ class AdminPanelProvider extends PanelProvider
 
                             const attachHelpIcons = () => {
                                 document.querySelectorAll('.fi-main-sidebar .fi-sidebar-item-btn').forEach((link) => {
-                                    if (link.querySelector('.gfree-sidebar-help')) {
+                                    if (link.querySelector('.twyxtco-sidebar-help')) {
                                         return;
                                     }
 
@@ -742,13 +742,13 @@ class AdminPanelProvider extends PanelProvider
                                     }
 
                                     const icon = document.createElement('span');
-                                    icon.className = 'gfree-sidebar-help';
+                                    icon.className = 'twyxtco-sidebar-help';
                                     icon.textContent = 'i';
                                     icon.setAttribute('role', 'button');
                                     icon.setAttribute('tabindex', '0');
                                     icon.setAttribute('aria-label', 'About ' + label + ': ' + description);
                                     icon.setAttribute('title', description);
-                                    icon.dataset.gfreeHelp = description;
+                                    icon.dataset.twyxtcoHelp = description;
 
                                     icon.addEventListener('click', (event) => {
                                         event.preventDefault();
@@ -770,7 +770,7 @@ class AdminPanelProvider extends PanelProvider
                                     icon.addEventListener('focus', () => showTooltip(icon));
                                     icon.addEventListener('blur', hideTooltip);
 
-                                    link.classList.add('gfree-sidebar-help-ready');
+                                    link.classList.add('twyxtco-sidebar-help-ready');
                                     link.appendChild(icon);
                                 });
                             };
@@ -790,7 +790,7 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): HtmlString => new HtmlString(<<<'HTML'
                     <script>
-                        document.addEventListener('gfree-focus-first-form-field', () => {
+                        document.addEventListener('twyxtco-focus-first-form-field', () => {
                             window.setTimeout(() => {
                                 document
                                     .querySelector('.fi-page form input:not([type="hidden"]):not([disabled]), .fi-page form textarea:not([disabled]), .fi-page form select:not([disabled]), .fi-page form [contenteditable="true"]')
@@ -805,9 +805,9 @@ class AdminPanelProvider extends PanelProvider
                 fn (): HtmlString => new HtmlString(<<<'HTML'
                     <script>
                         (() => {
-                            const storageKey = 'gfree.admin.dashboard.widgets.v1';
+                            const storageKey = 'twyxtco.admin.dashboard.widgets.v1';
 
-                            const dashboardContainer = () => document.querySelector('.gfree-cms-dashboard-widgets > .fi-sc');
+                            const dashboardContainer = () => document.querySelector('.twyxtco-cms-dashboard-widgets > .fi-sc');
 
                             const dashboardWidgets = () => {
                                 const container = dashboardContainer();
@@ -816,7 +816,7 @@ class AdminPanelProvider extends PanelProvider
                                     return [];
                                 }
 
-                                return Array.from(container.querySelectorAll('.gfree-dashboard-widget[data-gfree-dashboard-widget]'));
+                                return Array.from(container.querySelectorAll('.twyxtco-dashboard-widget[data-twyxtco-dashboard-widget]'));
                             };
 
                             const dashboardColumnCount = () => {
@@ -838,7 +838,7 @@ class AdminPanelProvider extends PanelProvider
                                     return [];
                                 }
 
-                                return Array.from(container.querySelectorAll(':scope > .gfree-dashboard-widget-column'));
+                                return Array.from(container.querySelectorAll(':scope > .twyxtco-dashboard-widget-column'));
                             };
 
                             const shortestColumn = (columns) => columns.reduce(
@@ -873,7 +873,7 @@ class AdminPanelProvider extends PanelProvider
                                 const state = readState();
 
                                 dashboardWidgets().forEach((widget) => {
-                                    const key = widget.dataset.gfreeDashboardWidget;
+                                    const key = widget.dataset.twyxtcoDashboardWidget;
 
                                     state.collapsed[key] = collapsed;
                                     applyCollapsedState(widget, collapsed);
@@ -883,28 +883,28 @@ class AdminPanelProvider extends PanelProvider
                             };
 
                             const ensureDashboardGlobalControls = () => {
-                                const dashboard = document.querySelector('.gfree-cms-dashboard');
+                                const dashboard = document.querySelector('.twyxtco-cms-dashboard');
                                 const host = dashboard?.querySelector('.fi-header') ?? dashboard;
 
-                                if (! host || host.querySelector('.gfree-dashboard-global-controls')) {
+                                if (! host || host.querySelector('.twyxtco-dashboard-global-controls')) {
                                     return;
                                 }
 
-                                host.classList.add('gfree-dashboard-global-controls-host');
+                                host.classList.add('twyxtco-dashboard-global-controls-host');
 
                                 const controls = document.createElement('div');
-                                controls.className = 'gfree-dashboard-global-controls';
+                                controls.className = 'twyxtco-dashboard-global-controls';
 
                                 const expandButton = document.createElement('button');
                                 expandButton.type = 'button';
-                                expandButton.className = 'gfree-dashboard-global-control';
+                                expandButton.className = 'twyxtco-dashboard-global-control';
                                 expandButton.textContent = 'Expand All';
                                 expandButton.setAttribute('aria-label', 'Expand all dashboard boxes');
                                 expandButton.addEventListener('click', () => setAllCollapsed(false));
 
                                 const collapseButton = document.createElement('button');
                                 collapseButton.type = 'button';
-                                collapseButton.className = 'gfree-dashboard-global-control';
+                                collapseButton.className = 'twyxtco-dashboard-global-control';
                                 collapseButton.textContent = 'Collapse All';
                                 collapseButton.setAttribute('aria-label', 'Collapse all dashboard boxes');
                                 collapseButton.addEventListener('click', () => setAllCollapsed(true));
@@ -915,9 +915,9 @@ class AdminPanelProvider extends PanelProvider
 
                             const applyCollapsedState = (widget, collapsed) => {
                                 const heading = widgetHeading(widget);
-                                const button = widget.querySelector('[data-gfree-dashboard-widget-collapse]');
+                                const button = widget.querySelector('[data-twyxtco-dashboard-widget-collapse]');
 
-                                widget.classList.toggle('gfree-dashboard-widget-collapsed', collapsed);
+                                widget.classList.toggle('twyxtco-dashboard-widget-collapsed', collapsed);
 
                                 if (! button) {
                                     return;
@@ -937,7 +937,7 @@ class AdminPanelProvider extends PanelProvider
 
                                 const state = readState();
                                 const widgets = dashboardWidgets();
-                                const byKey = new Map(widgets.map((widget) => [widget.dataset.gfreeDashboardWidget, widget]));
+                                const byKey = new Map(widgets.map((widget) => [widget.dataset.twyxtcoDashboardWidget, widget]));
                                 const ordered = [];
 
                                 state.order.forEach((key) => {
@@ -949,7 +949,7 @@ class AdminPanelProvider extends PanelProvider
 
                                 const columns = Array.from({ length: dashboardColumnCount() }, () => {
                                     const column = document.createElement('div');
-                                    column.className = 'gfree-dashboard-widget-column';
+                                    column.className = 'twyxtco-dashboard-widget-column';
 
                                     return column;
                                 });
@@ -965,10 +965,10 @@ class AdminPanelProvider extends PanelProvider
                                 const state = readState();
                                 const columns = dashboardColumns();
                                 const widgets = columns.length
-                                    ? columns.flatMap((column) => Array.from(column.querySelectorAll(':scope > .gfree-dashboard-widget[data-gfree-dashboard-widget]')))
+                                    ? columns.flatMap((column) => Array.from(column.querySelectorAll(':scope > .twyxtco-dashboard-widget[data-twyxtco-dashboard-widget]')))
                                     : dashboardWidgets();
 
-                                state.order = widgets.map((widget) => widget.dataset.gfreeDashboardWidget);
+                                state.order = widgets.map((widget) => widget.dataset.twyxtcoDashboardWidget);
                                 writeState(state);
                             };
 
@@ -981,7 +981,7 @@ class AdminPanelProvider extends PanelProvider
                                 widget.style.zIndex = '';
                                 widget.style.margin = '';
                                 widget.style.transform = '';
-                                widget.classList.remove('gfree-dashboard-widget-dragging');
+                                widget.classList.remove('twyxtco-dashboard-widget-dragging');
                             };
 
                             const startWidgetDrag = (event, widget) => {
@@ -1000,14 +1000,14 @@ class AdminPanelProvider extends PanelProvider
 
                                 const rect = widget.getBoundingClientRect();
                                 const placeholder = document.createElement('div');
-                                placeholder.className = 'gfree-dashboard-widget-placeholder';
+                                placeholder.className = 'twyxtco-dashboard-widget-placeholder';
                                 placeholder.style.height = rect.height + 'px';
                                 widget.after(placeholder);
 
                                 const offsetX = event.clientX - rect.left;
                                 const offsetY = event.clientY - rect.top;
 
-                                widget.classList.add('gfree-dashboard-widget-dragging');
+                                widget.classList.add('twyxtco-dashboard-widget-dragging');
                                 widget.style.position = 'fixed';
                                 widget.style.left = rect.left + 'px';
                                 widget.style.top = rect.top + 'px';
@@ -1041,7 +1041,7 @@ class AdminPanelProvider extends PanelProvider
                                         return candidateDistance < closestDistance ? candidate : closest;
                                     }, columns[0]);
 
-                                    const targets = Array.from(column.querySelectorAll(':scope > .gfree-dashboard-widget[data-gfree-dashboard-widget]'))
+                                    const targets = Array.from(column.querySelectorAll(':scope > .twyxtco-dashboard-widget[data-twyxtco-dashboard-widget]'))
                                         .filter((candidate) => candidate !== widget);
 
                                     const target = targets.find((candidate) => {
@@ -1085,18 +1085,18 @@ class AdminPanelProvider extends PanelProvider
                                 const state = readState();
 
                                 dashboardWidgets().forEach((widget) => {
-                                    const key = widget.dataset.gfreeDashboardWidget;
+                                    const key = widget.dataset.twyxtcoDashboardWidget;
                                     const heading = widgetHeading(widget);
-                                    const collapseButton = widget.querySelector('[data-gfree-dashboard-widget-collapse]');
-                                    const dragHandle = widget.querySelector('[data-gfree-dashboard-widget-drag-handle]');
+                                    const collapseButton = widget.querySelector('[data-twyxtco-dashboard-widget-collapse]');
+                                    const dragHandle = widget.querySelector('[data-twyxtco-dashboard-widget-drag-handle]');
 
                                     applyCollapsedState(widget, Boolean(state.collapsed[key]));
 
-                                    if (widget.dataset.gfreeDashboardReady === 'true') {
+                                    if (widget.dataset.twyxtcoDashboardReady === 'true') {
                                         return;
                                     }
 
-                                    widget.dataset.gfreeDashboardReady = 'true';
+                                    widget.dataset.twyxtcoDashboardReady = 'true';
 
                                     if (dragHandle) {
                                         dragHandle.addEventListener('pointerdown', (event) => startWidgetDrag(event, widget));
@@ -1105,7 +1105,7 @@ class AdminPanelProvider extends PanelProvider
                                     if (collapseButton) {
                                         collapseButton.addEventListener('click', () => {
                                             const nextState = readState();
-                                            const shouldCollapse = ! widget.classList.contains('gfree-dashboard-widget-collapsed');
+                                            const shouldCollapse = ! widget.classList.contains('twyxtco-dashboard-widget-collapsed');
 
                                             nextState.collapsed[key] = shouldCollapse;
                                             writeState(nextState);

@@ -29,7 +29,7 @@ class ContentBlocks
                 if ($type === 'announcements_bar') {
                     $data['updates'] = $updates ?? self::featuredAnnouncementUpdates();
                     $data['is_visible'] = $data['is_visible'] ?? true;
-                    $data['heading'] = $data['heading'] ?? 'Latest at gFree';
+                    $data['heading'] = $data['heading'] ?? 'Latest at TwyxtCo';
                     $data['link_label'] = $data['link_label'] ?? 'View all';
                     $data['link_url'] = $data['link_url'] ?? '/announcements';
                     $data['background'] = $data['background'] ?? 'white';

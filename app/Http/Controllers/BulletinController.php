@@ -34,7 +34,7 @@ class BulletinController extends Controller
             'hero' => $this->listingHero('bulletins', [
                 'small_label' => 'Bulletins',
                 'title' => 'Bulletins',
-                'subtitle' => 'View recent weekly bulletins from gFree Church.',
+                'subtitle' => 'View recent weekly bulletins from TwyxtCo Church.',
             ]),
         ]);
     }
@@ -81,7 +81,7 @@ class BulletinController extends Controller
     private function sharedViewData(): array
     {
         $settings = SiteSetting::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
 
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()

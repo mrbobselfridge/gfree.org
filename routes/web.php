@@ -368,7 +368,7 @@ Route::get('/concepts/{concept}', function (string $concept) {
             'name' => 'Refined B: White/Black Bands',
             'eyebrow' => 'Welcome home',
             'headline' => 'Grace for real life.',
-            'subhead' => 'A quieter refinement: full-width white and black bands, strong type, and fewer color accents beyond the gFree teal.',
+            'subhead' => 'A quieter refinement: full-width white and black bands, strong type, and fewer color accents beyond the TwyxtCo teal.',
             'primaryCta' => 'Visit This Sunday',
             'primaryUrl' => '/new-here',
             'secondaryCta' => 'Watch Live',

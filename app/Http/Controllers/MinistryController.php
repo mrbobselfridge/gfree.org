@@ -35,7 +35,7 @@ class MinistryController extends Controller
             'search' => $search,
             'hero' => $this->listingHero('ministry', [
                 'title' => 'Find your place.',
-                'subtitle' => 'Explore ministries, groups, and next steps at gFree Church.',
+                'subtitle' => 'Explore ministries, groups, and next steps at TwyxtCo Church.',
             ]),
         ]);
     }
@@ -84,7 +84,7 @@ class MinistryController extends Controller
     private function sharedViewData(): array
     {
         $settings = SiteSetting::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
 
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()

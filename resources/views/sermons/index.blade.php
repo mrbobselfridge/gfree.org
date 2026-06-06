@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.analytics-head')
-    <title>Sermons | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
-    <meta name="description" content="{{ strip_tags($hero['subtitle'] ?: $introText ?: 'Watch recent sermons from gFree Church.') }}">
+    <title>Sermons | {{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
+    <meta name="description" content="{{ strip_tags($hero['subtitle'] ?: $introText ?: 'Watch recent sermons from TwyxtCo Church.') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">
@@ -79,7 +79,7 @@
                 @else
                     <div class="page-rich-text">
                         <p>Sermons are currently available on YouTube.</p>
-                        <p><a href="{{ $channelUrl }}">Open the gFREE Sermons channel</a></p>
+                        <p><a href="{{ $channelUrl }}">Open the TwyxtCo Sermons channel</a></p>
                     </div>
                 @endif
             </div>

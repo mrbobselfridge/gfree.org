@@ -89,7 +89,7 @@ class AnalyticsAdminPageTest extends TestCase
         string $city = 'Pittsburgh',
     ): void {
         AnalyticsPageView::query()->create([
-            'url' => "https://gfree.org{$path}",
+            'url' => "https://twyxtco.org{$path}",
             'path' => $path,
             'route_name' => null,
             'page_title' => $title,

@@ -145,7 +145,7 @@ class LeadershipTest extends TestCase
     public function test_leader_profile_uses_landing_image_when_photo_is_missing(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'leadership_image_path' => 'site-settings/leadership/default.jpg',
         ]);
 

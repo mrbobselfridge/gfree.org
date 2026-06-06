@@ -99,7 +99,7 @@ trait UsesStandardCreateActions
     {
         $this->create(another: true);
 
-        $this->dispatch('gfree-focus-first-form-field');
+        $this->dispatch('twyxtco-focus-first-form-field');
     }
 
     protected function afterCreate(): void

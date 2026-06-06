@@ -17,7 +17,7 @@ class AnalyticsTrackingTest extends TestCase
     public function test_public_page_views_are_tracked_with_request_metadata(): void
     {
         Page::query()->create([
-            'title' => 'About gFree',
+            'title' => 'About TwyxtCo',
             'slug' => 'about',
             'is_published' => true,
         ]);
@@ -39,7 +39,7 @@ class AnalyticsTrackingTest extends TestCase
 
         $this
             ->withHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36')
-            ->from('https://www.google.com/search?q=gfree')
+            ->from('https://www.google.com/search?q=twyxtco')
             ->get('/about')
             ->assertOk();
 
@@ -47,8 +47,8 @@ class AnalyticsTrackingTest extends TestCase
             'url' => 'http://127.0.0.1:8000/about',
             'path' => '/about',
             'route_name' => 'pages.show',
-            'page_title' => 'About gFree',
-            'referrer_url' => 'https://www.google.com/search?q=gfree',
+            'page_title' => 'About TwyxtCo',
+            'referrer_url' => 'https://www.google.com/search?q=twyxtco',
             'referrer_domain' => 'google.com',
             'browser' => 'Chrome',
             'platform' => 'Windows',

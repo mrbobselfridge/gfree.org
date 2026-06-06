@@ -26,7 +26,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('User Details')
             ->assertSee('Approved Admin Areas')
             ->assertSee('text-base font-semibold', false)
-            ->assertSee('gfree-user-permission-list', false)
+            ->assertSee('twyxtco-user-permission-list', false)
             ->assertSee('Homepage Content')
             ->assertSee('Homepage Banners')
             ->assertSee('Announcements')
@@ -48,7 +48,7 @@ class AdminAccessTest extends TestCase
     public function test_editor_only_accesses_selected_admin_areas(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         NavigationLink::query()->create([

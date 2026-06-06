@@ -268,7 +268,7 @@ class ContentBlockBuilder
                             ->required(),
                         TextInput::make('heading')
                             ->live(onBlur: true)
-                            ->default('Latest at gFree')
+                            ->default('Latest at TwyxtCo')
                             ->maxLength(255),
                         TextInput::make('link_label')
                             ->default('View all')
@@ -309,7 +309,7 @@ class ContentBlockBuilder
                     $component->shouldPartiallyRenderAfterActionsCalled() ? $component->partiallyRender() : null;
                 }))
             ->extraFieldWrapperAttributes([
-                'class' => 'gfree-content-block-builder-field',
+                'class' => 'twyxtco-content-block-builder-field',
             ])
             ->blockNumbers(false)
             ->collapsible()

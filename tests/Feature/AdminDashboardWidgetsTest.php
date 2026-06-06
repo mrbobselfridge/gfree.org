@@ -25,8 +25,8 @@ class AdminDashboardWidgetsTest extends TestCase
         Storage::disk('public')->put('media-library/welcome.jpg', 'image-bytes');
 
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
-            'sermons_youtube_channel_url' => 'https://www.youtube.com/@gfreesermons9521',
+            'church_name' => 'TwyxtCo Church',
+            'sermons_youtube_channel_url' => 'https://www.youtube.com/@twyxtcosermons9521',
         ]);
 
         NavigationLink::query()->create([
@@ -63,7 +63,7 @@ class AdminDashboardWidgetsTest extends TestCase
         ]);
 
         AnalyticsPageView::query()->create([
-            'url' => 'https://gfree.org/',
+            'url' => 'https://twyxtco.org/',
             'path' => '/',
             'route_name' => 'home',
             'page_title' => 'Home',
@@ -77,7 +77,7 @@ class AdminDashboardWidgetsTest extends TestCase
         ]);
 
         AnalyticsPageView::query()->create([
-            'url' => 'https://gfree.org/ministry',
+            'url' => 'https://twyxtco.org/ministry',
             'path' => '/ministry',
             'route_name' => 'ministries.index',
             'page_title' => 'Ministries',
@@ -96,8 +96,8 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertDontSee('fi-account-widget', false)
             ->assertDontSee('fi-filament-info-widget', false)
             ->assertSee('Needs Attention')
-            ->assertSee('data-gfree-dashboard-widget="needs-attention-widget"', false)
-            ->assertSee('data-gfree-dashboard-widget-collapse', false)
+            ->assertSee('data-twyxtco-dashboard-widget="needs-attention-widget"', false)
+            ->assertSee('data-twyxtco-dashboard-widget-collapse', false)
             ->assertSee('Move')
             ->assertSee('Collapse')
             ->assertSee('Announcement')
@@ -128,13 +128,13 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
             ->assertSee('Header navigation')
-            ->assertSee('gfree-dashboard-widget-count--danger', false)
-            ->assertSee('gfree-dashboard-widget-count--warning', false)
-            ->assertSee('gfree-dashboard-widget-count--success', false)
+            ->assertSee('twyxtco-dashboard-widget-count--danger', false)
+            ->assertSee('twyxtco-dashboard-widget-count--warning', false)
+            ->assertSee('twyxtco-dashboard-widget-count--success', false)
             ->assertSee('1 high priority item')
             ->assertSee('4 review items')
             ->assertSee('2 good items')
-            ->assertSee('/admin/site-settings/1/edit" class="gfree-dashboard-widget-row-status" wire:navigate', false)
+            ->assertSee('/admin/site-settings/1/edit" class="twyxtco-dashboard-widget-row-status" wire:navigate', false)
             ->assertSee('Web Traffic Overview')
             ->assertSee('Views today')
             ->assertSee('Top Pages')
@@ -144,10 +144,10 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Browsers / Devices')
             ->assertSee('Chrome')
             ->assertSee('Mobile')
-            ->assertSee('gfree-dashboard-widget-count')
+            ->assertSee('twyxtco-dashboard-widget-count')
             ->assertDontSeeText('Page Views')
-            ->assertDontSee('class="gfree-dashboard-widget-type">Analytics', false)
-            ->assertSee('gfree.admin.dashboard.widgets.v1');
+            ->assertDontSee('class="twyxtco-dashboard-widget-type">Analytics', false)
+            ->assertSee('twyxtco.admin.dashboard.widgets.v1');
 
         $content = $response->getContent();
 
@@ -157,15 +157,15 @@ class AdminDashboardWidgetsTest extends TestCase
             'top-referrers-widget',
             'browsers-devices-widget',
         ] as $widgetKey) {
-            $start = strpos($content, 'data-gfree-dashboard-widget="'.$widgetKey.'"');
+            $start = strpos($content, 'data-twyxtco-dashboard-widget="'.$widgetKey.'"');
 
             $this->assertIsInt($start);
-            $nextWidgetStart = strpos($content, 'data-gfree-dashboard-widget="', $start + 1);
+            $nextWidgetStart = strpos($content, 'data-twyxtco-dashboard-widget="', $start + 1);
             $widgetMarkup = $nextWidgetStart === false
                 ? substr($content, $start)
                 : substr($content, $start, $nextWidgetStart - $start);
 
-            $this->assertStringNotContainsString('gfree-dashboard-widget-count', $widgetMarkup);
+            $this->assertStringNotContainsString('twyxtco-dashboard-widget-count', $widgetMarkup);
         }
     }
 

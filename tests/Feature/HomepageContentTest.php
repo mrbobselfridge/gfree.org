@@ -96,7 +96,7 @@ class HomepageContentTest extends TestCase
                     'type' => 'text',
                     'data' => [
                         'eyebrow' => 'More Ways',
-                        'heading' => 'Life at gFree',
+                        'heading' => 'Life at TwyxtCo',
                         'body' => '<p>Groups, events, and serving opportunities.</p>',
                         'background' => 'forest',
                     ],
@@ -131,7 +131,7 @@ class HomepageContentTest extends TestCase
             ->assertOk()
             ->assertSee('page-block--bg-forest', false)
             ->assertSee('More Ways')
-            ->assertSee('Life at gFree')
+            ->assertSee('Life at TwyxtCo')
             ->assertSee('Groups, events, and serving opportunities.')
             ->assertSee('page-block--process-steps', false)
             ->assertSee('Simple process')
@@ -172,7 +172,7 @@ class HomepageContentTest extends TestCase
     public function test_homepage_content_default_feature_url_still_allows_one_church_fallback(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'one_church_url' => 'https://example.com/one-church',
         ]);
 
@@ -188,10 +188,10 @@ class HomepageContentTest extends TestCase
     public function test_homepage_info_strip_can_pull_values_from_site_settings(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'sunday_service_times' => '<p>8:00, 9:15, &amp; <strong>11:00</strong></p>',
             'office_hours' => '<p>Mon-Thu <strong>9-4</strong></p>',
-            'address' => '<p>gFree Church 305 Keystone Hill Road <strong>Philipsburg</strong>, PA 16866</p>',
+            'address' => '<p>TwyxtCo Church 305 Keystone Hill Road <strong>Philipsburg</strong>, PA 16866</p>',
         ]);
 
         HomepageContent::query()->create([

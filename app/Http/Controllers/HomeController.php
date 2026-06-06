@@ -18,7 +18,7 @@ class HomeController extends Controller
     {
         $settings = SiteSetting::query()->first();
         $homepageContent = HomepageContent::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
         $now = now();
 
         $heroBanners = HomepageBanner::query()
@@ -157,7 +157,7 @@ class HomeController extends Controller
                 if ($type === 'announcements_bar') {
                     $data['updates'] = $updates;
                     $data['is_visible'] = $data['is_visible'] ?? true;
-                    $data['heading'] = $data['heading'] ?? 'Latest at gFree';
+                    $data['heading'] = $data['heading'] ?? 'Latest at TwyxtCo';
                     $data['link_label'] = $data['link_label'] ?? 'View all';
                     $data['link_url'] = $data['link_url'] ?? '/announcements';
                     $data['background'] = $data['background'] ?? 'white';
@@ -271,7 +271,7 @@ class HomeController extends Controller
             'type' => 'announcements_bar',
             'data' => [
                 'is_visible' => true,
-                'heading' => 'Latest at gFree',
+                'heading' => 'Latest at TwyxtCo',
                 'link_label' => 'View all',
                 'link_url' => '/announcements',
                 'background' => 'white',

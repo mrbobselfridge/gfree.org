@@ -1,14 +1,14 @@
 <x-filament-widgets::widget
-    class="gfree-dashboard-widget"
-    data-gfree-dashboard-widget="{{ $widgetKey }}"
+    class="twyxtco-dashboard-widget"
+    data-twyxtco-dashboard-widget="{{ $widgetKey }}"
 >
     <x-filament::section>
-        <div class="gfree-dashboard-widget-shell">
-            <div class="gfree-dashboard-widget-controls">
+        <div class="twyxtco-dashboard-widget-shell">
+            <div class="twyxtco-dashboard-widget-controls">
                 @if (filled($actionLabel) && filled($actionUrl))
                     <a
                         href="{{ $actionUrl }}"
-                        class="gfree-dashboard-widget-action"
+                        class="twyxtco-dashboard-widget-action"
                         wire:navigate
                     >
                         {{ $actionLabel }}
@@ -17,7 +17,7 @@
 
                 @foreach ($countBadges as $badge)
                     <span
-                        class="gfree-dashboard-widget-count gfree-dashboard-widget-count--{{ $badge['tone'] }}"
+                        class="twyxtco-dashboard-widget-count twyxtco-dashboard-widget-count--{{ $badge['tone'] }}"
                         title="{{ $badge['label'] }}"
                         aria-label="{{ $badge['label'] }}"
                     >
@@ -27,14 +27,14 @@
 
                 <button
                     type="button"
-                    class="gfree-dashboard-widget-collapse"
+                    class="twyxtco-dashboard-widget-collapse"
                     title="Collapse {{ $heading }}"
                     aria-label="Collapse {{ $heading }}"
                     aria-expanded="true"
-                    data-gfree-dashboard-widget-collapse
+                    data-twyxtco-dashboard-widget-collapse
                 >
                     <svg
-                        class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-expanded"
+                        class="twyxtco-dashboard-widget-control-icon twyxtco-dashboard-widget-collapse-icon-expanded"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -45,7 +45,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="m18 15-6-6-6 6" />
                     </svg>
                     <svg
-                        class="gfree-dashboard-widget-control-icon gfree-dashboard-widget-collapse-icon-collapsed"
+                        class="twyxtco-dashboard-widget-control-icon twyxtco-dashboard-widget-collapse-icon-collapsed"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -59,13 +59,13 @@
 
                 <button
                     type="button"
-                    class="gfree-dashboard-widget-drag-handle"
+                    class="twyxtco-dashboard-widget-drag-handle"
                     title="Move {{ $heading }}"
                     aria-label="Move {{ $heading }}"
-                    data-gfree-dashboard-widget-drag-handle
+                    data-twyxtco-dashboard-widget-drag-handle
                 >
                     <svg
-                        class="gfree-dashboard-widget-control-icon"
+                        class="twyxtco-dashboard-widget-control-icon"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -78,15 +78,15 @@
                 </button>
             </div>
 
-            <div class="gfree-dashboard-widget-header">
-                <h2 class="gfree-dashboard-widget-title">
+            <div class="twyxtco-dashboard-widget-header">
+                <h2 class="twyxtco-dashboard-widget-title">
                     {{ $heading }}
                 </h2>
 
                 @if (filled($description))
                     <p
-                        class="gfree-dashboard-widget-description"
-                        data-gfree-dashboard-widget-description
+                        class="twyxtco-dashboard-widget-description"
+                        data-twyxtco-dashboard-widget-description
                     >
                         {{ $description }}
                     </p>
@@ -94,21 +94,21 @@
             </div>
         </div>
 
-        <div class="gfree-dashboard-widget-body" data-gfree-dashboard-widget-body>
+        <div class="twyxtco-dashboard-widget-body" data-twyxtco-dashboard-widget-body>
             @forelse ($rows as $row)
-                <div class="gfree-dashboard-widget-row">
+                <div class="twyxtco-dashboard-widget-row">
                     @if (filled($row['imageUrl'] ?? null))
                         @if (filled($row['imageLinkUrl'] ?? null))
                             <a
                                 href="{{ $row['imageLinkUrl'] }}"
                                 target="{{ $row['imageLinkTarget'] ?? '_self' }}"
                                 rel="{{ ($row['imageLinkTarget'] ?? null) === '_blank' ? 'noopener noreferrer' : null }}"
-                                class="gfree-dashboard-widget-row-image-link"
+                                class="twyxtco-dashboard-widget-row-image-link"
                             >
                                 <img
                                     src="{{ $row['imageUrl'] }}"
                                     alt=""
-                                    class="gfree-dashboard-widget-row-image"
+                                    class="twyxtco-dashboard-widget-row-image"
                                     loading="lazy"
                                 >
                             </a>
@@ -116,7 +116,7 @@
                             <img
                                 src="{{ $row['imageUrl'] }}"
                                 alt=""
-                                class="gfree-dashboard-widget-row-image"
+                                class="twyxtco-dashboard-widget-row-image"
                                 loading="lazy"
                             >
                         @endif
@@ -125,7 +125,7 @@
                     <div class="min-w-0 flex-1">
                         @if (filled($row['type'] ?? null))
                             <div class="mb-1.5">
-                                <span class="gfree-dashboard-widget-type">
+                                <span class="twyxtco-dashboard-widget-type">
                                     {{ $row['type'] }}
                                 </span>
                             </div>
@@ -136,13 +136,13 @@
                                 @if (filled($row['url'] ?? null))
                                     <a
                                         href="{{ $row['url'] }}"
-                                        class="gfree-dashboard-widget-row-title"
+                                        class="twyxtco-dashboard-widget-row-title"
                                         wire:navigate
                                     >
                                         {{ $row['title'] }}
                                     </a>
                                 @else
-                                    <span class="gfree-dashboard-widget-row-title">
+                                    <span class="twyxtco-dashboard-widget-row-title">
                                         {{ $row['title'] }}
                                     </span>
                                 @endif
@@ -150,7 +150,7 @@
                         @endif
 
                         @if (filled($row['meta'] ?? null))
-                            <p class="gfree-dashboard-widget-row-meta" title="{{ $row['meta'] }}">
+                            <p class="twyxtco-dashboard-widget-row-meta" title="{{ $row['meta'] }}">
                                 {{ $row['meta'] }}
                             </p>
                         @endif
@@ -158,20 +158,20 @@
 
                     @if (filled($row['status'] ?? null))
                         @if (filled($row['url'] ?? null))
-                            <a href="{{ $row['url'] }}" class="gfree-dashboard-widget-row-status" wire:navigate>
+                            <a href="{{ $row['url'] }}" class="twyxtco-dashboard-widget-row-status" wire:navigate>
                                 <x-filament::badge :color="$row['statusColor'] ?? 'gray'">
                                     {{ $row['status'] }}
                                 </x-filament::badge>
                             </a>
                         @else
-                            <x-filament::badge :color="$row['statusColor'] ?? 'gray'" class="gfree-dashboard-widget-row-status">
+                            <x-filament::badge :color="$row['statusColor'] ?? 'gray'" class="twyxtco-dashboard-widget-row-status">
                                 {{ $row['status'] }}
                             </x-filament::badge>
                         @endif
                     @endif
                 </div>
             @empty
-                <p class="gfree-dashboard-widget-empty">
+                <p class="twyxtco-dashboard-widget-empty">
                     {{ $emptyMessage }}
                 </p>
             @endforelse

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $concept['name'] }} | gFree Concept</title>
+    <title>{{ $concept['name'] }} | TwyxtCo Concept</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body @class([
@@ -15,8 +15,8 @@
     'concept-page--sections-' . str_replace(' ', '-', $concept['sectionMode'] ?? '') => filled($concept['sectionMode'] ?? null),
 ])>
     <header class="concept-header">
-        <a href="{{ url('/concepts') }}" class="concept-logo-link" aria-label="gFree Church concepts">
-            <img class="concept-logo-img" src="{{ asset('images/gfree-logo.png') }}" alt="gFree Church">
+        <a href="{{ url('/concepts') }}" class="concept-logo-link" aria-label="TwyxtCo Church concepts">
+            <img class="concept-logo-img" src="{{ asset('images/twyxtco-logo.png') }}" alt="TwyxtCo Church">
         </a>
 
         <nav class="concept-nav" aria-label="Concept navigation">
@@ -116,7 +116,7 @@
 
         <section class="concept-updates">
             <div class="concept-updates__header">
-                <h2>Latest at gFree</h2>
+                <h2>Latest at TwyxtCo</h2>
                 <a href="#">View all</a>
             </div>
             <div class="concept-updates__grid">

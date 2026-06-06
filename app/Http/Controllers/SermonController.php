@@ -13,7 +13,7 @@ class SermonController extends Controller
     public function __invoke(YoutubeSermonFeed $feed): View
     {
         $settings = SiteSetting::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()
             ->limit(10)
@@ -26,7 +26,7 @@ class SermonController extends Controller
             'hero' => $this->listingHero('sermons', [
                 'small_label' => 'Messages',
                 'title' => 'Sermons',
-                'subtitle' => 'Watch recent messages from gFree Church.',
+                'subtitle' => 'Watch recent messages from TwyxtCo Church.',
             ]),
             'introText' => $settings?->sermons_text,
             'sermons' => $feed->latest(feedUrl: $settings?->sermons_youtube_feed_url),
@@ -60,7 +60,7 @@ class SermonController extends Controller
     {
         $channelUrl = filled($channelUrl)
             ? rtrim((string) $channelUrl, '/')
-            : 'https://www.youtube.com/@gfreesermons9521';
+            : 'https://www.youtube.com/@twyxtcosermons9521';
 
         return str_ends_with($channelUrl, '/videos') ? $channelUrl : "{$channelUrl}/videos";
     }

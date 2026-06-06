@@ -18,7 +18,7 @@ class PageController extends Controller
             ->firstOrFail();
 
         $settings = SiteSetting::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()
             ->limit(10)
@@ -42,5 +42,4 @@ class PageController extends Controller
             ['label' => 'YouTube', 'url' => $settings?->youtube_url],
         ])->filter(fn (array $link) => filled($link['url']));
     }
-
 }

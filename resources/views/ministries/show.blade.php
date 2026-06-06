@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.analytics-head')
-    <title>{{ $ministry->name }} | {{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
-    <meta name="description" content="{{ $ministry->short_summary ?: 'Ministry at gFree Church.' }}">
+    <title>{{ $ministry->name }} | {{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
+    <meta name="description" content="{{ $ministry->short_summary ?: 'Ministry at TwyxtCo Church.' }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-page concept-page concept-page--editorial concept-page--editorial-white-header concept-page--accent-color-bands">

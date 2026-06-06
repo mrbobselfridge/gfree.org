@@ -55,7 +55,7 @@ class PublicSermonTest extends TestCase
             ->assertOk()
             ->assertSee('Sermons')
             ->assertSee('Sermons are currently available on YouTube.')
-            ->assertSee('https://www.youtube.com/@gfreesermons9521/videos');
+            ->assertSee('https://www.youtube.com/@twyxtcosermons9521/videos');
     }
 
     public function test_sermons_page_can_use_configured_feed_and_channel_urls(): void
@@ -68,7 +68,7 @@ class PublicSermonTest extends TestCase
         ]);
 
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'sermons_youtube_feed_url' => 'https://example.com/custom-sermons.xml',
             'sermons_youtube_channel_url' => 'https://www.youtube.com/@customsermons/videos',
         ]);
@@ -88,7 +88,7 @@ class PublicSermonTest extends TestCase
         ]);
 
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'sermons_youtube_channel_url' => 'https://www.youtube.com/@customsermons',
         ]);
 

@@ -33,7 +33,7 @@ class AnnouncementController extends Controller
             'search' => $search,
             'hero' => $this->listingHero('announcements', [
                 'title' => 'Announcements',
-                'subtitle' => 'Current updates, next steps, and opportunities around gFree Church.',
+                'subtitle' => 'Current updates, next steps, and opportunities around TwyxtCo Church.',
             ]),
         ]);
     }
@@ -79,7 +79,7 @@ class AnnouncementController extends Controller
     private function sharedViewData(): array
     {
         $settings = SiteSetting::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
 
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()

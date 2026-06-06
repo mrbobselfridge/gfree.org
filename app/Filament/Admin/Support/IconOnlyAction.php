@@ -17,7 +17,7 @@ class IconOnlyAction
 
         return $action
             ->size(Size::ExtraLarge)
-            ->extraAttributes(['class' => 'gfree-admin-icon-action'], merge: true)
+            ->extraAttributes(['class' => 'twyxtco-admin-icon-action'], merge: true)
             ->tooltip($tooltip ?? $action->getLabel())
             ->iconButton();
     }

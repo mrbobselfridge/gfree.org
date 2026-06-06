@@ -19,7 +19,7 @@ class OpenAiContentRewriteTest extends TestCase
     public function test_openai_content_rewriter_sends_prompt_and_rich_text_html(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
             'openai_bulletin_model' => 'gpt-5-mini',
         ]);

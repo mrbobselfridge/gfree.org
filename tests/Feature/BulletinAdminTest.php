@@ -64,7 +64,7 @@ class BulletinAdminTest extends TestCase
         Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
 
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
             'openai_bulletin_model' => 'gpt-4o-mini',
         ]);
@@ -105,7 +105,7 @@ class BulletinAdminTest extends TestCase
         Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
 
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
             'openai_bulletin_model' => 'gpt-4o-mini',
         ]);

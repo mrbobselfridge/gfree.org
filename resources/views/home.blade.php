@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.analytics-head')
-    <title>{{ $settings?->church_name ?? config('app.name', 'gFree Church') }}</title>
+    <title>{{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
     <meta name="description" content="{{ $settings?->tagline ?? $hero['subtitle'] }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

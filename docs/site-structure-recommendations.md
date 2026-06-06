@@ -1,6 +1,6 @@
-# gFree Site Structure Recommendations
+# TwyxtCo Site Structure Recommendations
 
-This document captures the suggested public site structure for the new gFree site, based on the current Laravel/Filament build and the content areas already being modeled.
+This document captures the suggested public site structure for the new TwyxtCo site, based on the current Laravel/Filament build and the content areas already being modeled.
 
 ## Primary Navigation
 
@@ -35,7 +35,7 @@ Suggested route:
 
 ### About
 
-Purpose: explain who gFree is and build trust.
+Purpose: explain who TwyxtCo is and build trust.
 
 Suggested pages or sections:
 

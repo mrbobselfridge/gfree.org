@@ -15,7 +15,7 @@ class PublicPageTest extends TestCase
     public function test_published_pages_are_available_by_slug(): void
     {
         Page::query()->create([
-            'title' => 'About gFree',
+            'title' => 'About TwyxtCo',
             'slug' => 'about',
             'intro' => 'A short intro for the page.',
             'body' => 'This is the page body.',
@@ -24,12 +24,12 @@ class PublicPageTest extends TestCase
 
         $this->get('/about')
             ->assertOk()
-            ->assertSee('About gFree')
+            ->assertSee('About TwyxtCo')
             ->assertSee('A short intro for the page.')
             ->assertSee('This is the page body.')
             ->assertSee('concept-header', false)
             ->assertSee('site-footer', false)
-            ->assertDontSee('<p class="concept-eyebrow">gFree Church</p>', false);
+            ->assertDontSee('<p class="concept-eyebrow">TwyxtCo Church</p>', false);
     }
 
     public function test_page_can_hide_navigation_and_footer_for_minimal_landing_pages(): void
@@ -57,14 +57,14 @@ class PublicPageTest extends TestCase
     public function test_public_footer_uses_logo_contact_details_and_social_icons(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'tagline' => 'This tagline should not be in the footer.',
             'address' => '<p>305 Keystone Hill Road</p>',
             'email' => 'hello@example.com',
             'phone' => '(814) 555-1212',
-            'facebook_url' => 'https://facebook.example/gfree',
-            'instagram_url' => 'https://instagram.example/gfree',
-            'youtube_url' => 'https://youtube.example/gfree',
+            'facebook_url' => 'https://facebook.example/twyxtco',
+            'instagram_url' => 'https://instagram.example/twyxtco',
+            'youtube_url' => 'https://youtube.example/twyxtco',
         ]);
 
         Page::query()->create([
@@ -77,13 +77,13 @@ class PublicPageTest extends TestCase
         $this->get('/about')
             ->assertOk()
             ->assertSee('site-footer__brand', false)
-            ->assertSee('<a href="'.url('/').'" aria-label="gFree Church home">', false)
+            ->assertSee('<a href="'.url('/').'" aria-label="TwyxtCo Church home">', false)
             ->assertSee('site-footer__contact', false)
             ->assertSee('site-footer__social', false)
             ->assertSee('Address')
             ->assertSee('Email')
             ->assertSee('Phone')
-            ->assertSee('gFree Church')
+            ->assertSee('TwyxtCo Church')
             ->assertSee('305 Keystone Hill Road')
             ->assertDontSee('https://www.google.com/maps/search/?api=1', false)
             ->assertSee('mailto:hello@example.com', false)
@@ -374,7 +374,7 @@ class PublicPageTest extends TestCase
     public function test_page_info_strip_can_pull_office_hours_from_site_settings(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'office_hours' => '<p>Monday-Thursday <strong>9 AM-4 PM</strong></p>',
         ]);
 
@@ -563,7 +563,7 @@ class PublicPageTest extends TestCase
 
     public function test_embed_blocks_render_raw_provider_code_on_public_pages(): void
     {
-        $embedCode = '<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="gfree" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>'
+        $embedCode = '<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="twyxtco" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>'
             .'<script async src="https://cdn.onechurchsoftware.com/embed/v3.1.js"></script>';
 
         Page::query()->create([
@@ -585,7 +585,7 @@ class PublicPageTest extends TestCase
         $this->get('/calendar')
             ->assertOk()
             ->assertSee('Church Calendar')
-            ->assertSee('<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="gfree" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>', false)
+            ->assertSee('<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="twyxtco" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>', false)
             ->assertSee('<script async src="https://cdn.onechurchsoftware.com/embed/v3.1.js"></script>', false);
     }
 

@@ -6,26 +6,26 @@
     @endphp
 
     <style>
-        .gfree-media-summary {
+        .twyxtco-media-summary {
             border: 1px solid rgb(229 231 235);
             border-radius: 0.75rem;
             background: white;
             padding: 1rem;
         }
 
-        .dark .gfree-media-summary {
+        .dark .twyxtco-media-summary {
             border-color: rgb(31 41 55);
             background: rgb(17 24 39);
         }
 
-        .gfree-media-controls {
+        .twyxtco-media-controls {
             display: grid;
             grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px);
             gap: 0.75rem;
             align-items: end;
         }
 
-        .gfree-media-control label {
+        .twyxtco-media-control label {
             display: block;
             margin-bottom: 0.25rem;
             color: rgb(75 85 99);
@@ -33,12 +33,12 @@
             font-weight: 650;
         }
 
-        .dark .gfree-media-control label {
+        .dark .twyxtco-media-control label {
             color: rgb(209 213 219);
         }
 
-        .gfree-media-control input,
-        .gfree-media-control select {
+        .twyxtco-media-control input,
+        .twyxtco-media-control select {
             width: 100%;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
@@ -48,32 +48,32 @@
             font-size: 0.875rem;
         }
 
-        .dark .gfree-media-control input,
-        .dark .gfree-media-control select {
+        .dark .twyxtco-media-control input,
+        .dark .twyxtco-media-control select {
             border-color: rgb(55 65 81);
             background: rgb(3 7 18);
             color: white;
         }
 
-        .gfree-media-grid {
+        .twyxtco-media-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
             gap: 0.75rem;
         }
 
-        .gfree-media-card {
+        .twyxtco-media-card {
             overflow: hidden;
             border: 1px solid rgb(229 231 235);
             border-radius: 0.75rem;
             background: white;
         }
 
-        .dark .gfree-media-card {
+        .dark .twyxtco-media-card {
             border-color: rgb(31 41 55);
             background: rgb(17 24 39);
         }
 
-        .gfree-media-card__image {
+        .twyxtco-media-card__image {
             display: block;
             width: 100%;
             height: 5.25rem;
@@ -81,40 +81,40 @@
             background: rgb(243 244 246);
         }
 
-        .dark .gfree-media-card__image {
+        .dark .twyxtco-media-card__image {
             background: rgb(3 7 18);
         }
 
-        .gfree-media-card__body {
+        .twyxtco-media-card__body {
             padding: 0.625rem;
         }
 
-        .gfree-media-card__title,
-        .gfree-media-card__path,
-        .gfree-media-card__meta {
+        .twyxtco-media-card__title,
+        .twyxtco-media-card__path,
+        .twyxtco-media-card__meta {
             display: block;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .gfree-media-card__title {
+        .twyxtco-media-card__title {
             color: rgb(17 24 39);
             font-size: 0.75rem;
             font-weight: 700;
         }
 
-        .dark .gfree-media-card__title {
+        .dark .twyxtco-media-card__title {
             color: white;
         }
 
-        .gfree-media-card__path,
-        .gfree-media-card__meta {
+        .twyxtco-media-card__path,
+        .twyxtco-media-card__meta {
             color: rgb(107 114 128);
             font-size: 0.6875rem;
         }
 
-        .gfree-media-card__stats {
+        .twyxtco-media-card__stats {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 0.375rem;
@@ -123,11 +123,11 @@
             font-size: 0.6875rem;
         }
 
-        .gfree-media-card__stats dd {
+        .twyxtco-media-card__stats dd {
             margin: 0;
         }
 
-        .gfree-media-card__usage {
+        .twyxtco-media-card__usage {
             margin-top: 0.35rem;
             padding: 0;
             color: rgb(107 114 128);
@@ -135,27 +135,27 @@
             line-height: 1.2;
         }
 
-        .gfree-media-card__usage-list {
+        .twyxtco-media-card__usage-list {
             margin: 0;
             padding-left: 0.875rem;
             list-style: disc;
         }
 
-        .gfree-media-card__usage li,
-        .gfree-media-card__usage p {
+        .twyxtco-media-card__usage li,
+        .twyxtco-media-card__usage p {
             margin: 0;
             font-size: inherit;
             line-height: inherit;
         }
 
-        .gfree-media-card__usage-line {
+        .twyxtco-media-card__usage-line {
             display: block;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .gfree-media-card__actions {
+        .twyxtco-media-card__actions {
             display: flex;
             flex-wrap: wrap;
             gap: 0.25rem;
@@ -165,8 +165,8 @@
             text-align: center;
         }
 
-        .gfree-media-card__actions a,
-        .gfree-media-card__actions button {
+        .twyxtco-media-card__actions a,
+        .twyxtco-media-card__actions button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -176,24 +176,24 @@
             font-weight: 650;
         }
 
-        .gfree-media-card__actions svg {
+        .twyxtco-media-card__actions svg {
             width: 1rem;
             height: 1rem;
         }
 
         @media (max-width: 640px) {
-            .gfree-media-controls {
+            .twyxtco-media-controls {
                 grid-template-columns: 1fr;
             }
 
-            .gfree-media-grid {
+            .twyxtco-media-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
         }
     </style>
 
     <div class="space-y-6">
-        <div class="gfree-media-summary">
+        <div class="twyxtco-media-summary">
             <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
@@ -204,8 +204,8 @@
             </div>
         </div>
 
-        <div class="gfree-media-controls">
-            <div class="gfree-media-control">
+        <div class="twyxtco-media-controls">
+            <div class="twyxtco-media-control">
                 <label for="media-search">Search</label>
                 <input
                     id="media-search"
@@ -215,7 +215,7 @@
                 >
             </div>
 
-            <div class="gfree-media-control">
+            <div class="twyxtco-media-control">
                 <label for="media-sort">Sort by</label>
                 <select id="media-sort" wire:model.live="sort">
                     @foreach ($sortOptions as $value => $label)
@@ -230,20 +230,20 @@
                 No images match the current search.
             </div>
         @else
-            <div class="gfree-media-grid">
+            <div class="twyxtco-media-grid">
                 @foreach ($images as $image)
-                    <article class="gfree-media-card" title="{{ $image['path'] }}">
+                    <article class="twyxtco-media-card" title="{{ $image['path'] }}">
                         <a href="{{ $image['url'] }}" target="_blank" rel="noreferrer" title="Open">
                             <img
                                 src="{{ $image['url'] }}"
                                 alt=""
-                                class="gfree-media-card__image"
+                                class="twyxtco-media-card__image"
                                 loading="lazy"
                             >
                         </a>
 
-                        <div class="gfree-media-card__body">
-                            <dl class="gfree-media-card__stats">
+                        <div class="twyxtco-media-card__body">
+                            <dl class="twyxtco-media-card__stats">
                                 <div>
                                     <dd>{{ $image['size_for_humans'] }}</dd>
                                 </div>
@@ -252,14 +252,14 @@
                                 </div>
                             </dl>
 
-                            <div class="gfree-media-card__usage">
+                            <div class="twyxtco-media-card__usage">
                                 @if ($image['usage_count'] > 0)
-                                    <ul class="gfree-media-card__usage-list">
+                                    <ul class="twyxtco-media-card__usage-list">
                                         @foreach (array_slice($image['usage'], 0, 4) as $usage)
                                             @php($fullUsageText = "{$usage['label']} | {$usage['detail']}")
                                             @php($shortUsageText = "{$usage['short_label']} | {$usage['detail']}")
                                             <li>
-                                                <span class="gfree-media-card__usage-line" title="{{ $fullUsageText }}">{{ str($shortUsageText)->limit(30) }}</span>
+                                                <span class="twyxtco-media-card__usage-line" title="{{ $fullUsageText }}">{{ str($shortUsageText)->limit(30) }}</span>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -276,7 +276,7 @@
                                 @endif
                             </div>
 
-                            <div class="gfree-media-card__actions">
+                            <div class="twyxtco-media-card__actions">
                                 <a
                                     href="{{ $image['url'] }}"
                                     target="_blank"

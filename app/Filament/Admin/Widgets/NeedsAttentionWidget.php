@@ -2,15 +2,14 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
+use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
-use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
-use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
-use App\Filament\Admin\Pages\Sermons;
 use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\HomepageBanner;

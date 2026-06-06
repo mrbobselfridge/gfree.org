@@ -1,7 +1,7 @@
 <footer class="concept-footer site-footer">
     <div class="site-footer__brand">
-        <a href="{{ url('/') }}" aria-label="{{ $settings?->church_name ?? 'gFree Church' }} home">
-            <img class="concept-logo-img site-footer__logo" src="{{ asset('images/gfree-logo.png') }}" alt="{{ $settings?->church_name ?? 'gFree Church' }}">
+        <a href="{{ url('/') }}" aria-label="{{ $settings?->church_name ?? 'TwyxtCo Church' }} home">
+            <img class="concept-logo-img site-footer__logo" src="{{ asset('images/twyxtco-logo.png') }}" alt="{{ $settings?->church_name ?? 'TwyxtCo Church' }}">
         </a>
     </div>
 

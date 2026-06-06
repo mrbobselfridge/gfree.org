@@ -35,7 +35,7 @@ class LeadershipController extends Controller
             'leaders' => $leaders,
             'search' => $search,
             'hero' => $this->listingHero('leadership', [
-                'title' => 'Meet the people serving gFree.',
+                'title' => 'Meet the people serving TwyxtCo.',
                 'subtitle' => 'Staff and lay leaders helping our church follow Jesus together.',
             ]),
         ]);
@@ -73,7 +73,7 @@ class LeadershipController extends Controller
     private function sharedViewData(): array
     {
         $settings = SiteSetting::query()->first();
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
 
         $navigationLinks = NavigationLink::query()
             ->topLevelHeader()

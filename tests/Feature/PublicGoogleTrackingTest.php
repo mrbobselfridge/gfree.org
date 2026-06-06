@@ -14,7 +14,7 @@ class PublicGoogleTrackingTest extends TestCase
     public function test_google_tag_manager_renders_on_public_pages_and_takes_priority_over_direct_analytics(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'google_tag_manager_id' => 'gtm-church1',
             'google_analytics_measurement_id' => 'G-CHURCHGA1',
         ]);
@@ -31,7 +31,7 @@ class PublicGoogleTrackingTest extends TestCase
     public function test_direct_google_analytics_renders_when_tag_manager_is_empty(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'google_analytics_measurement_id' => 'g-churchga1',
         ]);
 
@@ -46,7 +46,7 @@ class PublicGoogleTrackingTest extends TestCase
     public function test_minimal_pages_without_site_chrome_still_render_tracking(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'google_tag_manager_id' => 'GTM-LANDING1',
         ]);
 

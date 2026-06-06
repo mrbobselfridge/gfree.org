@@ -14,7 +14,7 @@ class PublicBulletinTest extends TestCase
     public function test_bulletins_listing_shows_published_bulletins_newest_first(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Bulletin::query()->create([
@@ -56,7 +56,7 @@ class PublicBulletinTest extends TestCase
     public function test_bulletins_listing_uses_configured_hero_settings(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'bulletins_small_label' => 'This week',
             'bulletins_title' => 'Weekly Bulletins',
             'bulletins_subtitle' => '<p>Everything you need to <strong>follow along</strong>.</p>',
@@ -106,7 +106,7 @@ class PublicBulletinTest extends TestCase
     public function test_bulletin_detail_uses_selected_date_slug_and_shows_html_and_pdf_link(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'bulletins_image_path' => 'site-settings/bulletins/bulletins.jpg',
         ]);
 

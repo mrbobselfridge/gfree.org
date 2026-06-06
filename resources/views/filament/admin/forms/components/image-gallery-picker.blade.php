@@ -41,7 +41,7 @@
 
 <x-dynamic-component :component="$fieldWrapperView" :field="$field">
     <style>
-        .gfree-image-picker-controls {
+        .twyxtco-image-picker-controls {
             display: grid;
             grid-template-columns: minmax(180px, 1fr) minmax(160px, 240px) auto;
             gap: 0.75rem;
@@ -49,7 +49,7 @@
             align-items: end;
         }
 
-        .gfree-image-picker-control label {
+        .twyxtco-image-picker-control label {
             display: block;
             margin-bottom: 0.25rem;
             color: rgb(75 85 99);
@@ -57,12 +57,12 @@
             font-weight: 650;
         }
 
-        .dark .gfree-image-picker-control label {
+        .dark .twyxtco-image-picker-control label {
             color: rgb(209 213 219);
         }
 
-        .gfree-image-picker-control input,
-        .gfree-image-picker-control select {
+        .twyxtco-image-picker-control input,
+        .twyxtco-image-picker-control select {
             width: 100%;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
@@ -72,14 +72,14 @@
             font-size: 0.875rem;
         }
 
-        .dark .gfree-image-picker-control input,
-        .dark .gfree-image-picker-control select {
+        .dark .twyxtco-image-picker-control input,
+        .dark .twyxtco-image-picker-control select {
             border-color: rgb(55 65 81);
             background: rgb(3 7 18);
             color: white;
         }
 
-        .gfree-image-picker-submit {
+        .twyxtco-image-picker-submit {
             display: inline-flex;
             min-height: 2.375rem;
             align-items: center;
@@ -93,11 +93,11 @@
             white-space: nowrap;
         }
 
-        .gfree-image-picker-submit:hover {
+        .twyxtco-image-picker-submit:hover {
             background: rgb(180 83 9);
         }
 
-        .gfree-image-picker {
+        .twyxtco-image-picker {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
             gap: 0.75rem;
@@ -106,12 +106,12 @@
             padding-right: 0.25rem;
         }
 
-        .gfree-image-picker-option {
+        .twyxtco-image-picker-option {
             display: block;
             cursor: pointer;
         }
 
-        .gfree-image-picker-input {
+        .twyxtco-image-picker-input {
             position: absolute;
             width: 1px;
             height: 1px;
@@ -122,7 +122,7 @@
             border: 0;
         }
 
-        .gfree-image-picker-card {
+        .twyxtco-image-picker-card {
             display: block;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
@@ -131,17 +131,17 @@
             transition: border-color 120ms ease, box-shadow 120ms ease;
         }
 
-        .dark .gfree-image-picker-card {
+        .dark .twyxtco-image-picker-card {
             border-color: rgb(55 65 81);
             background: rgb(17 24 39);
         }
 
-        .gfree-image-picker-input:checked + .gfree-image-picker-card {
+        .twyxtco-image-picker-input:checked + .twyxtco-image-picker-card {
             border-color: rgb(217 119 6);
             box-shadow: 0 0 0 3px rgb(217 119 6 / 0.35);
         }
 
-        .gfree-image-picker-card__image {
+        .twyxtco-image-picker-card__image {
             display: block;
             width: 100%;
             height: 4.75rem;
@@ -149,52 +149,52 @@
             background: rgb(243 244 246);
         }
 
-        .dark .gfree-image-picker-card__image {
+        .dark .twyxtco-image-picker-card__image {
             background: rgb(3 7 18);
         }
 
-        .gfree-image-picker-card__body {
+        .twyxtco-image-picker-card__body {
             display: block;
             padding: 0.5rem;
         }
 
-        .gfree-image-picker-card__title,
-        .gfree-image-picker-card__path,
-        .gfree-image-picker-card__meta {
+        .twyxtco-image-picker-card__title,
+        .twyxtco-image-picker-card__path,
+        .twyxtco-image-picker-card__meta {
             display: block;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .gfree-image-picker-card__title {
+        .twyxtco-image-picker-card__title {
             color: rgb(17 24 39);
             font-size: 0.75rem;
             font-weight: 700;
         }
 
-        .dark .gfree-image-picker-card__title {
+        .dark .twyxtco-image-picker-card__title {
             color: white;
         }
 
-        .gfree-image-picker-card__path,
-        .gfree-image-picker-card__meta {
+        .twyxtco-image-picker-card__path,
+        .twyxtco-image-picker-card__meta {
             color: rgb(107 114 128);
             font-size: 0.6875rem;
         }
 
         @media (min-width: 1280px) {
-            .gfree-image-picker {
+            .twyxtco-image-picker {
                 grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             }
         }
 
         @media (max-width: 640px) {
-            .gfree-image-picker-controls {
+            .twyxtco-image-picker-controls {
                 grid-template-columns: 1fr;
             }
 
-            .gfree-image-picker {
+            .twyxtco-image-picker {
                 grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
             }
         }
@@ -230,8 +230,8 @@
             },
         }"
     >
-        <div class="gfree-image-picker-controls">
-            <div class="gfree-image-picker-control">
+        <div class="twyxtco-image-picker-controls">
+            <div class="twyxtco-image-picker-control">
                 <label for="{{ $id }}-search">Search</label>
                 <input
                     id="{{ $id }}-search"
@@ -241,7 +241,7 @@
                 >
             </div>
 
-            <div class="gfree-image-picker-control">
+            <div class="twyxtco-image-picker-control">
                 <label for="{{ $id }}-sort">Sort by</label>
                 <select id="{{ $id }}-sort" x-model="sort">
                     @foreach ($sortOptions as $value => $label)
@@ -252,7 +252,7 @@
 
             <button
                 type="button"
-                class="gfree-image-picker-submit"
+                class="twyxtco-image-picker-submit"
                 wire:click="callMountedAction"
                 wire:loading.attr="disabled"
                 wire:target="callMountedAction"
@@ -266,7 +266,7 @@
                 No uploaded images were found.
             </div>
         @else
-            <div class="gfree-image-picker">
+            <div class="twyxtco-image-picker">
             @foreach ($images as $image)
                 @php
                     $optionId = $id.'-'.Str::slug($image['path']).'-'.$loop->index;
@@ -275,7 +275,7 @@
 
                 <label
                     for="{{ $optionId }}"
-                    class="gfree-image-picker-option"
+                    class="twyxtco-image-picker-option"
                     x-show="matches(@js($imageForControls))"
                     x-bind:style="{ order: order(@js($image['path'])) }"
                     x-on:dblclick.prevent="$wire.set(@js($statePath), @js($image['path'])); $nextTick(() => $wire.callMountedAction())"
@@ -286,29 +286,29 @@
                         name="{{ $id }}"
                         value="{{ $image['path'] }}"
                         {{ $wireModelAttribute }}="{{ $statePath }}"
-                        class="gfree-image-picker-input"
+                        class="twyxtco-image-picker-input"
                     >
 
-                    <span class="gfree-image-picker-card">
+                    <span class="twyxtco-image-picker-card">
                         <img
                             src="{{ $image['url'] }}"
                             alt=""
-                            class="gfree-image-picker-card__image"
+                            class="twyxtco-image-picker-card__image"
                             loading="lazy"
                         >
 
-                        <span class="gfree-image-picker-card__body">
-                            <span class="gfree-image-picker-card__title" title="{{ $image['name'] }}">
+                        <span class="twyxtco-image-picker-card__body">
+                            <span class="twyxtco-image-picker-card__title" title="{{ $image['name'] }}">
                                 {{ $image['name'] }}
                             </span>
-                            <span class="gfree-image-picker-card__path" title="{{ $image['path'] }}">
+                            <span class="twyxtco-image-picker-card__path" title="{{ $image['path'] }}">
                                 {{ $image['path'] }}
                             </span>
-                            <span class="gfree-image-picker-card__meta">
+                            <span class="twyxtco-image-picker-card__meta">
                                 {{ collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])->filter()->implode(' | ') }}
                             </span>
                             <span @class([
-                                'gfree-image-picker-card__meta',
+                                'twyxtco-image-picker-card__meta',
                             ])>
                                 {{ $image['usage_summary'] ?? 'Unused' }}
                             </span>

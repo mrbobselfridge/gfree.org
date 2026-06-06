@@ -13,7 +13,7 @@ class HomepageBannerTest extends TestCase
     public function test_active_homepage_banner_replaces_default_hero_content(): void
     {
         HomepageBanner::query()->create([
-            'title' => 'Christmas Eve at gFree',
+            'title' => 'Christmas Eve at TwyxtCo',
             'eyebrow' => 'Holiday services',
             'subtitle' => 'Join us for candlelight services.',
             'image_path' => 'homepage-banners/christmas.jpg',
@@ -27,7 +27,7 @@ class HomepageBannerTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('Holiday services')
-            ->assertSee('Christmas Eve at gFree')
+            ->assertSee('Christmas Eve at TwyxtCo')
             ->assertSee('Join us for candlelight services.')
             ->assertSee('/storage/homepage-banners/christmas.jpg')
             ->assertSee('Reserve Seats')

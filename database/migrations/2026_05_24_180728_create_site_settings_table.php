@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('site_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('church_name')->default('gFree Church');
+            $table->string('church_name')->default('TwyxtCo Church');
             $table->string('tagline')->nullable();
             $table->text('sunday_service_times')->nullable();
             $table->text('address')->nullable();

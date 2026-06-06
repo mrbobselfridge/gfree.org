@@ -280,7 +280,7 @@ class PublicAnnouncementTest extends TestCase
     public function test_announcement_detail_uses_landing_image_when_record_image_is_missing(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'announcements_image_path' => 'site-settings/announcements/default.jpg',
         ]);
 

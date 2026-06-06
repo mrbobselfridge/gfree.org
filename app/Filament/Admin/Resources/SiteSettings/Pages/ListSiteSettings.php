@@ -15,7 +15,7 @@ class ListSiteSettings extends ListRecords
     public function mount(): void
     {
         $record = SiteSetting::query()->firstOrCreate([], [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'openai_bulletin_model' => OpenAiSiteSettings::DEFAULT_MODEL,
             'ai_content_prompt' => AiContentPrompt::DEFAULT,
         ]);

@@ -9,7 +9,7 @@
     ])>
         <div class="concept-updates__inner">
             <div class="concept-updates__header">
-                <h2>{{ $data['heading'] ?? 'Latest at gFree' }}</h2>
+                <h2>{{ $data['heading'] ?? 'Latest at TwyxtCo' }}</h2>
 
                 @if (filled($data['link_label'] ?? null) && filled($data['link_url'] ?? null))
                     <a href="{{ $data['link_url'] }}"{!! \App\Support\LinkAttributes::externalAttributes($data['link_url']) !!}>{{ $data['link_label'] }}</a>

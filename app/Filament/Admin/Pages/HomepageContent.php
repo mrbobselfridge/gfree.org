@@ -111,7 +111,7 @@ class HomepageContent extends Page
             ->statePath('data')
             ->components([
                 Section::make('Homepage Content Blocks')
-                    ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at gFree.')
+                    ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at TwyxtCo.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->iconColor('success')
                     ->extraAttributes([
@@ -157,7 +157,7 @@ class HomepageContent extends Page
 
     private function defaultData(?HomepageContentModel $record = null): array
     {
-        $defaults = config('gfree.homepage');
+        $defaults = config('twyxtco.homepage');
         $featureUrl = $defaults['feature']['url'] ?? null;
         $oneChurchUrl = SiteSetting::query()->value('one_church_url');
 
@@ -238,7 +238,7 @@ class HomepageContent extends Page
             'type' => 'announcements_bar',
             'data' => [
                 'is_visible' => true,
-                'heading' => 'Latest at gFree',
+                'heading' => 'Latest at TwyxtCo',
                 'link_label' => 'View all',
                 'link_url' => '/announcements',
                 'background' => 'white',

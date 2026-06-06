@@ -19,7 +19,7 @@ class CmsDashboard extends Dashboard
     public function getPageClasses(): array
     {
         return [
-            'gfree-cms-dashboard',
+            'twyxtco-cms-dashboard',
         ];
     }
 
@@ -27,6 +27,6 @@ class CmsDashboard extends Dashboard
     {
         return Grid::make($this->getColumns())
             ->schema(fn (): array => $this->getWidgetsSchemaComponents($this->getWidgets()))
-            ->extraAttributes(['class' => 'gfree-cms-dashboard-widgets'], merge: true);
+            ->extraAttributes(['class' => 'twyxtco-cms-dashboard-widgets'], merge: true);
     }
 }

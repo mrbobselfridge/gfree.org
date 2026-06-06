@@ -35,7 +35,7 @@ trait ManagesListingPageSettings
     protected function mountListingSettings(): void
     {
         $this->listingSettingsRecord = SiteSetting::query()->firstOrCreate([], [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         $this->getSchema('listingSettingsForm')?->fill(

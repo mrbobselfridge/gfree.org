@@ -1,6 +1,6 @@
 <header class="concept-header" data-site-header>
-    <a href="{{ url('/') }}" class="concept-logo-link" aria-label="{{ $settings?->church_name ?? 'gFree Church' }} home">
-        <img class="concept-logo-img" src="{{ asset('images/gfree-logo.png') }}" alt="{{ $settings?->church_name ?? 'gFree Church' }}">
+    <a href="{{ url('/') }}" class="concept-logo-link" aria-label="{{ $settings?->church_name ?? 'TwyxtCo Church' }} home">
+        <img class="concept-logo-img" src="{{ asset('images/twyxtco-logo.png') }}" alt="{{ $settings?->church_name ?? 'TwyxtCo Church' }}">
     </a>
 
     <button

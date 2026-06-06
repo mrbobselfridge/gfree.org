@@ -16,7 +16,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_edit_page_has_sections_and_cancel_actions(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         $response = $this->actingAs(User::factory()->create())
@@ -54,7 +54,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_sermons_channel_url_fills_feed_url(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())
@@ -66,7 +66,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_ai_content_prompt_can_be_saved(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())
@@ -84,7 +84,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_openai_fields_can_be_saved(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())
@@ -104,15 +104,15 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_url_fields_accept_external_urls_and_local_paths(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
-            ->set('data.livestream_url', 'https://live.example.com/gfree')
+            ->set('data.livestream_url', 'https://live.example.com/twyxtco')
             ->set('data.giving_url', '/give')
             ->set('data.one_church_url', '/connect-card?source=site')
-            ->set('data.facebook_url', 'http://facebook.example/gfree')
+            ->set('data.facebook_url', 'http://facebook.example/twyxtco')
             ->set('data.instagram_url', '/instagram')
             ->set('data.youtube_url', '/sermons')
             ->set('data.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCSiteSettingsLocalUrlTest')
@@ -122,10 +122,10 @@ class SiteSettingsAdminTest extends TestCase
 
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
-            'livestream_url' => 'https://live.example.com/gfree',
+            'livestream_url' => 'https://live.example.com/twyxtco',
             'giving_url' => '/give',
             'one_church_url' => '/connect-card?source=site',
-            'facebook_url' => 'http://facebook.example/gfree',
+            'facebook_url' => 'http://facebook.example/twyxtco',
             'instagram_url' => '/instagram',
             'youtube_url' => '/sermons',
             'sermons_youtube_channel_url' => 'https://www.youtube.com/channel/UCSiteSettingsLocalUrlTest',
@@ -136,7 +136,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_url_fields_reject_non_url_text(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())
@@ -149,7 +149,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_google_tracking_fields_can_be_saved(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())
@@ -169,7 +169,7 @@ class SiteSettingsAdminTest extends TestCase
     public function test_site_settings_google_tracking_fields_reject_invalid_ids(): void
     {
         $settings = SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Livewire::actingAs(User::factory()->create())

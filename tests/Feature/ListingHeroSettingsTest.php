@@ -16,7 +16,7 @@ class ListingHeroSettingsTest extends TestCase
     public function test_announcements_listing_uses_configured_hero_settings(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'announcements_small_label' => 'Latest',
             'announcements_title' => 'Church updates',
             'announcements_subtitle' => '<p>Important things to <strong>know</strong> this week.</p>',
@@ -36,10 +36,10 @@ class ListingHeroSettingsTest extends TestCase
     public function test_leadership_listing_uses_configured_hero_settings(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'leadership_small_label' => 'Our team',
             'leadership_title' => 'Leaders who serve',
-            'leadership_subtitle' => '<p>Meet the people helping <strong>gFree</strong> follow Jesus.</p>',
+            'leadership_subtitle' => '<p>Meet the people helping <strong>TwyxtCo</strong> follow Jesus.</p>',
             'leadership_image_path' => 'site-settings/leadership/team.jpg',
         ]);
 
@@ -47,8 +47,8 @@ class ListingHeroSettingsTest extends TestCase
             ->assertOk()
             ->assertSee('Our team')
             ->assertSee('Leaders who serve')
-            ->assertSee('<strong>gFree</strong>', false)
-            ->assertDontSee('&lt;strong&gt;gFree&lt;/strong&gt;', false)
+            ->assertSee('<strong>TwyxtCo</strong>', false)
+            ->assertDontSee('&lt;strong&gt;TwyxtCo&lt;/strong&gt;', false)
             ->assertSee('/storage/site-settings/leadership/team.jpg')
             ->assertSee('page-hero--image');
     }
@@ -56,7 +56,7 @@ class ListingHeroSettingsTest extends TestCase
     public function test_ministry_listing_uses_configured_hero_settings_and_lists_ministries(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'ministry_small_label' => 'Ministries',
             'ministry_title' => 'Find a place to connect',
             'ministry_subtitle' => '<p>Groups and <strong>teams</strong> for every season.</p>',
@@ -99,7 +99,7 @@ class ListingHeroSettingsTest extends TestCase
         ]);
 
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'sermons_small_label' => 'Messages',
             'sermons_title' => 'Latest sermons',
             'sermons_subtitle' => '<p>Messages for <strong>real life</strong>.</p>',
@@ -126,7 +126,7 @@ class ListingHeroSettingsTest extends TestCase
     public function test_ministry_detail_shows_ministry_actions_without_legacy_description(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ]);
 
         Ministry::query()->create([
@@ -249,7 +249,7 @@ class ListingHeroSettingsTest extends TestCase
     public function test_ministry_detail_uses_landing_image_when_hero_image_is_missing(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'ministry_image_path' => 'site-settings/ministry/default.jpg',
         ]);
 

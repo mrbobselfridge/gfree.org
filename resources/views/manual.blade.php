@@ -1,5 +1,5 @@
 @php
-    $churchName = $settings?->church_name ?? 'gFree Church';
+    $churchName = $settings?->church_name ?? 'TwyxtCo Church';
 @endphp
 
 <!doctype html>

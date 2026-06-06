@@ -145,7 +145,7 @@ class UserResource extends Resource
     private static function permissionListAttributes(): array
     {
         return [
-            'class' => 'gfree-user-permission-list',
+            'class' => 'twyxtco-user-permission-list',
         ];
     }
 

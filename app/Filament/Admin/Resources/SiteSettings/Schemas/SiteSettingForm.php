@@ -26,7 +26,7 @@ class SiteSettingForm
                     ->schema([
                         TextInput::make('church_name')
                             ->required()
-                            ->default('gFree Church')
+                            ->default('TwyxtCo Church')
                             ->maxLength(255),
                         TextInput::make('phone')
                             ->maxLength(255)

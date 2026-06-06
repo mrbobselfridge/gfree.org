@@ -20,15 +20,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         SiteSetting::updateOrCreate([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
         ], [
             'tagline' => 'Somewhere you can belong',
             'sunday_service_times' => '9:15 & 11 AM',
             'address' => '305 Keystone Hill Road',
-            'email' => 'office@gfree.org',
+            'email' => 'office@twyxtco.org',
             'livestream_url' => '/live',
             'giving_url' => '/give',
-            'one_church_url' => 'https://gfree.onechurchsoftware.com',
+            'one_church_url' => 'https://twyxtco.onechurchsoftware.com',
         ]);
 
         HomepageBanner::updateOrCreate([

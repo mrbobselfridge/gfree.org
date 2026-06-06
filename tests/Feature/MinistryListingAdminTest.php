@@ -21,7 +21,7 @@ class MinistryListingAdminTest extends TestCase
     public function test_ministry_listing_settings_appear_above_ministries_table(): void
     {
         SiteSetting::query()->create([
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'ministry_image_path' => 'site-settings/ministry/ministries.jpg',
         ]);
 
@@ -29,7 +29,7 @@ class MinistryListingAdminTest extends TestCase
             ->get('/admin/ministries')
             ->assertOk()
             ->assertSee('Ministries Landing Page Content')
-            ->assertSee('gfree-ministry-table-toolbar-heading', false)
+            ->assertSee('twyxtco-ministry-table-toolbar-heading', false)
             ->assertSee('Ministries')
             ->assertSee('Ministry small label')
             ->assertSee('Ministry title')
@@ -53,7 +53,7 @@ class MinistryListingAdminTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'ministry_small_label' => 'Ephesians 4:11-14',
             'ministry_title' => 'Ministries',
             'ministry_subtitle' => '<p>Equipping the saints for ministry.</p>',
@@ -66,7 +66,7 @@ class MinistryListingAdminTest extends TestCase
             ->get('/admin/staff-members')
             ->assertOk()
             ->assertSee('Leadership Landing Page Content')
-            ->assertSee('gfree-leadership-table-toolbar-heading', false)
+            ->assertSee('twyxtco-leadership-table-toolbar-heading', false)
             ->assertSee('Individual Leaders')
             ->assertSee('Leadership small label')
             ->assertSee('Leadership title')
@@ -88,7 +88,7 @@ class MinistryListingAdminTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'leadership_small_label' => 'Our team',
             'leadership_title' => 'Leaders who serve',
             'leadership_subtitle' => '<p>Meet the team.</p>',
@@ -101,7 +101,7 @@ class MinistryListingAdminTest extends TestCase
             ->get('/admin/announcements')
             ->assertOk()
             ->assertSee('Announcements Landing Page Content')
-            ->assertSee('gfree-announcements-table-toolbar-heading', false)
+            ->assertSee('twyxtco-announcements-table-toolbar-heading', false)
             ->assertSee('Individual Announcements')
             ->assertSee('Announcements small label')
             ->assertSee('Announcements title')
@@ -123,7 +123,7 @@ class MinistryListingAdminTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'announcements_small_label' => 'Latest',
             'announcements_title' => 'Church updates',
             'announcements_subtitle' => '<p>Important things to know.</p>',
@@ -158,7 +158,7 @@ class MinistryListingAdminTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'bulletins_small_label' => 'Weekly',
             'bulletins_title' => 'Bulletins',
             'bulletins_subtitle' => '<p>Follow along with this week.</p>',
@@ -199,7 +199,7 @@ class MinistryListingAdminTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'gFree Church',
+            'church_name' => 'TwyxtCo Church',
             'sermons_small_label' => 'Messages',
             'sermons_title' => 'Latest sermons',
             'sermons_subtitle' => '<p>Messages for real life.</p>',

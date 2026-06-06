@@ -15,7 +15,7 @@ class AdminNavigationHelpTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get('/admin')
             ->assertOk()
-            ->assertSee('gfree-sidebar-help', false)
+            ->assertSee('twyxtco-sidebar-help', false)
             ->assertSee('Your starting point for admin tools and quick account access.', false)
             ->assertSee('Manage ministry listing cards and individual ministry detail pages.', false)
             ->assertSee('Send automatic or manual email updates when selected content areas are created, changed, or deleted.', false)
