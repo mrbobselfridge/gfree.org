@@ -64,10 +64,13 @@ class WorkflowNotificationRuleForm
                     ->description('Choose users, groups, external emails, or any combination.')
                     ->schema([
                         Toggle::make('notify_admins')
-                            ->label('All admins'),
+                            ->label('All admins')
+                            ->helperText('When enabled, every ADMIN account receives this notification.')
+                            ->inline(),
                         Toggle::make('notify_all_users')
                             ->label('All admins and users')
-                            ->helperText('When enabled, every user account receives this notification.'),
+                            ->helperText('When enabled, every ADMIN and USER account receives this notification.')
+                            ->inline(),
                         Select::make('selected_user_ids')
                             ->label('Selected users')
                             ->multiple()
@@ -92,7 +95,8 @@ class WorkflowNotificationRuleForm
                     ->schema([
                         TextInput::make('subject')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                         Textarea::make('message')
                             ->required()
                             ->rows(6)
