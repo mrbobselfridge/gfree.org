@@ -91,6 +91,18 @@ class AdminPanelProvider extends PanelProvider
                             border-inline-start-color: var(--gray-700);
                         }
 
+                        .gfree-admin-icon-action.fi-icon-btn {
+                            width: 3.75rem;
+                            height: 3.75rem;
+                            margin: -0.5rem;
+                            border-radius: 0.75rem;
+                        }
+
+                        .gfree-admin-icon-action.fi-icon-btn > .fi-icon {
+                            width: 1.875rem;
+                            height: 1.875rem;
+                        }
+
                         .gfree-user-permission-list .fi-fo-checkbox-list-option-ctn {
                             padding-inline-start: 1.25rem;
                         }
