@@ -21,24 +21,27 @@ class WorkflowNotificationRuleForm
             ->components([
                 Section::make('Rule')
                     ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+
                         ToggleButtons::make('is_enabled')
                             ->boolean()
                             ->inline()
                             ->default(false)
                             ->required(),
 
-                        TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
                         Select::make('content_area')
                             ->label('Content area')
                             ->options(WorkflowNotificationAreas::options())
                             ->native(false)
                             ->required(),
+
                         CheckboxList::make('triggers')
                             ->options(WorkflowNotificationAreas::triggerOptions())
                             ->columns(4)
                             ->bulkToggleable()
+                            ->inline()
                             ->required(),
                         Select::make('delay_minutes')
                             ->label('Automatic send delay')
