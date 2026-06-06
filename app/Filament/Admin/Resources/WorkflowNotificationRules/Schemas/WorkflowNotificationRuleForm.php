@@ -40,7 +40,6 @@ class WorkflowNotificationRuleForm
                         CheckboxList::make('triggers')
                             ->options(WorkflowNotificationAreas::triggerOptions())
                             ->columns(4)
-                            ->bulkToggleable()
                             ->required(),
                         Select::make('delay_minutes')
                             ->label('Automatic send delay')
