@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
     'content_blocks',
     'photo_path',
     'email',
+    'phone_number',
+    'availability',
     'sort_order',
     'is_published',
 ])]

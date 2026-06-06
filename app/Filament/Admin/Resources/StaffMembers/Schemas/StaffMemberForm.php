@@ -37,6 +37,12 @@ class StaffMemberForm
                     ->label('Email address')
                     ->email()
                     ->maxLength(255),
+                TextInput::make('phone_number')
+                    ->label('Phone Number')
+                    ->tel()
+                    ->maxLength(255),
+                TextInput::make('availability')
+                    ->maxLength(255),
                 TextInput::make('slug')
                     ->prefix('/leadership/')
                     ->required()

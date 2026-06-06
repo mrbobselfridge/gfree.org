@@ -51,7 +51,9 @@ class LeadershipController extends Controller
                 ->orWhere('role', 'like', $like)
                 ->orWhere('bio', 'like', $like)
                 ->orWhere('content_blocks', 'like', $like)
-                ->orWhere('email', 'like', $like);
+                ->orWhere('email', 'like', $like)
+                ->orWhere('phone_number', 'like', $like)
+                ->orWhere('availability', 'like', $like);
         });
     }
 

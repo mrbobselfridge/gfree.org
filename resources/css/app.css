@@ -258,7 +258,8 @@
     max-width: 900px;
 }
 
-.page-hero--ministry-detail .page-hero__content {
+.page-hero--ministry-detail .page-hero__content,
+.page-hero--leader-detail .page-hero__content {
     display: grid;
     grid-template-columns: minmax(0, 760px) minmax(320px, 420px);
     gap: clamp(32px, 6vw, 96px);
@@ -309,7 +310,8 @@
     border-left: 10px solid var(--site-accent);
 }
 
-.page-hero--ministry-detail .ministry-hero-contact {
+.page-hero--ministry-detail .ministry-hero-contact,
+.page-hero--leader-detail .leadership-hero-contact {
     margin-top: 0;
     justify-self: end;
 }
@@ -1502,12 +1504,14 @@
         flex-basis: 100%;
     }
 
-    .page-hero--ministry-detail .page-hero__content {
+    .page-hero--ministry-detail .page-hero__content,
+    .page-hero--leader-detail .page-hero__content {
         grid-template-columns: 1fr;
         gap: 0;
     }
 
-    .page-hero--ministry-detail .ministry-hero-contact {
+    .page-hero--ministry-detail .ministry-hero-contact,
+    .page-hero--leader-detail .leadership-hero-contact {
         justify-self: start;
         margin-top: 28px;
     }

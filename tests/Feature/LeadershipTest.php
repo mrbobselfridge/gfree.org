@@ -4,12 +4,22 @@ namespace Tests\Feature;
 
 use App\Models\SiteSetting;
 use App\Models\StaffMember;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class LeadershipTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_leader_admin_form_includes_phone_number_and_availability(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get('/admin/staff-members/create')
+            ->assertOk()
+            ->assertSee('Phone Number')
+            ->assertSee('Availability');
+    }
 
     public function test_published_leaders_show_on_leadership_index(): void
     {
@@ -85,7 +95,7 @@ class LeadershipTest extends TestCase
             ]);
     }
 
-    public function test_leader_profile_renders_photo_without_email_or_legacy_bio(): void
+    public function test_leader_profile_renders_photo_and_contact_box_without_legacy_bio(): void
     {
         StaffMember::query()->create([
             'name' => 'John Shepherd',
@@ -94,6 +104,8 @@ class LeadershipTest extends TestCase
             'bio' => '<p>John helps people find care.</p><ul><li>Prayer</li></ul>',
             'photo_path' => 'leadership/john.jpg',
             'email' => 'john@example.com',
+            'phone_number' => '(814) 555-1313',
+            'availability' => 'Tuesdays and Thursdays by appointment',
             'is_published' => true,
         ]);
 
@@ -105,8 +117,15 @@ class LeadershipTest extends TestCase
             ->assertSee('/storage/leadership/john.jpg')
             ->assertDontSee('<p>John helps people find care.</p>', false)
             ->assertDontSee('<li>Prayer</li>', false)
-            ->assertDontSee('mailto:john@example.com')
-            ->assertDontSee('Email John Shepherd');
+            ->assertSee('page-hero--leader-detail', false)
+            ->assertSee('leadership-hero-contact', false)
+            ->assertSee('Leader Contact')
+            ->assertSee('mailto:john@example.com')
+            ->assertSee('john@example.com')
+            ->assertSee('(814) 555-1313')
+            ->assertSee('tel:8145551313', false)
+            ->assertSee('Availability')
+            ->assertSee('Tuesdays and Thursdays by appointment');
     }
 
     public function test_leader_profile_renders_content_blocks_before_legacy_bio(): void
