@@ -1124,6 +1124,10 @@
     line-height: 1.08;
 }
 
+.leadership-card h2 {
+    margin-bottom: 24px;
+}
+
 .listing-card__summary {
     display: block;
     margin: 18px 0 28px;
