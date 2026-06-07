@@ -22,6 +22,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -32,6 +33,11 @@ use Illuminate\Support\HtmlString;
 class UserResource extends Resource
 {
     use AppliesAdminAccess;
+
+    private const SECTION_IDS = [
+        'users-user-details',
+        'users-approved-admin-areas',
+    ];
 
     protected static ?string $model = User::class;
 
@@ -49,7 +55,13 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('User Details')
+                View::make('filament.admin.site-settings-section-controls')
+                    ->viewData([
+                        'sectionIds' => self::SECTION_IDS,
+                    ])
+                    ->key('users-section-controls')
+                    ->columnSpanFull(),
+                self::section('User Details', 'users-user-details')
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -77,7 +89,7 @@ class UserResource extends Resource
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Approved Admin Areas')
+                self::section('Approved Admin Areas', 'users-approved-admin-areas')
                     ->description('Admins always have access to every admin area. Editor permissions are applied here.')
                     ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
                     ->schema([
@@ -137,6 +149,16 @@ class UserResource extends Resource
                     ])
                     ->columnSpanFull(),
             ]);
+    }
+
+    private static function section(string $heading, string $id): Section
+    {
+        return Section::make($heading)
+            ->id($id)
+            ->key($id)
+            ->collapsible()
+            ->collapsed()
+            ->persistCollapsed();
     }
 
     private static function permissionGroupLabel(string $label): HtmlString

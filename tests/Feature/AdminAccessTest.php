@@ -8,6 +8,7 @@ use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AdminAccess;
+use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -43,7 +44,9 @@ class AdminAccessTest extends TestCase
             ->assertSee('Users')
             ->assertSee('Individual Ministry Entries')
             ->assertSee('Individual Page Entries')
-            ->assertSee('Individual Leader Entries');
+            ->assertSee('Individual Leader Entries')
+            ->assertSee('Collapse all')
+            ->assertSee('Expand all');
 
         $this->assertSame([], AdminAccess::toolOptionsForGroup('Homepage'));
         $this->assertSame(
@@ -60,6 +63,24 @@ class AdminAccessTest extends TestCase
         $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayNotHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::additionalToolOptions());
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(CreateUser::class)
+            ->assertSchemaComponentExists('users-section-controls')
+            ->assertSchemaComponentExists(
+                'users-user-details',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'users-approved-admin-areas',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            );
     }
 
     public function test_editor_only_accesses_selected_admin_areas(): void
