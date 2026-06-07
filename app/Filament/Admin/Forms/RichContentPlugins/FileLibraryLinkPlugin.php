@@ -132,7 +132,7 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                                         ->hidden(),
                                 ])
                                 ->columns(2),
-                            Tab::make('Existing File')
+                            Tab::make('Use Existing File')
                                 ->schema([
                                     Select::make('document_id')
                                         ->label('File Library document')

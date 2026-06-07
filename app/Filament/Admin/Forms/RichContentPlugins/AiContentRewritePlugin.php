@@ -72,6 +72,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                     'prompt' => SiteSetting::query()->value('ai_content_prompt') ?: AiContentPrompt::DEFAULT,
                     'source_html' => $arguments['content'] ?? '',
                     'suggested_html' => null,
+                    'rewrite_completed' => false,
                 ])
                 ->schema([
                     Textarea::make('prompt')
@@ -82,6 +83,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                         ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-prompt-field'])
                         ->columnSpanFull(),
                     Hidden::make('source_html'),
+                    Hidden::make('rewrite_completed'),
                     View::make('filament.admin.forms.components.ai-rewrite-actions')
                         ->viewData([
                             'acceptArguments' => ['accept' => true],
@@ -102,7 +104,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                         ->extraInputAttributes([
                             'class' => 'twyxtco-ai-rewrite-suggestion-editor',
                         ])
-                        ->visible(fn (Get $get): bool => filled($get('suggested_html')))
+                        ->visible(fn (Get $get): bool => (bool) $get('rewrite_completed'))
                         ->columnSpanFull(),
                 ])
                 ->action(function (
@@ -155,6 +157,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                     $schema->fill([
                         ...$data,
                         'suggested_html' => $suggestedHtml,
+                        'rewrite_completed' => true,
                     ]);
 
                     Notification::make()

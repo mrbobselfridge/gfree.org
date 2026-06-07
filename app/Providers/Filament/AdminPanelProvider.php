@@ -129,23 +129,23 @@ class AdminPanelProvider extends PanelProvider
                             flex-wrap: nowrap;
                             align-items: center;
                             justify-content: center;
-                            gap: 1.25rem;
+                            gap: 0.75rem;
                             width: 100%;
-                            padding-block: 0.75rem 1rem;
+                            padding-block: 0.125rem 0.375rem;
                         }
 
                         .twyxtco-ai-rewrite-action-btn.fi-icon-btn {
                             display: inline-flex !important;
-                            width: 5.5rem !important;
-                            height: 5.5rem !important;
+                            width: 3.75rem !important;
+                            height: 3.75rem !important;
                             align-items: center !important;
                             justify-content: center !important;
-                            border-radius: 0.75rem !important;
+                            border-radius: 0.5rem !important;
                         }
 
                         .twyxtco-ai-rewrite-action-btn.fi-icon-btn > .fi-icon {
-                            width: 2.75rem !important;
-                            height: 2.75rem !important;
+                            width: 2.5rem !important;
+                            height: 2.5rem !important;
                         }
 
                         .twyxtco-ai-rewrite-suggestion-editor {
@@ -158,6 +158,10 @@ class AdminPanelProvider extends PanelProvider
 
                         .twyxtco-ai-rewrite-suggestion-editor > .fi-fo-rich-editor-content {
                             min-height: 100%;
+                        }
+
+                        .twyxtco-ai-rewrite-suggestion-field {
+                            margin-bottom: 50px;
                         }
 
                         .twyxtco-ai-rewrite-processing {
