@@ -106,6 +106,90 @@ class AdminPanelProvider extends PanelProvider
                             height: 1.875rem;
                         }
 
+                        .twyxtco-ai-rewrite-modal.fi-modal-window {
+                            display: flex;
+                            flex-direction: column;
+                            max-height: calc(100dvh - 2rem);
+                            overflow: hidden;
+                        }
+
+                        .twyxtco-ai-rewrite-modal.fi-modal-window > .fi-modal-content {
+                            overflow-y: auto;
+                            overscroll-behavior: contain;
+                            padding-bottom: 2rem;
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-actions {
+                            position: relative;
+                            display: flex;
+                            flex-wrap: wrap;
+                            align-items: center;
+                            gap: 0.5rem;
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-actions .fi-icon-btn {
+                            width: 2.75rem;
+                            height: 2.75rem;
+                            border-radius: 0.5rem;
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-actions .fi-icon-btn > .fi-icon {
+                            width: 1.375rem;
+                            height: 1.375rem;
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing {
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            z-index: 60;
+                            display: none;
+                            width: min(24rem, calc(100vw - 2rem));
+                            align-items: center;
+                            gap: 0.875rem;
+                            padding: 1rem;
+                            border: 1px solid rgb(245 158 11 / 0.35);
+                            border-radius: 0.75rem;
+                            background: white;
+                            color: var(--gray-950);
+                            box-shadow: 0 20px 45px rgb(0 0 0 / 0.24);
+                            transform: translate(-50%, -50%);
+                        }
+
+                        .dark .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing {
+                            border-color: rgb(245 158 11 / 0.45);
+                            background: var(--gray-900);
+                            color: white;
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-spinner {
+                            width: 2rem;
+                            height: 2rem;
+                            flex-shrink: 0;
+                            color: rgb(217 119 6);
+                        }
+
+                        .dark .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-spinner {
+                            color: rgb(251 191 36);
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-title {
+                            font-size: 0.9375rem;
+                            font-weight: 700;
+                            line-height: 1.35;
+                        }
+
+                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-message {
+                            margin-top: 0.125rem;
+                            color: var(--gray-600);
+                            font-size: 0.8125rem;
+                            line-height: 1.4;
+                        }
+
+                        .dark .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-message {
+                            color: var(--gray-300);
+                        }
+
                         .twyxtco-user-permission-list .fi-fo-checkbox-list-option-ctn {
                             padding-inline-start: 1.25rem;
                         }

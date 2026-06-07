@@ -65,6 +65,8 @@ class AiContentRewritePlugin implements RichContentPlugin
                 ->modalWidth(Width::Screen)
                 ->modalSubmitAction(false)
                 ->modalCancelAction(false)
+                ->stickyModalHeader()
+                ->extraModalWindowAttributes(['class' => 'twyxtco-ai-rewrite-modal'], merge: true)
                 ->closeModalByClickingAway(false)
                 ->fillForm(fn (array $arguments): array => [
                     'prompt' => SiteSetting::query()->value('ai_content_prompt') ?: AiContentPrompt::DEFAULT,
