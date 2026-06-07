@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AiBulletinExtractionPrompt;
+use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -49,12 +50,33 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Bulletins title')
             ->assertSee('Bulletins subtitle')
             ->assertSee('Bulletins Image')
+            ->assertSee('Collapse all')
+            ->assertSee('Expand all')
             ->assertSee('Save');
 
         $this->assertGreaterThanOrEqual(2, substr_count($response->getContent(), 'Cancel'));
 
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->assertSchemaComponentExists('site-settings-section-controls')
+            ->assertSchemaComponentExists(
+                'site-settings-organizational-information',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'site-settings-ai-settings',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'site-settings-bulletins-settings',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
             ->assertSet('data.ai_bulletin_extraction_prompt', AiBulletinExtractionPrompt::DEFAULT);
     }
 

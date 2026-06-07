@@ -15,15 +15,34 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 
 class SiteSettingForm
 {
+    private const SECTION_IDS = [
+        'site-settings-organizational-information',
+        'site-settings-ai-settings',
+        'site-settings-social-and-video-urls',
+        'site-settings-google-tracking',
+        'site-settings-announcements-settings',
+        'site-settings-ministries-settings',
+        'site-settings-leaders-settings',
+        'site-settings-sermons-settings',
+        'site-settings-bulletins-settings',
+    ];
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Organizational Information')
+                View::make('filament.admin.site-settings-section-controls')
+                    ->viewData([
+                        'sectionIds' => self::SECTION_IDS,
+                    ])
+                    ->key('site-settings-section-controls')
+                    ->columnSpanFull(),
+                self::section('Organizational Information', 'site-settings-organizational-information')
                     ->schema([
                         TextInput::make('church_name')
                             ->required()
@@ -46,7 +65,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('AI Settings')
+                self::section('AI Settings', 'site-settings-ai-settings')
                     ->schema([
                         TextInput::make('openai_api_key')
                             ->label('OpenAI API key')
@@ -78,7 +97,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Social and Video URLs')
+                self::section('Social and Video URLs', 'site-settings-social-and-video-urls')
                     ->schema([
                         TextInput::make('livestream_url')
                             ->rules([new HttpOrRelativeUrl])
@@ -102,7 +121,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Google Tracking')
+                self::section('Google Tracking', 'site-settings-google-tracking')
                     ->description('Optional. Use Google Tag Manager for the most flexibility. If both are filled in, only Google Tag Manager is rendered to avoid duplicate Analytics page views.')
                     ->schema([
                         TextInput::make('google_tag_manager_id')
@@ -128,7 +147,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Announcements Settings')
+                self::section('Announcements Settings', 'site-settings-announcements-settings')
                     ->description('Can also be managed in the Announcements area.')
                     ->schema([
                         TextInput::make('announcements_small_label')
@@ -143,7 +162,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Ministries Settings')
+                self::section('Ministries Settings', 'site-settings-ministries-settings')
                     ->description('Can also be managed in the Ministries area.')
                     ->schema([
                         TextInput::make('ministry_small_label')
@@ -158,7 +177,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Leaders Settings')
+                self::section('Leaders Settings', 'site-settings-leaders-settings')
                     ->description('Can also be managed in the Leaders area.')
                     ->schema([
                         TextInput::make('leadership_small_label')
@@ -173,7 +192,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Sermons Settings')
+                self::section('Sermons Settings', 'site-settings-sermons-settings')
                     ->description('Can also be managed in the Sermons area.')
                     ->schema([
                         TextInput::make('sermons_small_label')
@@ -209,7 +228,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                Section::make('Bulletins Settings')
+                self::section('Bulletins Settings', 'site-settings-bulletins-settings')
                     ->description('Can also be managed in the Bulletins area.')
                     ->schema([
                         TextInput::make('bulletins_small_label')
@@ -225,5 +244,15 @@ class SiteSettingForm
                     ->columns(2)
                     ->columnSpanFull(),
             ]);
+    }
+
+    private static function section(string $heading, string $id): Section
+    {
+        return Section::make($heading)
+            ->id($id)
+            ->key($id)
+            ->collapsible()
+            ->collapsed()
+            ->persistCollapsed();
     }
 }
