@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms\RichContentPlugins;
 
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
 use App\Support\RichTextFileLibrary;
@@ -66,6 +67,18 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                 ->modalHeading('Insert file link')
                 ->modalDescription('Choose an existing public File Library document, or upload a new file that will be added to the File Library.')
                 ->modalWidth(Width::Large)
+                ->modalSubmitAction(fn (Action $action): Action => IconOnlyAction::make(
+                    $action
+                        ->label('Insert file link')
+                        ->color('success'),
+                    Heroicon::OutlinedCheck,
+                ))
+                ->modalCancelAction(fn (Action $action): Action => IconOnlyAction::make(
+                    $action
+                        ->label('Cancel')
+                        ->color('primary'),
+                    Heroicon::OutlinedXMark,
+                ))
                 ->fillForm([
                     'new_category' => 'Other',
                     'open_in_new_tab' => true,
