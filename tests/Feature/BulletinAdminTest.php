@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\Bulletins\Pages\CreateBulletin;
 use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
 use App\Models\Bulletin;
 use App\Models\SiteSetting;
@@ -56,6 +57,23 @@ class BulletinAdminTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin/bulletins')
             ->assertOk();
+    }
+
+    public function test_bulletin_title_defaults_from_bulletin_date_until_manually_changed(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateBulletin::class)
+            ->set('data.bulletin_date', '2026-06-14')
+            ->assertSet('data.title', 'Bulletin June 14, 2026')
+            ->set('data.bulletin_date', '2026-06-21')
+            ->assertSet('data.title', 'Bulletin June 21, 2026')
+            ->set('data.title', 'Graduation Sunday Bulletin')
+            ->set('data.bulletin_date', '2026-06-28')
+            ->assertSet('data.title', 'Graduation Sunday Bulletin');
     }
 
     public function test_openai_extractor_sends_pdf_and_prompt(): void
