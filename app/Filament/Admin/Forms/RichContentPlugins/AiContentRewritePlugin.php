@@ -90,6 +90,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                     RichEditor::make('suggested_html')
                         ->label('Suggested new write up')
                         ->helperText('Review and tweak the suggestion, then choose Accept to place it into the original rich text box.')
+                        ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-suggestion-field'])
                         ->toolbarButtons([
                             ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
                             ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],

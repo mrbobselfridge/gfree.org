@@ -111,7 +111,8 @@ class AdminPanelProvider extends PanelProvider
                             line-height: 1.2;
                         }
 
-                        .twyxtco-ai-rewrite-prompt-field .fi-fo-field-label-content {
+                        .twyxtco-ai-rewrite-prompt-field .fi-fo-field-label-content,
+                        .twyxtco-ai-rewrite-suggestion-field .fi-fo-field-label-content {
                             font-size: 1.125rem;
                             line-height: 1.35;
                         }
@@ -148,14 +149,15 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .twyxtco-ai-rewrite-suggestion-editor {
-                            max-height: min(27dvh, 22rem);
+                            height: clamp(14rem, calc(100dvh - 33rem), 42rem);
+                            max-height: calc(100dvh - 20px);
                             min-height: 14rem;
                             overflow-y: auto !important;
                             overscroll-behavior: contain;
                         }
 
                         .twyxtco-ai-rewrite-suggestion-editor > .fi-fo-rich-editor-content {
-                            min-height: 14rem;
+                            min-height: 100%;
                         }
 
                         .twyxtco-ai-rewrite-processing {
