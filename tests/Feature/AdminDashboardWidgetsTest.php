@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\CmsDashboard;
 use App\Models\AnalyticsPageView;
 use App\Models\Announcement;
 use App\Models\Bulletin;
@@ -29,6 +30,8 @@ class AdminDashboardWidgetsTest extends TestCase
             ->get('/admin')
             ->assertOk()
             ->assertSee('Custom Church Name');
+
+        $this->assertFalse(CmsDashboard::shouldRegisterNavigation());
     }
 
     public function test_admin_dashboard_shows_cms_widgets_with_relevant_content(): void
