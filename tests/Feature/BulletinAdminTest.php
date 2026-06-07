@@ -29,6 +29,22 @@ class BulletinAdminTest extends TestCase
             ->assertOk()
             ->assertSee('Bulletin Details')
             ->assertSee('Bulletin PDF')
+            ->assertDontSee('PDF Extraction')
+            ->assertDontSee('Extracted formatted HTML');
+    }
+
+    public function test_admin_can_edit_bulletin_pdf_extraction_fields_after_create(): void
+    {
+        $bulletin = Bulletin::query()->create([
+            'title' => 'Sunday Bulletin',
+            'bulletin_date' => '2026-06-14',
+        ]);
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->get("/admin/bulletins/{$bulletin->getKey()}/edit")
+            ->assertOk()
             ->assertSee('PDF Extraction')
             ->assertSee('Extracted formatted HTML');
     }
