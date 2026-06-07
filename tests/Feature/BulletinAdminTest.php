@@ -31,6 +31,13 @@ class BulletinAdminTest extends TestCase
             ->assertSee('Bulletin PDF')
             ->assertDontSee('PDF Extraction')
             ->assertDontSee('Extracted formatted HTML');
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(CreateBulletin::class)
+            ->assertFormFieldHidden('extraction_prompt')
+            ->assertFormFieldHidden('extracted_html');
     }
 
     public function test_admin_can_edit_bulletin_pdf_extraction_fields_after_create(): void
@@ -47,6 +54,13 @@ class BulletinAdminTest extends TestCase
             ->assertOk()
             ->assertSee('PDF Extraction')
             ->assertSee('Extracted formatted HTML');
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
+            ->assertFormFieldVisible('extraction_prompt')
+            ->assertFormFieldVisible('extracted_html');
     }
 
     public function test_editor_needs_bulletins_permission(): void

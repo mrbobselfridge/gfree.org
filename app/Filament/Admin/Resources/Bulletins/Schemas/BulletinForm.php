@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Bulletins\Schemas;
 
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Models\Bulletin;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -60,7 +61,7 @@ class BulletinForm
                     ->columnSpanFull(),
                 Section::make('PDF Extraction')
                     ->description('Upload a PDF, write what should be extracted, save the bulletin, then use Extract PDF on the edit page.')
-                    ->visible(fn (?string $operation): bool => $operation === 'edit')
+                    ->visible(fn (?Bulletin $record): bool => $record?->exists ?? false)
                     ->schema([
                         Textarea::make('extraction_prompt')
                             ->label('Extraction instructions')
