@@ -75,9 +75,11 @@ class AiContentRewritePlugin implements RichContentPlugin
                 ])
                 ->schema([
                     Textarea::make('prompt')
-                        ->label('Prompt')
+                        ->label('Default Prompt')
+                        ->helperText('You can change this prompt below to fine-tune the rewrite for your specific use case.')
                         ->rows(4)
                         ->required()
+                        ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-prompt-field'])
                         ->columnSpanFull(),
                     Hidden::make('source_html'),
                     View::make('filament.admin.forms.components.ai-rewrite-actions')
