@@ -26,9 +26,9 @@ class FileDocumentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Sitewide';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 910;
 
     protected static ?string $navigationLabel = 'File Library';
 

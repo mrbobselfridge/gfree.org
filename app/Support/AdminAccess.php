@@ -136,12 +136,12 @@ class AdminAccess
             ],
             self::MEDIA_LIBRARY => [
                 'label' => 'Media Library',
-                'group' => 'Sitewide',
+                'group' => 'Content',
                 'page' => MediaLibrary::class,
             ],
             self::FILE_LIBRARY => [
                 'label' => 'File Library',
-                'group' => 'Sitewide',
+                'group' => 'Content',
                 'model' => FileDocument::class,
                 'resource' => FileDocumentResource::class,
             ],

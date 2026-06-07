@@ -50,7 +50,14 @@ class AdminAccessTest extends TestCase
             [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::HOMEPAGE_BANNERS],
             array_slice(array_keys(AdminAccess::toolOptionsForGroup('Content')), 0, 2),
         );
-        $this->assertArrayHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $contentTools = array_keys(AdminAccess::toolOptionsForGroup('Content'));
+
+        $this->assertSame(
+            [AdminAccess::MEDIA_LIBRARY, AdminAccess::FILE_LIBRARY],
+            array_slice($contentTools, -2),
+        );
+        $this->assertArrayNotHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayNotHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::additionalToolOptions());
     }
@@ -144,8 +151,8 @@ class AdminAccessTest extends TestCase
             ->set('data.email', 'editor@example.com')
             ->set('data.password', 'password')
             ->set('data.role', User::ROLE_EDITOR)
-            ->set('data.admin_permissions.tool_groups.content', [AdminAccess::HOMEPAGE_CONTENT])
-            ->set('data.admin_permissions.tool_groups.sitewide', [AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS])
+            ->set('data.admin_permissions.tool_groups.content', [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::MEDIA_LIBRARY])
+            ->set('data.admin_permissions.tool_groups.sitewide', [AdminAccess::SITE_SETTINGS])
             ->set('data.admin_permissions.records.ministries', [(string) $ministry->getKey()])
             ->call('create')
             ->assertHasNoErrors();

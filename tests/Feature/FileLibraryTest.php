@@ -19,7 +19,7 @@ class FileLibraryTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_can_open_file_library_and_user_permission_in_sitewide_group(): void
+    public function test_admin_can_open_file_library_and_user_permission_in_content_group(): void
     {
         $admin = User::factory()->create([
             'role' => User::ROLE_ADMIN,
@@ -35,7 +35,8 @@ class FileLibraryTest extends TestCase
             ->assertOk()
             ->assertSee('File Library');
 
-        $this->assertArrayHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertArrayHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Content'));
+        $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
     }
 
     public function test_editor_needs_file_library_access(): void
