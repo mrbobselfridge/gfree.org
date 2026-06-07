@@ -1,3 +1,7 @@
+@php
+    $acceptAction = 'callMountedAction('.\Illuminate\Support\Js::from($acceptArguments).')';
+@endphp
+
 <div class="twyxtco-ai-rewrite-actions">
     <x-filament::icon-button
         type="button"
@@ -22,7 +26,7 @@
         size="xl"
         :loading-indicator="false"
         class="twyxtco-ai-rewrite-action-btn"
-        wire:click="callMountedAction(@js($acceptArguments))"
+        wire:click="{{ $acceptAction }}"
         wire:loading.attr="disabled"
         wire:target="callMountedAction"
     />

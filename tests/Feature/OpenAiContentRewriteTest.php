@@ -73,4 +73,15 @@ class OpenAiContentRewriteTest extends TestCase
         $this->assertSame('aiRewrite', $plugin->getEditorTools()[0]->getName());
         $this->assertSame('aiRewrite', $plugin->getEditorActions()[0]->getName());
     }
+
+    public function test_ai_rewrite_accept_button_renders_valid_livewire_arguments(): void
+    {
+        $html = view('filament.admin.forms.components.ai-rewrite-actions', [
+            'acceptArguments' => ['accept' => true],
+        ])->render();
+
+        $this->assertStringNotContainsString('@js($acceptArguments)', $html);
+        $this->assertStringContainsString('wire:click="callMountedAction(JSON.parse(', $html);
+        $this->assertStringContainsString('\u0022accept\u0022:true', $html);
+    }
 }
