@@ -299,6 +299,28 @@
     margin-bottom: 0;
 }
 
+.page-hero__subtitle ul,
+.page-rich-text ul {
+    padding-left: 1.4em;
+    list-style: disc;
+}
+
+.page-hero__subtitle ol,
+.page-rich-text ol {
+    padding-left: 1.4em;
+    list-style: decimal;
+}
+
+.page-hero__subtitle li,
+.page-rich-text li {
+    margin-bottom: 0.45em;
+}
+
+.page-hero__subtitle li::marker,
+.page-rich-text li::marker {
+    color: currentColor;
+}
+
 .ministry-hero-contact {
     display: grid;
     gap: 8px;
@@ -621,11 +643,6 @@
 
 .page-rich-text > :is(h2, h3, h4):first-child {
     margin-top: 0;
-}
-
-.page-rich-text ul,
-.page-rich-text ol {
-    padding-left: 1.4em;
 }
 
 .page-rich-text a {
