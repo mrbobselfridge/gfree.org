@@ -25,9 +25,9 @@ class AdminAccessTest extends TestCase
             ->get('/admin/users/create')
             ->assertOk()
             ->assertSee('User Details')
-            ->assertSee('Approved Admin Areas')
-            ->assertSee('text-base font-semibold', false)
             ->assertSee('twyxtco-user-permission-list', false)
+            ->assertSee('Content')
+            ->assertSee('Sitewide')
             ->assertSee('Homepage Content')
             ->assertSee('Homepage Banners')
             ->assertSee('Announcements')
@@ -71,16 +71,36 @@ class AdminAccessTest extends TestCase
             ->assertSchemaComponentExists('users-section-controls')
             ->assertSchemaComponentExists(
                 'users-user-details',
-                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
-                    && $component->isCollapsed()
-                    && $component->shouldPersistCollapsed(),
+                checkComponentUsing: fn (Section $component): bool => ! $component->isCollapsible()
+                    && ! $component->isCollapsed()
             )
             ->assertSchemaComponentExists(
-                'users-approved-admin-areas',
-                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
-                    && $component->isCollapsed()
-                    && $component->shouldPersistCollapsed(),
+                'users-content-tools',
+                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
+            )
+            ->assertSchemaComponentExists(
+                'users-sitewide-tools',
+                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
+            )
+            ->assertSchemaComponentExists(
+                'users-individual-ministry-entries',
+                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
+            )
+            ->assertSchemaComponentExists(
+                'users-individual-page-entries',
+                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
+            )
+            ->assertSchemaComponentExists(
+                'users-individual-leader-entries',
+                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
             );
+    }
+
+    private function isCollapsedUserPermissionSection(Section $component): bool
+    {
+        return $component->isCollapsible()
+            && $component->isCollapsed()
+            && $component->shouldPersistCollapsed();
     }
 
     public function test_editor_only_accesses_selected_admin_areas(): void

@@ -116,6 +116,17 @@ class HomepageContent extends Page
             ->operation('edit')
             ->statePath('data')
             ->components([
+                Section::make('Homepage Content Blocks')
+                    ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at TwyxtCo.')
+                    ->icon(Heroicon::OutlinedRectangleGroup)
+                    ->iconColor('success')
+                    ->extraAttributes([
+                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
+                    ])
+                    ->schema([
+                        ContentBlockBuilder::make('content_blocks', 'homepage/content-images', withScheduleFields: true),
+                    ])
+                    ->columnSpanFull(),
                 Section::make('Homepage SEO')
                     ->description('Controls the public homepage title and description used by browsers, search engines, and analytics.')
                     ->icon(Heroicon::OutlinedMagnifyingGlass)
@@ -131,17 +142,6 @@ class HomepageContent extends Page
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
-                    ->columnSpanFull(),
-                Section::make('Homepage Content Blocks')
-                    ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at TwyxtCo.')
-                    ->icon(Heroicon::OutlinedRectangleGroup)
-                    ->iconColor('success')
-                    ->extraAttributes([
-                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
-                    ])
-                    ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'homepage/content-images', withScheduleFields: true),
-                    ])
                     ->columnSpanFull(),
             ]);
     }

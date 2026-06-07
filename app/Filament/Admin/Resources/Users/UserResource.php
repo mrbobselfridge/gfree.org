@@ -28,15 +28,18 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class UserResource extends Resource
 {
     use AppliesAdminAccess;
 
     private const SECTION_IDS = [
-        'users-user-details',
-        'users-approved-admin-areas',
+        'users-content-tools',
+        'users-sitewide-tools',
+        'users-additional-tools',
+        'users-individual-ministry-entries',
+        'users-individual-page-entries',
+        'users-individual-leader-entries',
     ];
 
     protected static ?string $model = User::class;
@@ -55,13 +58,21 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
+                CheckboxList::make('admin_permissions.tools')
+                    ->label('Previously saved full access')
+                    ->options([])
+                    ->hidden()
+                    ->dehydrated(false),
                 View::make('filament.admin.site-settings-section-controls')
                     ->viewData([
                         'sectionIds' => self::SECTION_IDS,
                     ])
+                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
                     ->key('users-section-controls')
                     ->columnSpanFull(),
-                self::section('User Details', 'users-user-details')
+                Section::make('User Details')
+                    ->id('users-user-details')
+                    ->key('users-user-details')
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -89,58 +100,71 @@ class UserResource extends Resource
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Approved Admin Areas', 'users-approved-admin-areas')
-                    ->description('Admins always have access to every admin area. Editor permissions are applied here.')
+                self::section('Content', 'users-content-tools')
+                    ->description('Choose which content tools this editor can use.')
                     ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
                     ->schema([
-                        CheckboxList::make('admin_permissions.tools')
-                            ->label('Previously saved full access')
-                            ->options([])
-                            ->hidden()
-                            ->dehydrated(false),
-                        CheckboxList::make('admin_permissions.tool_groups.homepage')
-                            ->label(self::permissionGroupLabel('Homepage'))
-                            ->options(AdminAccess::toolOptionsForGroup('Homepage'))
-                            ->visible(fn (): bool => count(AdminAccess::toolOptionsForGroup('Homepage')) > 0)
-                            ->extraAlpineAttributes(self::permissionListAttributes())
-                            ->bulkToggleable()
-                            ->columns(2),
                         CheckboxList::make('admin_permissions.tool_groups.content')
-                            ->label(self::permissionGroupLabel('Content'))
+                            ->label('')
                             ->options(AdminAccess::toolOptionsForGroup('Content'))
                             ->helperText('Selecting Ministries, Pages, or Leaders here grants access to all current and future entries in that area.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
+                    ])
+                    ->columnSpanFull(),
+                self::section('Sitewide', 'users-sitewide-tools')
+                    ->description('Choose which sitewide tools this editor can use.')
+                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
+                    ->schema([
                         CheckboxList::make('admin_permissions.tool_groups.sitewide')
-                            ->label(self::permissionGroupLabel('Sitewide'))
+                            ->label('')
                             ->options(AdminAccess::toolOptionsForGroup('Sitewide'))
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
+                    ])
+                    ->columnSpanFull(),
+                self::section('Additional Tools', 'users-additional-tools')
+                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR && count(AdminAccess::additionalToolOptions()) > 0)
+                    ->schema([
                         CheckboxList::make('admin_permissions.tool_groups.additional')
-                            ->label(self::permissionGroupLabel('Additional Tools'))
+                            ->label('')
                             ->options(AdminAccess::additionalToolOptions())
-                            ->visible(fn (): bool => count(AdminAccess::additionalToolOptions()) > 0)
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
+                    ])
+                    ->columnSpanFull(),
+                self::section('Individual Ministry Entries', 'users-individual-ministry-entries')
+                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
+                    ->schema([
                         CheckboxList::make('admin_permissions.records.ministries')
-                            ->label(self::permissionGroupLabel('Individual Ministry Entries'))
+                            ->label('')
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::MINISTRIES))
                             ->helperText('Leave blank if the user has full Ministries access above.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
+                    ])
+                    ->columnSpanFull(),
+                self::section('Individual Page Entries', 'users-individual-page-entries')
+                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
+                    ->schema([
                         CheckboxList::make('admin_permissions.records.pages')
-                            ->label(self::permissionGroupLabel('Individual Page Entries'))
+                            ->label('')
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::PAGES))
                             ->helperText('Leave blank if the user has full Pages access above.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
+                    ])
+                    ->columnSpanFull(),
+                self::section('Individual Leader Entries', 'users-individual-leader-entries')
+                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
+                    ->schema([
                         CheckboxList::make('admin_permissions.records.leaders')
-                            ->label(self::permissionGroupLabel('Individual Leader Entries'))
+                            ->label('')
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::LEADERS))
                             ->helperText('Leave blank if the user has full Leaders access above.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
@@ -159,11 +183,6 @@ class UserResource extends Resource
             ->collapsible()
             ->collapsed()
             ->persistCollapsed();
-    }
-
-    private static function permissionGroupLabel(string $label): HtmlString
-    {
-        return new HtmlString('<span class="text-base font-semibold leading-6 text-gray-950 dark:text-white">'.$label.'</span>');
     }
 
     private static function permissionListAttributes(): array
