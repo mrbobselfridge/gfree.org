@@ -97,7 +97,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                             ['undo', 'redo'],
                         ])
                         ->extraInputAttributes([
-                            'style' => 'max-height: min(55vh, 34rem); overflow-y: auto;',
+                            'class' => 'twyxtco-ai-rewrite-suggestion-editor',
                         ])
                         ->visible(fn (Get $get): bool => filled($get('suggested_html')))
                         ->columnSpanFull(),

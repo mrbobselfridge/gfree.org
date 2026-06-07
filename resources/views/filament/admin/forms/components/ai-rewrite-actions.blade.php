@@ -6,6 +6,8 @@
         label="AI Rewrite"
         tooltip="AI Rewrite"
         size="xl"
+        :loading-indicator="false"
+        class="twyxtco-ai-rewrite-action-btn"
         wire:click="callMountedAction"
         wire:loading.attr="disabled"
         wire:target="callMountedAction"
@@ -18,6 +20,8 @@
         label="Accept Changes"
         tooltip="Accept Changes"
         size="xl"
+        :loading-indicator="false"
+        class="twyxtco-ai-rewrite-action-btn"
         wire:click="callMountedAction(@js($acceptArguments))"
         wire:loading.attr="disabled"
         wire:target="callMountedAction"
@@ -30,6 +34,8 @@
         label="Cancel"
         tooltip="Cancel"
         size="xl"
+        :loading-indicator="false"
+        class="twyxtco-ai-rewrite-action-btn"
         wire:click="unmountAction"
     />
 

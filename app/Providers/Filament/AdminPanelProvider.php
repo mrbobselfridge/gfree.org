@@ -107,38 +107,59 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .twyxtco-ai-rewrite-modal.fi-modal-window {
-                            display: flex;
-                            flex-direction: column;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            height: calc(100dvh - 2rem);
                             max-height: calc(100dvh - 2rem);
-                            overflow: hidden;
+                            overflow: hidden !important;
                         }
 
                         .twyxtco-ai-rewrite-modal.fi-modal-window > .fi-modal-content {
-                            overflow-y: auto;
+                            flex: 1 1 auto;
+                            min-height: 0;
+                            overflow-y: auto !important;
                             overscroll-behavior: contain;
                             padding-bottom: 2rem;
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-actions {
+                        .twyxtco-ai-rewrite-actions {
                             position: relative;
-                            display: flex;
-                            flex-wrap: wrap;
+                            display: flex !important;
+                            flex-direction: row !important;
+                            flex-wrap: nowrap;
                             align-items: center;
-                            gap: 0.5rem;
+                            justify-content: center;
+                            gap: 1.25rem;
+                            width: 100%;
+                            padding-block: 0.75rem 1rem;
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-actions .fi-icon-btn {
-                            width: 2.75rem;
-                            height: 2.75rem;
-                            border-radius: 0.5rem;
+                        .twyxtco-ai-rewrite-action-btn.fi-icon-btn {
+                            display: inline-flex !important;
+                            width: 5.5rem !important;
+                            height: 5.5rem !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            border-radius: 0.75rem !important;
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-actions .fi-icon-btn > .fi-icon {
-                            width: 1.375rem;
-                            height: 1.375rem;
+                        .twyxtco-ai-rewrite-action-btn.fi-icon-btn > .fi-icon {
+                            width: 2.75rem !important;
+                            height: 2.75rem !important;
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing {
+                        .twyxtco-ai-rewrite-suggestion-editor {
+                            max-height: min(36dvh, 28rem);
+                            min-height: 14rem;
+                            overflow-y: auto !important;
+                            overscroll-behavior: contain;
+                        }
+
+                        .twyxtco-ai-rewrite-suggestion-editor > .fi-fo-rich-editor-content {
+                            min-height: 14rem;
+                        }
+
+                        .twyxtco-ai-rewrite-processing {
                             position: fixed;
                             top: 50%;
                             left: 50%;
@@ -156,37 +177,37 @@ class AdminPanelProvider extends PanelProvider
                             transform: translate(-50%, -50%);
                         }
 
-                        .dark .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing {
+                        .dark .twyxtco-ai-rewrite-processing {
                             border-color: rgb(245 158 11 / 0.45);
                             background: var(--gray-900);
                             color: white;
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-spinner {
+                        .twyxtco-ai-rewrite-processing-spinner {
                             width: 2rem;
                             height: 2rem;
                             flex-shrink: 0;
                             color: rgb(217 119 6);
                         }
 
-                        .dark .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-spinner {
+                        .dark .twyxtco-ai-rewrite-processing-spinner {
                             color: rgb(251 191 36);
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-title {
+                        .twyxtco-ai-rewrite-processing-title {
                             font-size: 0.9375rem;
                             font-weight: 700;
                             line-height: 1.35;
                         }
 
-                        .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-message {
+                        .twyxtco-ai-rewrite-processing-message {
                             margin-top: 0.125rem;
                             color: var(--gray-600);
                             font-size: 0.8125rem;
                             line-height: 1.4;
                         }
 
-                        .dark .twyxtco-ai-rewrite-modal .twyxtco-ai-rewrite-processing-message {
+                        .dark .twyxtco-ai-rewrite-processing-message {
                             color: var(--gray-300);
                         }
 
