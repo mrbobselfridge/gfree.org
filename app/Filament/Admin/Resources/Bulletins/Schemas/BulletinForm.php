@@ -4,6 +4,8 @@ namespace App\Filament\Admin\Resources\Bulletins\Schemas;
 
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\Bulletin;
+use App\Models\SiteSetting;
+use App\Support\AiBulletinExtractionPrompt;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -66,6 +68,12 @@ class BulletinForm
                         Textarea::make('extraction_prompt')
                             ->label('Extraction instructions')
                             ->default(self::defaultExtractionPrompt())
+                            ->afterStateHydrated(function (Textarea $component, ?string $state): void {
+                                if (blank($state)) {
+                                    $component->state(self::defaultExtractionPrompt());
+                                }
+                            })
+                            ->helperText('Defaults from Site Settings. Edit here to customize this bulletin only.')
                             ->rows(5)
                             ->columnSpanFull(),
                         RichEditorDefaults::configure(RichEditor::make('extracted_html'))
@@ -78,7 +86,7 @@ class BulletinForm
 
     private static function defaultExtractionPrompt(): string
     {
-        return 'Extract the important public bulletin content for the church website. Preserve headings, dates, event details, announcements, contact information, and links when available. Return clean formatted HTML with headings, paragraphs, and bullet lists where helpful. Anywhere it notes Connection Card - please link that to /card on this site in a new window. ';
+        return SiteSetting::query()->value('ai_bulletin_extraction_prompt') ?: AiBulletinExtractionPrompt::DEFAULT;
     }
 
     private static function titleFromDate(?string $date): ?string

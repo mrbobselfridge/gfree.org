@@ -60,7 +60,11 @@ class BulletinAdminTest extends TestCase
         ]))
             ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
             ->assertFormFieldVisible('extraction_prompt')
-            ->assertFormFieldVisible('extracted_html');
+            ->assertFormFieldVisible('extracted_html')
+            ->assertSet('data.extraction_prompt', fn (?string $prompt): bool => str_contains(
+                (string) $prompt,
+                'Extract the important public bulletin content for the church website.',
+            ));
     }
 
     public function test_editor_needs_bulletins_permission(): void
@@ -144,6 +148,42 @@ class BulletinAdminTest extends TestCase
                 && str_starts_with(data_get($content, '0.file_data'), 'data:application/pdf;base64,')
                 && data_get($content, '1.type') === 'input_text'
                 && str_contains(data_get($content, '1.text'), 'Only extract announcements.');
+        });
+    }
+
+    public function test_openai_extractor_uses_site_settings_prompt_when_bulletin_has_no_override(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('bulletins/pdfs/test.pdf', '%PDF-1.4 test bulletin');
+
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-4o-mini',
+            'ai_bulletin_extraction_prompt' => 'Use the church-wide bulletin prompt.',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => '<h2>Sunday Bulletin</h2><p>Welcome.</p>',
+            ]),
+        ]);
+
+        $bulletin = Bulletin::query()->create([
+            'title' => 'Sunday Bulletin',
+            'pdf_path' => 'bulletins/pdfs/test.pdf',
+            'extraction_prompt' => null,
+        ]);
+
+        $html = app(OpenAiBulletinExtractor::class)->extract($bulletin);
+
+        $this->assertSame('<h2>Sunday Bulletin</h2><p>Welcome.</p>', $html);
+
+        Http::assertSent(function (Request $request): bool {
+            return str_contains(
+                (string) data_get($request->data(), 'input.0.content.1.text'),
+                'Use the church-wide bulletin prompt.',
+            );
         });
     }
 

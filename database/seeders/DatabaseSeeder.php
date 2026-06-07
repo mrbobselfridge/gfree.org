@@ -7,6 +7,7 @@ use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
+use App\Support\AiBulletinExtractionPrompt;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'livestream_url' => '/live',
             'giving_url' => '/give',
             'one_church_url' => 'https://twyxtco.onechurchsoftware.com',
+            'ai_bulletin_extraction_prompt' => AiBulletinExtractionPrompt::DEFAULT,
         ]);
 
         HomepageBanner::updateOrCreate([

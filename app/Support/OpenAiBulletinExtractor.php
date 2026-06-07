@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Bulletin;
+use App\Models\SiteSetting;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -64,7 +65,7 @@ class OpenAiBulletinExtractor
     {
         $instructions = filled($bulletin->extraction_prompt)
             ? $bulletin->extraction_prompt
-            : 'Extract the important public bulletin content for the church website.';
+            : (SiteSetting::query()->value('ai_bulletin_extraction_prompt') ?: AiBulletinExtractionPrompt::DEFAULT);
 
         return <<<PROMPT
 You are preparing a church bulletin for a website editor.

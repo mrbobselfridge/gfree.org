@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Rules\HttpOrRelativeUrl;
+use App\Support\AiBulletinExtractionPrompt;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiSiteSettings;
 use App\Support\YoutubeFeedUrl;
@@ -63,6 +64,17 @@ class SiteSettingForm
                         Textarea::make('ai_content_prompt')
                             ->label('AI Content Prompt')
                             ->default(AiContentPrompt::DEFAULT)
+                            ->rows(8)
+                            ->columnSpanFull(),
+                        Textarea::make('ai_bulletin_extraction_prompt')
+                            ->label('AI Bulletin Extraction Prompt')
+                            ->default(AiBulletinExtractionPrompt::DEFAULT)
+                            ->afterStateHydrated(function (Textarea $component, ?string $state): void {
+                                if (blank($state)) {
+                                    $component->state(AiBulletinExtractionPrompt::DEFAULT);
+                                }
+                            })
+                            ->helperText('Default extraction instructions for bulletin PDFs. Individual bulletins may still customize their own instructions.')
                             ->rows(8)
                             ->columnSpanFull(),
                     ])

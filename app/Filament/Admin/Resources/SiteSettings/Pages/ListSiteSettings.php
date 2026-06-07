@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\SiteSettings\Pages;
 
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Models\SiteSetting;
+use App\Support\AiBulletinExtractionPrompt;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiSiteSettings;
 use Filament\Resources\Pages\ListRecords;
@@ -18,6 +19,7 @@ class ListSiteSettings extends ListRecords
             'church_name' => 'TwyxtCo Church',
             'openai_bulletin_model' => OpenAiSiteSettings::DEFAULT_MODEL,
             'ai_content_prompt' => AiContentPrompt::DEFAULT,
+            'ai_bulletin_extraction_prompt' => AiBulletinExtractionPrompt::DEFAULT,
         ]);
 
         $this->redirect(SiteSettingResource::getUrl('edit', ['record' => $record]));

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
     'openai_api_key',
     'openai_bulletin_model',
     'ai_content_prompt',
+    'ai_bulletin_extraction_prompt',
     'livestream_url',
     'giving_url',
     'one_church_url',

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\AiBulletinExtractionPrompt;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -29,6 +30,7 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('OpenAI bulletin model')
             ->assertSee('GPT-5 Nano')
             ->assertSee('AI Content Prompt')
+            ->assertSee('AI Bulletin Extraction Prompt')
             ->assertSee('Social and Video URLs')
             ->assertSee('Google Tracking')
             ->assertSee('Google Tag Manager container ID')
@@ -50,6 +52,10 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Save');
 
         $this->assertGreaterThanOrEqual(2, substr_count($response->getContent(), 'Cancel'));
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->assertSet('data.ai_bulletin_extraction_prompt', AiBulletinExtractionPrompt::DEFAULT);
     }
 
     public function test_site_settings_sermons_channel_url_fills_feed_url(): void
@@ -79,6 +85,24 @@ class SiteSettingsAdminTest extends TestCase
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
             'ai_content_prompt' => 'Rewrite this for local church visitors.',
+        ]);
+    }
+
+    public function test_site_settings_ai_bulletin_extraction_prompt_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.ai_bulletin_extraction_prompt', 'Extract only announcements and calendar items.')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'ai_bulletin_extraction_prompt' => 'Extract only announcements and calendar items.',
         ]);
     }
 
