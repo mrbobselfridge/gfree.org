@@ -64,8 +64,7 @@ class SiteSettingForm
                         Textarea::make('ai_content_prompt')
                             ->label('AI Content Prompt')
                             ->default(AiContentPrompt::DEFAULT)
-                            ->rows(8)
-                            ->columnSpanFull(),
+                            ->rows(6),
                         Textarea::make('ai_bulletin_extraction_prompt')
                             ->label('AI Bulletin Extraction Prompt')
                             ->default(AiBulletinExtractionPrompt::DEFAULT)
@@ -75,8 +74,7 @@ class SiteSettingForm
                                 }
                             })
                             ->helperText('Default extraction instructions for bulletin PDFs. Individual bulletins may still customize their own instructions.')
-                            ->rows(8)
-                            ->columnSpanFull(),
+                            ->rows(6),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
