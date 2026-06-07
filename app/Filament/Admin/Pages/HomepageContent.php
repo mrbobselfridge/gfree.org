@@ -14,6 +14,8 @@ use App\Support\CodeBlockAccess;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -114,6 +116,22 @@ class HomepageContent extends Page
             ->operation('edit')
             ->statePath('data')
             ->components([
+                Section::make('Homepage SEO')
+                    ->description('Controls the public homepage title and description used by browsers, search engines, and analytics.')
+                    ->icon(Heroicon::OutlinedMagnifyingGlass)
+                    ->schema([
+                        TextInput::make('seo_title')
+                            ->label('SEO Page Title')
+                            ->helperText('Defaults to the church name from Site Settings when blank.')
+                            ->maxLength(255),
+                        Textarea::make('seo_description')
+                            ->label('SEO Page Description')
+                            ->helperText('Defaults to the site tagline, then the active banner subtitle, when blank.')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
                 Section::make('Homepage Content Blocks')
                     ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at TwyxtCo.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -170,6 +188,8 @@ class HomepageContent extends Page
         }
 
         return [
+            'seo_title' => $record?->seo_title,
+            'seo_description' => $record?->seo_description,
             'content_blocks' => [
                 [
                     'type' => 'info_strip',

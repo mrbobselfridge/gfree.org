@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
+    'seo_title',
+    'seo_description',
     'intro_eyebrow',
     'intro_title',
     'intro_body',

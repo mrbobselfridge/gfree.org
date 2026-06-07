@@ -147,6 +147,10 @@ class TrackPublicPageView
             }
         }
 
+        if (filled($data['pageTitle'] ?? null)) {
+            return Str::limit((string) $data['pageTitle'], 255, '');
+        }
+
         $heroTitle = data_get($data, 'hero.title');
 
         if (filled($heroTitle)) {

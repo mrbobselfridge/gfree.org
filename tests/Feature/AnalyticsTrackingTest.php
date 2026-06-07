@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\AnalyticsPageView;
+use App\Models\HomepageBanner;
+use App\Models\HomepageContent;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Stevebauman\Location\Facades\Location;
@@ -77,5 +80,41 @@ class AnalyticsTrackingTest extends TestCase
             ->assertOk();
 
         $this->assertDatabaseCount(AnalyticsPageView::class, 0);
+    }
+
+    public function test_homepage_tracking_uses_explicit_homepage_title_instead_of_banner_title(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        HomepageContent::query()->create([
+            'seo_title' => 'Stable Homepage Title',
+            'content_blocks' => [],
+        ]);
+
+        HomepageBanner::query()->create([
+            'title' => 'Rotating Banner Title',
+            'subtitle' => 'This banner should not name the homepage in analytics.',
+            'is_published' => true,
+        ]);
+
+        Location::fake([
+            '*' => false,
+        ]);
+
+        $this->get('/')
+            ->assertOk();
+
+        $this->assertDatabaseHas(AnalyticsPageView::class, [
+            'path' => '/',
+            'route_name' => 'home',
+            'page_title' => 'Stable Homepage Title',
+        ]);
+
+        $this->assertDatabaseMissing(AnalyticsPageView::class, [
+            'path' => '/',
+            'page_title' => 'Rotating Banner Title',
+        ]);
     }
 }

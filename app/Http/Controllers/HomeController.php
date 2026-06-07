@@ -52,16 +52,33 @@ class HomeController extends Controller
             ->limit(ContentBlocks::FEATURED_ANNOUNCEMENT_LIMIT)
             ->get();
         $updates = $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']);
+        $hero = $this->hero($defaults['hero'], $heroBanners->first());
 
         return view('home', [
             'settings' => $settings,
             'theme' => $defaults['theme'],
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
-            'hero' => $this->hero($defaults['hero'], $heroBanners->first()),
+            'pageTitle' => $this->pageTitle($settings, $homepageContent),
+            'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
+            'hero' => $hero,
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
             'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $updates, $now),
             'socialLinks' => $this->socialLinks($settings),
         ]);
+    }
+
+    private function pageTitle(?SiteSetting $settings, ?HomepageContent $content): string
+    {
+        return $content?->seo_title
+            ?: $settings?->church_name
+            ?: config('app.name', 'TwyxtCo Church');
+    }
+
+    private function pageDescription(?SiteSetting $settings, ?HomepageContent $content, array $hero): ?string
+    {
+        return $content?->seo_description
+            ?: $settings?->tagline
+            ?: ($hero['subtitle'] ?? null);
     }
 
     private function heroSlides(array $defaults, $banners)

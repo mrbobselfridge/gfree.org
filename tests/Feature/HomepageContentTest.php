@@ -89,6 +89,42 @@ class HomepageContentTest extends TestCase
             ->assertSee('page-block--process-steps', false);
     }
 
+    public function test_homepage_uses_custom_seo_metadata_when_present(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'tagline' => 'A stable church tagline.',
+        ]);
+
+        HomepageContent::query()->create([
+            'seo_title' => 'Welcome to gFree',
+            'seo_description' => 'A custom homepage description for search and analytics.',
+            'content_blocks' => [],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('<title>Welcome to gFree</title>', false)
+            ->assertSee('<meta name="description" content="A custom homepage description for search and analytics.">', false);
+    }
+
+    public function test_homepage_seo_title_defaults_to_church_name_when_blank(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+            'tagline' => 'A stable church tagline.',
+        ]);
+
+        HomepageContent::query()->create([
+            'content_blocks' => [],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('<title>gFree Church</title>', false)
+            ->assertSee('<meta name="description" content="A stable church tagline.">', false);
+    }
+
     public function test_homepage_content_renders_flexible_content_blocks(): void
     {
         HomepageContent::query()->create([

@@ -4,8 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.analytics-head')
-    <title>{{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
-    <meta name="description" content="{{ $settings?->tagline ?? $hero['subtitle'] }}">
+    <title>{{ $pageTitle }}</title>
+    @if (filled($pageDescription))
+        <meta name="description" content="{{ $pageDescription }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body @class([
