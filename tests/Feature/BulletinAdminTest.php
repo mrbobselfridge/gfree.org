@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Bulletins\Pages\CreateBulletin;
 use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
+use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AdminAccess;
+use App\Support\OpenAiBulletinAnnouncementReviewer;
 use App\Support\OpenAiBulletinExtractor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -30,14 +32,16 @@ class BulletinAdminTest extends TestCase
             ->assertSee('Bulletin Details')
             ->assertSee('Bulletin PDF')
             ->assertDontSee('PDF Extraction')
-            ->assertDontSee('Extracted formatted HTML');
+            ->assertDontSee('Extracted formatted HTML')
+            ->assertDontSee('AI Announcement Review');
 
         Livewire::actingAs(User::factory()->create([
             'role' => User::ROLE_ADMIN,
         ]))
             ->test(CreateBulletin::class)
             ->assertFormFieldHidden('extraction_prompt')
-            ->assertFormFieldHidden('extracted_html');
+            ->assertFormFieldHidden('extracted_html')
+            ->assertFormFieldHidden('announcement_review');
     }
 
     public function test_admin_can_edit_bulletin_pdf_extraction_fields_after_create(): void
@@ -53,7 +57,8 @@ class BulletinAdminTest extends TestCase
             ->get("/admin/bulletins/{$bulletin->getKey()}/edit")
             ->assertOk()
             ->assertSee('PDF Extraction')
-            ->assertSee('Extracted formatted HTML');
+            ->assertSee('Extracted formatted HTML')
+            ->assertSee('AI Announcement Review');
 
         Livewire::actingAs(User::factory()->create([
             'role' => User::ROLE_ADMIN,
@@ -61,6 +66,7 @@ class BulletinAdminTest extends TestCase
             ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
             ->assertFormFieldVisible('extraction_prompt')
             ->assertFormFieldVisible('extracted_html')
+            ->assertFormFieldVisible('announcement_review')
             ->assertSet('data.extraction_prompt', fn (?string $prompt): bool => str_contains(
                 (string) $prompt,
                 'Extract the important public bulletin content for the church website.',
@@ -221,5 +227,97 @@ class BulletinAdminTest extends TestCase
             ->assertHasNoActionErrors();
 
         $this->assertSame('<h2>Extracted Bulletin</h2>', $bulletin->refresh()->extracted_html);
+    }
+
+    public function test_openai_announcement_reviewer_sends_bulletin_and_announcement_context(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-4o-mini',
+        ]);
+
+        Announcement::query()->create([
+            'title' => 'Youth Retreat',
+            'slug' => 'youth-retreat',
+            'summary' => 'Registration closes soon.',
+            'body' => '<p>Meet at 8 AM Saturday.</p>',
+            'publish_at' => now()->subDay(),
+            'expires_at' => now()->addWeek(),
+            'is_published' => true,
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => "Missing announcements\nNone found.",
+            ]),
+        ]);
+
+        $bulletin = Bulletin::query()->create([
+            'title' => 'Sunday Bulletin',
+            'bulletin_date' => '2026-06-14',
+            'extracted_html' => '<h2>Youth Retreat</h2><p>Register this week.</p>',
+        ]);
+
+        $review = app(OpenAiBulletinAnnouncementReviewer::class)->review($bulletin);
+
+        $this->assertSame("Missing announcements\nNone found.", $review);
+
+        Http::assertSent(function (Request $request): bool {
+            $payload = $request->data();
+            $content = data_get($payload, 'input.0.content');
+            $prompt = (string) data_get($content, '1.text');
+
+            return $request->url() === 'https://api.openai.com/v1/responses'
+                && data_get($payload, 'model') === 'gpt-4o-mini'
+                && data_get($content, '0.type') === 'input_text'
+                && str_contains((string) data_get($content, '0.text'), 'Current extracted bulletin HTML')
+                && str_contains((string) data_get($content, '0.text'), 'Register this week.')
+                && str_contains($prompt, 'Youth Retreat')
+                && str_contains($prompt, 'Registration closes soon.')
+                && str_contains($prompt, 'Missing announcements');
+        });
+    }
+
+    public function test_review_announcements_action_updates_review_field(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-4o-mini',
+        ]);
+
+        Announcement::query()->create([
+            'title' => 'Men\'s Breakfast',
+            'slug' => 'mens-breakfast',
+            'summary' => 'Breakfast is Saturday.',
+            'expires_at' => now()->addWeek(),
+            'is_published' => true,
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => "Missing announcements\n- Add a baptism announcement.",
+            ]),
+        ]);
+
+        $bulletin = Bulletin::query()->create([
+            'title' => 'Sunday Bulletin',
+            'bulletin_date' => '2026-06-14',
+            'extracted_html' => '<h2>Baptism Sunday</h2><p>Sign up today.</p>',
+        ]);
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
+            ->callAction('reviewAnnouncements')
+            ->assertHasNoActionErrors()
+            ->assertSet('data.announcement_review', "Missing announcements\n- Add a baptism announcement.");
+
+        $this->assertSame(
+            "Missing announcements\n- Add a baptism announcement.",
+            $bulletin->refresh()->announcement_review,
+        );
     }
 }

@@ -305,7 +305,8 @@ class ContentBlockBuilder
                             ->boolean()
                             ->inline()
                             ->default(true)
-                            ->required(),
+                            ->required()
+                            ->columnSpanFull(),
                         Select::make('background')
                             ->options(self::backgroundOptions())
                             ->default('white')

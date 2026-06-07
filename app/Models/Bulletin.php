@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
     'pdf_path',
     'extraction_prompt',
     'extracted_html',
+    'announcement_review',
     'is_published',
 ])]
 class Bulletin extends Model implements HasPublicUrl

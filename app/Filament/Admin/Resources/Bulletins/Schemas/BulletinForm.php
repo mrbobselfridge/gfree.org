@@ -81,6 +81,18 @@ class BulletinForm
                             ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
+                Section::make('AI Announcement Review')
+                    ->description('Use Review Announcements on the edit page to compare this bulletin against announcement records.')
+                    ->visible(fn (?Bulletin $record): bool => $record?->exists ?? false)
+                    ->schema([
+                        Textarea::make('announcement_review')
+                            ->label('Review results')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->rows(12)
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
