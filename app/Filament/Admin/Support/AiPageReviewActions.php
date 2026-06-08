@@ -48,13 +48,6 @@ class AiPageReviewActions
                         ->required()
                         ->columnSpanFull(),
                     Hidden::make('snapshot_json'),
-                    Textarea::make('snapshot_preview')
-                        ->label('Page Snapshot')
-                        ->helperText('Draft-safe CMS content that will be sent for review. It includes page fields, content blocks, and image references.')
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->rows(12)
-                        ->columnSpanFull(),
                     Textarea::make('review')
                         ->label('AI Review')
                         ->helperText('Review these notes, then manually update the fields that should change.')
@@ -92,7 +85,6 @@ class AiPageReviewActions
                     $schema->fill([
                         ...$data,
                         'snapshot_json' => $snapshotJson,
-                        'snapshot_preview' => $snapshotJson,
                         'review' => $review,
                     ]);
 
@@ -117,7 +109,6 @@ class AiPageReviewActions
         return [
             'prompt' => SiteSetting::query()->value('ai_content_prompt') ?: AiContentPrompt::DEFAULT,
             'snapshot_json' => $snapshotJson,
-            'snapshot_preview' => $snapshotJson,
             'review' => null,
         ];
     }
