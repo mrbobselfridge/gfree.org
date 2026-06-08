@@ -27,22 +27,20 @@ class PageForm
         return $schema
             ->components([
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
+                Placeholder::make('direct_child_pages')
+                    ->label('Direct subpages')
+                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                    ->visible(fn (?Page $record): bool => filled($record?->getKey()))
+                    ->columnSpanFull(),
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255),
                 ToggleButtons::make('is_published')
                     ->label('Make Page Live')
                     ->boolean()
                     ->inline()
                     ->default(false)
                     ->required(),
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->prefix('/')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->rule(new PageSlugPath)
-                    ->suffixAction(SlugRebuildAction::make('title'))
-                    ->maxLength(255),
                 TextInput::make('title')
                     ->required()
                     ->live(onBlur: true)
@@ -50,8 +48,23 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null),
+                Select::make('parent_page_id')
+                    ->label('Parent Page')
+                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                    ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
                 Textarea::make('intro')
                     ->rows(1),
+                TextInput::make('slug')
+                    ->prefix('/')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->rule(new PageSlugPath)
+                    ->suffixAction(SlugRebuildAction::make('title'))
+                    ->maxLength(255),
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -83,20 +96,6 @@ class PageForm
                     ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                     ->label('SEO description')
                     ->rows(1),
-
-                Select::make('parent_page_id')
-                    ->label('Parent Page')
-                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                    ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
-                Placeholder::make('direct_child_pages')
-                    ->label('Direct subpages')
-                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                    ->visible(fn (?Page $record): bool => filled($record?->getKey()))
-                    ->columnSpanFull(),
 
             ]);
     }
