@@ -6,6 +6,8 @@ use App\Models\SiteSetting;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiPageReviewer;
 use App\Support\PageReviewSnapshot;
+use App\Support\PageVisualSnapshot;
+use App\Support\PageVisualSnapshotResult;
 use App\Support\WorkflowNotificationAreas;
 use Closure;
 use Filament\Actions\Action;
@@ -76,6 +78,7 @@ class AiPageReviewActions
                     array $data,
                     OpenAiPageReviewer $reviewer,
                     PageReviewSnapshot $snapshotBuilder,
+                    PageVisualSnapshot $visualSnapshot,
                     Schema $schema,
                 ) use ($record, $save): void {
                     if ($arguments['email'] ?? false) {
@@ -89,9 +92,10 @@ class AiPageReviewActions
 
                     $record->refresh();
                     $snapshot = $snapshotBuilder->forRecord($record);
+                    $visualSnapshotResult = self::captureVisualSnapshot($visualSnapshot, $record);
 
                     try {
-                        $review = $reviewer->review($snapshot, (string) ($data['prompt'] ?? ''));
+                        $review = $reviewer->review($snapshot, (string) ($data['prompt'] ?? ''), $visualSnapshotResult);
                     } catch (Throwable $exception) {
                         Notification::make()
                             ->title('AI page review failed')
@@ -115,6 +119,9 @@ class AiPageReviewActions
 
                     Notification::make()
                         ->title('AI page review ready')
+                        ->body($visualSnapshotResult
+                            ? 'The review includes a desktop visual snapshot.'
+                            : 'The review ran without a visual snapshot because screenshot capture is not available.')
                         ->success()
                         ->send();
 
@@ -137,6 +144,21 @@ class AiPageReviewActions
             'review' => null,
             'review_completed' => false,
         ];
+    }
+
+    private static function captureVisualSnapshot(PageVisualSnapshot $visualSnapshot, Model $record): ?PageVisualSnapshotResult
+    {
+        try {
+            return $visualSnapshot->capture($record);
+        } catch (Throwable $exception) {
+            Notification::make()
+                ->title('Visual snapshot unavailable')
+                ->body($exception->getMessage())
+                ->warning()
+                ->send();
+
+            return null;
+        }
     }
 
     private static function emailReview(string $review, Model $record): void

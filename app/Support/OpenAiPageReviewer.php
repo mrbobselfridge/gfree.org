@@ -11,7 +11,7 @@ class OpenAiPageReviewer
     /**
      * @param  array<string, mixed>  $snapshot
      */
-    public function review(array $snapshot, string $prompt): string
+    public function review(array $snapshot, string $prompt, ?PageVisualSnapshotResult $visualSnapshot = null): string
     {
         $apiKey = OpenAiSiteSettings::apiKey();
 
@@ -31,12 +31,7 @@ class OpenAiPageReviewer
                 'input' => [
                     [
                         'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'input_text',
-                                'text' => $this->buildPrompt($snapshot, $prompt),
-                            ],
-                        ],
+                        'content' => $this->requestContent($snapshot, $prompt, $visualSnapshot),
                     ],
                 ],
             ]);
@@ -52,11 +47,38 @@ class OpenAiPageReviewer
 
     /**
      * @param  array<string, mixed>  $snapshot
+     * @return array<int, array<string, string>>
      */
-    private function buildPrompt(array $snapshot, string $prompt): string
+    private function requestContent(array $snapshot, string $prompt, ?PageVisualSnapshotResult $visualSnapshot): array
+    {
+        $content = [
+            [
+                'type' => 'input_text',
+                'text' => $this->buildPrompt($snapshot, $prompt, $visualSnapshot),
+            ],
+        ];
+
+        if ($visualSnapshot) {
+            $content[] = [
+                'type' => 'input_image',
+                'image_url' => $this->imageDataUrl($visualSnapshot),
+                'detail' => 'auto',
+            ];
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     */
+    private function buildPrompt(array $snapshot, string $prompt, ?PageVisualSnapshotResult $visualSnapshot): string
     {
         $instructions = filled($prompt) ? $prompt : AiContentPrompt::DEFAULT;
         $context = app(PageReviewSnapshot::class)->toPromptContext($snapshot);
+        $visualContext = $visualSnapshot
+            ? "A desktop full-page screenshot is attached for visual review. It was captured at {$visualSnapshot->width}px wide by {$visualSnapshot->height}px viewport height before full-page capture."
+            : 'No visual screenshot is attached. Review the structured CMS snapshot only.';
 
         return <<<PROMPT
 You are reviewing a church website page for an admin editor.
@@ -67,10 +89,14 @@ Follow these admin instructions:
 Review this full page CMS snapshot. It includes the resulting page URL, editable fields, rendered content outline, and image references:
 {$context}
 
+Visual context:
+{$visualContext}
+
 Important constraints:
 - Ignore site navigation and footer unless the snapshot says this is the Homepage.
 - Do not suggest changes to fields or page areas that are not represented in editable_fields.
 - Treat image URLs and image metadata as visual context; do not invent unseen image details.
+- When a screenshot is attached, use it to evaluate visible layout, visual hierarchy, spacing, image presentation, and obvious rendering issues.
 - Keep recommendations practical for a church website editor.
 
 Return concise plain text using these headings exactly:
@@ -82,6 +108,15 @@ Things to verify before publishing
 
 For Suggested field updates, name the exact editable field or content block when possible. Do not return JSON, Markdown fences, scripts, styles, or full HTML documents.
 PROMPT;
+    }
+
+    private function imageDataUrl(PageVisualSnapshotResult $visualSnapshot): string
+    {
+        if (! is_file($visualSnapshot->absolutePath) || ! is_readable($visualSnapshot->absolutePath)) {
+            throw new RuntimeException('The page visual snapshot image could not be read.');
+        }
+
+        return 'data:image/png;base64,'.base64_encode(file_get_contents($visualSnapshot->absolutePath));
     }
 
     /**

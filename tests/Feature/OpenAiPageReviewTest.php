@@ -12,11 +12,14 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\OpenAiPageReviewer;
 use App\Support\PageReviewSnapshot;
+use App\Support\PageVisualSnapshot;
+use App\Support\PageVisualSnapshotResult;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Mockery;
 use Tests\TestCase;
@@ -76,6 +79,115 @@ class OpenAiPageReviewTest extends TestCase
                 && str_contains($text, '"is_published": false')
                 && str_contains($text, 'Ignore site navigation and footer')
                 && str_contains($text, 'Suggested field updates');
+        });
+    }
+
+    public function test_page_review_sends_visual_snapshot_when_available(): void
+    {
+        Storage::disk('local')->put('page-visual-snapshots/test.png', 'fake-png-bytes');
+
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-5-mini',
+        ]);
+
+        config([
+            'services.openai.content_model' => 'gpt-5-mini',
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Plan a Visit',
+            'slug' => 'plan-a-visit',
+            'is_published' => true,
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => "Overall assessment\nThe screenshot is useful.",
+            ]),
+        ]);
+
+        $snapshot = app(PageReviewSnapshot::class)->forRecord($page);
+        $visualSnapshot = new PageVisualSnapshotResult(
+            path: 'page-visual-snapshots/test.png',
+            absolutePath: Storage::disk('local')->path('page-visual-snapshots/test.png'),
+            previewUrl: 'https://example.test/preview',
+            width: 1440,
+            height: 1000,
+        );
+
+        app(OpenAiPageReviewer::class)->review($snapshot, 'Review layout too.', $visualSnapshot);
+
+        Http::assertSent(function (Request $request): bool {
+            $content = data_get($request->data(), 'input.0.content');
+            $prompt = (string) data_get($content, '0.text');
+
+            return data_get($content, '0.type') === 'input_text'
+                && str_contains($prompt, 'A desktop full-page screenshot is attached')
+                && data_get($content, '1.type') === 'input_image'
+                && data_get($content, '1.detail') === 'auto'
+                && data_get($content, '1.image_url') === 'data:image/png;base64,'.base64_encode('fake-png-bytes');
+        });
+    }
+
+    public function test_page_review_action_captures_visual_snapshot_for_openai(): void
+    {
+        Storage::disk('local')->put('page-visual-snapshots/action-test.png', 'action-png-bytes');
+
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+            'openai_bulletin_model' => 'gpt-5-mini',
+            'ai_content_prompt' => 'Review the whole page.',
+        ]);
+
+        config([
+            'services.openai.content_model' => 'gpt-5-mini',
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Connect',
+            'slug' => 'connect',
+            'intro' => 'Find your next step.',
+            'is_published' => false,
+        ]);
+
+        $visualSnapshot = new PageVisualSnapshotResult(
+            path: 'page-visual-snapshots/action-test.png',
+            absolutePath: Storage::disk('local')->path('page-visual-snapshots/action-test.png'),
+            previewUrl: 'https://example.test/preview',
+            width: 1440,
+            height: 1000,
+        );
+
+        $visualSnapshotService = Mockery::mock(PageVisualSnapshot::class);
+        $visualSnapshotService
+            ->shouldReceive('capture')
+            ->once()
+            ->with(Mockery::on(fn (Page $record): bool => $record->is($page)))
+            ->andReturn($visualSnapshot);
+
+        $this->app->instance(PageVisualSnapshot::class, $visualSnapshotService);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => "Overall assessment\nThe page review includes the screenshot.",
+            ]),
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditPage::class, ['record' => $page->getKey()])
+            ->callAction('aiPageReview', [
+                'prompt' => 'Review visual layout.',
+            ])
+            ->assertHasNoActionErrors();
+
+        Http::assertSent(function (Request $request): bool {
+            $content = data_get($request->data(), 'input.0.content');
+
+            return data_get($content, '1.type') === 'input_image'
+                && data_get($content, '1.image_url') === 'data:image/png;base64,'.base64_encode('action-png-bytes');
         });
     }
 
