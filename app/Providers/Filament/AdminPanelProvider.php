@@ -148,7 +148,7 @@ class AdminPanelProvider extends PanelProvider
                             height: 2.5rem !important;
                         }
 
-                        .twyxtco-ai-rewrite-suggestion-editor {
+                        .twyxtco-ai-rewrite-comparison-editor {
                             height: clamp(14rem, calc(100dvh - 33rem), 42rem);
                             max-height: calc(100dvh - 20px);
                             min-height: 14rem;
@@ -156,7 +156,7 @@ class AdminPanelProvider extends PanelProvider
                             overscroll-behavior: contain;
                         }
 
-                        .twyxtco-ai-rewrite-suggestion-editor > .fi-fo-rich-editor-content {
+                        .twyxtco-ai-rewrite-comparison-editor > .fi-fo-rich-editor-content {
                             min-height: 100%;
                         }
 

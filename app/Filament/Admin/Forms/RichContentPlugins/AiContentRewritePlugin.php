@@ -13,6 +13,7 @@ use Filament\Forms\Components\RichEditor\Plugins\Contracts\RichContentPlugin;
 use Filament\Forms\Components\RichEditor\RichEditorTool;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -71,6 +72,8 @@ class AiContentRewritePlugin implements RichContentPlugin
                 ->fillForm(fn (array $arguments): array => [
                     'prompt' => SiteSetting::query()->value('ai_content_prompt') ?: AiContentPrompt::DEFAULT,
                     'source_html' => $arguments['content'] ?? '',
+                    'source_preview_html' => $arguments['content'] ?? '',
+                    'source_compare_html' => $arguments['content'] ?? '',
                     'suggested_html' => null,
                     'rewrite_completed' => false,
                 ])
@@ -89,20 +92,46 @@ class AiContentRewritePlugin implements RichContentPlugin
                             'acceptArguments' => ['accept' => true],
                         ])
                         ->columnSpanFull(),
-                    RichEditor::make('suggested_html')
-                        ->label('Suggested new write up')
-                        ->helperText('Review and tweak the suggestion, then choose Accept to place it into the original rich text box.')
-                        ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-suggestion-field'])
-                        ->toolbarButtons([
-                            ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
-                            ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
-                            ['alignStart', 'alignCenter', 'alignEnd'],
-                            ['blockquote', 'bulletList', 'orderedList'],
-                            ['table', 'horizontalRule'],
-                            ['undo', 'redo'],
-                        ])
+                    RichEditor::make('source_preview_html')
+                        ->label('Before')
+                        ->helperText('Current content. This side is shown for comparison and is not changed here.')
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->toolbarButtons([])
                         ->extraInputAttributes([
-                            'class' => 'twyxtco-ai-rewrite-suggestion-editor',
+                            'class' => 'twyxtco-ai-rewrite-comparison-editor',
+                        ])
+                        ->visible(fn (Get $get): bool => ! (bool) $get('rewrite_completed'))
+                        ->columnSpanFull(),
+                    Grid::make([
+                        'default' => 1,
+                        'lg' => 2,
+                    ])
+                        ->schema([
+                            RichEditor::make('source_compare_html')
+                                ->label('Before')
+                                ->helperText('Current content. This side is shown for comparison and is not changed here.')
+                                ->disabled()
+                                ->dehydrated(false)
+                                ->toolbarButtons([])
+                                ->extraInputAttributes([
+                                    'class' => 'twyxtco-ai-rewrite-comparison-editor',
+                                ]),
+                            RichEditor::make('suggested_html')
+                                ->label('After')
+                                ->helperText('Review and tweak this version, then choose Accept to place it into the original rich text box.')
+                                ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-suggestion-field'])
+                                ->toolbarButtons([
+                                    ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
+                                    ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
+                                    ['alignStart', 'alignCenter', 'alignEnd'],
+                                    ['blockquote', 'bulletList', 'orderedList'],
+                                    ['table', 'horizontalRule'],
+                                    ['undo', 'redo'],
+                                ])
+                                ->extraInputAttributes([
+                                    'class' => 'twyxtco-ai-rewrite-comparison-editor',
+                                ]),
                         ])
                         ->visible(fn (Get $get): bool => (bool) $get('rewrite_completed'))
                         ->columnSpanFull(),
@@ -139,9 +168,11 @@ class AiContentRewritePlugin implements RichContentPlugin
                         return;
                     }
 
+                    $sourceHtml = (string) ($data['source_html'] ?? $arguments['content'] ?? '');
+
                     try {
                         $suggestedHtml = $rewriter->rewrite(
-                            html: (string) ($data['source_html'] ?? $arguments['content'] ?? ''),
+                            html: $sourceHtml,
                             prompt: (string) ($data['prompt'] ?? ''),
                         );
                     } catch (RuntimeException $exception) {
@@ -156,6 +187,9 @@ class AiContentRewritePlugin implements RichContentPlugin
 
                     $schema->fill([
                         ...$data,
+                        'source_html' => $sourceHtml,
+                        'source_preview_html' => $sourceHtml,
+                        'source_compare_html' => $sourceHtml,
                         'suggested_html' => $suggestedHtml,
                         'rewrite_completed' => true,
                     ]);
