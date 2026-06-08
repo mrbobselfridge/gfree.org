@@ -7,9 +7,6 @@ use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Models\Page;
 use App\Rules\PageSlugPath;
-use App\Rules\ValidPageParent;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -33,19 +30,6 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null),
-                Select::make('parent_page_id')
-                    ->label('Parent Page')
-                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                    ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
-                Placeholder::make('direct_child_pages')
-                    ->label('Direct subpages')
-                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                    ->visible(fn (?Page $record): bool => filled($record?->getKey()))
-                    ->columnSpanFull(),
                 ToggleButtons::make('is_published')
                     ->label('Make Page Live')
                     ->boolean()
