@@ -26,6 +26,17 @@ class PageForm
     {
         return $schema
             ->components([
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                    ->columnSpanFull(),
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255),
+                ToggleButtons::make('is_published')
+                    ->label('Make Page Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
                 TextInput::make('title')
                     ->required()
                     ->live(onBlur: true)
@@ -33,15 +44,6 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null),
-                ToggleButtons::make('is_published')
-                    ->label('Make Page Live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->required(),
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255),
                 Textarea::make('intro')
                     ->rows(1),
                 Section::make('Page Content Blocks')
@@ -74,8 +76,6 @@ class PageForm
                     ->rule(new PageSlugPath)
                     ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255),
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                    ->columnSpanFull(),
                 TextInput::make('seo_title')
                     ->label('SEO title')
                     ->helperText('Alternative for additional SEO content in the page BROWSER title.')
