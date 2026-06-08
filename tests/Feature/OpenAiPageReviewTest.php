@@ -98,4 +98,24 @@ class OpenAiPageReviewTest extends TestCase
             ->assertActionExists('extractPdf')
             ->assertActionExists('reviewAnnouncements');
     }
+
+    public function test_page_review_modal_icon_actions_render_valid_livewire_calls(): void
+    {
+        $actionsHtml = view('filament.admin.forms.components.ai-page-review-actions')->render();
+        $emailHtml = view('filament.admin.forms.components.ai-page-review-email-actions', [
+            'emailArguments' => ['email' => true],
+        ])->render();
+
+        $this->assertStringContainsString("content: 'AI Review'", $actionsHtml);
+        $this->assertStringContainsString('aria-label="AI Review"', $actionsHtml);
+        $this->assertStringContainsString("content: 'Close'", $actionsHtml);
+        $this->assertStringContainsString('aria-label="Close"', $actionsHtml);
+        $this->assertStringContainsString('wire:click="callMountedAction"', $actionsHtml);
+        $this->assertStringContainsString('wire:click="unmountAction"', $actionsHtml);
+
+        $this->assertStringContainsString("content: 'Email Results'", $emailHtml);
+        $this->assertStringContainsString('aria-label="Email Results"', $emailHtml);
+        $this->assertStringContainsString('wire:click="callMountedAction(JSON.parse(', $emailHtml);
+        $this->assertStringContainsString('\u0022email\u0022:true', $emailHtml);
+    }
 }

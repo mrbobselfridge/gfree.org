@@ -148,6 +148,70 @@ class AdminPanelProvider extends PanelProvider
                             flex: 0 0 auto;
                         }
 
+                        .twyxtco-ai-page-review-actions {
+                            position: relative;
+                            display: flex !important;
+                            flex-direction: row !important;
+                            flex-wrap: nowrap;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.75rem;
+                            width: 100%;
+                            padding-block: 0.125rem 0.375rem;
+                        }
+
+                        .twyxtco-ai-page-review-email-actions {
+                            display: flex !important;
+                            align-items: center;
+                            justify-content: center;
+                            width: 100%;
+                            padding-block: 0 0.75rem;
+                        }
+
+                        .twyxtco-ai-page-review-action-btn.fi-icon-btn {
+                            display: inline-flex !important;
+                            width: 3.75rem !important;
+                            height: 3.75rem !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            border-radius: 0.5rem !important;
+                        }
+
+                        .twyxtco-ai-page-review-action-btn.fi-icon-btn > .fi-icon {
+                            width: 2.5rem !important;
+                            height: 2.5rem !important;
+                        }
+
+                        .twyxtco-ai-page-review-processing {
+                            position: fixed;
+                            z-index: 60;
+                            inset: 0;
+                            display: none;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 1rem;
+                            padding: 1.25rem;
+                            background: color-mix(in oklab, black 55%, transparent);
+                            backdrop-filter: blur(2px);
+                        }
+
+                        .twyxtco-ai-page-review-processing-spinner {
+                            width: 2rem;
+                            height: 2rem;
+                            color: var(--primary-400);
+                        }
+
+                        .twyxtco-ai-page-review-processing-title {
+                            color: white;
+                            font-size: 1rem;
+                            font-weight: 700;
+                        }
+
+                        .twyxtco-ai-page-review-processing-message {
+                            color: var(--gray-300);
+                            font-size: 0.875rem;
+                        }
+
                         .twyxtco-ai-rewrite-prompt-field .fi-fo-field-label-content,
                         .twyxtco-ai-rewrite-suggestion-field .fi-fo-field-label-content {
                             font-size: 1.125rem;

@@ -55,14 +55,17 @@ class AiPageReviewActions
                     Hidden::make('snapshot_json'),
                     Hidden::make('review_completed'),
                     View::make('filament.admin.forms.components.ai-page-review-actions')
-                        ->viewData([
-                            'emailArguments' => ['email' => true],
-                        ])
                         ->columnSpanFull(),
                     Textarea::make('review')
                         ->label('AI Review')
                         ->helperText('Review these notes, then manually update the fields that should change.')
                         ->rows(18)
+                        ->visible(fn (Get $get): bool => (bool) $get('review_completed'))
+                        ->columnSpanFull(),
+                    View::make('filament.admin.forms.components.ai-page-review-email-actions')
+                        ->viewData([
+                            'emailArguments' => ['email' => true],
+                        ])
                         ->visible(fn (Get $get): bool => (bool) $get('review_completed'))
                         ->columnSpanFull(),
                 ])
