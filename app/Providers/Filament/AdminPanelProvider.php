@@ -160,14 +160,6 @@ class AdminPanelProvider extends PanelProvider
                             padding-block: 0.125rem 0.375rem;
                         }
 
-                        .twyxtco-ai-page-review-email-actions {
-                            display: flex !important;
-                            align-items: center;
-                            justify-content: center;
-                            width: 100%;
-                            padding-block: 0 0.75rem;
-                        }
-
                         .twyxtco-ai-page-review-visual {
                             display: grid;
                             gap: 0.75rem;

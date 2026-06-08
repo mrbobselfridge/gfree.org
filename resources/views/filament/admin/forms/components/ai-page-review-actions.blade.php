@@ -1,3 +1,9 @@
+@php
+    $reviewCompleted = (bool) ($reviewCompleted ?? false);
+    $emailArguments = $emailArguments ?? ['email' => true];
+    $emailAction = 'callMountedAction('.\Illuminate\Support\Js::from($emailArguments).')';
+@endphp
+
 <div class="twyxtco-ai-page-review-actions">
     <x-filament::icon-button
         type="button"
@@ -12,6 +18,22 @@
         wire:loading.attr="disabled"
         wire:target="callMountedAction"
     />
+
+    @if ($reviewCompleted)
+        <x-filament::icon-button
+            type="button"
+            color="info"
+            :icon="\Filament\Support\Icons\Heroicon::OutlinedEnvelope"
+            label="Email Results"
+            tooltip="Email Results"
+            size="xl"
+            :loading-indicator="false"
+            class="twyxtco-ai-page-review-action-btn"
+            wire:click="{{ $emailAction }}"
+            wire:loading.attr="disabled"
+            wire:target="callMountedAction"
+        />
+    @endif
 
     <x-filament::icon-button
         type="button"

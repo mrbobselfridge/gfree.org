@@ -221,8 +221,9 @@ class OpenAiPageReviewTest extends TestCase
     public function test_page_review_modal_icon_actions_render_valid_livewire_calls(): void
     {
         $actionsHtml = view('filament.admin.forms.components.ai-page-review-actions')->render();
-        $emailHtml = view('filament.admin.forms.components.ai-page-review-email-actions', [
+        $completedActionsHtml = view('filament.admin.forms.components.ai-page-review-actions', [
             'emailArguments' => ['email' => true],
+            'reviewCompleted' => true,
         ])->render();
         $visualHtml = view('filament.admin.forms.components.ai-page-review-visual-snapshot', [
             'visualSnapshotUrl' => 'https://example.test/snapshot-image',
@@ -234,11 +235,12 @@ class OpenAiPageReviewTest extends TestCase
         $this->assertStringContainsString('aria-label="Close"', $actionsHtml);
         $this->assertStringContainsString('wire:click="callMountedAction"', $actionsHtml);
         $this->assertStringContainsString('wire:click="unmountAction"', $actionsHtml);
+        $this->assertStringNotContainsString('aria-label="Email Results"', $actionsHtml);
 
-        $this->assertStringContainsString("content: 'Email Results'", $emailHtml);
-        $this->assertStringContainsString('aria-label="Email Results"', $emailHtml);
-        $this->assertStringContainsString('wire:click="callMountedAction(JSON.parse(', $emailHtml);
-        $this->assertStringContainsString('\u0022email\u0022:true', $emailHtml);
+        $this->assertStringContainsString("content: 'Email Results'", $completedActionsHtml);
+        $this->assertStringContainsString('aria-label="Email Results"', $completedActionsHtml);
+        $this->assertStringContainsString('wire:click="callMountedAction(JSON.parse(', $completedActionsHtml);
+        $this->assertStringContainsString('\u0022email\u0022:true', $completedActionsHtml);
 
         $this->assertStringContainsString('Page screenshot', $visualHtml);
         $this->assertStringContainsString('Open full-size screenshot', $visualHtml);

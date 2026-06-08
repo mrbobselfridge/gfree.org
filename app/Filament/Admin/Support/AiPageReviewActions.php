@@ -61,6 +61,10 @@ class AiPageReviewActions
                     Hidden::make('review_completed'),
                     Hidden::make('visual_snapshot_url'),
                     View::make('filament.admin.forms.components.ai-page-review-actions')
+                        ->viewData(fn (Get $get): array => [
+                            'emailArguments' => ['email' => true],
+                            'reviewCompleted' => (bool) $get('review_completed'),
+                        ])
                         ->columnSpanFull(),
                     Grid::make([
                         'default' => 1,
@@ -79,12 +83,6 @@ class AiPageReviewActions
                                 ->rows(18)
                                 ->autosize()
                                 ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-page-review-result-field']),
-                        ])
-                        ->visible(fn (Get $get): bool => (bool) $get('review_completed'))
-                        ->columnSpanFull(),
-                    View::make('filament.admin.forms.components.ai-page-review-email-actions')
-                        ->viewData([
-                            'emailArguments' => ['email' => true],
                         ])
                         ->visible(fn (Get $get): bool => (bool) $get('review_completed'))
                         ->columnSpanFull(),
