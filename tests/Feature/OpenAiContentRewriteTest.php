@@ -79,11 +79,15 @@ class OpenAiContentRewriteTest extends TestCase
         $action = (new AiContentRewritePlugin)->getEditorActions()[0];
         $schema = (fn (): array => $this->schema)->call($action);
         $fieldNames = $this->fieldNamesFromComponents($schema);
+        $fieldLabels = $this->fieldLabelsFromComponents($schema);
 
         $this->assertContains('source_html', $fieldNames);
         $this->assertContains('source_preview_html', $fieldNames);
         $this->assertContains('source_compare_html', $fieldNames);
         $this->assertContains('suggested_html', $fieldNames);
+        $this->assertSame('Current Content', $fieldLabels['source_preview_html']);
+        $this->assertSame('Current Content', $fieldLabels['source_compare_html']);
+        $this->assertSame('Suggested Content Rewrite', $fieldLabels['suggested_html']);
     }
 
     public function test_ai_rewrite_accept_button_renders_valid_livewire_arguments(): void
@@ -134,5 +138,44 @@ class OpenAiContentRewriteTest extends TestCase
         }
 
         return array_values(array_unique($names));
+    }
+
+    /**
+     * @param  array<int|string, mixed>  $components
+     * @return array<string, string>
+     */
+    private function fieldLabelsFromComponents(array $components): array
+    {
+        $labels = [];
+
+        foreach ($components as $component) {
+            if (is_array($component)) {
+                $labels = [
+                    ...$labels,
+                    ...$this->fieldLabelsFromComponents($component),
+                ];
+
+                continue;
+            }
+
+            if (! is_object($component) || $component instanceof \Closure) {
+                continue;
+            }
+
+            if (method_exists($component, 'getName') && method_exists($component, 'getLabel')) {
+                $labels[$component->getName()] = (string) $component->getLabel();
+            }
+
+            $children = (fn (): array => $this->childComponents ?? [])->call($component);
+
+            if ($children !== []) {
+                $labels = [
+                    ...$labels,
+                    ...$this->fieldLabelsFromComponents($children),
+                ];
+            }
+        }
+
+        return $labels;
     }
 }

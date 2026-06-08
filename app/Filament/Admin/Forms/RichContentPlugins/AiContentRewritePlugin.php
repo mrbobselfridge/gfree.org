@@ -93,7 +93,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                         ])
                         ->columnSpanFull(),
                     RichEditor::make('source_preview_html')
-                        ->label('Before')
+                        ->label('Current Content')
                         ->helperText('Current content. This side is shown for comparison and is not changed here.')
                         ->disabled()
                         ->dehydrated(false)
@@ -109,7 +109,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                     ])
                         ->schema([
                             RichEditor::make('source_compare_html')
-                                ->label('Before')
+                                ->label('Current Content')
                                 ->helperText('Current content. This side is shown for comparison and is not changed here.')
                                 ->disabled()
                                 ->dehydrated(false)
@@ -118,7 +118,7 @@ class AiContentRewritePlugin implements RichContentPlugin
                                     'class' => 'twyxtco-ai-rewrite-comparison-editor',
                                 ]),
                             RichEditor::make('suggested_html')
-                                ->label('After')
+                                ->label('Suggested Content Rewrite')
                                 ->helperText('Review and tweak this version, then choose Accept to place it into the original rich text box.')
                                 ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-suggestion-field'])
                                 ->toolbarButtons([
