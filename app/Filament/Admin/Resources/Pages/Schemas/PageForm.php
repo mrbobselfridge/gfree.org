@@ -36,23 +36,24 @@ class PageForm
                     ->inline()
                     ->default(false)
                     ->required(),
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255),
                 ToggleButtons::make('show_site_chrome')
                     ->label('Show navigation and footer')
                     ->boolean()
                     ->inline()
                     ->default(true)
                     ->required(),
+                Textarea::make('intro')
+                    ->rows(1)
+                    ->columnSpanFull(),
                 ToggleButtons::make('show_page_header')
                     ->label('Show page header')
                     ->boolean()
                     ->inline()
                     ->default(true)
                     ->required(),
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255),
-                Textarea::make('intro')
-                    ->rows(1),
                 TextInput::make('slug')
                     ->prefix('/')
                     ->required()
@@ -81,6 +82,21 @@ class PageForm
                     ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                     ->label('SEO description')
                     ->rows(1),
+
+                Select::make('parent_page_id')
+                    ->label('Parent Page')
+                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                    ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
+                Placeholder::make('direct_child_pages')
+                    ->label('Direct subpages')
+                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                    ->visible(fn (?Page $record): bool => filled($record?->getKey()))
+                    ->columnSpanFull(),
+
             ]);
     }
 
