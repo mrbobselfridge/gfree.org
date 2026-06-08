@@ -263,9 +263,9 @@ class OpenAiPageReviewTest extends TestCase
 
         $this->actingAs($user);
 
-        Mail::shouldReceive('raw')
+        Mail::shouldReceive('html')
             ->once()
-            ->withArgs(function (string $body, callable $callback) use ($page): bool {
+            ->withArgs(function (string $html, callable $callback) use ($page): bool {
                 $message = Mockery::mock(Message::class);
                 $message
                     ->shouldReceive('to')
@@ -280,15 +280,18 @@ class OpenAiPageReviewTest extends TestCase
 
                 $callback($message);
 
-                return str_contains($body, 'Reviewed @ ')
-                    && str_contains($body, ' for Grace Free Church')
-                    && str_contains($body, 'Page Reviewed: Connect - '.$page->publicUrl())
-                    && str_contains($body, 'Edit Content: '.PageResource::getUrl('edit', ['record' => $page]))
-                    && str_contains($body, 'Screenshot Reviewed: https://example.test/snapshot-image')
-                    && str_contains($body, 'Overall assessment: Looks good.');
+                return str_contains($html, '<strong>Reviewed @</strong>')
+                    && str_contains($html, ' for Grace Free Church')
+                    && str_contains($html, 'Page Reviewed:</strong> Connect -')
+                    && str_contains($html, '<a href="'.$page->publicUrl().'" style="color: #2563eb; font-weight: 700;">LINK</a>')
+                    && str_contains($html, '<a href="'.PageResource::getUrl('edit', ['record' => $page]).'" style="color: #2563eb; font-weight: 700;">LINK</a>')
+                    && str_contains($html, '<a href="https://example.test/snapshot-image" style="color: #2563eb; font-weight: 700;">LINK</a>')
+                    && str_contains($html, '<strong>Looks good.</strong>')
+                    && str_contains($html, '<li>Fix spacing.</li>')
+                    && ! str_contains($html, '<script>');
             });
 
         $method = new \ReflectionMethod(AiPageReviewActions::class, 'emailReview');
-        $method->invoke(null, 'Overall assessment: Looks good.', $page, 'https://example.test/snapshot-image');
+        $method->invoke(null, "**Looks good.**\n\n- Fix spacing.\n\n<script>alert('nope')</script>", $page, 'https://example.test/snapshot-image');
     }
 }

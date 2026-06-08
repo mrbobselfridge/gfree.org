@@ -99,14 +99,14 @@ Important constraints:
 - When a screenshot is attached, use it to evaluate visible layout, visual hierarchy, spacing, image presentation, and obvious rendering issues.
 - Keep recommendations practical for a church website editor.
 
-Return concise plain text using these headings exactly:
+Return concise Markdown-compatible text using these headings exactly:
 Overall assessment
 Recommended content edits
 Recommended image or layout edits
 Suggested field updates
 Things to verify before publishing
 
-For Suggested field updates, name the exact editable field or content block when possible. Do not return JSON, Markdown fences, scripts, styles, or full HTML documents.
+You may use bold text and bullet lists when they improve readability. For Suggested field updates, name the exact editable field or content block when possible. Do not return JSON, Markdown fences, scripts, styles, raw HTML, or full HTML documents.
 PROMPT;
     }
 

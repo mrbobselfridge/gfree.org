@@ -24,6 +24,7 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Throwable;
 
 class AiPageReviewActions
@@ -204,9 +205,9 @@ class AiPageReviewActions
 
         $publicUrl = self::publicUrlForRecord($record);
         $subject = 'AI Review: '.$publicUrl;
-        $body = self::emailBody($record, $review, $publicUrl, $visualSnapshotUrl);
+        $body = self::emailHtml($record, $review, $publicUrl, $visualSnapshotUrl);
 
-        Mail::raw($body, function (Message $message) use ($email, $subject): void {
+        Mail::html($body, function (Message $message) use ($email, $subject): void {
             $message
                 ->to($email)
                 ->subject($subject);
@@ -219,23 +220,31 @@ class AiPageReviewActions
             ->send();
     }
 
-    private static function emailBody(Model $record, string $review, string $publicUrl, ?string $visualSnapshotUrl = null): string
+    private static function emailHtml(Model $record, string $review, string $publicUrl, ?string $visualSnapshotUrl = null): string
     {
         $settings = SiteSetting::query()->first();
         $churchName = $settings?->church_name ?: config('app.name', 'Church Website');
         $timestamp = now()->format('F j, Y g:i A T');
         $recordTitle = WorkflowNotificationAreas::labelForRecord($record);
         $adminUrl = WorkflowNotificationAreas::adminUrlForRecord($record) ?: url('/admin');
-        $screenshotLine = filled($visualSnapshotUrl) ? "Screenshot Reviewed: {$visualSnapshotUrl}\n" : '';
 
-        return <<<BODY
-Reviewed @ {$timestamp} for {$churchName}
-Page Reviewed: {$recordTitle} - {$publicUrl}
-Edit Content: {$adminUrl}
-{$screenshotLine}
+        return view('mail.ai-page-review', [
+            'adminUrl' => $adminUrl,
+            'churchName' => $churchName,
+            'publicUrl' => $publicUrl,
+            'recordTitle' => $recordTitle,
+            'reviewHtml' => self::markdownReviewHtml($review),
+            'timestamp' => $timestamp,
+            'visualSnapshotUrl' => $visualSnapshotUrl,
+        ])->render();
+    }
 
-{$review}
-BODY;
+    private static function markdownReviewHtml(string $review): string
+    {
+        return Str::markdown($review, [
+            'allow_unsafe_links' => false,
+            'html_input' => 'strip',
+        ]);
     }
 
     private static function publicUrlForRecord(Model $record): string
