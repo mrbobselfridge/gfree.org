@@ -10,5 +10,6 @@ class PageVisualSnapshotResult
         public readonly string $previewUrl,
         public readonly int $width,
         public readonly int $height,
+        public readonly ?string $imageUrl = null,
     ) {}
 }

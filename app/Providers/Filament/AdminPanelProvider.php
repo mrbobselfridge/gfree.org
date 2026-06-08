@@ -168,6 +168,70 @@ class AdminPanelProvider extends PanelProvider
                             padding-block: 0 0.75rem;
                         }
 
+                        .twyxtco-ai-page-review-visual {
+                            display: grid;
+                            gap: 0.75rem;
+                            border: 1px solid var(--gray-300);
+                            border-radius: 0.5rem;
+                            padding: 0.875rem;
+                            background: var(--gray-50);
+                        }
+
+                        .dark .twyxtco-ai-page-review-visual {
+                            border-color: var(--gray-700);
+                            background: var(--gray-900);
+                        }
+
+                        .twyxtco-ai-page-review-visual-header {
+                            display: flex;
+                            flex-wrap: wrap;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 0.75rem;
+                        }
+
+                        .twyxtco-ai-page-review-visual-title {
+                            color: var(--gray-950);
+                            font-size: 0.95rem;
+                            font-weight: 700;
+                        }
+
+                        .dark .twyxtco-ai-page-review-visual-title {
+                            color: white;
+                        }
+
+                        .twyxtco-ai-page-review-visual-link {
+                            color: var(--primary-600);
+                            font-size: 0.875rem;
+                            font-weight: 700;
+                            text-decoration: underline;
+                            text-underline-offset: 0.1875rem;
+                        }
+
+                        .dark .twyxtco-ai-page-review-visual-link {
+                            color: var(--primary-400);
+                        }
+
+                        .twyxtco-ai-page-review-visual-preview {
+                            display: block;
+                            max-height: min(34rem, 62vh);
+                            overflow: auto;
+                            border: 1px solid var(--gray-300);
+                            border-radius: 0.375rem;
+                            background: white;
+                        }
+
+                        .dark .twyxtco-ai-page-review-visual-preview {
+                            border-color: var(--gray-700);
+                            background: black;
+                        }
+
+                        .twyxtco-ai-page-review-visual-preview img {
+                            display: block;
+                            width: 100%;
+                            height: auto;
+                        }
+
                         .twyxtco-ai-page-review-action-btn.fi-icon-btn {
                             display: inline-flex !important;
                             width: 3.75rem !important;

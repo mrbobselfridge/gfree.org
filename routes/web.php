@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BulletinController;
@@ -37,6 +38,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/admin/page-visual-snapshots/preview/{type}/{record?}', PageVisualSnapshotPreviewController::class)
     ->middleware('signed')
     ->name('admin.page-visual-snapshots.preview');
+
+Route::get('/admin/page-visual-snapshots/image', PageVisualSnapshotImageController::class)
+    ->middleware('signed')
+    ->name('admin.page-visual-snapshots.image');
 
 Route::get('/leadership', [LeadershipController::class, 'index'])->name('leadership.index');
 Route::get('/leadership/{slug}', [LeadershipController::class, 'show'])->name('leadership.show');

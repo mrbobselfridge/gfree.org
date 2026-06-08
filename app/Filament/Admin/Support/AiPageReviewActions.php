@@ -57,7 +57,14 @@ class AiPageReviewActions
                         ->columnSpanFull(),
                     Hidden::make('snapshot_json'),
                     Hidden::make('review_completed'),
+                    Hidden::make('visual_snapshot_url'),
                     View::make('filament.admin.forms.components.ai-page-review-actions')
+                        ->columnSpanFull(),
+                    View::make('filament.admin.forms.components.ai-page-review-visual-snapshot')
+                        ->viewData(fn (Get $get): array => [
+                            'visualSnapshotUrl' => $get('visual_snapshot_url'),
+                        ])
+                        ->visible(fn (Get $get): bool => (bool) $get('review_completed') && filled($get('visual_snapshot_url')))
                         ->columnSpanFull(),
                     Textarea::make('review')
                         ->label('AI Review')
@@ -115,6 +122,7 @@ class AiPageReviewActions
                         'snapshot_json' => $snapshotJson,
                         'review' => $review,
                         'review_completed' => true,
+                        'visual_snapshot_url' => $visualSnapshotResult?->imageUrl,
                     ]);
 
                     Notification::make()
@@ -143,6 +151,7 @@ class AiPageReviewActions
             'snapshot_json' => $snapshotJson,
             'review' => null,
             'review_completed' => false,
+            'visual_snapshot_url' => null,
         ];
     }
 

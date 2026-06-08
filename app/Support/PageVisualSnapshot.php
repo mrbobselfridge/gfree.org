@@ -60,6 +60,16 @@ class PageVisualSnapshot
             previewUrl: $this->previewUrl($record),
             width: $width,
             height: $height,
+            imageUrl: $this->imageUrl($relativePath),
+        );
+    }
+
+    public function imageUrl(string $path): string
+    {
+        return URL::temporarySignedRoute(
+            'admin.page-visual-snapshots.image',
+            now()->addHour(),
+            ['path' => $path],
         );
     }
 

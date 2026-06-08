@@ -159,6 +159,7 @@ class OpenAiPageReviewTest extends TestCase
             previewUrl: 'https://example.test/preview',
             width: 1440,
             height: 1000,
+            imageUrl: 'https://example.test/snapshot-image',
         );
 
         $visualSnapshotService = Mockery::mock(PageVisualSnapshot::class);
@@ -181,6 +182,7 @@ class OpenAiPageReviewTest extends TestCase
             ->callAction('aiPageReview', [
                 'prompt' => 'Review visual layout.',
             ])
+            ->assertSet('mountedActions.0.data.visual_snapshot_url', 'https://example.test/snapshot-image')
             ->assertHasNoActionErrors();
 
         Http::assertSent(function (Request $request): bool {
@@ -222,6 +224,9 @@ class OpenAiPageReviewTest extends TestCase
         $emailHtml = view('filament.admin.forms.components.ai-page-review-email-actions', [
             'emailArguments' => ['email' => true],
         ])->render();
+        $visualHtml = view('filament.admin.forms.components.ai-page-review-visual-snapshot', [
+            'visualSnapshotUrl' => 'https://example.test/snapshot-image',
+        ])->render();
 
         $this->assertStringContainsString("content: 'AI Review'", $actionsHtml);
         $this->assertStringContainsString('aria-label="AI Review"', $actionsHtml);
@@ -234,6 +239,10 @@ class OpenAiPageReviewTest extends TestCase
         $this->assertStringContainsString('aria-label="Email Results"', $emailHtml);
         $this->assertStringContainsString('wire:click="callMountedAction(JSON.parse(', $emailHtml);
         $this->assertStringContainsString('\u0022email\u0022:true', $emailHtml);
+
+        $this->assertStringContainsString('Page screenshot', $visualHtml);
+        $this->assertStringContainsString('Open full-size screenshot', $visualHtml);
+        $this->assertStringContainsString('src="https://example.test/snapshot-image"', $visualHtml);
     }
 
     public function test_page_review_email_uses_page_context_subject_and_body(): void
