@@ -34,19 +34,6 @@ class PageForm
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255),
-                ToggleButtons::make('is_published')
-                    ->label('Make Page Live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->required(),
-                TextInput::make('title')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->maxLength(255)
-                    ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
-                        ? $set('slug', Str::slug($state))
-                        : null),
                 Select::make('parent_page_id')
                     ->label('Parent Page')
                     ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -55,15 +42,23 @@ class PageForm
                     ->native(false)
                     ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
                     ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
-                Textarea::make('intro')
-                    ->rows(1),
-                TextInput::make('slug')
-                    ->prefix('/')
+                TextInput::make('title')
                     ->required()
-                    ->unique(ignoreRecord: true)
-                    ->rule(new PageSlugPath)
-                    ->suffixAction(SlugRebuildAction::make('title'))
-                    ->maxLength(255),
+                    ->live(onBlur: true)
+                    ->maxLength(255)
+                    ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
+                        ? $set('slug', Str::slug($state))
+                        : null),
+                ToggleButtons::make('is_published')
+                    ->label('Make Page Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
+                Textarea::make('intro')
+                    ->rows(1)
+                    ->columnSpanFull(),
+
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -91,10 +86,18 @@ class PageForm
                     ->label('SEO title')
                     ->helperText('Alternative for additional SEO content in the page BROWSER title.')
                     ->maxLength(255),
+                TextInput::make('slug')
+                    ->prefix('/')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->rule(new PageSlugPath)
+                    ->suffixAction(SlugRebuildAction::make('title'))
+                    ->maxLength(255),
                 Textarea::make('seo_description')
                     ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                     ->label('SEO description')
-                    ->rows(1),
+                    ->rows(1)
+                    ->columnSpanFull(),
 
             ]);
     }
