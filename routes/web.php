@@ -11,6 +11,7 @@ use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SermonController;
 use App\Models\SiteSetting;
+use App\Support\PageSlugs;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -512,5 +513,5 @@ Route::get('/concepts/{concept}', function (string $concept) {
 });
 
 Route::get('/{slug}', PageController::class)
-    ->where('slug', '^(?!admin$|manual$|concepts$|concept-screens$|build$|storage$|livewire$)[A-Za-z0-9-]+$')
+    ->where('slug', PageSlugs::routePattern())
     ->name('pages.show');

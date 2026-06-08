@@ -28,6 +28,7 @@ class PublicPageAdminLinkTest extends TestCase
     public function test_public_url_models_resolve_their_live_site_urls(): void
     {
         $this->assertSame(url('/visit'), (new Page(['slug' => 'visit']))->publicUrl());
+        $this->assertSame(url('/learn/baptism/basics'), (new Page(['slug' => 'learn/baptism/basics']))->publicUrl());
         $this->assertSame(route('announcements.show', ['slug' => 'church-picnic']), (new Announcement(['slug' => 'church-picnic']))->publicUrl());
         $this->assertSame(route('bulletins.show', ['date' => '2026-06-07']), (new Bulletin(['bulletin_date' => '2026-06-07']))->publicUrl());
         $this->assertSame(route('ministries.show', ['slug' => 'students']), (new Ministry(['slug' => 'students']))->publicUrl());
@@ -82,6 +83,19 @@ class PublicPageAdminLinkTest extends TestCase
         $page = Page::query()->where('slug', 'plan-a-visit')->firstOrFail();
 
         $component->assertRedirect(PageResource::getUrl('edit', ['record' => $page]));
+    }
+
+    public function test_page_slug_rejects_reserved_public_areas(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.title', 'Announcement Landing')
+            ->set('data.slug', 'announcements/custom-landing')
+            ->set('data.is_published', true)
+            ->set('data.show_site_chrome', true)
+            ->set('data.show_page_header', true)
+            ->call('create')
+            ->assertHasFormErrors(['slug']);
     }
 
     public function test_landing_page_settings_show_view_public_page_action(): void

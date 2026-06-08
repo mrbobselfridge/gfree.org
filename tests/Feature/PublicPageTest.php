@@ -32,6 +32,23 @@ class PublicPageTest extends TestCase
             ->assertDontSee('<p class="concept-eyebrow">TwyxtCo Church</p>', false);
     }
 
+    public function test_published_pages_are_available_by_nested_slug_path(): void
+    {
+        Page::query()->create([
+            'title' => 'Baptism Basics',
+            'slug' => 'learn/baptism/basics',
+            'intro' => 'What baptism means at TwyxtCo.',
+            'body' => 'A page with an SEO-friendly path.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/learn/baptism/basics')
+            ->assertOk()
+            ->assertSee('Baptism Basics')
+            ->assertSee('What baptism means at TwyxtCo.')
+            ->assertSee('A page with an SEO-friendly path.');
+    }
+
     public function test_page_can_hide_navigation_and_footer_for_minimal_landing_pages(): void
     {
         Page::query()->create([
