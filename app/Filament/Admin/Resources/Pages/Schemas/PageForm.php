@@ -30,8 +30,7 @@ class PageForm
                 Placeholder::make('direct_child_pages')
                     ->label('Direct subpages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                    ->visible(fn (?Page $record): bool => filled($record?->getKey()))
-                    ->columnSpanFull(),
+                    ->visible(fn (?Page $record): bool => filled($record?->getKey())),
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255),
