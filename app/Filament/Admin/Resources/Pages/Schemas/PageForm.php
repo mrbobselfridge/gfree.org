@@ -35,13 +35,12 @@ class PageForm
                     ->label('Small label')
                     ->maxLength(255),
                 Select::make('parent_page_id')
-                    ->label('Parent Page')
+                    ->label('Parent Page - optional')
                     ->options(fn (?Page $record): array => self::parentPageOptions($record))
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                    ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
                 TextInput::make('title')
                     ->required()
                     ->live(onBlur: true)
