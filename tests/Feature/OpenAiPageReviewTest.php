@@ -284,10 +284,11 @@ class OpenAiPageReviewTest extends TestCase
                     && str_contains($body, ' for Grace Free Church')
                     && str_contains($body, 'Page Reviewed: Connect - '.$page->publicUrl())
                     && str_contains($body, 'Edit Content: '.PageResource::getUrl('edit', ['record' => $page]))
+                    && str_contains($body, 'Screenshot Reviewed: https://example.test/snapshot-image')
                     && str_contains($body, 'Overall assessment: Looks good.');
             });
 
         $method = new \ReflectionMethod(AiPageReviewActions::class, 'emailReview');
-        $method->invoke(null, 'Overall assessment: Looks good.', $page);
+        $method->invoke(null, 'Overall assessment: Looks good.', $page, 'https://example.test/snapshot-image');
     }
 }

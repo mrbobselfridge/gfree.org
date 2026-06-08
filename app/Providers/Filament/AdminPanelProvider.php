@@ -214,8 +214,6 @@ class AdminPanelProvider extends PanelProvider
 
                         .twyxtco-ai-page-review-visual-preview {
                             display: block;
-                            max-height: min(34rem, 62vh);
-                            overflow: auto;
                             border: 1px solid var(--gray-300);
                             border-radius: 0.375rem;
                             background: white;
@@ -230,6 +228,10 @@ class AdminPanelProvider extends PanelProvider
                             display: block;
                             width: 100%;
                             height: auto;
+                        }
+
+                        .twyxtco-ai-page-review-result-field textarea {
+                            overflow: hidden;
                         }
 
                         .twyxtco-ai-page-review-action-btn.fi-icon-btn {

@@ -15,6 +15,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -60,16 +61,23 @@ class AiPageReviewActions
                     Hidden::make('visual_snapshot_url'),
                     View::make('filament.admin.forms.components.ai-page-review-actions')
                         ->columnSpanFull(),
-                    View::make('filament.admin.forms.components.ai-page-review-visual-snapshot')
-                        ->viewData(fn (Get $get): array => [
-                            'visualSnapshotUrl' => $get('visual_snapshot_url'),
+                    Grid::make([
+                        'default' => 1,
+                        'xl' => 2,
+                    ])
+                        ->schema([
+                            View::make('filament.admin.forms.components.ai-page-review-visual-snapshot')
+                                ->viewData(fn (Get $get): array => [
+                                    'visualSnapshotUrl' => $get('visual_snapshot_url'),
+                                ])
+                                ->visible(fn (Get $get): bool => filled($get('visual_snapshot_url'))),
+                            Textarea::make('review')
+                                ->label('AI Review')
+                                ->helperText('Review these notes, then manually update the fields that should change.')
+                                ->rows(18)
+                                ->autosize()
+                                ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-page-review-result-field']),
                         ])
-                        ->visible(fn (Get $get): bool => (bool) $get('review_completed') && filled($get('visual_snapshot_url')))
-                        ->columnSpanFull(),
-                    Textarea::make('review')
-                        ->label('AI Review')
-                        ->helperText('Review these notes, then manually update the fields that should change.')
-                        ->rows(18)
                         ->visible(fn (Get $get): bool => (bool) $get('review_completed'))
                         ->columnSpanFull(),
                     View::make('filament.admin.forms.components.ai-page-review-email-actions')
@@ -89,7 +97,7 @@ class AiPageReviewActions
                     Schema $schema,
                 ) use ($record, $save): void {
                     if ($arguments['email'] ?? false) {
-                        self::emailReview((string) ($data['review'] ?? ''), $record);
+                        self::emailReview((string) ($data['review'] ?? ''), $record, $data['visual_snapshot_url'] ?? null);
                         $action->halt();
 
                         return;
@@ -170,7 +178,7 @@ class AiPageReviewActions
         }
     }
 
-    private static function emailReview(string $review, Model $record): void
+    private static function emailReview(string $review, Model $record, ?string $visualSnapshotUrl = null): void
     {
         if (blank($review)) {
             Notification::make()
@@ -196,7 +204,7 @@ class AiPageReviewActions
 
         $publicUrl = self::publicUrlForRecord($record);
         $subject = 'AI Review: '.$publicUrl;
-        $body = self::emailBody($record, $review, $publicUrl);
+        $body = self::emailBody($record, $review, $publicUrl, $visualSnapshotUrl);
 
         Mail::raw($body, function (Message $message) use ($email, $subject): void {
             $message
@@ -211,18 +219,20 @@ class AiPageReviewActions
             ->send();
     }
 
-    private static function emailBody(Model $record, string $review, string $publicUrl): string
+    private static function emailBody(Model $record, string $review, string $publicUrl, ?string $visualSnapshotUrl = null): string
     {
         $settings = SiteSetting::query()->first();
         $churchName = $settings?->church_name ?: config('app.name', 'Church Website');
         $timestamp = now()->format('F j, Y g:i A T');
         $recordTitle = WorkflowNotificationAreas::labelForRecord($record);
         $adminUrl = WorkflowNotificationAreas::adminUrlForRecord($record) ?: url('/admin');
+        $screenshotLine = filled($visualSnapshotUrl) ? "Screenshot Reviewed: {$visualSnapshotUrl}\n" : '';
 
         return <<<BODY
 Reviewed @ {$timestamp} for {$churchName}
 Page Reviewed: {$recordTitle} - {$publicUrl}
 Edit Content: {$adminUrl}
+{$screenshotLine}
 
 {$review}
 BODY;

@@ -68,7 +68,7 @@ class PageVisualSnapshot
     {
         return URL::temporarySignedRoute(
             'admin.page-visual-snapshots.image',
-            now()->addHour(),
+            now()->addDays(7),
             ['path' => $path],
         );
     }
