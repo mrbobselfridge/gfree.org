@@ -119,6 +119,35 @@ class AdminPanelProvider extends PanelProvider
                             overflow-y: auto;
                         }
 
+                        .twyxtco-ai-page-review-modal.fi-modal-window,
+                        .twyxtco-ai-page-review-modal .fi-modal-window {
+                            display: flex;
+                            flex-direction: column;
+                            max-height: 100dvh;
+                            min-height: 0;
+                            overflow: hidden;
+                        }
+
+                        .twyxtco-ai-page-review-modal form,
+                        .twyxtco-ai-page-review-modal .fi-modal-content-ctn {
+                            display: flex;
+                            flex: 1 1 auto;
+                            flex-direction: column;
+                            min-height: 0;
+                        }
+
+                        .twyxtco-ai-page-review-modal .fi-modal-content {
+                            flex: 1 1 auto;
+                            min-height: 0;
+                            overflow-y: auto;
+                            overscroll-behavior: contain;
+                            padding-bottom: 2rem;
+                        }
+
+                        .twyxtco-ai-page-review-modal .fi-modal-footer {
+                            flex: 0 0 auto;
+                        }
+
                         .twyxtco-ai-rewrite-prompt-field .fi-fo-field-label-content,
                         .twyxtco-ai-rewrite-suggestion-field .fi-fo-field-label-content {
                             font-size: 1.125rem;

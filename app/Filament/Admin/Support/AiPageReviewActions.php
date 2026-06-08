@@ -37,6 +37,7 @@ class AiPageReviewActions
                 ->modalSubmitActionLabel('Run AI Review')
                 ->modalCancelActionLabel('Close')
                 ->stickyModalHeader()
+                ->extraModalWindowAttributes(['class' => 'twyxtco-ai-page-review-modal'], merge: true)
                 ->closeModalByClickingAway(false)
                 ->fillForm(fn (): array => self::initialFormData($record, $snapshotBuilder))
                 ->schema([
