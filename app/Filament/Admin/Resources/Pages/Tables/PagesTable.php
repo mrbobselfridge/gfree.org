@@ -24,6 +24,10 @@ class PagesTable
                     ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()
                     ->searchable(),
+                TextColumn::make('parentPage.title')
+                    ->label('Parent Page')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('hero_image_path')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),

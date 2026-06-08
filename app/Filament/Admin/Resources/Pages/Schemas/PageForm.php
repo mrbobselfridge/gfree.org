@@ -5,7 +5,11 @@ namespace App\Filament\Admin\Resources\Pages\Schemas;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
+use App\Models\Page;
 use App\Rules\PageSlugPath;
+use App\Rules\ValidPageParent;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -13,6 +17,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class PageForm
@@ -28,6 +33,19 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null),
+                Select::make('parent_page_id')
+                    ->label('Parent Page')
+                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                    ->helperText('Optional. All other pages are listed, including inactive pages. A page cannot be its own parent or use one of its subpages as its parent.'),
+                Placeholder::make('direct_child_pages')
+                    ->label('Direct subpages')
+                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                    ->visible(fn (?Page $record): bool => filled($record?->getKey()))
+                    ->columnSpanFull(),
                 ToggleButtons::make('is_published')
                     ->label('Make Page Live')
                     ->boolean()
@@ -80,5 +98,54 @@ class PageForm
                     ->label('SEO description')
                     ->rows(1),
             ]);
+    }
+
+    public static function parentPageOptions(?Page $record = null): array
+    {
+        return Page::query()
+            ->when($record?->getKey(), fn ($query, int $pageId) => $query->whereKeyNot($pageId))
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'is_published'])
+            ->mapWithKeys(fn (Page $page): array => [
+                (string) $page->getKey() => self::parentPageOptionLabel($page),
+            ])
+            ->all();
+    }
+
+    public static function parentPageOptionLabel(Page $page): string
+    {
+        $status = $page->is_published ? 'Active' : 'Inactive';
+
+        return sprintf('%s (/%s) - %s', $page->title, ltrim((string) $page->slug, '/'), $status);
+    }
+
+    public static function directChildPagesContent(?Page $record): HtmlString
+    {
+        if (blank($record?->getKey())) {
+            return new HtmlString('');
+        }
+
+        $children = $record->childPages()
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'is_published']);
+
+        if ($children->isEmpty()) {
+            return new HtmlString('<span class="text-sm text-gray-500 dark:text-gray-400">No direct subpages currently use this page as a parent.</span>');
+        }
+
+        $items = $children
+            ->map(function (Page $page): string {
+                $status = $page->is_published ? 'Active' : 'Inactive';
+
+                return sprintf(
+                    '<li><strong>%s</strong> <span class="text-gray-500 dark:text-gray-400">/%s - %s</span></li>',
+                    e($page->title),
+                    e(ltrim((string) $page->slug, '/')),
+                    e($status),
+                );
+            })
+            ->implode('');
+
+        return new HtmlString('<ul class="list-disc space-y-1 pl-5 text-sm">'.$items.'</ul>');
     }
 }
