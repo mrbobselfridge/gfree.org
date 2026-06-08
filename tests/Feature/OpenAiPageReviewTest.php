@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
+use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
+use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Models\Bulletin;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -12,8 +14,11 @@ use App\Support\OpenAiPageReviewer;
 use App\Support\PageReviewSnapshot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
+use Mockery;
 use Tests\TestCase;
 
 class OpenAiPageReviewTest extends TestCase
@@ -117,5 +122,51 @@ class OpenAiPageReviewTest extends TestCase
         $this->assertStringContainsString('aria-label="Email Results"', $emailHtml);
         $this->assertStringContainsString('wire:click="callMountedAction(JSON.parse(', $emailHtml);
         $this->assertStringContainsString('\u0022email\u0022:true', $emailHtml);
+    }
+
+    public function test_page_review_email_uses_page_context_subject_and_body(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'Grace Free Church',
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'editor@example.com',
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Connect',
+            'slug' => 'connect',
+            'is_published' => true,
+        ]);
+
+        $this->actingAs($user);
+
+        Mail::shouldReceive('raw')
+            ->once()
+            ->withArgs(function (string $body, callable $callback) use ($page): bool {
+                $message = Mockery::mock(Message::class);
+                $message
+                    ->shouldReceive('to')
+                    ->once()
+                    ->with('editor@example.com')
+                    ->andReturnSelf();
+                $message
+                    ->shouldReceive('subject')
+                    ->once()
+                    ->with('AI Review: '.$page->publicUrl())
+                    ->andReturnSelf();
+
+                $callback($message);
+
+                return str_contains($body, 'Reviewed @ ')
+                    && str_contains($body, ' for Grace Free Church')
+                    && str_contains($body, 'Page Reviewed: Connect - '.$page->publicUrl())
+                    && str_contains($body, 'Edit Content: '.PageResource::getUrl('edit', ['record' => $page]))
+                    && str_contains($body, 'Overall assessment: Looks good.');
+            });
+
+        $method = new \ReflectionMethod(AiPageReviewActions::class, 'emailReview');
+        $method->invoke(null, 'Overall assessment: Looks good.', $page);
     }
 }

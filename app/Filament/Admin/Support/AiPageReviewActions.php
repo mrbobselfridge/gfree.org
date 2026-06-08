@@ -6,6 +6,7 @@ use App\Models\SiteSetting;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiPageReviewer;
 use App\Support\PageReviewSnapshot;
+use App\Support\WorkflowNotificationAreas;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -162,10 +163,11 @@ class AiPageReviewActions
             return;
         }
 
-        $subject = 'AI page review results';
-        $recordTitle = (string) ($record->getAttribute('title') ?? $record->getAttribute('name') ?? 'Page');
+        $publicUrl = self::publicUrlForRecord($record);
+        $subject = 'AI Review: '.$publicUrl;
+        $body = self::emailBody($record, $review, $publicUrl);
 
-        Mail::raw("AI page review results for {$recordTitle}:\n\n{$review}", function (Message $message) use ($email, $subject): void {
+        Mail::raw($body, function (Message $message) use ($email, $subject): void {
             $message
                 ->to($email)
                 ->subject($subject);
@@ -176,5 +178,35 @@ class AiPageReviewActions
             ->body('The review results were sent to '.$email.'.')
             ->success()
             ->send();
+    }
+
+    private static function emailBody(Model $record, string $review, string $publicUrl): string
+    {
+        $settings = SiteSetting::query()->first();
+        $churchName = $settings?->church_name ?: config('app.name', 'Church Website');
+        $timestamp = now()->format('F j, Y g:i A T');
+        $recordTitle = WorkflowNotificationAreas::labelForRecord($record);
+        $adminUrl = WorkflowNotificationAreas::adminUrlForRecord($record) ?: url('/admin');
+
+        return <<<BODY
+Reviewed @ {$timestamp} for {$churchName}
+Page Reviewed: {$recordTitle} - {$publicUrl}
+Edit Content: {$adminUrl}
+
+{$review}
+BODY;
+    }
+
+    private static function publicUrlForRecord(Model $record): string
+    {
+        if (method_exists($record, 'publicUrl')) {
+            $url = $record->publicUrl();
+
+            if (filled($url)) {
+                return $url;
+            }
+        }
+
+        return route('home');
     }
 }
