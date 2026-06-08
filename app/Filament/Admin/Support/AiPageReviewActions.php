@@ -66,6 +66,7 @@ class AiPageReviewActions
                         'default' => 1,
                         'xl' => 2,
                     ])
+                        ->extraAttributes(['class' => 'twyxtco-ai-page-review-results'])
                         ->schema([
                             View::make('filament.admin.forms.components.ai-page-review-visual-snapshot')
                                 ->viewData(fn (Get $get): array => [

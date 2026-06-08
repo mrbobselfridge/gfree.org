@@ -231,7 +231,8 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .twyxtco-ai-page-review-result-field textarea {
-                            overflow: hidden;
+                            max-height: var(--twyxtco-ai-page-review-visual-height, none);
+                            overflow-y: auto;
                         }
 
                         .twyxtco-ai-page-review-action-btn.fi-icon-btn {
