@@ -42,15 +42,25 @@ class PageForm
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255),
+                Textarea::make('intro')
+                    ->rows(1),
+                Section::make('Page Content Blocks')
+                    ->description('Build the visible page body here. Each block becomes a public section on the page.')
+                    ->icon(Heroicon::OutlinedRectangleGroup)
+                    ->iconColor('success')
+                    ->extraAttributes([
+                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
+                    ])
+                    ->schema([
+                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true),
+                    ])
+                    ->columnSpanFull(),
                 ToggleButtons::make('show_site_chrome')
                     ->label('Show navigation and footer')
                     ->boolean()
                     ->inline()
                     ->default(true)
                     ->required(),
-                Textarea::make('intro')
-                    ->rows(1)
-                    ->columnSpanFull(),
                 ToggleButtons::make('show_page_header')
                     ->label('Show page header')
                     ->boolean()
@@ -64,17 +74,6 @@ class PageForm
                     ->rule(new PageSlugPath)
                     ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255),
-                Section::make('Page Content Blocks')
-                    ->description('Build the visible page body here. Each block becomes a public section on the page.')
-                    ->icon(Heroicon::OutlinedRectangleGroup)
-                    ->iconColor('success')
-                    ->extraAttributes([
-                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
-                    ])
-                    ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true),
-                    ])
-                    ->columnSpanFull(),
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                     ->columnSpanFull(),
                 TextInput::make('seo_title')
