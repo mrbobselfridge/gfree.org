@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BulletinController;
 use App\Http\Controllers\FileDocumentController;
@@ -32,6 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/files/versions/{fileDocumentVersion}/download', [FileDocumentController::class, 'downloadVersion'])
         ->name('admin.files.versions.download');
 });
+
+Route::get('/admin/page-visual-snapshots/preview/{type}/{record?}', PageVisualSnapshotPreviewController::class)
+    ->middleware('signed')
+    ->name('admin.page-visual-snapshots.preview');
 
 Route::get('/leadership', [LeadershipController::class, 'index'])->name('leadership.index');
 Route::get('/leadership/{slug}', [LeadershipController::class, 'show'])->name('leadership.show');

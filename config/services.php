@@ -45,4 +45,8 @@ return [
         'content_model' => env('OPENAI_CONTENT_MODEL', 'gpt-5-nano'),
     ],
 
+    'page_visual_snapshot' => [
+        'node_binary' => env('PAGE_VISUAL_SNAPSHOT_NODE_BINARY', 'node'),
+    ],
+
 ];
