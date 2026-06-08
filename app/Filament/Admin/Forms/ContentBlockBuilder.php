@@ -46,7 +46,7 @@ class ContentBlockBuilder
                         TextInput::make('heading')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('body'))
+                        RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false)
                             ->columnSpanFull(),
                         Select::make('content_width')
                             ->label('Content width')
@@ -79,7 +79,7 @@ class ContentBlockBuilder
                         TextInput::make('heading')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('body'))
+                        RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false)
                             ->columnSpanFull(),
                         TextInput::make('button_label')
                             ->maxLength(80),
@@ -142,7 +142,7 @@ class ContentBlockBuilder
                         TextInput::make('heading')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('body'))
+                        RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false)
                             ->columnSpanFull(),
                         TextInput::make('button_label')
                             ->required()

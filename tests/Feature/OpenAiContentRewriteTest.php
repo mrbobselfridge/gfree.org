@@ -74,6 +74,20 @@ class OpenAiContentRewriteTest extends TestCase
         $this->assertSame('aiRewrite', $plugin->getEditorActions()[0]->getName());
     }
 
+    public function test_rich_editor_defaults_can_disable_ai_rewrite_tool(): void
+    {
+        $editor = RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false);
+        $plugins = (fn (): array => $this->plugins)->call($editor);
+        $toolbarButtons = (fn (): array => $this->toolbarButtons)->call($editor);
+        $aiPlugins = array_filter(
+            $plugins,
+            fn (object $plugin): bool => $plugin instanceof AiContentRewritePlugin,
+        );
+
+        $this->assertEmpty($aiPlugins);
+        $this->assertNotContains('aiRewrite', collect($toolbarButtons)->flatten()->all());
+    }
+
     public function test_ai_rewrite_action_includes_before_and_after_comparison_fields(): void
     {
         $action = (new AiContentRewritePlugin)->getEditorActions()[0];

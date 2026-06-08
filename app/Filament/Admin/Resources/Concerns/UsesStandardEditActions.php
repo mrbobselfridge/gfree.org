@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Concerns;
 
+use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
@@ -21,6 +22,7 @@ trait UsesStandardEditActions
         return [
             $this->getHeaderCancelAction(),
             ...$this->getHeaderViewPublicPageActions(),
+            ...$this->getHeaderAiPageReviewActions(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             $this->getHeaderDeleteAction(),
             $this->getHeaderSaveAndCloseAction(),
@@ -155,6 +157,16 @@ trait UsesStandardEditActions
     protected function getHeaderViewPublicPageActions(): array
     {
         $action = PublicPageActions::button('headerViewPublicPage', $this->getPublicPageUrl());
+
+        return $action ? [$action] : [];
+    }
+
+    protected function getHeaderAiPageReviewActions(): array
+    {
+        $action = AiPageReviewActions::make(
+            $this->getRecord(),
+            fn (): mixed => $this->save(shouldRedirect: false, shouldSendSavedNotification: false),
+        );
 
         return $action ? [$action] : [];
     }

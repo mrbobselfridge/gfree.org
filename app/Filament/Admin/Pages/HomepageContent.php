@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
+use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
@@ -71,18 +72,7 @@ class HomepageContent extends Page
 
     public function save(): void
     {
-        $data = $this->form->getState();
-        $data['content_blocks'] = CodeBlockAccess::protectBlocks(
-            $this->normalizeContentBlocks($data['content_blocks'] ?? []),
-            $this->record->content_blocks,
-        );
-
-        $this->record->update($data);
-
-        app(WorkflowNotificationService::class)->automaticForRecord(
-            $this->record,
-            WorkflowNotificationRule::TRIGGER_UPDATED,
-        );
+        $this->persistRecord();
 
         Notification::make()
             ->success()
@@ -94,10 +84,34 @@ class HomepageContent extends Page
             ->send();
     }
 
+    public function saveForAiPageReview(): void
+    {
+        $this->persistRecord(sendWorkflowNotifications: false);
+    }
+
+    private function persistRecord(bool $sendWorkflowNotifications = true): void
+    {
+        $data = $this->form->getState();
+        $data['content_blocks'] = CodeBlockAccess::protectBlocks(
+            $this->normalizeContentBlocks($data['content_blocks'] ?? []),
+            $this->record->content_blocks,
+        );
+
+        $this->record->update($data);
+
+        if ($sendWorkflowNotifications) {
+            app(WorkflowNotificationService::class)->automaticForRecord(
+                $this->record,
+                WorkflowNotificationRule::TRIGGER_UPDATED,
+            );
+        }
+    }
+
     protected function getHeaderActions(): array
     {
         return [
             PublicPageActions::button('viewPublicPage', route('home')),
+            AiPageReviewActions::make($this->record, fn (): mixed => $this->saveForAiPageReview()),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
             IconOnlyAction::make(
                 Action::make('save')

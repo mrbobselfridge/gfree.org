@@ -11,13 +11,28 @@ use Filament\Support\Icons\Heroicon;
 
 class RichEditorDefaults
 {
-    public static function configure(RichEditor $editor): RichEditor
+    public static function configure(RichEditor $editor, bool $withAiRewrite = true): RichEditor
     {
+        $plugins = [
+            new FileLibraryLinkPlugin,
+        ];
+
+        $toolbarButtons = [
+            ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
+            ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
+            ['alignStart', 'alignCenter', 'alignEnd'],
+            ['blockquote', 'bulletList', 'orderedList'],
+            ['table', 'horizontalRule', 'embed', 'fileLibrary'],
+            ['undo', 'redo'],
+        ];
+
+        if ($withAiRewrite) {
+            array_unshift($plugins, new AiContentRewritePlugin);
+            $toolbarButtons[4][] = 'aiRewrite';
+        }
+
         return $editor
-            ->plugins([
-                new AiContentRewritePlugin,
-                new FileLibraryLinkPlugin,
-            ])
+            ->plugins($plugins)
             ->customBlocks([
                 EmbedBlock::class,
             ])
@@ -28,13 +43,6 @@ class RichEditorDefaults
                     ->activeJsExpression('isPanelActive(\'customBlocks\')')
                     ->icon(Heroicon::OutlinedCodeBracketSquare),
             ])
-            ->toolbarButtons([
-                ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
-                ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
-                ['alignStart', 'alignCenter', 'alignEnd'],
-                ['blockquote', 'bulletList', 'orderedList'],
-                ['table', 'horizontalRule', 'embed', 'fileLibrary', 'aiRewrite'],
-                ['undo', 'redo'],
-            ]);
+            ->toolbarButtons($toolbarButtons);
     }
 }
