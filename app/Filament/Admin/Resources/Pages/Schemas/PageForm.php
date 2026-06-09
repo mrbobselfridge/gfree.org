@@ -137,7 +137,7 @@ class PageForm
         $items = $children
             ->map(function (Page $page): string {
                 return sprintf(
-                    '<li style="display: flex; align-items: center; gap: 0.375rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+                    '<li style="display: flex; align-items: center; gap: 0.2rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
                     self::pageActionLinks($page),
                     e(self::pageDetailTooltip($page)),
                     e($page->title),
