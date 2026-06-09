@@ -173,7 +173,7 @@ class PageForm
     private static function pageIconLink(string $href, string $label, string $color, string $icon): string
     {
         return sprintf(
-            '<a href="%s" target="_blank" rel="noopener noreferrer" title="%s" aria-label="%s" class="rounded-md transition hover:bg-gray-100 dark:hover:bg-white/10" style="display: inline-flex; width: 1.5rem; height: 1.5rem; align-items: center; justify-content: center; flex-shrink: 0; color: %s;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display: block; width: 1rem; height: 1rem; max-width: 1rem; max-height: 1rem; flex-shrink: 0;">%s</svg></a>',
+            '<a href="%s" target="_blank" rel="noopener noreferrer" title="%s" aria-label="%s" class="rounded-md transition hover:bg-gray-100 dark:hover:bg-white/10" style="display: inline-flex; width: .9rem; height: 1.5rem; align-items: center; justify-content: center; flex-shrink: 0; color: %s;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display: block; width: 1rem; height: 1rem; max-width: 1rem; max-height: 1rem; flex-shrink: 0;">%s</svg></a>',
             e($href),
             e($label),
             e($label),

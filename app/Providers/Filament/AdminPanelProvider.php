@@ -95,7 +95,7 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .twyxtco-admin-icon-action.fi-icon-btn {
-                            width: 3.75rem;
+                            width: 3rem;
                             height: 3.75rem;
                             margin: -0.5rem;
                             border-radius: 0.75rem;
