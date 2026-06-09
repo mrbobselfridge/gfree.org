@@ -95,8 +95,7 @@ class PageForm
                 Textarea::make('seo_description')
                     ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                     ->label('SEO description')
-                    ->rows(1)
-                    ->columnSpanFull(),
+                    ->rows(1),
 
             ]);
     }
