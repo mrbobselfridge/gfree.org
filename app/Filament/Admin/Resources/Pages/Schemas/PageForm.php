@@ -75,6 +75,15 @@ class PageForm
                         ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true),
                     ])
                     ->columnSpanFull(),
+                TextInput::make('seo_title')
+                    ->label('SEO title')
+                    ->helperText('Alternative for additional SEO content in the page BROWSER title.')
+                    ->maxLength(255),
+
+                Textarea::make('seo_description')
+                    ->helperText('Only for search engines review - not seen by users for SEO rankings.')
+                    ->label('SEO description')
+                    ->rows(1),
                 ToggleButtons::make('show_site_chrome')
                     ->label('Show navigation and footer')
                     ->boolean()
@@ -87,15 +96,6 @@ class PageForm
                     ->inline()
                     ->default(true)
                     ->required(),
-                TextInput::make('seo_title')
-                    ->label('SEO title')
-                    ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                    ->maxLength(255),
-
-                Textarea::make('seo_description')
-                    ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                    ->label('SEO description')
-                    ->rows(1),
 
             ]);
     }
