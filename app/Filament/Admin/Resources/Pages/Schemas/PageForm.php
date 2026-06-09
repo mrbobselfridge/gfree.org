@@ -147,7 +147,7 @@ class PageForm
             })
             ->implode('');
 
-        return new HtmlString('<ul style="display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
+        return new HtmlString('<ul style="display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
     }
 
     private static function pageActionLinks(Page $page): string
