@@ -103,7 +103,7 @@ class PageParentPageTest extends TestCase
         $this->assertStringContainsString('title="View page"', $content);
         $this->assertStringContainsString('title="Edit page"', $content);
         $this->assertStringContainsString('align-items: center;', $content);
-        $this->assertStringContainsString('gap: 0.03125rem;', $content);
+        $this->assertStringContainsString('gap: .04rem;', $content);
         $this->assertStringContainsString('color: #9ca3af;', $content);
         $this->assertStringContainsString('color: #f59e0b;', $content);
         $this->assertStringContainsString('color: #22c55e;', $content);
