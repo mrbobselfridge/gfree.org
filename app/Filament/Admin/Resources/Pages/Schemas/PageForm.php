@@ -137,9 +137,8 @@ class PageForm
         $items = $children
             ->map(function (Page $page): string {
                 return sprintf(
-                    '<li style="display: flex; align-items: flex-start; gap: 0.5rem;">%s%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+                    '<li style="display: flex; align-items: flex-start; gap: 0.5rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
                     self::pageActionLinks($page),
-                    self::pageStatusIcon($page),
                     e(self::pageDetailTooltip($page)),
                     e($page->title),
                     e(self::pageDetailTooltip($page)),
@@ -154,27 +153,31 @@ class PageForm
     private static function pageActionLinks(Page $page): string
     {
         return sprintf(
-            '<span style="display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.375rem; margin-top: 0.125rem;">%s%s</span>',
+            '<span style="display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.1875rem; margin-top: 0.125rem;">%s%s%s</span>',
             self::pageIconLink(
                 href: (string) $page->publicUrl(),
                 label: 'View page',
+                color: '#9ca3af',
                 icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 8.25A2.25 2.25 0 0 1 8.25 6h2.25M6 8.25v7.5A2.25 2.25 0 0 0 8.25 18h7.5A2.25 2.25 0 0 0 18 15.75v-2.25" />',
             ),
             self::pageIconLink(
                 href: PageResource::getUrl('edit', ['record' => $page]),
                 label: 'Edit page',
+                color: '#f59e0b',
                 icon: '<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.651 1.651a1.875 1.875 0 0 1 0 2.652L8.625 18.678 4.5 19.5l.822-4.125 9.888-9.888a1.875 1.875 0 0 1 2.652 0Z" />',
             ),
+            self::pageStatusIcon($page),
         );
     }
 
-    private static function pageIconLink(string $href, string $label, string $icon): string
+    private static function pageIconLink(string $href, string $label, string $color, string $icon): string
     {
         return sprintf(
-            '<a href="%s" target="_blank" rel="noopener noreferrer" title="%s" aria-label="%s" class="rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-primary-400" style="display: inline-flex; width: 1.5rem; height: 1.5rem; align-items: center; justify-content: center; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display: block; width: 1rem; height: 1rem; max-width: 1rem; max-height: 1rem; flex-shrink: 0;">%s</svg></a>',
+            '<a href="%s" target="_blank" rel="noopener noreferrer" title="%s" aria-label="%s" class="rounded-md transition hover:bg-gray-100 dark:hover:bg-white/10" style="display: inline-flex; width: 1.5rem; height: 1.5rem; align-items: center; justify-content: center; flex-shrink: 0; color: %s;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display: block; width: 1rem; height: 1rem; max-width: 1rem; max-height: 1rem; flex-shrink: 0;">%s</svg></a>',
             e($href),
             e($label),
             e($label),
+            e($color),
             $icon,
         );
     }
@@ -182,10 +185,29 @@ class PageForm
     private static function pageStatusIcon(Page $page): string
     {
         if ($page->is_published) {
-            return '<span title="Active" aria-label="Active" style="display: inline-flex; width: 1rem; height: 1rem; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.25rem; border-radius: 9999px; background: #22c55e; color: #ffffff;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="display: block; width: 0.75rem; height: 0.75rem; max-width: 0.75rem; max-height: 0.75rem;"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" /></svg></span>';
+            return self::pageStatusIconMarkup(
+                label: 'Active',
+                color: '#22c55e',
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+            );
         }
 
-        return '<span title="Inactive" aria-label="Inactive" style="display: inline-flex; width: 1rem; height: 1rem; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.25rem; border-radius: 9999px; background: #6b7280; color: #ffffff;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="display: block; width: 0.75rem; height: 0.75rem; max-width: 0.75rem; max-height: 0.75rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></span>';
+        return self::pageStatusIconMarkup(
+            label: 'Inactive',
+            color: '#ef4444',
+            icon: '<path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+        );
+    }
+
+    private static function pageStatusIconMarkup(string $label, string $color, string $icon): string
+    {
+        return sprintf(
+            '<span title="%s" aria-label="%s" style="display: inline-flex; width: 1.5rem; height: 1.5rem; align-items: center; justify-content: center; flex-shrink: 0; color: %s;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display: block; width: 1rem; height: 1rem; max-width: 1rem; max-height: 1rem; flex-shrink: 0;">%s</svg></span>',
+            e($label),
+            e($label),
+            e($color),
+            $icon,
+        );
     }
 
     private static function pageDetailTooltip(Page $page): string

@@ -87,13 +87,26 @@ class PageParentPageTest extends TestCase
             'is_published' => false,
         ]);
 
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Draft Child',
+            'slug' => 'about/draft-child',
+            'is_published' => false,
+        ]);
+
         $content = (string) PageForm::directChildPagesContent($parent);
 
         $this->assertStringContainsString('Beliefs', $content);
         $this->assertStringContainsString('/about/beliefs', $content);
         $this->assertStringContainsString('title="Active"', $content);
+        $this->assertStringContainsString('title="Inactive"', $content);
         $this->assertStringContainsString('title="View page"', $content);
         $this->assertStringContainsString('title="Edit page"', $content);
+        $this->assertStringContainsString('gap: 0.1875rem;', $content);
+        $this->assertStringContainsString('color: #9ca3af;', $content);
+        $this->assertStringContainsString('color: #f59e0b;', $content);
+        $this->assertStringContainsString('color: #22c55e;', $content);
+        $this->assertStringContainsString('color: #ef4444;', $content);
         $this->assertStringContainsString('width: 1.5rem; height: 1.5rem;', $content);
         $this->assertStringContainsString('max-width: 1rem; max-height: 1rem;', $content);
         $this->assertStringContainsString('Small label: What We Believe', $content);
