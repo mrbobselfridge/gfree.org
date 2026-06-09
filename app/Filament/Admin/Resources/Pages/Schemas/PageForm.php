@@ -61,7 +61,7 @@ class PageForm
                     ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
                 Placeholder::make('direct_child_pages')
-                    ->label('Direct children pages')
+                    ->label('Parent of child pages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                     ->visible(fn (?Page $record): bool => filled($record?->getKey())),
 
@@ -137,7 +137,7 @@ class PageForm
         $items = $children
             ->map(function (Page $page): string {
                 return sprintf(
-                    '<li style="display: flex; align-items: center; gap: 0.2rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+                    '<li style="display: flex; align-items: center; gap: 0.1rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
                     self::pageActionLinks($page),
                     e(self::pageDetailTooltip($page)),
                     e($page->title),
