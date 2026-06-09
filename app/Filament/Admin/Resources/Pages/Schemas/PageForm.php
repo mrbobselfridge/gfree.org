@@ -26,15 +26,6 @@ class PageForm
     {
         return $schema
             ->components([
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255),
-                ToggleButtons::make('is_published')
-                    ->label('Make Page Live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->required(),
                 TextInput::make('title')
                     ->required()
                     ->live(onBlur: true)
@@ -42,6 +33,24 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null),
+                ToggleButtons::make('is_published')
+                    ->label('Make Page Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255),
+                TextInput::make('slug')
+                    ->prefix('/')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->rule(new PageSlugPath)
+                    ->suffixAction(SlugRebuildAction::make('title'))
+                    ->maxLength(255),
+                Textarea::make('intro')
+                    ->rows(1),
                 Select::make('parent_page_id')
                     ->label('Parent Page - optional')
                     ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -49,9 +58,6 @@ class PageForm
                     ->preload()
                     ->native(false)
                     ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
-                Textarea::make('intro')
-                    ->rows(1)
-                    ->columnSpanFull(),
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
                 Placeholder::make('direct_child_pages')
                     ->label('Direct subpages')
@@ -85,13 +91,7 @@ class PageForm
                     ->label('SEO title')
                     ->helperText('Alternative for additional SEO content in the page BROWSER title.')
                     ->maxLength(255),
-                TextInput::make('slug')
-                    ->prefix('/')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->rule(new PageSlugPath)
-                    ->suffixAction(SlugRebuildAction::make('title'))
-                    ->maxLength(255),
+
                 Textarea::make('seo_description')
                     ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                     ->label('SEO description')
