@@ -26,21 +26,15 @@ class PageForm
     {
         return $schema
             ->components([
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
-                Placeholder::make('direct_child_pages')
-                    ->label('Direct subpages')
-                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                    ->visible(fn (?Page $record): bool => filled($record?->getKey())),
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255),
-                Select::make('parent_page_id')
-                    ->label('Parent Page - optional')
-                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
+                ToggleButtons::make('is_published')
+                    ->label('Make Page Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->required(),
                 TextInput::make('title')
                     ->required()
                     ->live(onBlur: true)
@@ -48,15 +42,21 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null),
-                ToggleButtons::make('is_published')
-                    ->label('Make Page Live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->required(),
+                Select::make('parent_page_id')
+                    ->label('Parent Page - optional')
+                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
                 Textarea::make('intro')
                     ->rows(1)
                     ->columnSpanFull(),
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
+                Placeholder::make('direct_child_pages')
+                    ->label('Direct subpages')
+                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                    ->visible(fn (?Page $record): bool => filled($record?->getKey())),
 
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
