@@ -153,7 +153,7 @@ class PageForm
     private static function pageActionLinks(Page $page): string
     {
         return sprintf(
-            '<span style="display: inline-flex; flex-shrink: 0; align-items: center; gap: 1.03125rem;">%s%s%s</span>',
+            '<span style="display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.05rem;">%s%s%s</span>',
             self::pageIconLink(
                 href: (string) $page->publicUrl(),
                 label: 'View page',
