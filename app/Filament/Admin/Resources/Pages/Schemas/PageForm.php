@@ -137,7 +137,7 @@ class PageForm
         $items = $children
             ->map(function (Page $page): string {
                 return sprintf(
-                    '<li style="display: flex; align-items: center; gap: 0.1rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+                    '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
                     self::pageActionLinks($page),
                     e(self::pageDetailTooltip($page)),
                     e($page->title),
@@ -147,7 +147,7 @@ class PageForm
             })
             ->implode('');
 
-        return new HtmlString('<ul style="display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
+        return new HtmlString('<ul style="display: grid; gap: 1.2rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
     }
 
     private static function pageActionLinks(Page $page): string
