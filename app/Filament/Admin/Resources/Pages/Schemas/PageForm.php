@@ -61,7 +61,7 @@ class PageForm
                     ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
                 Placeholder::make('direct_child_pages')
-                    ->label('Direct subpages')
+                    ->label('Direct children pages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                     ->visible(fn (?Page $record): bool => filled($record?->getKey())),
 
