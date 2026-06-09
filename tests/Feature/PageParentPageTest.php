@@ -94,6 +94,8 @@ class PageParentPageTest extends TestCase
         $this->assertStringContainsString('title="Active"', $content);
         $this->assertStringContainsString('title="View page"', $content);
         $this->assertStringContainsString('title="Edit page"', $content);
+        $this->assertStringContainsString('width: 1.5rem; height: 1.5rem;', $content);
+        $this->assertStringContainsString('max-width: 1rem; max-height: 1rem;', $content);
         $this->assertStringContainsString('Small label: What We Believe', $content);
         $this->assertStringContainsString('Intro: Core beliefs and doctrine.', $content);
         $this->assertStringNotContainsString('Membership Class', $content);

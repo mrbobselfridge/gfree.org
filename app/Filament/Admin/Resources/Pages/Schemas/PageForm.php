@@ -137,7 +137,7 @@ class PageForm
         $items = $children
             ->map(function (Page $page): string {
                 return sprintf(
-                    '<li class="flex items-start gap-2">%s%s<span class="min-w-0"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+                    '<li style="display: flex; align-items: flex-start; gap: 0.5rem;">%s%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
                     self::pageActionLinks($page),
                     self::pageStatusIcon($page),
                     e(self::pageDetailTooltip($page)),
@@ -148,13 +148,13 @@ class PageForm
             })
             ->implode('');
 
-        return new HtmlString('<ul class="space-y-2 text-sm">'.$items.'</ul>');
+        return new HtmlString('<ul style="display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
     }
 
     private static function pageActionLinks(Page $page): string
     {
         return sprintf(
-            '<span class="mt-0.5 flex shrink-0 items-center gap-1.5">%s%s</span>',
+            '<span style="display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.375rem; margin-top: 0.125rem;">%s%s</span>',
             self::pageIconLink(
                 href: (string) $page->publicUrl(),
                 label: 'View page',
@@ -171,7 +171,7 @@ class PageForm
     private static function pageIconLink(string $href, string $label, string $icon): string
     {
         return sprintf(
-            '<a href="%s" target="_blank" rel="noopener noreferrer" title="%s" aria-label="%s" class="inline-flex h-6 w-6 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-primary-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">%s</svg></a>',
+            '<a href="%s" target="_blank" rel="noopener noreferrer" title="%s" aria-label="%s" class="rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-primary-400" style="display: inline-flex; width: 1.5rem; height: 1.5rem; align-items: center; justify-content: center; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display: block; width: 1rem; height: 1rem; max-width: 1rem; max-height: 1rem; flex-shrink: 0;">%s</svg></a>',
             e($href),
             e($label),
             e($label),
@@ -182,10 +182,10 @@ class PageForm
     private static function pageStatusIcon(Page $page): string
     {
         if ($page->is_published) {
-            return '<span title="Active" aria-label="Active" class="mt-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-success-500 text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" /></svg></span>';
+            return '<span title="Active" aria-label="Active" style="display: inline-flex; width: 1rem; height: 1rem; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.25rem; border-radius: 9999px; background: #22c55e; color: #ffffff;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="display: block; width: 0.75rem; height: 0.75rem; max-width: 0.75rem; max-height: 0.75rem;"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" /></svg></span>';
         }
 
-        return '<span title="Inactive" aria-label="Inactive" class="mt-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gray-400 text-white dark:bg-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></span>';
+        return '<span title="Inactive" aria-label="Inactive" style="display: inline-flex; width: 1rem; height: 1rem; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.25rem; border-radius: 9999px; background: #6b7280; color: #ffffff;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" style="display: block; width: 0.75rem; height: 0.75rem; max-width: 0.75rem; max-height: 0.75rem;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></span>';
     }
 
     private static function pageDetailTooltip(Page $page): string
