@@ -27,6 +27,8 @@ class PageParentPageTest extends TestCase
             'parent_page_id' => $parent->getKey(),
             'title' => 'Beliefs',
             'slug' => 'about/beliefs',
+            'hero_label' => 'What We Believe',
+            'intro' => 'Core beliefs and doctrine.',
             'is_published' => true,
         ]);
 
@@ -73,6 +75,8 @@ class PageParentPageTest extends TestCase
             'parent_page_id' => $parent->getKey(),
             'title' => 'Beliefs',
             'slug' => 'about/beliefs',
+            'hero_label' => 'What We Believe',
+            'intro' => 'Core beliefs and doctrine.',
             'is_published' => true,
         ]);
 
@@ -86,7 +90,12 @@ class PageParentPageTest extends TestCase
         $content = (string) PageForm::directChildPagesContent($parent);
 
         $this->assertStringContainsString('Beliefs', $content);
-        $this->assertStringContainsString('/about/beliefs - Active', $content);
+        $this->assertStringContainsString('/about/beliefs', $content);
+        $this->assertStringContainsString('title="Active"', $content);
+        $this->assertStringContainsString('title="View page"', $content);
+        $this->assertStringContainsString('title="Edit page"', $content);
+        $this->assertStringContainsString('Small label: What We Believe', $content);
+        $this->assertStringContainsString('Intro: Core beliefs and doctrine.', $content);
         $this->assertStringNotContainsString('Membership Class', $content);
     }
 
