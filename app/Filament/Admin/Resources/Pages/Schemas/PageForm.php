@@ -65,6 +65,10 @@ class PageForm
                     ->columns(2)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
@@ -73,10 +77,10 @@ class PageForm
                     ->default(false)
                     ->helperText('When enabled, visitors sent to this slug will be forwarded to another URL instead of seeing page content.')
                     ->required(),
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                Textarea::make('intro')
+                    ->rows(1)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                    ->columnSpanFull(),
                 TextInput::make('slug')
                     ->prefix('/')
                     ->required()
@@ -84,9 +88,6 @@ class PageForm
                     ->rule(new PageSlugPath)
                     ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255),
-                Textarea::make('intro')
-                    ->rows(1)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 Select::make('parent_page_id')
                     ->label('Parent Page - optional')
                     ->options(fn (?Page $record): array => self::parentPageOptions($record))
