@@ -9,6 +9,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class PagesTable
@@ -19,11 +20,22 @@ class PagesTable
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
+                TextColumn::make('is_redirect')
+                    ->label('Type')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Redirect' : 'Page')
+                    ->color(fn (bool $state): string => $state ? 'warning' : 'success'),
                 TextColumn::make('slug')
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()
                     ->searchable(),
+                TextColumn::make('redirect_url')
+                    ->label('Redirects To')
+                    ->placeholder('Not a redirect')
+                    ->limit(44)
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('parentPage.title')
                     ->label('Parent Page')
                     ->searchable()
@@ -48,7 +60,17 @@ class PagesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('page_type')
+                    ->label('Page type')
+                    ->options([
+                        'page' => 'Content pages',
+                        'redirect' => 'Redirect pages',
+                    ])
+                    ->query(fn ($query, array $data) => match ($data['value'] ?? null) {
+                        'page' => $query->where('is_redirect', false),
+                        'redirect' => $query->where('is_redirect', true),
+                        default => $query,
+                    }),
             ])
             ->defaultSort('title')
             ->recordAction(null)

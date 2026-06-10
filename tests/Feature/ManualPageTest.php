@@ -21,4 +21,13 @@ class ManualPageTest extends TestCase
             ->assertSee('Use <strong>Run now</strong> before a major content cleanup, launch, or sitewide change.', false)
             ->assertSee('Restore caution');
     }
+
+    public function test_manual_describes_redirect_pages(): void
+    {
+        $this->get('/manual')
+            ->assertOk()
+            ->assertSee('Redirect Pages')
+            ->assertSee('Turn on <strong>Redirect this page</strong>.', false)
+            ->assertSee('Use <strong>Temporary</strong> for most redirects unless the old URL has permanently moved.', false);
+    }
 }

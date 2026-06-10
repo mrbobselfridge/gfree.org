@@ -7,6 +7,7 @@ use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\Page;
+use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
 use Filament\Forms\Components\Placeholder;
@@ -15,6 +16,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -40,9 +42,41 @@ class PageForm
                     ->inline()
                     ->default(false)
                     ->required(),
+                ToggleButtons::make('is_redirect')
+                    ->label('Redirect this page')
+                    ->boolean()
+                    ->inline()
+                    ->live()
+                    ->default(false)
+                    ->helperText('When enabled, visitors sent to this slug will be forwarded to another URL instead of seeing page content.')
+                    ->required(),
+                Section::make('Redirect')
+                    ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
+                    ->icon(Heroicon::OutlinedArrowRightCircle)
+                    ->schema([
+                        TextInput::make('redirect_url')
+                            ->label('Send visitors to')
+                            ->helperText('Use a local path like /new-here or a full https:// URL.')
+                            ->placeholder('/new-here')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
+                            ->maxLength(2048)
+                            ->columnSpanFull(),
+                        ToggleButtons::make('redirect_status_code')
+                            ->label('Redirect type')
+                            ->options(Page::redirectStatusOptions())
+                            ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
+                            ->inline()
+                            ->default(Page::REDIRECT_TEMPORARY)
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
                 TextInput::make('hero_label')
                     ->label('Small label')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 TextInput::make('slug')
                     ->prefix('/')
                     ->required()
@@ -51,19 +85,22 @@ class PageForm
                     ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255),
                 Textarea::make('intro')
-                    ->rows(1),
+                    ->rows(1)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 Select::make('parent_page_id')
                     ->label('Parent Page - optional')
                     ->options(fn (?Page $record): array => self::parentPageOptions($record))
                     ->searchable()
                     ->preload()
                     ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey())),
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 Placeholder::make('direct_child_pages')
                     ->label('Parent of child pages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                    ->visible(fn (?Page $record): bool => filled($record?->getKey())),
+                    ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
 
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
@@ -75,28 +112,33 @@ class PageForm
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true),
                     ])
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 TextInput::make('seo_title')
                     ->label('SEO title')
                     ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
                 Textarea::make('seo_description')
                     ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                     ->label('SEO description')
-                    ->rows(1),
+                    ->rows(1)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 ToggleButtons::make('show_site_chrome')
                     ->label('Show navigation and footer')
                     ->boolean()
                     ->inline()
                     ->default(true)
-                    ->required(),
+                    ->required()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
                 ToggleButtons::make('show_page_header')
                     ->label('Show page header')
                     ->boolean()
                     ->inline()
                     ->default(true)
-                    ->required(),
+                    ->required()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
             ]);
     }

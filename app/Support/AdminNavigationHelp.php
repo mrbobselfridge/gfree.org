@@ -18,7 +18,7 @@ class AdminNavigationHelp
             'Media Library' => 'Browse, upload, reuse, replace, or delete images used across the site.',
             'File Library' => 'Manage public and private PDFs, documents, spreadsheets, forms, posters, and handouts.',
             'Ministries' => 'Manage ministry listing cards and individual ministry detail pages.',
-            'Pages' => 'Create and edit general website pages such as New Here or About.',
+            'Pages' => 'Create and edit website pages, nested page paths, and simple redirect URLs.',
             'Leaders' => 'Manage leadership profiles, photos, and public leader detail pages.',
             'Sermons' => 'Manage sermon landing page text and YouTube feed settings.',
             'Analytics' => 'Review site traffic, top pages, referrers, devices, browsers, and recent page views.',

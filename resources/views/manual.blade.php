@@ -626,6 +626,15 @@
                 <li>Do not change a public slug casually. Old links may stop working.</li>
                 <li>Avoid slugs already used by system routes such as announcements, bulletins, leadership, ministry, sermons, admin, or manual.</li>
             </ul>
+            <h3>Redirect Pages</h3>
+            <p>A page can also be used as a simple redirect. This is useful for old links, printed QR codes, short campaign URLs, or pages that have moved.</p>
+            <ul>
+                <li>Turn on <strong>Redirect this page</strong>.</li>
+                <li>Enter the slug visitors will use, such as <code>/visit-us</code>.</li>
+                <li>Enter the destination, such as <code>/new-here</code> or a full <code>https://</code> URL.</li>
+                <li>Use <strong>Temporary</strong> for most redirects unless the old URL has permanently moved.</li>
+                <li>A redirect page must be marked live before visitors can use it.</li>
+            </ul>
         </section>
 
         <section class="manual-section" id="leaders">
