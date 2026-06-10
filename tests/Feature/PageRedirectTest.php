@@ -60,6 +60,30 @@ class PageRedirectTest extends TestCase
         $this->get('/draft-redirect')->assertNotFound();
     }
 
+    public function test_redirect_pages_respect_publish_and_expiration_dates(): void
+    {
+        Page::query()->create([
+            'title' => 'Future Redirect',
+            'slug' => 'future-redirect',
+            'is_published' => true,
+            'is_redirect' => true,
+            'redirect_url' => '/new-here',
+            'publish_at' => now()->addDay(),
+        ]);
+
+        Page::query()->create([
+            'title' => 'Expired Redirect',
+            'slug' => 'expired-redirect',
+            'is_published' => true,
+            'is_redirect' => true,
+            'redirect_url' => '/new-here',
+            'expires_at' => now()->subDay(),
+        ]);
+
+        $this->get('/future-redirect')->assertNotFound();
+        $this->get('/expired-redirect')->assertNotFound();
+    }
+
     public function test_redirect_page_cannot_redirect_to_itself(): void
     {
         $this->expectException(ValidationException::class);

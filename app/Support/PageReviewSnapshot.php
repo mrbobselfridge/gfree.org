@@ -56,6 +56,8 @@ class PageReviewSnapshot
             'hero_image_path',
             'seo_title',
             'seo_description',
+            'publish_at',
+            'expires_at',
             'show_site_chrome',
             'show_page_header',
             'is_published',

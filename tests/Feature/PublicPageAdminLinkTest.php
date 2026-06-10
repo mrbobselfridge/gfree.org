@@ -72,15 +72,22 @@ class PublicPageAdminLinkTest extends TestCase
     {
         $component = Livewire::actingAs(User::factory()->create())
             ->test(CreatePage::class)
+            ->assertSee('Publish at')
+            ->assertSee('Expires at')
             ->set('data.title', 'Plan a Visit')
             ->set('data.slug', 'plan-a-visit')
             ->set('data.is_published', true)
+            ->set('data.publish_at', '2026-06-10 08:00:00')
+            ->set('data.expires_at', '2026-06-30 17:00:00')
             ->set('data.show_site_chrome', true)
             ->set('data.show_page_header', true)
             ->call('create')
             ->assertHasNoErrors();
 
         $page = Page::query()->where('slug', 'plan-a-visit')->firstOrFail();
+
+        $this->assertSame('2026-06-10 08:00:00', $page->publish_at?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-06-30 17:00:00', $page->expires_at?->format('Y-m-d H:i:s'));
 
         $component->assertRedirect(PageResource::getUrl('edit', ['record' => $page]));
     }

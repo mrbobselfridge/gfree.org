@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,8 @@ use Illuminate\Validation\ValidationException;
     'seo_title',
     'seo_description',
     'sort_order',
+    'publish_at',
+    'expires_at',
     'is_published',
     'is_redirect',
     'redirect_url',
@@ -91,6 +94,16 @@ class Page extends Model implements HasPublicUrl
         ];
     }
 
+    public function scopeActive(Builder $query): Builder
+    {
+        $now = now();
+
+        return $query
+            ->where('is_published', true)
+            ->where(fn (Builder $query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
+            ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now));
+    }
+
     public static function wouldCreateParentLoop(mixed $parentPageId, mixed $pageId): bool
     {
         if (blank($parentPageId)) {
@@ -139,6 +152,8 @@ class Page extends Model implements HasPublicUrl
     {
         return [
             'content_blocks' => 'array',
+            'publish_at' => 'datetime',
+            'expires_at' => 'datetime',
             'is_published' => 'boolean',
             'is_redirect' => 'boolean',
             'redirect_status_code' => 'integer',

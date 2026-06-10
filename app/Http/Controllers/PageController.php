@@ -16,7 +16,7 @@ class PageController extends Controller
     {
         $page = Page::query()
             ->where('slug', $slug)
-            ->where('is_published', true)
+            ->active()
             ->firstOrFail();
 
         if ($page->isRedirect()) {

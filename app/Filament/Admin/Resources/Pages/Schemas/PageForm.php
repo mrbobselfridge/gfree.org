@@ -10,6 +10,7 @@ use App\Models\Page;
 use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -43,6 +44,11 @@ class PageForm
                     ->default(false)
                     ->live()
                     ->required(),
+                DateTimePicker::make('publish_at')
+                    ->label('Publish at'),
+                DateTimePicker::make('expires_at')
+                    ->label('Expires at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
 
                 TextInput::make('hero_label')
                     ->label('Small label')

@@ -50,6 +50,14 @@ class PagesTable
                 IconColumn::make('is_published')
                     ->label('Live')
                     ->boolean(),
+                TextColumn::make('publish_at')
+                    ->label('Publish at')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('expires_at')
+                    ->label('Expires at')
+                    ->dateTime()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

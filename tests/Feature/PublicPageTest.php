@@ -199,6 +199,42 @@ class PublicPageTest extends TestCase
         $this->get('/draft-page')->assertNotFound();
     }
 
+    public function test_pages_respect_publish_and_expiration_dates(): void
+    {
+        Page::query()->create([
+            'title' => 'Always Active Page',
+            'slug' => 'always-active-page',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Active Window Page',
+            'slug' => 'active-window-page',
+            'publish_at' => now()->subHour(),
+            'expires_at' => now()->addHour(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Future Page',
+            'slug' => 'future-page',
+            'publish_at' => now()->addDay(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Expired Page',
+            'slug' => 'expired-page',
+            'expires_at' => now()->subDay(),
+            'is_published' => true,
+        ]);
+
+        $this->get('/always-active-page')->assertOk()->assertSee('Always Active Page');
+        $this->get('/active-window-page')->assertOk()->assertSee('Active Window Page');
+        $this->get('/future-page')->assertNotFound();
+        $this->get('/expired-page')->assertNotFound();
+    }
+
     public function test_structured_page_blocks_render_before_legacy_body(): void
     {
         Page::query()->create([
