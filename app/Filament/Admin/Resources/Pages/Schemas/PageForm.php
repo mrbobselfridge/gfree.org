@@ -140,6 +140,9 @@ class PageForm
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
                     ->columnSpanFull(),
 
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
                 Select::make('parent_page_id')
                     ->label('Parent Page - optional')
                     ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -152,9 +155,6 @@ class PageForm
                     ->label('Parent to the following child pages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                     ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
-
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
             ]);
     }
