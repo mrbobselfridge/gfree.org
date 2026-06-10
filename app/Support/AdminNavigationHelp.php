@@ -22,6 +22,7 @@ class AdminNavigationHelp
             'Leaders' => 'Manage leadership profiles, photos, and public leader detail pages.',
             'Sermons' => 'Manage sermon landing page text and YouTube feed settings.',
             'Analytics' => 'Review site traffic, top pages, referrers, devices, browsers, and recent page views.',
+            'Backups' => 'Run and review database, full-site, and archive backups for recovery planning.',
             'Site Settings' => 'Edit church-wide contact details, social links, AI settings, and page defaults.',
             'Navigation Links' => 'Control the public website header navigation links and dropdowns.',
             'Workflow Notifications' => 'Send automatic or manual email updates when selected content areas are created, changed, or deleted.',

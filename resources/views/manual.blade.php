@@ -342,6 +342,7 @@
                 <li><a href="#navigation">Navigation Links</a></li>
                 <li><a href="#settings">Site Settings</a></li>
                 <li><a href="#analytics">Analytics</a></li>
+                <li><a href="#backups">Backups</a></li>
                 <li><a href="#workflow-notifications">Workflow Notifications and Email</a></li>
                 <li><a href="#users">Users</a></li>
                 <li><a href="#publishing">Publishing Checklist</a></li>
@@ -704,6 +705,60 @@
                 <li>Use device/browser information to understand how visitors are browsing.</li>
             </ul>
             <p>Analytics is useful for decisions, but it should not replace pastoral or ministry judgment. Use it as one signal.</p>
+        </section>
+
+        <section class="manual-section" id="backups">
+            <h2>Backups</h2>
+            <p>Backups help protect the website if content is deleted by mistake, files are lost, or the site needs to be restored after a technical problem.</p>
+
+            <h3>Backup Profiles</h3>
+            <table class="manual-table">
+                <thead>
+                    <tr>
+                        <th>Profile</th>
+                        <th>What it includes</th>
+                        <th>Typical schedule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Database Backup</td>
+                        <td>CMS content, users, settings, bulletins metadata, file records, analytics, and other database content.</td>
+                        <td>Every 4 hours.</td>
+                    </tr>
+                    <tr>
+                        <td>Full Site Backup</td>
+                        <td>Database content, Media Library images, bulletin PDFs, and private File Library documents.</td>
+                        <td>Nightly.</td>
+                    </tr>
+                    <tr>
+                        <td>Archive Backup</td>
+                        <td>A full-site backup kept longer for weekly or every-X-days recovery points.</td>
+                        <td>Weekly by default.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Common Tasks</h3>
+            <ul>
+                <li>Review the latest backup age and size for each profile.</li>
+                <li>Use <strong>Run now</strong> before a major content cleanup, launch, or sitewide change.</li>
+                <li>Use <strong>Download latest</strong> when a trusted admin needs a local copy.</li>
+                <li>Use <strong>Check health</strong> to confirm backup destinations have recent backups.</li>
+            </ul>
+
+            <div class="manual-note">
+                <strong>Restore caution</strong>
+                <p>Downloading a backup is safe for trusted admins, but restoring a backup should be handled by a technical admin or developer. A restore can overwrite current content, media, files, and bulletin PDFs.</p>
+            </div>
+
+            <h3>What To Watch</h3>
+            <ul>
+                <li>If a profile says no backups are present, run that backup or ask a technical admin to check the schedule.</li>
+                <li>If a health check reports a problem, confirm the backup storage destination is reachable and has enough space.</li>
+                <li>Backups may be stored locally, offsite, or both depending on site configuration.</li>
+                <li>The server must have the correct database dump tool installed for the site's database type.</li>
+            </ul>
         </section>
 
         <section class="manual-section" id="workflow-notifications">
