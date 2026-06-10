@@ -263,7 +263,82 @@
         .manual-section {
             margin-top: 18px;
             padding: 34px 44px 40px;
-            scroll-margin-top: 24px;
+            scroll-margin-top: 120px;
+        }
+
+        .manual-contents-section {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            padding-bottom: 28px;
+            margin-bottom: var(--manual-contents-spacer, 0);
+        }
+
+        .manual-contents-section.is-docked {
+            box-shadow: 0 16px 34px rgb(29 36 31 / 0.18);
+        }
+
+        .manual-contents-section.is-collapsed {
+            padding-bottom: 28px;
+        }
+
+        .manual-contents-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #edf0ed;
+        }
+
+        .manual-contents-bar h2 {
+            flex: 1 1 auto;
+            padding-bottom: 0;
+            border-bottom: 0;
+        }
+
+        .manual-contents-controls {
+            display: flex;
+            flex: 0 0 auto;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .manual-contents-control {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 12px;
+            color: var(--ink);
+            font: inherit;
+            font-size: 0.86rem;
+            font-weight: 800;
+            text-decoration: none;
+            background: #fbfbf8;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .manual-contents-control:hover,
+        .manual-contents-control:focus {
+            border-color: var(--teal);
+            background: #f1fbf9;
+            outline: none;
+        }
+
+        .manual-contents-top {
+            color: #fff;
+            background: var(--forest);
+            border-color: var(--forest);
+        }
+
+        .manual-contents-top:hover,
+        .manual-contents-top:focus {
+            color: #fff;
+            background: var(--teal);
+            border-color: var(--teal);
         }
 
         .manual-section:target {
@@ -288,35 +363,41 @@
         }
 
         .manual-toc {
-            columns: 2;
-            column-gap: 32px;
+            columns: 4;
+            column-gap: 18px;
             margin-top: 18px;
             padding: 0;
             list-style: none;
             counter-reset: manual-toc;
+            font-size: 0.92rem;
+            line-height: 1.35;
+        }
+
+        .manual-contents-section.is-collapsed .manual-toc {
+            display: none;
         }
 
         .manual-toc li {
             break-inside: avoid;
-            margin: 0 0 10px;
+            margin: 0 0 7px;
             counter-increment: manual-toc;
         }
 
         .manual-toc a {
             display: block;
-            padding: 10px 12px;
+            padding: 8px 9px;
             color: var(--ink);
             text-decoration: none;
             background: #fbfbf8;
             border: 1px solid var(--line);
-            border-radius: 8px;
+            border-radius: 6px;
         }
 
         .manual-toc a::before {
             content: counter(manual-toc, decimal-leading-zero) " ";
             color: var(--teal);
             font-weight: 900;
-            margin-right: 6px;
+            margin-right: 4px;
         }
 
         .manual-toc a:hover,
@@ -380,6 +461,23 @@
             .manual-cover,
             .manual-section {
                 padding: 24px;
+            }
+
+            .manual-section {
+                scroll-margin-top: 102px;
+            }
+
+            .manual-contents-section {
+                padding-bottom: 24px;
+            }
+
+            .manual-contents-bar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .manual-contents-controls {
+                justify-content: flex-start;
             }
 
             .manual-cover-top {
@@ -446,6 +544,15 @@
 
             .manual-section {
                 page-break-before: always;
+                scroll-margin-top: 0;
+            }
+
+            .manual-contents-section {
+                position: static;
+            }
+
+            .manual-contents-controls {
+                display: none;
             }
 
             .manual-note,
@@ -510,9 +617,23 @@
             </div>
         </section>
 
-        <section class="manual-section" id="contents">
-            <h2>Contents</h2>
-            <ol class="manual-toc">
+        <section class="manual-section manual-contents-section" id="contents" data-manual-contents>
+            <div class="manual-contents-bar">
+                <h2>Contents</h2>
+                <div class="manual-contents-controls" aria-label="Contents controls">
+                    <button
+                        type="button"
+                        class="manual-contents-control"
+                        data-manual-contents-toggle
+                        aria-expanded="true"
+                        aria-controls="manual-contents-links"
+                    >
+                        Collapse
+                    </button>
+                    <a class="manual-contents-control manual-contents-top" href="#top">Top</a>
+                </div>
+            </div>
+            <ol class="manual-toc" id="manual-contents-links">
                 <li><a href="#roles">Roles and Permissions</a></li>
                 <li><a href="#daily-workflow">Daily Workflow</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
@@ -1126,5 +1247,86 @@
             </div>
         </section>
     </main>
+    <script>
+        (() => {
+            const contents = document.querySelector('[data-manual-contents]');
+            const toggle = document.querySelector('[data-manual-contents-toggle]');
+            const links = document.getElementById('manual-contents-links');
+
+            if (! contents || ! toggle || ! links) {
+                return;
+            }
+
+            let contentsTop = 0;
+            let expandedHeight = 0;
+            let userExpandedWhileDocked = false;
+
+            const measure = () => {
+                contents.style.setProperty('--manual-contents-spacer', '0px');
+                contents.classList.remove('is-collapsed');
+                links.hidden = false;
+                expandedHeight = contents.offsetHeight;
+                contentsTop = contents.getBoundingClientRect().top + window.scrollY;
+                update();
+            };
+
+            const setExpanded = (expanded) => {
+                toggle.textContent = expanded ? 'Collapse' : 'Expand';
+                toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+
+                if (expanded) {
+                    contents.style.setProperty('--manual-contents-spacer', '0px');
+                    contents.classList.remove('is-collapsed');
+                    links.hidden = false;
+
+                    return;
+                }
+
+                contents.classList.add('is-collapsed');
+                links.hidden = true;
+
+                const collapsedHeight = contents.offsetHeight;
+                const spacer = Math.max(0, expandedHeight - collapsedHeight);
+                contents.style.setProperty('--manual-contents-spacer', spacer + 'px');
+            };
+
+            const update = () => {
+                const docked = window.scrollY >= Math.max(0, contentsTop - 1);
+
+                contents.classList.toggle('is-docked', docked);
+
+                if (! docked) {
+                    userExpandedWhileDocked = false;
+                    setExpanded(true);
+
+                    return;
+                }
+
+                setExpanded(userExpandedWhileDocked);
+            };
+
+            toggle.addEventListener('click', () => {
+                const expanded = toggle.getAttribute('aria-expanded') === 'true';
+                const docked = contents.classList.contains('is-docked');
+
+                userExpandedWhileDocked = docked ? ! expanded : false;
+                setExpanded(! expanded);
+            });
+
+            contents.querySelectorAll('.manual-toc a').forEach((link) => {
+                link.addEventListener('click', () => {
+                    userExpandedWhileDocked = false;
+                    window.setTimeout(update, 0);
+                });
+            });
+
+            window.addEventListener('resize', measure);
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('beforeprint', () => setExpanded(true));
+            window.addEventListener('afterprint', update);
+            window.addEventListener('load', measure);
+            measure();
+        })();
+    </script>
 </body>
 </html>

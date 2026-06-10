@@ -15,6 +15,8 @@ class ManualPageTest extends TestCase
             ->assertOk()
             ->assertSee('Last updated: June 10, 2026')
             ->assertSee('Backups')
+            ->assertSee('data-manual-contents-toggle', false)
+            ->assertSee('href="#top"', false)
             ->assertSee('Database Backup')
             ->assertSee('Full Site Backup')
             ->assertSee('Archive Backup')
