@@ -96,37 +96,6 @@ class PageForm
                     ])
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                TextInput::make('seo_title')
-                    ->label('SEO title')
-                    ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                    ->maxLength(255)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                Textarea::make('seo_description')
-                    ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                    ->label('SEO description')
-                    ->rows(1)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ToggleButtons::make('show_site_chrome')
-                    ->label('Show navigation and footer')
-                    ->boolean()
-                    ->inline()
-                    ->default(true)
-                    ->required()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ToggleButtons::make('show_page_header')
-                    ->label('Show page header')
-                    ->boolean()
-                    ->inline()
-                    ->default(true)
-                    ->required()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                DateTimePicker::make('publish_at')
-                    ->label('Publish at'),
-                DateTimePicker::make('expires_at')
-                    ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
-
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
@@ -142,6 +111,39 @@ class PageForm
 
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                ToggleButtons::make('show_site_chrome')
+                    ->label('Show navigation and footer')
+                    ->boolean()
+                    ->inline()
+                    ->default(true)
+                    ->required()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                ToggleButtons::make('show_page_header')
+                    ->label('Show page header')
+                    ->boolean()
+                    ->inline()
+                    ->default(true)
+                    ->required()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                TextInput::make('seo_title')
+                    ->label('SEO title')
+                    ->helperText('Alternative for additional SEO content in the page BROWSER title.')
+                    ->maxLength(255)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                Textarea::make('seo_description')
+                    ->helperText('Only for search engines review - not seen by users for SEO rankings.')
+                    ->label('SEO description')
+                    ->rows(1)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                DateTimePicker::make('publish_at')
+                    ->label('Publish at'),
+                DateTimePicker::make('expires_at')
+                    ->label('Expires at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
 
                 Select::make('parent_page_id')
                     ->label('Parent Page - optional')
