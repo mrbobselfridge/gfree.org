@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BackupDownloadController;
 use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
 use App\Http\Controllers\AnnouncementController;
@@ -29,6 +30,10 @@ Route::get('/files/{fileName}', [FileDocumentController::class, 'show'])
     ->name('files.show');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/backups/{profile}/{disk}/{path}/download', BackupDownloadController::class)
+        ->where('path', '[A-Za-z0-9_-]+')
+        ->name('admin.backups.download');
+
     Route::get('/admin/files/{fileDocument}/download', [FileDocumentController::class, 'download'])
         ->name('admin.files.download');
 

@@ -38,6 +38,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('Sermons')
             ->assertSee('Site Settings')
             ->assertSee('Analytics')
+            ->assertSee('Backups')
             ->assertSee('Media Library')
             ->assertSee('Workflow Notifications')
             ->assertSee('Navigation Links')
@@ -62,6 +63,7 @@ class AdminAccessTest extends TestCase
         $this->assertArrayNotHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertArrayHasKey(AdminAccess::BACKUPS, AdminAccess::toolOptionsForGroup('Sitewide'));
         $this->assertArrayNotHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::additionalToolOptions());
 
         Livewire::actingAs(User::factory()->create([

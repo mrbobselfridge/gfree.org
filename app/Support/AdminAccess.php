@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Filament\Admin\Pages\Analytics;
+use App\Filament\Admin\Pages\Backups;
 use App\Filament\Admin\Pages\HomepageContent;
 use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Pages\Sermons;
@@ -69,6 +70,8 @@ class AdminAccess
     public const USERS = 'users';
 
     public const WORKFLOW_NOTIFICATIONS = 'workflow_notifications';
+
+    public const BACKUPS = 'backups';
 
     public static function toolDefinitions(): array
     {
@@ -162,6 +165,11 @@ class AdminAccess
                 'group' => 'Sitewide',
                 'model' => WorkflowNotificationRule::class,
                 'resource' => WorkflowNotificationRuleResource::class,
+            ],
+            self::BACKUPS => [
+                'label' => 'Backups',
+                'group' => 'Sitewide',
+                'page' => Backups::class,
             ],
         ];
     }
