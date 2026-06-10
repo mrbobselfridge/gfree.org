@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\NavigationLinks\Pages\ListNavigationLinks;
 use App\Models\NavigationLink;
+use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -99,6 +100,180 @@ class NavigationLinkTest extends TestCase
             ->assertSee('Ministries')
             ->assertSee('Kids')
             ->assertDontSee('Future Students');
+    }
+
+    public function test_header_navigation_hides_links_to_inactive_matching_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Visible Page',
+            'slug' => 'visible-page',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Absolute Visible Page',
+            'slug' => 'absolute-visible-page',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Future Page',
+            'slug' => 'future-page',
+            'publish_at' => now()->addDay(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Expired Page',
+            'slug' => 'expired-page',
+            'expires_at' => now()->subDay(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Draft Page',
+            'slug' => 'draft-page',
+            'is_published' => false,
+        ]);
+
+        foreach ([
+            ['Visible Page Link', '/visible-page'],
+            ['Absolute Visible Page Link', url('/absolute-visible-page')],
+            ['Future Page Link', '/future-page'],
+            ['Expired Page Link', '/expired-page'],
+            ['Draft Page Link', '/draft-page'],
+            ['System Route Link', '/announcements'],
+            ['External Link', 'https://example.com/events'],
+        ] as $index => [$label, $url]) {
+            NavigationLink::query()->create([
+                'label' => $label,
+                'url' => $url,
+                'location' => 'header',
+                'sort_order' => $index + 1,
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Visible Page Link')
+            ->assertSee('Absolute Visible Page Link')
+            ->assertSee('System Route Link')
+            ->assertSee('External Link')
+            ->assertDontSee('Future Page Link')
+            ->assertDontSee('Expired Page Link')
+            ->assertDontSee('Draft Page Link');
+    }
+
+    public function test_header_navigation_hides_child_links_to_inactive_matching_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Kids Page',
+            'slug' => 'kids-page',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Future Students Page',
+            'slug' => 'future-students-page',
+            'publish_at' => now()->addDay(),
+            'is_published' => true,
+        ]);
+
+        $parent = NavigationLink::query()->create([
+            'label' => 'Ministries',
+            'url' => '/ministries',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Kids Page Link',
+            'url' => '/kids-page',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Future Students Page Link',
+            'url' => '/future-students-page',
+            'location' => 'header',
+            'sort_order' => 2,
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Ministries')
+            ->assertSee('Kids Page Link')
+            ->assertDontSee('Future Students Page Link');
+    }
+
+    public function test_navigation_admin_shows_page_limit_statuses(): void
+    {
+        Page::query()->create([
+            'title' => 'Live Page',
+            'slug' => 'live-page',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Windowed Page',
+            'slug' => 'windowed-page',
+            'publish_at' => now()->subDay(),
+            'expires_at' => now()->addDay(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Future Page',
+            'slug' => 'future-page',
+            'publish_at' => now()->addDay(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Expired Page',
+            'slug' => 'expired-page',
+            'expires_at' => now()->subDay(),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Draft Page',
+            'slug' => 'draft-page',
+            'is_published' => false,
+        ]);
+
+        foreach ([
+            ['Live Page Link', '/live-page'],
+            ['Windowed Page Link', '/windowed-page'],
+            ['Future Page Link', '/future-page'],
+            ['Expired Page Link', '/expired-page'],
+            ['Draft Page Link', '/draft-page'],
+            ['Listing Link', '/announcements'],
+        ] as $index => [$label, $url]) {
+            NavigationLink::query()->create([
+                'label' => $label,
+                'url' => $url,
+                'location' => 'header',
+                'sort_order' => $index + 1,
+                'is_published' => true,
+            ]);
+        }
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->assertSee('Page live')
+            ->assertSee('Page window active')
+            ->assertSee('Hidden: page future')
+            ->assertSee('Hidden: page expired')
+            ->assertSee('Hidden: page draft')
+            ->assertSee('No Page record uses /announcements');
     }
 
     public function test_header_navigation_does_not_render_default_give_link(): void

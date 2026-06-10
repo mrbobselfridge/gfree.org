@@ -30,10 +30,7 @@ class PageController extends Controller
 
         $settings = SiteSetting::query()->first();
         $defaults = config('twyxtco.homepage');
-        $navigationLinks = NavigationLink::query()
-            ->topLevelHeader()
-            ->limit(10)
-            ->get();
+        $navigationLinks = NavigationLink::topLevelHeaderLinks();
 
         return view('pages.show', [
             'settings' => $settings,

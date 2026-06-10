@@ -98,10 +98,7 @@ class PageVisualSnapshotPreviewController extends Controller
     private function sharedViewData(?SiteSetting $settings): array
     {
         $defaults = config('twyxtco.homepage');
-        $navigationLinks = NavigationLink::query()
-            ->topLevelHeader()
-            ->limit(10)
-            ->get();
+        $navigationLinks = NavigationLink::topLevelHeaderLinks();
 
         return [
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),

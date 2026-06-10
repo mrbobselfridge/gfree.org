@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\NavigationLinks\Tables;
 
 use App\Filament\Admin\Resources\Support\StandardTableActions;
+use App\Models\NavigationLink;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
@@ -42,6 +43,12 @@ class NavigationLinksTable
                 IconColumn::make('is_published')
                     ->label('Published')
                     ->boolean(),
+                TextColumn::make('page_limit')
+                    ->label('Page limits')
+                    ->state(fn (NavigationLink $record): string => $record->pageLimitLabel())
+                    ->description(fn (NavigationLink $record): ?string => $record->pageLimitDescription())
+                    ->badge()
+                    ->color(fn (NavigationLink $record): string => $record->pageLimitColor()),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

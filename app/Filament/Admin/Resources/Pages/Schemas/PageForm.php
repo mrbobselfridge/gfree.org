@@ -110,7 +110,7 @@ class PageForm
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
                 Placeholder::make('direct_child_pages')
-                    ->label('Parent of child pages')
+                    ->label('Parent to the following child pages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                     ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
 

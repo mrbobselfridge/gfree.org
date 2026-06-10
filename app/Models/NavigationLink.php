@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'parent_id',
@@ -23,6 +25,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class NavigationLink extends Model implements HasPublicUrl
 {
+    private bool $matchingPageResolved = false;
+
+    private ?Page $matchingPageCache = null;
+
     public function publicUrl(): ?string
     {
         return PublicPageUrls::normalize($this->url);
@@ -64,6 +70,146 @@ class NavigationLink extends Model implements HasPublicUrl
             ->orderBy('label');
     }
 
+    public static function topLevelHeaderLinks(int $limit = 10): Collection
+    {
+        $links = self::query()
+            ->topLevelHeader()
+            ->get();
+
+        self::loadMatchingPages(
+            $links->flatMap(fn (NavigationLink $link): Collection => collect([$link])->merge($link->children))
+        );
+
+        return $links
+            ->filter(fn (NavigationLink $link): bool => $link->targetPageAllowsNavigation())
+            ->map(function (NavigationLink $link): NavigationLink {
+                $link->setRelation(
+                    'children',
+                    $link->children
+                        ->filter(fn (NavigationLink $child): bool => $child->targetPageAllowsNavigation())
+                        ->values()
+                );
+
+                return $link;
+            })
+            ->take($limit)
+            ->values();
+    }
+
+    public function matchingPageSlug(): ?string
+    {
+        $url = trim((string) $this->url);
+
+        if (blank($url) || $url === '#') {
+            return null;
+        }
+
+        if (Str::startsWith($url, ['http://', 'https://'])) {
+            $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+            $urlHost = parse_url($url, PHP_URL_HOST);
+
+            if (! $appHost || ! $urlHost || strcasecmp($appHost, $urlHost) !== 0) {
+                return null;
+            }
+        } elseif (! Str::startsWith($url, '/')) {
+            return null;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+        $slug = trim((string) $path, '/');
+
+        return filled($slug) ? $slug : null;
+    }
+
+    public function matchingPage(): ?Page
+    {
+        if ($this->matchingPageResolved) {
+            return $this->matchingPageCache;
+        }
+
+        $this->matchingPageResolved = true;
+        $slug = $this->matchingPageSlug();
+
+        if ($slug === null) {
+            return $this->matchingPageCache = null;
+        }
+
+        return $this->matchingPageCache = Page::query()
+            ->where('slug', $slug)
+            ->first();
+    }
+
+    public function targetPageAllowsNavigation(): bool
+    {
+        $page = $this->matchingPage();
+
+        return $page === null || $page->isActive();
+    }
+
+    public function pageLimitLabel(): string
+    {
+        $slug = $this->matchingPageSlug();
+
+        if ($slug === null) {
+            return 'No page match';
+        }
+
+        $page = $this->matchingPage();
+
+        if ($page === null) {
+            return 'No page match';
+        }
+
+        if (! $page->is_published) {
+            return 'Hidden: page draft';
+        }
+
+        if ($page->publish_at?->isFuture()) {
+            return 'Hidden: page future';
+        }
+
+        if ($page->expires_at?->isPast()) {
+            return 'Hidden: page expired';
+        }
+
+        if ($page->publish_at !== null || $page->expires_at !== null) {
+            return 'Page window active';
+        }
+
+        return 'Page live';
+    }
+
+    public function pageLimitDescription(): ?string
+    {
+        $slug = $this->matchingPageSlug();
+
+        if ($slug === null) {
+            return 'External links, anchors, home, and system routes are limited only by Navigation dates.';
+        }
+
+        $page = $this->matchingPage();
+
+        if ($page === null) {
+            return "No Page record uses /{$slug}, so Page dates do not affect this link.";
+        }
+
+        $publishAt = $page->publish_at?->format('M j, Y g:i A') ?? 'not set';
+        $expiresAt = $page->expires_at?->format('M j, Y g:i A') ?? 'not set';
+
+        return "Matches /{$slug}. Page Publish at: {$publishAt}. Page Expires at: {$expiresAt}.";
+    }
+
+    public function pageLimitColor(): string
+    {
+        return match ($this->pageLimitLabel()) {
+            'Hidden: page draft', 'Hidden: page expired' => 'danger',
+            'Hidden: page future' => 'warning',
+            'Page window active' => 'info',
+            'Page live' => 'success',
+            default => 'gray',
+        };
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
@@ -72,5 +218,36 @@ class NavigationLink extends Model implements HasPublicUrl
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    private static function loadMatchingPages(Collection $links): void
+    {
+        $links = $links->filter(fn (NavigationLink $link): bool => $link->matchingPageSlug() !== null);
+        $slugs = $links
+            ->map(fn (NavigationLink $link): ?string => $link->matchingPageSlug())
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($slugs->isEmpty()) {
+            return;
+        }
+
+        $pages = Page::query()
+            ->whereIn('slug', $slugs)
+            ->get()
+            ->keyBy('slug');
+
+        $links->each(fn (NavigationLink $link): ?Page => $link->setMatchingPage(
+            $pages->get($link->matchingPageSlug())
+        ));
+    }
+
+    private function setMatchingPage(?Page $page): ?Page
+    {
+        $this->matchingPageResolved = true;
+        $this->matchingPageCache = $page;
+
+        return $page;
     }
 }

@@ -30,10 +30,7 @@ class HomeController extends Controller
             ->inRandomOrder()
             ->get();
 
-        $navigationLinks = NavigationLink::query()
-            ->topLevelHeader()
-            ->limit(10)
-            ->get();
+        $navigationLinks = NavigationLink::topLevelHeaderLinks();
 
         $ministries = Ministry::query()
             ->where('is_published', true)

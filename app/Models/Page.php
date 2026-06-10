@@ -104,6 +104,15 @@ class Page extends Model implements HasPublicUrl
             ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now));
     }
 
+    public function isActive(): bool
+    {
+        $now = now();
+
+        return (bool) $this->is_published
+            && ($this->publish_at === null || $this->publish_at->lte($now))
+            && ($this->expires_at === null || $this->expires_at->gte($now));
+    }
+
     public static function wouldCreateParentLoop(mixed $parentPageId, mixed $pageId): bool
     {
         if (blank($parentPageId)) {
