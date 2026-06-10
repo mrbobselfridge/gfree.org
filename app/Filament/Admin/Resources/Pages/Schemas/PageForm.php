@@ -42,14 +42,6 @@ class PageForm
                     ->inline()
                     ->default(false)
                     ->required(),
-                ToggleButtons::make('is_redirect')
-                    ->label('Redirect this page')
-                    ->boolean()
-                    ->inline()
-                    ->live()
-                    ->default(false)
-                    ->helperText('When enabled, visitors sent to this slug will be forwarded to another URL instead of seeing page content.')
-                    ->required(),
                 Section::make('Redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
                     ->icon(Heroicon::OutlinedArrowRightCircle)
@@ -73,6 +65,14 @@ class PageForm
                     ->columns(2)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
+                ToggleButtons::make('is_redirect')
+                    ->label('Redirect this page')
+                    ->boolean()
+                    ->inline()
+                    ->live()
+                    ->default(false)
+                    ->helperText('When enabled, visitors sent to this slug will be forwarded to another URL instead of seeing page content.')
+                    ->required(),
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255)
