@@ -44,12 +44,6 @@ class PageForm
                     ->default(false)
                     ->live()
                     ->required(),
-                DateTimePicker::make('publish_at')
-                    ->label('Publish at'),
-                DateTimePicker::make('expires_at')
-                    ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
-
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255)
@@ -64,26 +58,6 @@ class PageForm
                 Textarea::make('intro')
                     ->rows(1)
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->columnSpanFull(),
-                Select::make('parent_page_id')
-                    ->label('Parent Page - optional')
-                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ToggleButtons::make('is_redirect')
-                    ->label('Redirect this page')
-                    ->boolean()
-                    ->inline()
-                    ->live()
-                    ->default(false)
-                    ->required(),
-                Placeholder::make('redirect_inactive_notice')
-                    ->label('Redirect inactive')
-                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
-                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
                     ->columnSpanFull(),
                 Section::make('Redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
@@ -108,6 +82,33 @@ class PageForm
                     ->columns(2)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
+
+                DateTimePicker::make('publish_at')
+                    ->label('Publish at'),
+                DateTimePicker::make('expires_at')
+                    ->label('Expires at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+
+                Select::make('parent_page_id')
+                    ->label('Parent Page - optional')
+                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                ToggleButtons::make('is_redirect')
+                    ->label('Redirect this page')
+                    ->boolean()
+                    ->inline()
+                    ->live()
+                    ->default(false)
+                    ->required(),
+                Placeholder::make('redirect_inactive_notice')
+                    ->label('Redirect inactive')
+                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
+                    ->columnSpanFull(),
 
                 Placeholder::make('direct_child_pages')
                     ->label('Parent to the following child pages')
