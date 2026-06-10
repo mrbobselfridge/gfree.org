@@ -44,6 +44,41 @@ class PageForm
                     ->live()
                     ->required(),
 
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                TextInput::make('slug')
+                    ->prefix('/')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->rule(new PageSlugPath)
+                    ->suffixAction(SlugRebuildAction::make('title'))
+                    ->maxLength(255),
+                Textarea::make('intro')
+                    ->rows(1)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                    ->columnSpanFull(),
+                Select::make('parent_page_id')
+                    ->label('Parent Page - optional')
+                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                ToggleButtons::make('is_redirect')
+                    ->label('Redirect this page')
+                    ->boolean()
+                    ->inline()
+                    ->live()
+                    ->default(false)
+                    ->required(),
+                Placeholder::make('redirect_inactive_notice')
+                    ->label('Redirect inactive')
+                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
+                    ->columnSpanFull(),
                 Section::make('Redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
                     ->icon(Heroicon::OutlinedArrowRightCircle)
@@ -67,47 +102,14 @@ class PageForm
                     ->columns(2)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                Textarea::make('intro')
-                    ->rows(1)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->columnSpanFull(),
-                ToggleButtons::make('is_redirect')
-                    ->label('Redirect this page')
-                    ->boolean()
-                    ->inline()
-                    ->live()
-                    ->default(false)
-                    ->required(),
-                Placeholder::make('redirect_inactive_notice')
-                    ->label('Redirect inactive')
-                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
-                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
-                    ->columnSpanFull(),
-                TextInput::make('slug')
-                    ->prefix('/')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->rule(new PageSlugPath)
-                    ->suffixAction(SlugRebuildAction::make('title'))
-                    ->maxLength(255),
-                Select::make('parent_page_id')
-                    ->label('Parent Page - optional')
-                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
                 Placeholder::make('direct_child_pages')
                     ->label('Parent of child pages')
                     ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                     ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
+
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
                 Section::make('Page Content Blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')

@@ -410,7 +410,7 @@ class AdminPanelProvider extends PanelProvider
                             font-size: 0.8125rem;
                             font-weight: 700;
                             line-height: 1;
-                            cursor: help;
+                            cursor: pointer;
                             flex-shrink: 0;
                         }
 
@@ -950,11 +950,19 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::SCRIPTS_AFTER,
                 function (): HtmlString {
                     $descriptions = Js::from(AdminNavigationHelp::descriptions());
+                    $manualUrls = [];
+
+                    foreach (AdminNavigationHelp::manualAnchors() as $label => $anchor) {
+                        $manualUrls[$label] = route('manual').'#'.$anchor;
+                    }
+
+                    $manualUrls = Js::from($manualUrls);
 
                     return new HtmlString(<<<HTML
                     <script>
                         (() => {
                             const descriptions = {$descriptions};
+                            const manualUrls = {$manualUrls};
                             let tooltip = null;
 
                             const normalizeLabel = (value) => value.replace(/\\s+/g, ' ').trim();
@@ -1013,6 +1021,7 @@ class AdminPanelProvider extends PanelProvider
 
                                     const label = normalizeLabel(link.querySelector('.fi-sidebar-item-label')?.textContent ?? '');
                                     const description = descriptions[label];
+                                    const manualUrl = manualUrls[label];
 
                                     if (! description) {
                                         return;
@@ -1023,13 +1032,28 @@ class AdminPanelProvider extends PanelProvider
                                     icon.textContent = 'i';
                                     icon.setAttribute('role', 'button');
                                     icon.setAttribute('tabindex', '0');
-                                    icon.setAttribute('aria-label', 'About ' + label + ': ' + description);
-                                    icon.setAttribute('title', description);
+                                    icon.setAttribute('aria-label', 'About ' + label + ': ' + description + ' Open the related user manual section.');
+                                    icon.setAttribute('title', description + (manualUrl ? ' Click to open the related manual section.' : ''));
                                     icon.dataset.twyxtcoHelp = description;
+                                    if (manualUrl) {
+                                        icon.dataset.twyxtcoManualUrl = manualUrl;
+                                    }
+
+                                    const openManualSection = () => {
+                                        if (! icon.dataset.twyxtcoManualUrl) {
+                                            showTooltip(icon);
+
+                                            return;
+                                        }
+
+                                        hideTooltip();
+                                        window.open(icon.dataset.twyxtcoManualUrl, '_blank', 'noopener');
+                                    };
 
                                     icon.addEventListener('click', (event) => {
                                         event.preventDefault();
                                         event.stopPropagation();
+                                        openManualSection();
                                     });
 
                                     icon.addEventListener('keydown', (event) => {
@@ -1039,7 +1063,7 @@ class AdminPanelProvider extends PanelProvider
 
                                         event.preventDefault();
                                         event.stopPropagation();
-                                        showTooltip(icon);
+                                        openManualSection();
                                     });
 
                                     icon.addEventListener('mouseenter', () => showTooltip(icon));

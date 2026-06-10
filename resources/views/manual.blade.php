@@ -1,5 +1,6 @@
 @php
     $churchName = $settings?->church_name ?? 'TwyxtCo Church';
+    $logoUrl = $settings?->logoUrl() ?? asset('images/twyxtco-logo.png');
 @endphp
 
 <!doctype html>
@@ -11,13 +12,17 @@
     <meta name="description" content="Printable website and CMS manual for {{ $churchName }} admins and content editors.">
     <style>
         :root {
-            --ink: #171717;
-            --muted: #555f5c;
-            --line: #d8ddd9;
+            --ink: #1d241f;
+            --muted: #5d6762;
+            --line: #d7ded8;
             --paper: #ffffff;
-            --soft: #f6f5ef;
-            --accent: #f4c542;
-            --teal: #22b9ad;
+            --soft: #f5f2e9;
+            --accent: #e5b62e;
+            --accent-deep: #8c6411;
+            --teal: #15998f;
+            --forest: #294e3c;
+            --clay: #a75d42;
+            --shadow: 0 18px 45px rgb(41 78 60 / 0.12);
         }
 
         * {
@@ -31,7 +36,8 @@
         body {
             margin: 0;
             color: var(--ink);
-            background: var(--soft);
+            background:
+                linear-gradient(180deg, #fbfaf5 0, var(--soft) 320px, #eef6f4 100%);
             font-family: Arial, Helvetica, sans-serif;
             font-size: 16px;
             line-height: 1.58;
@@ -52,23 +58,72 @@
         .manual-section {
             background: var(--paper);
             border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
         }
 
         .manual-cover {
+            position: relative;
+            overflow: hidden;
             padding: 44px;
+            background:
+                linear-gradient(135deg, rgb(255 255 255 / 0.96), rgb(255 247 219 / 0.92) 58%, rgb(230 247 244 / 0.9));
+        }
+
+        .manual-cover::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent), var(--teal), var(--forest), var(--clay));
+        }
+
+        .manual-cover-top {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .manual-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .manual-brand img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid rgb(215 222 216 / 0.9);
+            border-radius: 8px;
+            box-shadow: 0 10px 28px rgb(41 78 60 / 0.12);
+        }
+
+        .manual-brand span {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 800;
         }
 
         .manual-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 32px;
+            justify-content: flex-end;
+            margin-bottom: 0;
         }
 
         .manual-actions a,
         .manual-actions button {
             display: inline-flex;
             align-items: center;
+            gap: 8px;
             min-height: 42px;
             padding: 0 16px;
             color: var(--ink);
@@ -77,12 +132,26 @@
             text-decoration: none;
             background: var(--accent);
             border: 1px solid #c59c14;
+            border-radius: 6px;
+            box-shadow: 0 8px 18px rgb(140 100 17 / 0.12);
             cursor: pointer;
         }
 
+        .manual-actions a:nth-child(2) {
+            color: #fff;
+            background: var(--forest);
+            border-color: var(--forest);
+        }
+
+        .manual-actions a:nth-child(3) {
+            color: #fff;
+            background: var(--teal);
+            border-color: var(--teal);
+        }
+
         .manual-kicker {
-            margin: 0 0 12px;
-            color: #63500e;
+            margin: 34px 0 12px;
+            color: var(--accent-deep);
             font-size: 0.82rem;
             font-weight: 900;
             letter-spacing: 0.08em;
@@ -100,12 +169,26 @@
         h1 {
             max-width: 820px;
             font-size: 3rem;
+            letter-spacing: 0;
         }
 
         h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             padding-bottom: 12px;
             font-size: 2rem;
-            border-bottom: 2px solid var(--line);
+            border-bottom: 2px solid #edf0ed;
+        }
+
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 0.72em;
+            height: 0.72em;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            box-shadow: 0 0 0 4px #f8f1d8;
         }
 
         h3 {
@@ -136,6 +219,7 @@
             padding: 2px 5px;
             background: #eef1ef;
             border: 1px solid #d9dfdc;
+            border-radius: 4px;
         }
 
         .manual-meta {
@@ -149,8 +233,9 @@
 
         .manual-pill {
             padding: 6px 10px;
-            background: #f8f1d5;
+            background: rgb(255 255 255 / 0.72);
             border: 1px solid #e1ca74;
+            border-radius: 999px;
         }
 
         .manual-grid {
@@ -162,9 +247,11 @@
 
         .manual-note,
         .manual-card {
+            position: relative;
             padding: 18px;
             background: #fbfbf8;
             border: 1px solid var(--line);
+            border-radius: 8px;
         }
 
         .manual-note strong,
@@ -176,30 +263,83 @@
         .manual-section {
             margin-top: 18px;
             padding: 34px 44px 40px;
+            scroll-margin-top: 24px;
+        }
+
+        .manual-section:target {
+            border-color: #d7a61f;
+            box-shadow: 0 0 0 4px rgb(229 182 46 / 0.22), var(--shadow);
+        }
+
+        .manual-section:nth-of-type(4n + 1) {
+            border-top: 5px solid var(--teal);
+        }
+
+        .manual-section:nth-of-type(4n + 2) {
+            border-top: 5px solid var(--accent);
+        }
+
+        .manual-section:nth-of-type(4n + 3) {
+            border-top: 5px solid var(--forest);
+        }
+
+        .manual-section:nth-of-type(4n + 4) {
+            border-top: 5px solid var(--clay);
         }
 
         .manual-toc {
             columns: 2;
             column-gap: 32px;
             margin-top: 18px;
-            padding-left: 1.1rem;
+            padding: 0;
+            list-style: none;
+            counter-reset: manual-toc;
         }
 
         .manual-toc li {
             break-inside: avoid;
-            margin: 0 0 8px;
+            margin: 0 0 10px;
+            counter-increment: manual-toc;
+        }
+
+        .manual-toc a {
+            display: block;
+            padding: 10px 12px;
+            color: var(--ink);
+            text-decoration: none;
+            background: #fbfbf8;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .manual-toc a::before {
+            content: counter(manual-toc, decimal-leading-zero) " ";
+            color: var(--teal);
+            font-weight: 900;
+            margin-right: 6px;
+        }
+
+        .manual-toc a:hover,
+        .manual-toc a:focus {
+            border-color: var(--teal);
+            background: #f1fbf9;
         }
 
         .manual-checklist {
             padding: 18px 18px 18px 34px;
-            background: #f8fbfa;
+            background: #f1fbf9;
             border: 1px solid #cbdeda;
+            border-radius: 8px;
         }
 
         .manual-table {
             width: 100%;
             margin-top: 18px;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 8px;
             font-size: 0.95rem;
         }
 
@@ -208,11 +348,28 @@
             padding: 10px;
             text-align: left;
             vertical-align: top;
-            border: 1px solid var(--line);
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
         }
 
         .manual-table th {
-            background: #f5edc7;
+            background: #f7edc5;
+            color: #3f3109;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .manual-table tr > :last-child {
+            border-right: 0;
+        }
+
+        .manual-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .manual-table tbody tr:nth-child(even) td {
+            background: #fbfbf8;
         }
 
         .manual-print-footer {
@@ -223,6 +380,15 @@
             .manual-cover,
             .manual-section {
                 padding: 24px;
+            }
+
+            .manual-cover-top {
+                display: block;
+            }
+
+            .manual-actions {
+                justify-content: flex-start;
+                margin-top: 18px;
             }
 
             h1 {
@@ -264,7 +430,18 @@
                 margin: 0;
                 padding: 0.45in 0;
                 border: 0;
+                border-radius: 0;
+                box-shadow: none;
                 page-break-inside: avoid;
+            }
+
+            .manual-cover {
+                background: #fff;
+            }
+
+            .manual-cover::before,
+            h2::before {
+                display: none;
             }
 
             .manual-section {
@@ -276,6 +453,10 @@
             .manual-checklist {
                 background: #fff;
                 border-color: #999;
+            }
+
+            .manual-table {
+                border-radius: 0;
             }
 
             .manual-toc {
@@ -294,10 +475,17 @@
 <body>
     <main class="manual-shell">
         <section class="manual-cover" id="top">
-            <div class="manual-actions" aria-label="Manual actions">
-                <button type="button" onclick="window.print()">Print or Save PDF</button>
-                <a href="{{ url('/admin') }}">Open Admin</a>
-                <a href="{{ url('/') }}">Open Website</a>
+            <div class="manual-cover-top">
+                <div class="manual-brand">
+                    <img src="{{ $logoUrl }}" alt="{{ $churchName }} logo">
+                    <span>Website operations guide</span>
+                </div>
+
+                <div class="manual-actions" aria-label="Manual actions">
+                    <button type="button" onclick="window.print()">Print or Save PDF</button>
+                    <a href="{{ url('/admin') }}">Open Admin</a>
+                    <a href="{{ url('/') }}">Open Website</a>
+                </div>
             </div>
 
             <p class="manual-kicker">Website and CMS Manual</p>

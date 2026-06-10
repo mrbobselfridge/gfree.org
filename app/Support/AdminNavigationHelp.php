@@ -30,4 +30,31 @@ class AdminNavigationHelp
             'User Manual' => 'Open the printable website and admin manual.',
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function manualAnchors(): array
+    {
+        return [
+            'Dashboard' => 'dashboard',
+            'Homepage Content' => 'homepage',
+            'Homepage Banners' => 'banners',
+            'Announcements' => 'announcements',
+            'Bulletins' => 'bulletins',
+            'Media Library' => 'media-library',
+            'File Library' => 'file-library',
+            'Ministries' => 'ministries',
+            'Pages' => 'pages',
+            'Leaders' => 'leaders',
+            'Sermons' => 'sermons',
+            'Analytics' => 'analytics',
+            'Backups' => 'backups',
+            'Site Settings' => 'settings',
+            'Navigation Links' => 'navigation',
+            'Workflow Notifications' => 'workflow-notifications',
+            'Users' => 'users',
+            'User Manual' => 'top',
+        ];
+    }
 }
