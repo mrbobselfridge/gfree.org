@@ -75,7 +75,6 @@ class PageForm
                     ->inline()
                     ->live()
                     ->default(false)
-                    ->helperText('When enabled, visitors sent to this slug will be forwarded to another URL instead of seeing page content.')
                     ->required(),
                 Textarea::make('intro')
                     ->rows(1)
