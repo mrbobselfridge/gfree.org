@@ -43,6 +43,10 @@ class PagesTable
                 ImageColumn::make('hero_image_path')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),
+                ImageColumn::make('card_image_path')
+                    ->label('Card image')
+                    ->disk('public')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('seo_title')
                     ->label('SEO title')
                     ->searchable()

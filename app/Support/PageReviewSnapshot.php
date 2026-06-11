@@ -54,6 +54,7 @@ class PageReviewSnapshot
             'intro',
             'content_blocks',
             'hero_image_path',
+            'card_image_path',
             'seo_title',
             'seo_description',
             'publish_at',

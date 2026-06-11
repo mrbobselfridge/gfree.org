@@ -95,6 +95,7 @@ class MediaUsage
                 'title' => 'title',
                 'fields' => [
                     'hero_image_path' => 'Header image',
+                    'card_image_path' => 'Card image',
                 ],
             ],
             [

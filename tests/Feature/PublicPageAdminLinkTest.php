@@ -79,6 +79,7 @@ class PublicPageAdminLinkTest extends TestCase
             ->set('data.is_published', true)
             ->set('data.publish_at', '2026-06-10 08:00:00')
             ->set('data.expires_at', '2026-06-30 17:00:00')
+            ->set('data.card_image_path', ['pages/card-images/plan-a-visit.jpg'])
             ->set('data.show_site_chrome', true)
             ->set('data.show_page_header', true)
             ->call('create')
@@ -88,6 +89,7 @@ class PublicPageAdminLinkTest extends TestCase
 
         $this->assertSame('2026-06-10 08:00:00', $page->publish_at?->format('Y-m-d H:i:s'));
         $this->assertSame('2026-06-30 17:00:00', $page->expires_at?->format('Y-m-d H:i:s'));
+        $this->assertSame('pages/card-images/plan-a-visit.jpg', $page->card_image_path);
 
         $component->assertRedirect(PageResource::getUrl('edit', ['record' => $page]));
     }

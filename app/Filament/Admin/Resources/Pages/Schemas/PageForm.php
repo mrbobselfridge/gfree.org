@@ -68,6 +68,8 @@ class PageForm
 
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')

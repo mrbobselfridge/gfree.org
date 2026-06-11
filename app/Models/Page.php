@@ -20,6 +20,7 @@ use Illuminate\Validation\ValidationException;
     'body',
     'content_blocks',
     'hero_image_path',
+    'card_image_path',
     'seo_title',
     'seo_description',
     'sort_order',
