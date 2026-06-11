@@ -15,12 +15,18 @@ use Illuminate\Support\Facades\Mail;
 
 class WorkflowNotificationService
 {
+    public function __construct(private readonly WorkflowVisualSnapshots $visualSnapshots) {}
+
     public function automaticForRecord(Model $record, string $trigger, ?User $actor = null): void
     {
         $area = WorkflowNotificationAreas::areaForModel($record);
 
         if (! $area) {
             return;
+        }
+
+        if ($trigger === WorkflowNotificationRule::TRIGGER_CREATED && $this->hasAnyRuleForArea($area)) {
+            $this->visualSnapshots->seedBaseline($record);
         }
 
         $this->automatic(
@@ -63,11 +69,16 @@ class WorkflowNotificationService
                     ->where('status', WorkflowNotificationEvent::STATUS_PENDING)
                     ->first();
 
+                $isNewEvent = ! $event;
                 $event ??= new WorkflowNotificationEvent([
                     'workflow_notification_rule_id' => $rule->getKey(),
                     'content_area' => $area,
                     'record_key' => $recordKey,
                 ]);
+
+                if ($isNewEvent && $trigger === WorkflowNotificationRule::TRIGGER_UPDATED) {
+                    $this->fillPreSnapshot($event, $recordType, $recordId);
+                }
 
                 $event->fill([
                     'trigger' => $trigger,
@@ -197,12 +208,18 @@ class WorkflowNotificationService
             return false;
         }
 
+        $postSnapshot = $this->capturePostSnapshot($event);
+
         Mail::to($recipients->all())->send(new WorkflowNotificationMail($event));
 
         $event->update([
             'status' => WorkflowNotificationEvent::STATUS_SENT,
             'sent_at' => now(),
         ]);
+
+        if ($postSnapshot && ($record = $this->visualSnapshots->recordFor($event->record_type, $event->record_id))) {
+            $this->visualSnapshots->advanceBaseline($record, $postSnapshot);
+        }
 
         return true;
     }
@@ -228,6 +245,63 @@ class WorkflowNotificationService
             ->get()
             ->filter(fn (WorkflowNotificationRule $rule): bool => $rule->hasTrigger($trigger))
             ->values();
+    }
+
+    private function hasAnyRuleForArea(string $area): bool
+    {
+        return WorkflowNotificationRule::query()
+            ->enabled()
+            ->where('content_area', $area)
+            ->exists();
+    }
+
+    private function fillPreSnapshot(WorkflowNotificationEvent $event, ?string $recordType, ?int $recordId): void
+    {
+        $record = $this->visualSnapshots->recordFor($recordType, $recordId);
+
+        if (! $record) {
+            return;
+        }
+
+        $baseline = $this->visualSnapshots->seedBaseline($record);
+
+        if (! $baseline) {
+            return;
+        }
+
+        $event->fill([
+            'pre_snapshot_path' => $baseline->snapshot_path,
+            'pre_snapshot_captured_at' => $baseline->snapshot_captured_at,
+        ]);
+    }
+
+    private function capturePostSnapshot(WorkflowNotificationEvent $event): ?PageVisualSnapshotResult
+    {
+        if (! in_array($event->trigger, [
+            WorkflowNotificationRule::TRIGGER_CREATED,
+            WorkflowNotificationRule::TRIGGER_UPDATED,
+        ], true)) {
+            return null;
+        }
+
+        $record = $this->visualSnapshots->recordFor($event->record_type, $event->record_id);
+
+        if (! $record) {
+            return null;
+        }
+
+        $snapshot = $this->visualSnapshots->captureCurrent($record);
+
+        if (! $snapshot) {
+            return null;
+        }
+
+        $event->forceFill([
+            'post_snapshot_path' => $snapshot->path,
+            'post_snapshot_captured_at' => now(),
+        ])->save();
+
+        return $snapshot;
     }
 
     private function recordKey(Model $record): string

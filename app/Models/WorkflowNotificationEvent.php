@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'actor_name',
     'admin_url',
     'public_url',
+    'pre_snapshot_path',
+    'pre_snapshot_captured_at',
+    'post_snapshot_path',
+    'post_snapshot_captured_at',
     'scheduled_at',
     'sent_at',
     'cancelled_at',
@@ -45,6 +49,8 @@ class WorkflowNotificationEvent extends Model
     protected function casts(): array
     {
         return [
+            'pre_snapshot_captured_at' => 'datetime',
+            'post_snapshot_captured_at' => 'datetime',
             'scheduled_at' => 'datetime',
             'sent_at' => 'datetime',
             'cancelled_at' => 'datetime',

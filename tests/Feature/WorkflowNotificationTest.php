@@ -11,7 +11,10 @@ use App\Models\Page;
 use App\Models\User;
 use App\Models\WorkflowNotificationEvent;
 use App\Models\WorkflowNotificationRule;
+use App\Models\WorkflowVisualSnapshot;
 use App\Support\AdminAccess;
+use App\Support\PageVisualSnapshot;
+use App\Support\PageVisualSnapshotResult;
 use App\Support\WorkflowNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -156,6 +159,7 @@ class WorkflowNotificationTest extends TestCase
     public function test_create_record_hook_queues_matching_workflow_notification(): void
     {
         Queue::fake();
+        $this->mockVisualSnapshots(['page-visual-snapshots/create-baseline.png']);
 
         $recipient = User::factory()->create([
             'email' => 'page-review@example.com',
@@ -190,7 +194,194 @@ class WorkflowNotificationTest extends TestCase
         $this->assertSame(WorkflowNotificationRule::TRIGGER_CREATED, $event->trigger);
         $this->assertSame($page->publicUrl(), $event->public_url);
         $this->assertSame(['page-review@example.com'], $event->recipient_emails);
+        $this->assertSame(
+            'page-visual-snapshots/create-baseline.png',
+            WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->firstOrFail()->snapshot_path,
+        );
 
         Queue::assertPushed(SendWorkflowNotificationJob::class);
+    }
+
+    public function test_automatic_update_notification_uses_visual_baseline_as_pre_and_advances_baseline_after_send(): void
+    {
+        Queue::fake();
+        Mail::fake();
+        $this->mockVisualSnapshots(['page-visual-snapshots/post-update.png']);
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        WorkflowNotificationRule::query()->create([
+            'name' => 'Page updated',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'Page updated',
+            'message' => 'Please review the page update.',
+            'delay_minutes' => 0,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Workflow Page',
+            'slug' => 'workflow-page',
+            'is_published' => true,
+            'show_site_chrome' => true,
+            'show_page_header' => true,
+        ]);
+
+        WorkflowVisualSnapshot::query()->create([
+            'snapshotable_type' => Page::class,
+            'snapshotable_id' => $page->getKey(),
+            'snapshot_path' => 'page-visual-snapshots/baseline.png',
+            'snapshot_captured_at' => now()->subHour(),
+        ]);
+
+        $service = app(WorkflowNotificationService::class);
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame('page-visual-snapshots/baseline.png', $event->pre_snapshot_path);
+        $this->assertNull($event->post_snapshot_path);
+
+        $service->send($event->refresh());
+
+        $event->refresh();
+
+        $this->assertSame(WorkflowNotificationEvent::STATUS_SENT, $event->status);
+        $this->assertSame('page-visual-snapshots/baseline.png', $event->pre_snapshot_path);
+        $this->assertSame('page-visual-snapshots/post-update.png', $event->post_snapshot_path);
+        $this->assertSame(
+            'page-visual-snapshots/post-update.png',
+            WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->firstOrFail()->snapshot_path,
+        );
+
+        Mail::assertSent(WorkflowNotificationMail::class, fn (WorkflowNotificationMail $mail): bool => $mail->hasTo('page-review@example.com'));
+    }
+
+    public function test_repeated_updates_keep_the_original_pre_visual_snapshot(): void
+    {
+        Queue::fake();
+        Carbon::setTestNow('2026-06-05 09:00:00');
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        WorkflowNotificationRule::query()->create([
+            'name' => 'Page updated',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'Page updated',
+            'message' => 'Please review the page update.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Workflow Page',
+            'slug' => 'workflow-page',
+            'is_published' => true,
+            'show_site_chrome' => true,
+            'show_page_header' => true,
+        ]);
+
+        WorkflowVisualSnapshot::query()->create([
+            'snapshotable_type' => Page::class,
+            'snapshotable_id' => $page->getKey(),
+            'snapshot_path' => 'page-visual-snapshots/original-pre.png',
+            'snapshot_captured_at' => now()->subDay(),
+        ]);
+
+        $service = app(WorkflowNotificationService::class);
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
+
+        Carbon::setTestNow('2026-06-05 09:10:00');
+
+        WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->update([
+            'snapshot_path' => 'page-visual-snapshots/should-not-replace-pre.png',
+        ]);
+
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame(1, WorkflowNotificationEvent::query()->count());
+        $this->assertSame('page-visual-snapshots/original-pre.png', $event->pre_snapshot_path);
+        $this->assertSame('2026-06-05 09:25:00', $event->scheduled_at->format('Y-m-d H:i:s'));
+
+        Carbon::setTestNow();
+    }
+
+    public function test_workflow_notification_email_shows_pre_and_post_visual_snapshots(): void
+    {
+        $this->mockVisualSnapshots();
+
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Page updated',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'extra_emails' => 'page-review@example.com',
+            'subject' => 'Page updated',
+            'message' => 'Please review the page update.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $event = WorkflowNotificationEvent::query()->create([
+            'workflow_notification_rule_id' => $rule->getKey(),
+            'content_area' => AdminAccess::PAGES,
+            'trigger' => WorkflowNotificationRule::TRIGGER_UPDATED,
+            'status' => WorkflowNotificationEvent::STATUS_PENDING,
+            'record_key' => Page::class.':1',
+            'pre_snapshot_path' => 'page-visual-snapshots/pre.png',
+            'post_snapshot_path' => 'page-visual-snapshots/post.png',
+            'scheduled_at' => now(),
+            'recipient_emails' => ['page-review@example.com'],
+        ]);
+
+        $html = view('mail.workflow-notification', ['event' => $event])->render();
+
+        $this->assertStringContainsString('Visual comparison', $html);
+        $this->assertStringContainsString('PRE', $html);
+        $this->assertStringContainsString('POST', $html);
+        $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/pre.png', $html);
+        $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/post.png', $html);
+    }
+
+    /**
+     * @param  array<int, string>  $capturePaths
+     */
+    private function mockVisualSnapshots(array $capturePaths = []): void
+    {
+        $this->mock(PageVisualSnapshot::class, function ($mock) use ($capturePaths): void {
+            $paths = $capturePaths;
+
+            $mock->shouldReceive('supports')
+                ->zeroOrMoreTimes()
+                ->andReturnUsing(fn (mixed $record): bool => $record instanceof Page);
+
+            $mock->shouldReceive('capture')
+                ->zeroOrMoreTimes()
+                ->andReturnUsing(function (Page $page) use (&$paths): PageVisualSnapshotResult {
+                    $path = array_shift($paths) ?: 'page-visual-snapshots/mock.png';
+
+                    return new PageVisualSnapshotResult(
+                        path: $path,
+                        absolutePath: storage_path('app/'.$path),
+                        previewUrl: 'https://example.test/preview',
+                        width: PageVisualSnapshot::DEFAULT_WIDTH,
+                        height: PageVisualSnapshot::DEFAULT_HEIGHT,
+                        imageUrl: 'https://example.test/snapshots/'.$path,
+                    );
+                });
+
+            $mock->shouldReceive('imageUrl')
+                ->zeroOrMoreTimes()
+                ->andReturnUsing(fn (string $path): string => 'https://example.test/snapshots/'.$path);
+        });
     }
 }
