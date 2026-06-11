@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('workflow_visual_snapshots', function (Blueprint $table): void {
             $table->id();
-            $table->morphs('snapshotable');
+            $table->string('snapshotable_type');
+            $table->unsignedBigInteger('snapshotable_id');
             $table->string('snapshot_path');
             $table->timestamp('snapshot_captured_at')->nullable();
             $table->timestamps();
