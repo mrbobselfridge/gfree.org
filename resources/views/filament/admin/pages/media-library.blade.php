@@ -404,8 +404,27 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 8V5.5A1.5 1.5 0 0 1 9.5 4h8A1.5 1.5 0 0 1 19 5.5v8A1.5 1.5 0 0 1 17.5 15H15M6.5 9h8A1.5 1.5 0 0 1 16 10.5v8a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 18.5v-8A1.5 1.5 0 0 1 6.5 9Z" />
                                     </svg>
                                 </button>
-                                {{ $this->replaceImageActionFor($image['path']) }}
-                                {{ $this->deleteImageActionFor($image['path']) }}
+                                <button
+                                    type="button"
+                                    wire:click="{{ $this->replaceImageClickHandler($image['path']) }}"
+                                    title="Replace"
+                                    aria-label="Replace"
+                                >
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.9 4.6 2.5 2.5M4 20h4.2L18.7 9.5a1.8 1.8 0 0 0 0-2.5L17 5.3a1.8 1.8 0 0 0-2.5 0L4 15.8V20Z" />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    wire:click="{{ $this->deleteImageClickHandler($image['path']) }}"
+                                    title="Delete"
+                                    aria-label="Delete"
+                                    class="text-danger-600"
+                                >
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7m2 0-.7 12.2A1.5 1.5 0 0 1 14.8 20H9.2a1.5 1.5 0 0 1-1.5-1.4L7 7m3 3v7m4-7v7" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                         </article>

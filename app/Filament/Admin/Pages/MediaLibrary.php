@@ -145,14 +145,14 @@ class MediaLibrary extends Page implements HasTable
         ];
     }
 
-    public function replaceImageActionFor(string $path): Action
+    public function replaceImageClickHandler(string $path): ?string
     {
-        return $this->replaceImageAction()(['path' => $path]);
+        return $this->replaceImageAction()(['path' => $path])->getLivewireClickHandler();
     }
 
-    public function deleteImageActionFor(string $path): Action
+    public function deleteImageClickHandler(string $path): ?string
     {
-        return $this->deleteImageAction()(['path' => $path]);
+        return $this->deleteImageAction()(['path' => $path])->getLivewireClickHandler();
     }
 
     protected function getHeaderActions(): array
@@ -223,10 +223,6 @@ class MediaLibrary extends Page implements HasTable
         return IconOnlyAction::make(
             Action::make('replaceImage')
                 ->label('Replace image')
-                ->extraAttributes([
-                    'title' => 'Replace',
-                    'aria-label' => 'Replace',
-                ])
                 ->modalHeading('Replace image')
                 ->modalDescription('Upload a replacement image. Every tracked place using the selected image will be updated to the new image.')
                 ->modalSubmitActionLabel('Replace image')
@@ -274,10 +270,6 @@ class MediaLibrary extends Page implements HasTable
             Action::make('deleteImage')
                 ->label('Delete image')
                 ->color('danger')
-                ->extraAttributes([
-                    'title' => 'Delete',
-                    'aria-label' => 'Delete',
-                ])
                 ->requiresConfirmation()
                 ->modalHeading('Delete image')
                 ->modalDescription(fn (array $arguments): string => $this->deleteImageDescription((string) ($arguments['path'] ?? '')))

@@ -224,7 +224,8 @@ class ContentBlockBuilder
                                     ->label('URL / href')
                                     ->rows(2)
                                     ->helperText('Use a site path like /give or a full https:// URL.')
-                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true)),
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true))
+                                    ->columnSpanFull(),
                                 Textarea::make('html')
                                     ->label('Flip HTML')
                                     ->rows(7)
