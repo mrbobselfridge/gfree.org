@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\FileDocuments\Tables;
 
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\FileDocument;
 use App\Models\FileDocumentVersion;
@@ -109,7 +110,8 @@ class FileDocumentsTable
         return [
             IconOnlyAction::make(
                 EditAction::make()
-                    ->label('Edit'),
+                    ->label('Edit')
+                    ->url(fn (FileDocument $record): string => FileDocumentResource::getUrl('edit', ['record' => $record])),
                 Heroicon::OutlinedPencilSquare,
             ),
             IconOnlyAction::make(

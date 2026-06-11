@@ -3,6 +3,8 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
+use App\Filament\Admin\Resources\FileDocuments\Tables\FileDocumentsTable;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
@@ -12,16 +14,22 @@ use App\Support\MediaUsage;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Url;
 
-class MediaLibrary extends Page
+class MediaLibrary extends Page implements HasTable
 {
     use RequiresAdminPageAccess;
+    use InteractsWithTable;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
@@ -41,9 +49,65 @@ class MediaLibrary extends Page
 
     public string $sort = 'recent';
 
+    #[Url(as: 'library')]
+    public string $libraryTab = 'images';
+
+    public static function canAccess(): bool
+    {
+        $user = Filament::auth()->user();
+
+        return AdminAccess::canAccessPage($user, static::class)
+            || AdminAccess::canAccessToolOrAssignedRecords($user, AdminAccess::FILE_LIBRARY);
+    }
+
+    public function mount(): void
+    {
+        if (! in_array($this->libraryTab, ['images', 'files'], true)) {
+            $this->libraryTab = 'images';
+        }
+
+        if ($this->libraryTab === 'images' && ! $this->canAccessImages()) {
+            $this->libraryTab = 'files';
+        }
+
+        if ($this->libraryTab === 'files' && ! $this->canAccessFiles()) {
+            $this->libraryTab = 'images';
+        }
+    }
+
     public function updatedSearch(): void
     {
         $this->search = trim($this->search);
+    }
+
+    public function setLibraryTab(string $tab): void
+    {
+        if ($tab === 'images' && $this->canAccessImages()) {
+            $this->libraryTab = 'images';
+        }
+
+        if ($tab === 'files' && $this->canAccessFiles()) {
+            $this->libraryTab = 'files';
+        }
+    }
+
+    public function canAccessImages(): bool
+    {
+        return AdminAccess::canAccessToolOrAssignedRecords(Filament::auth()->user(), AdminAccess::MEDIA_LIBRARY);
+    }
+
+    public function canAccessFiles(): bool
+    {
+        return AdminAccess::canAccessToolOrAssignedRecords(Filament::auth()->user(), AdminAccess::FILE_LIBRARY);
+    }
+
+    public function table(Table $table): Table
+    {
+        return FileDocumentsTable::configure($table)
+            ->query(FileDocumentResource::getEloquentQuery())
+            ->modelLabel(FileDocumentResource::getModelLabel())
+            ->pluralModelLabel(FileDocumentResource::getPluralModelLabel())
+            ->recordTitleAttribute(FileDocumentResource::getRecordTitleAttribute());
     }
 
     /**
@@ -83,6 +147,24 @@ class MediaLibrary extends Page
 
     protected function getHeaderActions(): array
     {
+        if ($this->libraryTab === 'files') {
+            return $this->canAccessFiles()
+                ? [
+                    IconOnlyAction::make(
+                        Action::make('createFile')
+                            ->label('New file')
+                            ->color('success')
+                            ->url(FileDocumentResource::getUrl('create')),
+                        Heroicon::OutlinedPlus,
+                    ),
+                ]
+                : [];
+        }
+
+        if (! $this->canAccessImages()) {
+            return [];
+        }
+
         return [
             ...WorkflowNotificationActions::notifyTeamForAreaActions(
                 AdminAccess::MEDIA_LIBRARY,

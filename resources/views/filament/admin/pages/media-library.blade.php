@@ -1,11 +1,76 @@
 <x-filament-panels::page>
     @php
-        $images = $this->getImages();
-        $totalImages = $this->getTotalImageCount();
+        $images = $this->libraryTab === 'images' && $this->canAccessImages() ? $this->getImages() : collect();
+        $totalImages = $this->libraryTab === 'images' && $this->canAccessImages() ? $this->getTotalImageCount() : 0;
         $sortOptions = $this->getSortOptions();
     @endphp
 
     <style>
+        .twyxtco-library-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgb(229 231 235);
+            border-radius: 0.75rem;
+            background: white;
+            padding: 0.625rem;
+        }
+
+        .dark .twyxtco-library-tabs {
+            border-color: rgb(31 41 55);
+            background: rgb(17 24 39);
+        }
+
+        .twyxtco-library-tabs__label {
+            padding: 0 0.25rem;
+            color: rgb(75 85 99);
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .dark .twyxtco-library-tabs__label {
+            color: rgb(209 213 219);
+        }
+
+        .twyxtco-library-tabs__button {
+            border-radius: 0.5rem;
+            padding: 0.45rem 0.75rem;
+            color: rgb(75 85 99);
+            font-size: 0.8125rem;
+            font-weight: 700;
+        }
+
+        .twyxtco-library-tabs__button:hover,
+        .twyxtco-library-tabs__button:focus {
+            background: rgb(243 244 246);
+            color: rgb(17 24 39);
+        }
+
+        .dark .twyxtco-library-tabs__button {
+            color: rgb(209 213 219);
+        }
+
+        .dark .twyxtco-library-tabs__button:hover,
+        .dark .twyxtco-library-tabs__button:focus {
+            background: rgb(31 41 55);
+            color: white;
+        }
+
+        .twyxtco-library-tabs__button--active {
+            background: rgb(217 119 6);
+            color: white;
+        }
+
+        .twyxtco-library-tabs__button--active:hover,
+        .twyxtco-library-tabs__button--active:focus,
+        .dark .twyxtco-library-tabs__button--active,
+        .dark .twyxtco-library-tabs__button--active:hover,
+        .dark .twyxtco-library-tabs__button--active:focus {
+            background: rgb(217 119 6);
+            color: white;
+        }
+
         .twyxtco-media-summary {
             border: 1px solid rgb(229 231 235);
             border-radius: 0.75rem;
@@ -193,46 +258,75 @@
     </style>
 
     <div class="space-y-6">
-        <div class="twyxtco-media-summary">
-            <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('image', $totalImages) }} shown.
-                    </p>
+        <div class="twyxtco-library-tabs" aria-label="Library sections">
+            <span class="twyxtco-library-tabs__label">Library:</span>
+
+            @if ($this->canAccessImages())
+                <button
+                    type="button"
+                    wire:click="setLibraryTab('images')"
+                    class="twyxtco-library-tabs__button {{ $this->libraryTab === 'images' ? 'twyxtco-library-tabs__button--active' : '' }}"
+                    aria-pressed="{{ $this->libraryTab === 'images' ? 'true' : 'false' }}"
+                >
+                    Image Gallery
+                </button>
+            @endif
+
+            @if ($this->canAccessFiles())
+                <button
+                    type="button"
+                    wire:click="setLibraryTab('files')"
+                    class="twyxtco-library-tabs__button {{ $this->libraryTab === 'files' ? 'twyxtco-library-tabs__button--active' : '' }}"
+                    aria-pressed="{{ $this->libraryTab === 'files' ? 'true' : 'false' }}"
+                >
+                    File Listing
+                </button>
+            @endif
+        </div>
+
+        @if ($this->libraryTab === 'files' && $this->canAccessFiles())
+            {{ $this->table }}
+        @elseif ($this->canAccessImages())
+            <div class="twyxtco-media-summary">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('image', $totalImages) }} shown.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="twyxtco-media-controls">
-            <div class="twyxtco-media-control">
-                <label for="media-search">Search</label>
-                <input
-                    id="media-search"
-                    type="search"
-                    wire:model.live.debounce.300ms="search"
-                    placeholder="Search path, filename, or content area"
-                >
+            <div class="twyxtco-media-controls">
+                <div class="twyxtco-media-control">
+                    <label for="media-search">Search</label>
+                    <input
+                        id="media-search"
+                        type="search"
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Search path, filename, or content area"
+                    >
+                </div>
+
+                <div class="twyxtco-media-control">
+                    <label for="media-sort">Sort by</label>
+                    <select id="media-sort" wire:model.live="sort">
+                        @foreach ($sortOptions as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
-            <div class="twyxtco-media-control">
-                <label for="media-sort">Sort by</label>
-                <select id="media-sort" wire:model.live="sort">
-                    @foreach ($sortOptions as $value => $label)
-                        <option value="{{ $value }}">{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-        @if ($images->isEmpty())
-            <div class="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                No images match the current search.
-            </div>
-        @else
-            <div class="twyxtco-media-grid">
-                @foreach ($images as $image)
-                    <article class="twyxtco-media-card" title="{{ $image['path'] }}">
+            @if ($images->isEmpty())
+                <div class="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                    No images match the current search.
+                </div>
+            @else
+                <div class="twyxtco-media-grid">
+                    @foreach ($images as $image)
+                        <article class="twyxtco-media-card" title="{{ $image['path'] }}">
                         <a href="{{ $image['url'] }}" target="_blank" rel="noreferrer" title="Open">
                             <img
                                 src="{{ $image['url'] }}"
@@ -332,9 +426,10 @@
                                 </button>
                             </div>
                         </div>
-                    </article>
-                @endforeach
-            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @endif
         @endif
     </div>
 </x-filament-panels::page>

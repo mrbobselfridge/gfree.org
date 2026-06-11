@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\FileDocuments\RelationManagers\VersionsRelationManager;
 use App\Models\FileDocument;
 use App\Models\User;
@@ -37,6 +38,29 @@ class FileLibraryTest extends TestCase
 
         $this->assertArrayHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Content'));
         $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertFalse(FileDocumentResource::shouldRegisterNavigation());
+    }
+
+    public function test_file_listing_is_available_from_media_library_tab(): void
+    {
+        FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->get('/admin/media-library?library=files')
+            ->assertOk()
+            ->assertSee('Library:')
+            ->assertSee('Image Gallery')
+            ->assertSee('File Listing')
+            ->assertSee('Connection Card')
+            ->assertSee('New file')
+            ->assertDontSee('Uploaded images');
     }
 
     public function test_editor_needs_file_library_access(): void
@@ -63,6 +87,12 @@ class FileLibraryTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin/file-documents')
             ->assertOk();
+
+        $this->actingAs($editor)
+            ->get('/admin/media-library?library=files')
+            ->assertOk()
+            ->assertSee('File Listing')
+            ->assertDontSee('Image Gallery');
     }
 
     public function test_create_file_document_uploads_file_and_serves_public_stable_link(): void
