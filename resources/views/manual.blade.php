@@ -643,7 +643,6 @@
                 <li><a href="#announcements">Announcements</a></li>
                 <li><a href="#bulletins">Bulletins</a></li>
                 <li><a href="#media-library">Media Library</a></li>
-                <li><a href="#file-library">File Library</a></li>
                 <li><a href="#ministries">Ministries</a></li>
                 <li><a href="#pages">Pages</a></li>
                 <li><a href="#leaders">Leaders</a></li>
@@ -861,12 +860,17 @@
 
         <section class="manual-section" id="media-library">
             <h2>Media Library</h2>
-            <p>The Media Library stores reusable images used throughout the site.</p>
+            <p>The Media Library is the shared library area for reusable images and downloadable files. Use the tabs at the top of the page to switch between <strong>Images</strong> and <strong>Files</strong>.</p>
             <h3>Common Tasks</h3>
             <ul>
-                <li>Upload images for pages, announcements, ministries, leaders, and banners.</li>
-                <li>Replace an image when the same file is used in multiple places.</li>
-                <li>Review usage before deleting media.</li>
+                <li>Open <strong>Images</strong> to upload images for pages, announcements, ministries, leaders, and banners.</li>
+                <li>Use image search and sorting to find files by path, filename, size, dimensions, or usage.</li>
+                <li>Replace an image when the same file is used in multiple tracked places.</li>
+                <li>Review image usage before deleting media.</li>
+                <li>Open <strong>Files</strong> to create and manage downloadable PDFs, forms, posters, policies, spreadsheets, handouts, and other shared documents.</li>
+                <li>Use Public for files that visitors may download from a shared link, and Private for internal files that should require an admin login.</li>
+                <li>Use Replace file to upload a new version while keeping older versions available.</li>
+                <li>Copy the public link when the file should be linked from a page, announcement, ministry, or email.</li>
                 <li>Use descriptive filenames when possible.</li>
             </ul>
             <h3>Image Guidelines</h3>
@@ -875,19 +879,6 @@
                 <li>Avoid images with heavy text baked into the image.</li>
                 <li>Use landscape photos for banners and wide image sections.</li>
                 <li>Use portrait or square photos for leaders when the layout expects a profile image.</li>
-            </ul>
-        </section>
-
-        <section class="manual-section" id="file-library">
-            <h2>File Library</h2>
-            <p>The File Library stores downloadable documents such as PDFs, forms, posters, policies, spreadsheets, handouts, and other shared files.</p>
-            <h3>Common Tasks</h3>
-            <ul>
-                <li>Create a file record with a clear title, category, visibility, and description.</li>
-                <li>Use Public for files that visitors may download from a shared link.</li>
-                <li>Use Private for internal files that should require an admin login.</li>
-                <li>Use Replace file to upload a new version while keeping older versions available.</li>
-                <li>Copy the public link when the file should be linked from a page, announcement, ministry, or email.</li>
             </ul>
             <h3>Document Guidelines</h3>
             <ul>

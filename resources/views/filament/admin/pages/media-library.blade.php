@@ -88,6 +88,7 @@
             grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px);
             gap: 0.75rem;
             align-items: end;
+            margin: 1rem 0 1.25rem;
         }
 
         .twyxtco-media-control label {
@@ -268,7 +269,7 @@
                     class="twyxtco-library-tabs__button {{ $this->libraryTab === 'images' ? 'twyxtco-library-tabs__button--active' : '' }}"
                     aria-pressed="{{ $this->libraryTab === 'images' ? 'true' : 'false' }}"
                 >
-                    Image Gallery
+                    Images
                 </button>
             @endif
 
@@ -279,7 +280,7 @@
                     class="twyxtco-library-tabs__button {{ $this->libraryTab === 'files' ? 'twyxtco-library-tabs__button--active' : '' }}"
                     aria-pressed="{{ $this->libraryTab === 'files' ? 'true' : 'false' }}"
                 >
-                    File Listing
+                    Files
                 </button>
             @endif
         </div>

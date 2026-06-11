@@ -56,8 +56,8 @@ class FileLibraryTest extends TestCase
             ->get('/admin/media-library?library=files')
             ->assertOk()
             ->assertSee('Library:')
-            ->assertSee('Image Gallery')
-            ->assertSee('File Listing')
+            ->assertSee('Images')
+            ->assertSee('Files')
             ->assertSee('Connection Card')
             ->assertSee('New file')
             ->assertDontSee('Uploaded images');
@@ -91,8 +91,8 @@ class FileLibraryTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin/media-library?library=files')
             ->assertOk()
-            ->assertSee('File Listing')
-            ->assertDontSee('Image Gallery');
+            ->assertSee('Files')
+            ->assertDontSee('Images');
     }
 
     public function test_create_file_document_uploads_file_and_serves_public_stable_link(): void
