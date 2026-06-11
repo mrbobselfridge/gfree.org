@@ -205,9 +205,9 @@ class ContentBlockBuilder
                                     }),
                                 TextInput::make('title')
                                     ->required()
-                                    ->maxLength(160),
+                                    ->maxLength(160)->columnSpanFull(),
                                 Textarea::make('summary')
-                                    ->rows(2),
+                                    ->rows(2)->columnSpanFull(),
                                 Select::make('type')
                                     ->label('Card type')
                                     ->options(fn (): array => LinkCard::typeOptions(CodeBlockAccess::canManage()))
@@ -218,7 +218,7 @@ class ContentBlockBuilder
                                         }
                                     })
                                     ->required()
-                                    ->live(),
+                                    ->live()->columnSpanFull(),
                                 Textarea::make('url')
                                     ->label('URL / href')
                                     ->rows(2)
