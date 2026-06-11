@@ -37,7 +37,10 @@ class AdminDashboardWidgetsTest extends TestCase
     public function test_admin_dashboard_shows_cms_widgets_with_relevant_content(): void
     {
         Storage::fake('public');
+        Storage::fake('backups');
         Storage::disk('public')->put('media-library/welcome.jpg', 'image-bytes');
+        Storage::disk('backups')->put(config('backup_database.backup.name').'/db-2026-06-10-00-15-00.zip', 'database backup');
+        Storage::disk('backups')->put(config('backup_full.backup.name').'/full-2026-06-10-01-00-00.zip', 'full backup');
 
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
@@ -150,6 +153,14 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('4 review items')
             ->assertSee('2 good items')
             ->assertSee('/admin/site-settings/1/edit" class="twyxtco-dashboard-widget-row-status" wire:navigate', false)
+            ->assertSee('Backups')
+            ->assertSee('data-twyxtco-dashboard-widget="backup-status-widget"', false)
+            ->assertSee('Database Backup')
+            ->assertSee('Full Site Backup')
+            ->assertSee('Archive Backup')
+            ->assertSee('Available')
+            ->assertSee('Missing')
+            ->assertSee('Open backups')
             ->assertSee('Web Traffic Overview')
             ->assertSee('Views today')
             ->assertSee('Top Pages')
