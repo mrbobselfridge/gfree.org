@@ -60,6 +60,22 @@ class PageForm
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->columnSpanFull(),
 
+                ToggleButtons::make('is_redirect')
+                    ->label('Redirect this page')
+                    ->boolean()
+                    ->inline()
+                    ->live()
+                    ->default(false)
+                    ->required(),
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                Placeholder::make('redirect_inactive_notice')
+                    ->label('Redirect inactive')
+                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
+                    ->columnSpanFull(),
+
                 Section::make('Redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
                     ->icon(Heroicon::OutlinedArrowRightCircle)
@@ -96,22 +112,6 @@ class PageForm
                     ])
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ToggleButtons::make('is_redirect')
-                    ->label('Redirect this page')
-                    ->boolean()
-                    ->inline()
-                    ->live()
-                    ->default(false)
-                    ->required(),
-                Placeholder::make('redirect_inactive_notice')
-                    ->label('Redirect inactive')
-                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
-                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
-                    ->columnSpanFull(),
-
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
                 ToggleButtons::make('show_site_chrome')
                     ->label('Show navigation and footer')
                     ->boolean()
