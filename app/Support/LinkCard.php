@@ -12,6 +12,8 @@ class LinkCard
 
     public const TYPE_LINK_NEW = 'link_new';
 
+    public const TYPE_FLIP_IMAGE = 'flip_image';
+
     public const TYPE_FLIP_HTML = 'flip_html';
 
     public const TYPE_JAVASCRIPT_WIDGET = 'javascript_widget';
@@ -22,6 +24,7 @@ class LinkCard
             self::TYPE_DISPLAY => 'Nothing / display only',
             self::TYPE_LINK_SAME => 'Link in same window',
             self::TYPE_LINK_NEW => 'Link in new window',
+            self::TYPE_FLIP_IMAGE => 'Flip Image',
         ];
 
         if ($includeCodeTypes) {
@@ -44,6 +47,50 @@ class LinkCard
     public static function isCodeType(?string $type): bool
     {
         return in_array($type, [self::TYPE_FLIP_HTML, self::TYPE_JAVASCRIPT_WIDGET], true);
+    }
+
+    public static function imageFitOptions(): array
+    {
+        return [
+            'cover' => 'Fill card (crop/zoom)',
+            'contain' => 'Fit full image',
+        ];
+    }
+
+    public static function normalizeImageFit(?string $fit): string
+    {
+        return array_key_exists((string) $fit, self::imageFitOptions()) ? (string) $fit : 'cover';
+    }
+
+    public static function imageFocusOptions(): array
+    {
+        return [
+            'center' => 'Center',
+            'top' => 'Top',
+            'bottom' => 'Bottom',
+            'left' => 'Left',
+            'right' => 'Right',
+        ];
+    }
+
+    public static function imageFocusPosition(?string $focus): string
+    {
+        return match ($focus) {
+            'top' => 'center top',
+            'bottom' => 'center bottom',
+            'left' => 'left center',
+            'right' => 'right center',
+            default => 'center center',
+        };
+    }
+
+    public static function normalizeImageZoom(mixed $zoom): int
+    {
+        if (! is_numeric($zoom)) {
+            return 100;
+        }
+
+        return max(100, min(200, (int) $zoom));
     }
 
     public static function isSafeHref(?string $url): bool

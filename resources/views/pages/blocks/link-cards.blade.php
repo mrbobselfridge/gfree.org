@@ -21,6 +21,10 @@
                     $cardKey = \App\Support\LinkCard::sanitizedKey($card['key'] ?? 'block-'.(($blockIndex ?? 0) + 1).'-card-'.$loop->iteration);
                     $flipId = \App\Support\LinkCard::flipId($cardKey);
                     $widgetId = \App\Support\LinkCard::widgetId($cardKey);
+                    $imageUrl = \App\Support\ContentBlocks::imageUrl($card['image_path'] ?? null);
+                    $imageFit = \App\Support\LinkCard::normalizeImageFit($card['image_fit'] ?? null);
+                    $imageFocus = \App\Support\LinkCard::imageFocusPosition($card['image_focus'] ?? null);
+                    $imageZoom = \App\Support\LinkCard::normalizeImageZoom($card['image_zoom'] ?? null);
                 @endphp
 
                 @if ($type === \App\Support\LinkCard::TYPE_LINK_SAME && \App\Support\LinkCard::isSafeHref($url))
@@ -58,6 +62,33 @@
 
                             <span class="page-link-card__face page-link-card__face--back">
                                 {!! $card['html'] ?? '' !!}
+                            </span>
+                        </span>
+                    </button>
+                @elseif ($type === \App\Support\LinkCard::TYPE_FLIP_IMAGE && filled($imageUrl))
+                    <button
+                        type="button"
+                        id="{{ $flipId }}"
+                        class="page-link-card page-link-card--flip"
+                        aria-pressed="false"
+                        data-card-flip
+                    >
+                        <span class="page-link-card__flip-inner">
+                            <span class="page-link-card__face page-link-card__face--front">
+                                <h3>{{ $card['title'] ?? '' }}</h3>
+
+                                @if (filled($card['summary'] ?? null))
+                                    <p>{{ $card['summary'] }}</p>
+                                @endif
+                            </span>
+
+                            <span class="page-link-card__face page-link-card__face--back page-link-card__face--image">
+                                <img
+                                    src="{{ $imageUrl }}"
+                                    alt="{{ $card['image_alt'] ?? ($card['title'] ?? '') }}"
+                                    class="page-link-card__flip-image page-link-card__flip-image--{{ $imageFit }}"
+                                    style="object-position: {{ $imageFocus }}; transform: scale({{ $imageZoom / 100 }}); transform-origin: {{ $imageFocus }};"
+                                >
                             </span>
                         </span>
                     </button>

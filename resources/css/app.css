@@ -1014,6 +1014,27 @@
     transform: rotateY(180deg);
 }
 
+.page-link-card__face--image {
+    overflow: hidden;
+    padding: 0;
+}
+
+.page-link-card__flip-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    background: var(--page-block-card-bg);
+}
+
+.page-link-card__flip-image--cover {
+    object-fit: cover;
+}
+
+.page-link-card__flip-image--contain {
+    object-fit: contain;
+}
+
 .page-link-card__face--back > :first-child {
     margin-top: 0;
 }

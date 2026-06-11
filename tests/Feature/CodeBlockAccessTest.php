@@ -176,6 +176,13 @@ class CodeBlockAccessTest extends TestCase
                             'url' => '/safe',
                         ],
                         [
+                            'key' => 'safe-image',
+                            'title' => 'Safe image',
+                            'type' => LinkCard::TYPE_FLIP_IMAGE,
+                            'image_path' => 'pages/content-images/original.jpg',
+                            'image_fit' => 'cover',
+                        ],
+                        [
                             'key' => 'flip-card',
                             'title' => 'Original flip',
                             'summary' => 'Original summary',
@@ -207,6 +214,17 @@ class CodeBlockAccessTest extends TestCase
                             'html' => '<strong>Tampered HTML</strong>',
                         ],
                         [
+                            'key' => 'safe-image',
+                            'title' => 'Safe image edited',
+                            'type' => LinkCard::TYPE_FLIP_IMAGE,
+                            'image_path' => 'pages/content-images/updated.jpg',
+                            'image_alt' => 'Updated image',
+                            'image_fit' => 'contain',
+                            'image_focus' => 'bottom',
+                            'image_zoom' => 130,
+                            'html' => '<script>window.shouldAlsoNotSave = true;</script>',
+                        ],
+                        [
                             'key' => 'new-widget',
                             'title' => 'Unauthorized widget',
                             'type' => LinkCard::TYPE_JAVASCRIPT_WIDGET,
@@ -226,7 +244,15 @@ class CodeBlockAccessTest extends TestCase
         $this->assertSame('Original flip', $cards[1]['title']);
         $this->assertSame(LinkCard::TYPE_FLIP_HTML, $cards[1]['type']);
         $this->assertSame('<strong>Original HTML</strong>', $cards[1]['html']);
-        $this->assertCount(2, $cards);
+        $this->assertSame('Safe image edited', $cards[2]['title']);
+        $this->assertSame(LinkCard::TYPE_FLIP_IMAGE, $cards[2]['type']);
+        $this->assertSame('pages/content-images/updated.jpg', $cards[2]['image_path']);
+        $this->assertSame('Updated image', $cards[2]['image_alt']);
+        $this->assertSame('contain', $cards[2]['image_fit']);
+        $this->assertSame('bottom', $cards[2]['image_focus']);
+        $this->assertSame(130, $cards[2]['image_zoom']);
+        $this->assertArrayNotHasKey('html', $cards[2]);
+        $this->assertCount(3, $cards);
     }
 
     public function test_code_card_type_options_are_hidden_without_code_blocks_access(): void
@@ -263,6 +289,7 @@ class CodeBlockAccessTest extends TestCase
         $this->actingAs($editor)
             ->get("/admin/pages/{$page->getKey()}/edit")
             ->assertOk()
+            ->assertSee('Flip Image')
             ->assertDontSee('Flip HTML')
             ->assertDontSee('JavaScript widget');
 
@@ -271,6 +298,7 @@ class CodeBlockAccessTest extends TestCase
         ]))
             ->get("/admin/pages/{$page->getKey()}/edit")
             ->assertOk()
+            ->assertSee('Flip Image')
             ->assertSee('Flip HTML')
             ->assertSee('JavaScript widget');
     }

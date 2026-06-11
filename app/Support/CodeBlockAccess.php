@@ -148,6 +148,7 @@ class CodeBlockAccess
                 LinkCard::TYPE_DISPLAY,
                 LinkCard::TYPE_LINK_SAME,
                 LinkCard::TYPE_LINK_NEW,
+                LinkCard::TYPE_FLIP_IMAGE,
             ], true) ? $type : LinkCard::TYPE_DISPLAY;
 
             if (in_array($card['type'], [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true) && ! LinkCard::isSafeHref($card['url'] ?? null)) {

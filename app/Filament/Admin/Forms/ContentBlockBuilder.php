@@ -226,6 +226,32 @@ class ContentBlockBuilder
                                     ->helperText('Use a site path like /give or a full https:// URL.')
                                     ->visible(fn (Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true))
                                     ->columnSpanFull(),
+                                ImageUpload::make('image_path', $imageDirectory, 'Flip image')
+                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                    ->columnSpanFull(),
+                                TextInput::make('image_alt')
+                                    ->label('Image description')
+                                    ->maxLength(255)
+                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE),
+                                Select::make('image_fit')
+                                    ->label('Image sizing')
+                                    ->options(LinkCard::imageFitOptions())
+                                    ->default('cover')
+                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE),
+                                Select::make('image_focus')
+                                    ->label('Image focus')
+                                    ->options(LinkCard::imageFocusOptions())
+                                    ->default('center')
+                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE),
+                                TextInput::make('image_zoom')
+                                    ->label('Image zoom')
+                                    ->numeric()
+                                    ->minValue(100)
+                                    ->maxValue(200)
+                                    ->step(5)
+                                    ->suffix('%')
+                                    ->default(100)
+                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE),
                                 Textarea::make('html')
                                     ->label('Flip HTML')
                                     ->rows(7)

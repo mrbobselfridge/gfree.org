@@ -351,6 +351,17 @@ class PublicPageTest extends TestCase
                                 'html' => '<strong>Back details</strong>',
                             ],
                             [
+                                'title' => 'Flip Image',
+                                'summary' => 'Click for photo.',
+                                'key' => 'flipimage123',
+                                'type' => 'flip_image',
+                                'image_path' => 'pages/content-images/serve.jpg',
+                                'image_alt' => 'Serving team photo',
+                                'image_fit' => 'contain',
+                                'image_focus' => 'top',
+                                'image_zoom' => 125,
+                            ],
+                            [
                                 'title' => 'Widget',
                                 'summary' => 'Rendered by JavaScript.',
                                 'key' => 'widget123',
@@ -388,6 +399,11 @@ class PublicPageTest extends TestCase
             ->assertSee('<a class="page-link-card" href="/storage/media/serve.pdf" target="_blank" rel="noopener noreferrer">', false)
             ->assertSee('id="content-card-flip-flip123"', false)
             ->assertSee('<strong>Back details</strong>', false)
+            ->assertSee('id="content-card-flip-flipimage123"', false)
+            ->assertSee('/storage/pages/content-images/serve.jpg')
+            ->assertSee('alt="Serving team photo"', false)
+            ->assertSee('page-link-card__flip-image--contain', false)
+            ->assertSee('object-position: center top; transform: scale(1.25); transform-origin: center top;', false)
             ->assertSee('id="content-card-widget-widget123"', false)
             ->assertSee("document.getElementById('content-card-widget-widget123').textContent = 'Loaded widget';", false)
             ->assertSee('<div class="page-link-card">', false)
@@ -397,6 +413,7 @@ class PublicPageTest extends TestCase
             ->assertSee('Kids')
             ->assertSee('Download')
             ->assertSee('Flip')
+            ->assertSee('Flip Image')
             ->assertSee('Widget')
             ->assertSee('Care')
             ->assertSee('Unsafe')
