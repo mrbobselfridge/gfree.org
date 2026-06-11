@@ -229,8 +229,7 @@ class ContentBlockBuilder
                                     ->rows(7)
                                     ->helperText('Trusted raw HTML shown on the back of the flip card.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
-                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
-                                    ->columnSpanFull(),
+                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage()),
                                 Placeholder::make('widget_id')
                                     ->label('Widget div ID')
                                     ->content(fn (Get $get): HtmlString => new HtmlString('<code>'.e(LinkCard::widgetId($get('key'))).'</code>'))
@@ -240,8 +239,7 @@ class ContentBlockBuilder
                                     ->rows(9)
                                     ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
-                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
-                                    ->columnSpanFull(),
+                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage()),
                             ])
                             ->addActionLabel('Add card')
                             ->columns(3)

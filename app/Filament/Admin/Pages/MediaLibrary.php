@@ -28,8 +28,8 @@ use Livewire\Attributes\Url;
 
 class MediaLibrary extends Page implements HasTable
 {
-    use RequiresAdminPageAccess;
     use InteractsWithTable;
+    use RequiresAdminPageAccess;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
@@ -145,6 +145,16 @@ class MediaLibrary extends Page implements HasTable
         ];
     }
 
+    public function replaceImageActionFor(string $path): Action
+    {
+        return $this->replaceImageAction()(['path' => $path]);
+    }
+
+    public function deleteImageActionFor(string $path): Action
+    {
+        return $this->deleteImageAction()(['path' => $path]);
+    }
+
     protected function getHeaderActions(): array
     {
         if ($this->libraryTab === 'files') {
@@ -213,6 +223,10 @@ class MediaLibrary extends Page implements HasTable
         return IconOnlyAction::make(
             Action::make('replaceImage')
                 ->label('Replace image')
+                ->extraAttributes([
+                    'title' => 'Replace',
+                    'aria-label' => 'Replace',
+                ])
                 ->modalHeading('Replace image')
                 ->modalDescription('Upload a replacement image. Every tracked place using the selected image will be updated to the new image.')
                 ->modalSubmitActionLabel('Replace image')
@@ -260,6 +274,10 @@ class MediaLibrary extends Page implements HasTable
             Action::make('deleteImage')
                 ->label('Delete image')
                 ->color('danger')
+                ->extraAttributes([
+                    'title' => 'Delete',
+                    'aria-label' => 'Delete',
+                ])
                 ->requiresConfirmation()
                 ->modalHeading('Delete image')
                 ->modalDescription(fn (array $arguments): string => $this->deleteImageDescription((string) ($arguments['path'] ?? '')))
