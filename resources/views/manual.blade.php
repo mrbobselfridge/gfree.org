@@ -10,6 +10,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Website Manual | {{ $churchName }}</title>
     <meta name="description" content="Printable website and CMS manual for {{ $churchName }} admins and content editors.">
+    <script>
+        (() => {
+            const hash = window.location.hash;
+
+            if (hash && hash !== '#top' && hash !== '#contents') {
+                document.documentElement.classList.add('manual-start-collapsed');
+            }
+        })();
+    </script>
     <style>
         :root {
             --ink: #1d241f;
@@ -373,8 +382,15 @@
             line-height: 1.35;
         }
 
+        html.manual-start-collapsed .manual-contents-section .manual-toc,
+        body:not(.manual-contents-user-expanded):has(.manual-section:target:not(#top):not(#contents)) .manual-contents-section .manual-toc,
         .manual-contents-section.is-collapsed .manual-toc {
             display: none;
+        }
+
+        .manual-contents-section.is-measuring .manual-toc {
+            display: block;
+            visibility: hidden;
         }
 
         .manual-toc li {
@@ -1253,6 +1269,8 @@
             let isDocked = false;
             let isExpanded = true;
             let userExpandedWhileDocked = false;
+            let keepCollapsedForHashScroll = false;
+            let hashCollapseHandled = false;
 
             const hashTarget = () => {
                 if (! window.location.hash || window.location.hash === '#top') {
@@ -1264,6 +1282,16 @@
                 } catch (error) {
                     return null;
                 }
+            };
+
+            const hasManualSectionHash = () => {
+                return Boolean(window.location.hash && window.location.hash !== '#top' && window.location.hash !== '#contents');
+            };
+
+            const hasSectionHash = () => {
+                const target = hashTarget();
+
+                return target && target !== contents;
             };
 
             const restoreHashScroll = () => {
@@ -1279,6 +1307,13 @@
             };
 
             const measure = () => {
+                const shouldStartCollapsed = ! hashCollapseHandled && hasManualSectionHash();
+
+                if (shouldStartCollapsed) {
+                    keepCollapsedForHashScroll = true;
+                }
+
+                contents.classList.toggle('is-measuring', shouldStartCollapsed);
                 contents.style.setProperty('--manual-contents-spacer', '0px');
                 contents.classList.remove('is-collapsed');
                 links.hidden = false;
@@ -1287,10 +1322,19 @@
                 expandedHeight = contents.offsetHeight;
                 contentsTop = contents.offsetTop;
 
-                isDocked = window.scrollY >= Math.max(0, contentsTop + 1);
+                isDocked = shouldStartCollapsed || keepCollapsedForHashScroll || window.scrollY >= Math.max(0, contentsTop + 1);
                 contents.classList.toggle('is-docked', isDocked);
 
                 setExpanded(isDocked ? userExpandedWhileDocked : true, true);
+                document.documentElement.classList.remove('manual-start-collapsed');
+                contents.classList.remove('is-measuring');
+
+                if (shouldStartCollapsed) {
+                    hashCollapseHandled = true;
+
+                    return;
+                }
+
                 update();
             };
 
@@ -1319,8 +1363,39 @@
                 contents.style.setProperty('--manual-contents-spacer', spacer + 'px');
             };
 
+            const collapseForHashIfNeeded = () => {
+                if (hashCollapseHandled || ! hasManualSectionHash()) {
+                    return false;
+                }
+
+                hashCollapseHandled = true;
+                keepCollapsedForHashScroll = true;
+                userExpandedWhileDocked = false;
+                isDocked = true;
+                contents.classList.add('is-docked');
+                document.body.classList.remove('manual-contents-user-expanded');
+                setExpanded(false, true);
+
+                return true;
+            };
+
             const update = () => {
                 const scrollY = window.scrollY;
+
+                if (keepCollapsedForHashScroll) {
+                    const reachedContents = scrollY >= Math.max(0, contentsTop - 24);
+
+                    if (! reachedContents) {
+                        isDocked = true;
+                        contents.classList.add('is-docked');
+                        setExpanded(false);
+
+                        return;
+                    }
+
+                    keepCollapsedForHashScroll = false;
+                }
+
                 const docked = isDocked
                     ? scrollY >= Math.max(0, contentsTop - 24)
                     : scrollY >= Math.max(0, contentsTop + 1);
@@ -1341,13 +1416,18 @@
             };
 
             toggle.addEventListener('click', () => {
-                userExpandedWhileDocked = isDocked ? ! isExpanded : false;
-                setExpanded(! isExpanded);
+                const willExpand = ! isExpanded;
+
+                keepCollapsedForHashScroll = false;
+                userExpandedWhileDocked = isDocked ? willExpand : false;
+                document.body.classList.toggle('manual-contents-user-expanded', willExpand);
+                setExpanded(willExpand);
             });
 
             contents.querySelectorAll('.manual-toc a').forEach((link) => {
                 link.addEventListener('click', () => {
                     userExpandedWhileDocked = false;
+                    document.body.classList.remove('manual-contents-user-expanded');
                     window.setTimeout(() => {
                         update();
                         restoreHashScroll();
@@ -1357,21 +1437,33 @@
 
             window.addEventListener('resize', measure);
             window.addEventListener('scroll', update, { passive: true });
-            window.addEventListener('beforeprint', () => setExpanded(true));
-            window.addEventListener('afterprint', update);
+            window.addEventListener('beforeprint', () => {
+                document.body.classList.add('manual-contents-user-expanded');
+                setExpanded(true);
+            });
+            window.addEventListener('afterprint', () => {
+                document.body.classList.remove('manual-contents-user-expanded');
+                update();
+            });
             window.addEventListener('load', () => {
                 measure();
                 restoreHashScroll();
             });
             window.addEventListener('hashchange', () => {
                 userExpandedWhileDocked = false;
+                document.body.classList.remove('manual-contents-user-expanded');
+                hashCollapseHandled = false;
+                keepCollapsedForHashScroll = hasManualSectionHash();
                 window.setTimeout(() => {
                     update();
                     restoreHashScroll();
                 }, 0);
             });
             measure();
-            restoreHashScroll();
+            window.requestAnimationFrame(() => {
+                collapseForHashIfNeeded();
+                restoreHashScroll();
+            });
         })();
     </script>
 </body>
