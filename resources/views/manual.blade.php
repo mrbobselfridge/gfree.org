@@ -1250,6 +1250,8 @@
 
             let contentsTop = 0;
             let expandedHeight = 0;
+            let isDocked = false;
+            let isExpanded = true;
             let userExpandedWhileDocked = false;
 
             const hashTarget = () => {
@@ -1280,12 +1282,24 @@
                 contents.style.setProperty('--manual-contents-spacer', '0px');
                 contents.classList.remove('is-collapsed');
                 links.hidden = false;
+                isExpanded = true;
+
                 expandedHeight = contents.offsetHeight;
                 contentsTop = contents.offsetTop;
+
+                isDocked = window.scrollY >= Math.max(0, contentsTop + 1);
+                contents.classList.toggle('is-docked', isDocked);
+
+                setExpanded(isDocked ? userExpandedWhileDocked : true, true);
                 update();
             };
 
-            const setExpanded = (expanded) => {
+            const setExpanded = (expanded, force = false) => {
+                if (! force && isExpanded === expanded) {
+                    return;
+                }
+
+                isExpanded = expanded;
                 toggle.textContent = expanded ? 'Collapse' : 'Expand';
                 toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 
@@ -1306,9 +1320,15 @@
             };
 
             const update = () => {
-                const docked = window.scrollY >= Math.max(0, contentsTop - 1);
+                const scrollY = window.scrollY;
+                const docked = isDocked
+                    ? scrollY >= Math.max(0, contentsTop - 24)
+                    : scrollY >= Math.max(0, contentsTop + 1);
 
-                contents.classList.toggle('is-docked', docked);
+                if (docked !== isDocked) {
+                    isDocked = docked;
+                    contents.classList.toggle('is-docked', docked);
+                }
 
                 if (! docked) {
                     userExpandedWhileDocked = false;
@@ -1321,11 +1341,8 @@
             };
 
             toggle.addEventListener('click', () => {
-                const expanded = toggle.getAttribute('aria-expanded') === 'true';
-                const docked = contents.classList.contains('is-docked');
-
-                userExpandedWhileDocked = docked ? ! expanded : false;
-                setExpanded(! expanded);
+                userExpandedWhileDocked = isDocked ? ! isExpanded : false;
+                setExpanded(! isExpanded);
             });
 
             contents.querySelectorAll('.manual-toc a').forEach((link) => {
