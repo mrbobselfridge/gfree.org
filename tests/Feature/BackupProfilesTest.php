@@ -41,12 +41,44 @@ class BackupProfilesTest extends TestCase
             ->test(Backups::class)
             ->assertSee('Full Site Backup')
             ->assertSee('Download latest')
+            ->assertSee('Delete')
             ->assertSee('backups');
 
         $latest = BackupProfiles::latestBackup('full');
 
         $this->assertNotNull($latest);
         $this->assertSame($path, $latest['path']);
+        $this->assertNotEmpty($latest['timestamp']);
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(Backups::class)
+            ->assertSee('title="'.$latest['timestamp'].'"', false);
+    }
+
+    public function test_admin_can_delete_backup_file_with_confirmation(): void
+    {
+        Storage::fake('backups');
+
+        $path = config('backup_full.backup.name').'/full-2026-06-10-01-00-00.zip';
+        Storage::disk('backups')->put($path, 'backup zip');
+
+        $latest = BackupProfiles::latestBackup('full');
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(Backups::class)
+            ->callAction('deleteBackup', arguments: [
+                'profile' => 'full',
+                'disk' => 'backups',
+                'path' => $latest['encoded_path'],
+                'name' => $latest['name'],
+            ])
+            ->assertHasNoActionErrors();
+
+        Storage::disk('backups')->assertMissing($path);
     }
 
     public function test_backup_download_requires_backup_access(): void

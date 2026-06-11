@@ -143,6 +143,13 @@ class BackupProfiles
             : null;
     }
 
+    public static function deleteBackup(string $profileKey, string $disk, string $encodedPath): bool
+    {
+        $path = self::downloadPath($profileKey, $disk, $encodedPath);
+
+        return $path !== null && Storage::disk($disk)->delete($path);
+    }
+
     public static function backupName(array $profile): string
     {
         return (string) data_get(config($profile['config']), 'backup.name');
@@ -156,9 +163,11 @@ class BackupProfiles
             'path' => $path,
             'name' => basename($path),
             'date' => $date,
+            'timestamp' => $date->timezone(config('app.timezone'))->format('M j, Y g:i A T'),
             'age' => $date->diffForHumans(),
             'size' => $size,
             'size_for_humans' => Number::fileSize($size),
+            'encoded_path' => self::encodePath($path),
             'download_url' => route('admin.backups.download', [
                 'profile' => $profile,
                 'disk' => $disk,

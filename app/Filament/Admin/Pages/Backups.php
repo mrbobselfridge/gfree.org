@@ -91,6 +91,30 @@ class Backups extends Page
             });
     }
 
+    protected function deleteBackupAction(): Action
+    {
+        return Action::make('deleteBackup')
+            ->label('Delete backup')
+            ->color('danger')
+            ->requiresConfirmation()
+            ->modalHeading(fn (array $arguments): string => 'Delete '.$this->backupFilename($arguments).'?')
+            ->modalDescription('This permanently removes the selected backup file from storage.')
+            ->modalSubmitActionLabel('Delete backup')
+            ->action(function (array $arguments): void {
+                $deleted = BackupProfiles::deleteBackup(
+                    profileKey: (string) ($arguments['profile'] ?? ''),
+                    disk: (string) ($arguments['disk'] ?? ''),
+                    encodedPath: (string) ($arguments['path'] ?? ''),
+                );
+
+                Notification::make()
+                    ->title($deleted ? 'Backup deleted' : 'Backup could not be deleted')
+                    ->body($deleted ? null : 'The backup file may have already been removed or could not be found.')
+                    ->{$deleted ? 'success' : 'warning'}()
+                    ->send();
+            });
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -112,6 +136,13 @@ class Backups extends Page
         }
 
         return "This will run the {$profile['type']} profile and may take a few minutes.";
+    }
+
+    private function backupFilename(array $arguments): string
+    {
+        $path = (string) ($arguments['name'] ?? '');
+
+        return filled($path) ? $path : 'backup file';
     }
 
     private function notificationBody(string $output): ?string

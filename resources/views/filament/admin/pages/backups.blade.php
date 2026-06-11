@@ -90,9 +90,19 @@
             color: rgb(55 65 81);
         }
 
+        .twyxtco-backup-link--danger {
+            border-color: rgb(248 113 113);
+            color: rgb(185 28 28);
+        }
+
         .dark .twyxtco-backup-link {
             border-color: rgb(55 65 81);
             color: rgb(229 231 235);
+        }
+
+        .dark .twyxtco-backup-link--danger {
+            border-color: rgb(127 29 29);
+            color: rgb(252 165 165);
         }
 
         .twyxtco-backup-button svg,
@@ -186,7 +196,7 @@
                         </div>
                         <div>
                             <dt>Latest</dt>
-                            <dd>{{ $latest ? $latest['age'] : 'No backups yet' }}</dd>
+                            <dd title="{{ $latest['timestamp'] ?? 'No backups yet' }}">{{ $latest ? $latest['age'] : 'No backups yet' }}</dd>
                         </div>
                         <div>
                             <dt>Size</dt>
@@ -228,6 +238,7 @@
                                 <th>Recent backups</th>
                                 <th>Disk</th>
                                 <th>Size</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -235,19 +246,30 @@
                                 <tr>
                                     <td>
                                         @if ($backup['download_url'])
-                                            <a href="{{ $backup['download_url'] }}" class="font-semibold text-primary-600 dark:text-primary-400">
+                                            <a href="{{ $backup['download_url'] }}" class="font-semibold text-primary-600 dark:text-primary-400" title="{{ $backup['timestamp'] ?? $backup['age'] }}">
                                                 {{ $backup['age'] }}
                                             </a>
                                         @else
-                                            {{ $backup['age'] }}
+                                            <span title="{{ $backup['timestamp'] ?? $backup['age'] }}">{{ $backup['age'] }}</span>
                                         @endif
                                     </td>
                                     <td>{{ $backup['disk'] }}</td>
                                     <td>{{ $backup['size_for_humans'] ?? '-' }}</td>
+                                    <td>
+                                        @if ($backup['path'] && $backup['encoded_path'])
+                                            <button
+                                                type="button"
+                                                class="twyxtco-backup-link twyxtco-backup-link--danger"
+                                                wire:click="mountAction('deleteBackup', { profile: @js($backup['profile']), disk: @js($backup['disk']), path: @js($backup['encoded_path']), name: @js($backup['name']) })"
+                                            >
+                                                Delete
+                                            </button>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3">No backups found.</td>
+                                    <td colspan="4">No backups found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
