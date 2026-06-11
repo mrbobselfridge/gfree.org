@@ -60,6 +60,12 @@ class PageForm
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->columnSpanFull(),
 
+                DateTimePicker::make('publish_at')
+                    ->label('Publish at'),
+                DateTimePicker::make('expires_at')
+                    ->label('Expires at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+
                 ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
@@ -76,12 +82,6 @@ class PageForm
                     ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
                     ->columnSpanFull(),
-
-                DateTimePicker::make('publish_at')
-                    ->label('Publish at'),
-                DateTimePicker::make('expires_at')
-                    ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
 
                 Section::make('Redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
