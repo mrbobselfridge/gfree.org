@@ -334,17 +334,39 @@ class PublicPageTest extends TestCase
                             [
                                 'title' => 'Kids',
                                 'summary' => 'Help children know Jesus.',
+                                'type' => 'link_same',
                                 'url' => '/kids',
                             ],
                             [
-                                'title' => 'Welcome',
-                                'summary' => 'Make Sunday clear for guests.',
-                                'url' => 'javascript:void(0)',
+                                'title' => 'Download',
+                                'summary' => 'Open the PDF.',
+                                'type' => 'link_new',
+                                'url' => '/storage/media/serve.pdf',
+                            ],
+                            [
+                                'title' => 'Flip',
+                                'summary' => 'Click for more.',
+                                'key' => 'flip123',
+                                'type' => 'flip_html',
+                                'html' => '<strong>Back details</strong>',
+                            ],
+                            [
+                                'title' => 'Widget',
+                                'summary' => 'Rendered by JavaScript.',
+                                'key' => 'widget123',
+                                'type' => 'javascript_widget',
+                                'javascript' => "document.getElementById('content-card-widget-widget123').textContent = 'Loaded widget';",
                             ],
                             [
                                 'title' => 'Care',
                                 'summary' => 'Support people through hard seasons.',
                                 'url' => '/care',
+                            ],
+                            [
+                                'title' => 'Unsafe',
+                                'summary' => 'Should not become a JavaScript href.',
+                                'type' => 'link_same',
+                                'url' => 'javascript:void(0)',
                             ],
                             [
                                 'title' => 'Production',
@@ -363,13 +385,21 @@ class PublicPageTest extends TestCase
             ->assertSee('Serving teams')
             ->assertSee('class="page-link-cards"', false)
             ->assertSee('<a class="page-link-card" href="/kids">', false)
-            ->assertSee('<a class="page-link-card" href="javascript:void(0)">', false)
+            ->assertSee('<a class="page-link-card" href="/storage/media/serve.pdf" target="_blank" rel="noopener noreferrer">', false)
+            ->assertSee('id="content-card-flip-flip123"', false)
+            ->assertSee('<strong>Back details</strong>', false)
+            ->assertSee('id="content-card-widget-widget123"', false)
+            ->assertSee("document.getElementById('content-card-widget-widget123').textContent = 'Loaded widget';", false)
             ->assertSee('<div class="page-link-card">', false)
+            ->assertDontSee('href="javascript:void(0)"', false)
             ->assertDontSee('href="/production"', false)
             ->assertDontSee('href="#"', false)
             ->assertSee('Kids')
-            ->assertSee('Welcome')
+            ->assertSee('Download')
+            ->assertSee('Flip')
+            ->assertSee('Widget')
             ->assertSee('Care')
+            ->assertSee('Unsafe')
             ->assertSee('Production');
     }
 

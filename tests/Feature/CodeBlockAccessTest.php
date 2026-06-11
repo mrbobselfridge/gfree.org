@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\User;
 use App\Support\AdminAccess;
 use App\Support\CodeBlockAccess;
+use App\Support\LinkCard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -150,5 +151,127 @@ class CodeBlockAccessTest extends TestCase
             ->assertSee('Existing embed')
             ->assertSee('window.existingEmbed', false)
             ->assertDontSee('Code Blocks');
+    }
+
+    public function test_editor_without_code_blocks_access_cannot_change_existing_code_card_data(): void
+    {
+        $editor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES],
+                'records' => [],
+            ],
+        ]);
+
+        $existingBlocks = [
+            [
+                'type' => 'link_cards',
+                'data' => [
+                    'heading' => 'Cards',
+                    'cards' => [
+                        [
+                            'key' => 'safe-link',
+                            'title' => 'Safe link',
+                            'type' => LinkCard::TYPE_LINK_SAME,
+                            'url' => '/safe',
+                        ],
+                        [
+                            'key' => 'flip-card',
+                            'title' => 'Original flip',
+                            'summary' => 'Original summary',
+                            'type' => LinkCard::TYPE_FLIP_HTML,
+                            'html' => '<strong>Original HTML</strong>',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $submittedBlocks = [
+            [
+                'type' => 'link_cards',
+                'data' => [
+                    'heading' => 'Cards edited',
+                    'cards' => [
+                        [
+                            'key' => 'safe-link',
+                            'title' => 'Safe link edited',
+                            'type' => LinkCard::TYPE_LINK_NEW,
+                            'url' => '/safe.pdf',
+                            'html' => '<script>window.shouldNotSave = true;</script>',
+                        ],
+                        [
+                            'key' => 'flip-card',
+                            'title' => 'Tampered flip',
+                            'type' => LinkCard::TYPE_FLIP_HTML,
+                            'html' => '<strong>Tampered HTML</strong>',
+                        ],
+                        [
+                            'key' => 'new-widget',
+                            'title' => 'Unauthorized widget',
+                            'type' => LinkCard::TYPE_JAVASCRIPT_WIDGET,
+                            'javascript' => 'window.unauthorizedWidget = true;',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $protectedBlocks = CodeBlockAccess::protectBlocks($submittedBlocks, $existingBlocks, $editor);
+        $cards = $protectedBlocks[0]['data']['cards'];
+
+        $this->assertSame('Safe link edited', $cards[0]['title']);
+        $this->assertSame(LinkCard::TYPE_LINK_NEW, $cards[0]['type']);
+        $this->assertArrayNotHasKey('html', $cards[0]);
+        $this->assertSame('Original flip', $cards[1]['title']);
+        $this->assertSame(LinkCard::TYPE_FLIP_HTML, $cards[1]['type']);
+        $this->assertSame('<strong>Original HTML</strong>', $cards[1]['html']);
+        $this->assertCount(2, $cards);
+    }
+
+    public function test_code_card_type_options_are_hidden_without_code_blocks_access(): void
+    {
+        $page = Page::query()->create([
+            'title' => 'Cards Page',
+            'slug' => 'cards-page',
+            'content_blocks' => [
+                [
+                    'type' => 'link_cards',
+                    'data' => [
+                        'heading' => 'Cards',
+                        'cards' => [
+                            [
+                                'key' => 'card-one',
+                                'title' => 'Plain card',
+                                'type' => LinkCard::TYPE_DISPLAY,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $editor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES],
+                'records' => [],
+            ],
+        ]);
+
+        $this->actingAs($editor)
+            ->get("/admin/pages/{$page->getKey()}/edit")
+            ->assertOk()
+            ->assertDontSee('Flip HTML')
+            ->assertDontSee('JavaScript widget');
+
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->get("/admin/pages/{$page->getKey()}/edit")
+            ->assertOk()
+            ->assertSee('Flip HTML')
+            ->assertSee('JavaScript widget');
     }
 }

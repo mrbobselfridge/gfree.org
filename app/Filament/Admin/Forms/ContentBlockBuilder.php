@@ -3,10 +3,13 @@
 namespace App\Filament\Admin\Forms;
 
 use App\Support\CodeBlockAccess;
+use App\Support\LinkCard;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -16,6 +19,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\HtmlString;
 use Throwable;
 
 class ContentBlockBuilder
@@ -192,15 +196,52 @@ class ContentBlockBuilder
                             ->required(),
                         Repeater::make('cards')
                             ->schema([
+                                Hidden::make('key')
+                                    ->default(fn (): string => LinkCard::newKey())
+                                    ->afterStateHydrated(function (Hidden $component, ?string $state): void {
+                                        if (blank($state)) {
+                                            $component->state(LinkCard::newKey());
+                                        }
+                                    }),
                                 TextInput::make('title')
                                     ->required()
                                     ->maxLength(160),
                                 Textarea::make('summary')
                                     ->rows(2),
+                                Select::make('type')
+                                    ->label('Card type')
+                                    ->options(fn (): array => LinkCard::typeOptions(CodeBlockAccess::canManage()))
+                                    ->default(LinkCard::TYPE_DISPLAY)
+                                    ->afterStateHydrated(function (Select $component, ?string $state, Get $get): void {
+                                        if (blank($state)) {
+                                            $component->state(LinkCard::normalizeType($state, $get('url')));
+                                        }
+                                    })
+                                    ->required()
+                                    ->live(),
                                 Textarea::make('url')
                                     ->label('URL / href')
                                     ->rows(2)
-                                    ->helperText('Optional. Leave blank for a non-linked card. If filled, it is used exactly as the href.'),
+                                    ->helperText('Use a site path like /give or a full https:// URL.')
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true)),
+                                Textarea::make('html')
+                                    ->label('Flip HTML')
+                                    ->rows(7)
+                                    ->helperText('Trusted raw HTML shown on the back of the flip card.')
+                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
+                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
+                                    ->columnSpanFull(),
+                                Placeholder::make('widget_id')
+                                    ->label('Widget div ID')
+                                    ->content(fn (Get $get): HtmlString => new HtmlString('<code>'.e(LinkCard::widgetId($get('key'))).'</code>'))
+                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET),
+                                Textarea::make('javascript')
+                                    ->label('JavaScript')
+                                    ->rows(9)
+                                    ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
+                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
+                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
+                                    ->columnSpanFull(),
                             ])
                             ->addActionLabel('Add card')
                             ->columns(3)
@@ -458,6 +499,16 @@ class ContentBlockBuilder
             if (filled($item['data'][$field] ?? null)) {
                 $item['data'][$field] .= ' copy';
             }
+        }
+
+        if (($item['type'] ?? null) === 'link_cards') {
+            $item['data']['cards'] = collect($item['data']['cards'] ?? [])
+                ->map(function (array $card): array {
+                    $card['key'] = LinkCard::newKey();
+
+                    return $card;
+                })
+                ->all();
         }
 
         return $item;

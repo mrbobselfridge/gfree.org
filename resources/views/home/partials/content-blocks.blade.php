@@ -1,6 +1,6 @@
 @if (count($contentBlocks))
     <div class="page-blocks">
-        @foreach ($contentBlocks as $block)
+        @foreach ($contentBlocks as $blockIndex => $block)
             @php($data = $block['data'] ?? [])
 
             @switch($block['type'])

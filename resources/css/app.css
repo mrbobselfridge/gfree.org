@@ -957,6 +957,8 @@
     flex: 0 1 calc((100% - 32px) / 3);
     min-height: 220px;
     padding: 28px;
+    font: inherit;
+    text-align: left;
     color: var(--page-block-card-fg);
     text-decoration: none;
     background: var(--page-block-card-bg);
@@ -974,6 +976,56 @@
     color: var(--page-block-card-muted);
     font-size: 1.04rem;
     line-height: 1.6;
+}
+
+.page-link-card--flip {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.page-link-card__flip-inner {
+    position: relative;
+    display: block;
+    min-height: 220px;
+    transition: transform 240ms ease;
+    transform-style: preserve-3d;
+}
+
+.page-link-card--flip.is-flipped .page-link-card__flip-inner {
+    transform: rotateY(180deg);
+}
+
+.page-link-card__face {
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: 28px;
+    overflow: auto;
+    color: var(--page-block-card-fg);
+    background: var(--page-block-card-bg);
+    border: 1px solid var(--page-block-border);
+    backface-visibility: hidden;
+}
+
+.page-link-card__face--back {
+    transform: rotateY(180deg);
+}
+
+.page-link-card__face--back > :first-child {
+    margin-top: 0;
+}
+
+.page-link-card__face--back > :last-child {
+    margin-bottom: 0;
+}
+
+.page-link-card__widget {
+    max-width: 100%;
+    min-height: 1px;
+    margin-top: 20px;
 }
 
 .page-process {
