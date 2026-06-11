@@ -77,6 +77,12 @@ class PageForm
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
                     ->columnSpanFull(),
 
+                DateTimePicker::make('publish_at')
+                    ->label('Publish at'),
+                DateTimePicker::make('expires_at')
+                    ->label('Expires at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+
                 Section::make('Redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
                     ->icon(Heroicon::OutlinedArrowRightCircle)
@@ -139,12 +145,6 @@ class PageForm
                     ->label('SEO description')
                     ->rows(1)
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                DateTimePicker::make('publish_at')
-                    ->label('Publish at'),
-                DateTimePicker::make('expires_at')
-                    ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
 
                 Select::make('parent_page_id')
                     ->label('Parent Page - optional')
