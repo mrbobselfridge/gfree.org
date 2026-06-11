@@ -633,7 +633,7 @@
             </div>
         </section>
 
-        <section class="manual-section manual-contents-section" id="contents" data-manual-contents>
+        <section class="manual-section manual-contents-section is-collapsed" id="contents" data-manual-contents>
             <div class="manual-contents-bar">
                 <h2>Contents</h2>
                 <div class="manual-contents-controls" aria-label="Contents controls">
@@ -641,15 +641,15 @@
                         type="button"
                         class="manual-contents-control"
                         data-manual-contents-toggle
-                        aria-expanded="true"
+                        aria-expanded="false"
                         aria-controls="manual-contents-links"
                     >
-                        Collapse
+                        Expand
                     </button>
                     <a class="manual-contents-control manual-contents-top" href="#top">Top</a>
                 </div>
             </div>
-            <ol class="manual-toc" id="manual-contents-links">
+            <ol class="manual-toc" id="manual-contents-links" hidden>
                 <li><a href="#roles">Roles and Permissions</a></li>
                 <li><a href="#daily-workflow">Daily Workflow</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
@@ -1267,7 +1267,7 @@
             let contentsTop = 0;
             let expandedHeight = 0;
             let isDocked = false;
-            let isExpanded = true;
+            let isExpanded = false;
             let userExpandedWhileDocked = false;
             let keepCollapsedForHashScroll = false;
             let hashCollapseHandled = false;
