@@ -60,6 +60,9 @@ class PageForm
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->columnSpanFull(),
 
+                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
@@ -67,8 +70,6 @@ class PageForm
                     ->live()
                     ->default(false)
                     ->required(),
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
                 Placeholder::make('redirect_inactive_notice')
                     ->label('Redirect inactive')
