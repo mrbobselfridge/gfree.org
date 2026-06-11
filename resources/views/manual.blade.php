@@ -1252,12 +1252,36 @@
             let expandedHeight = 0;
             let userExpandedWhileDocked = false;
 
+            const hashTarget = () => {
+                if (! window.location.hash || window.location.hash === '#top') {
+                    return null;
+                }
+
+                try {
+                    return document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+                } catch (error) {
+                    return null;
+                }
+            };
+
+            const restoreHashScroll = () => {
+                const target = hashTarget();
+
+                if (! target || target === contents) {
+                    return;
+                }
+
+                window.requestAnimationFrame(() => {
+                    target.scrollIntoView({ block: 'start', behavior: 'auto' });
+                });
+            };
+
             const measure = () => {
                 contents.style.setProperty('--manual-contents-spacer', '0px');
                 contents.classList.remove('is-collapsed');
                 links.hidden = false;
                 expandedHeight = contents.offsetHeight;
-                contentsTop = contents.getBoundingClientRect().top + window.scrollY;
+                contentsTop = contents.offsetTop;
                 update();
             };
 
@@ -1307,7 +1331,10 @@
             contents.querySelectorAll('.manual-toc a').forEach((link) => {
                 link.addEventListener('click', () => {
                     userExpandedWhileDocked = false;
-                    window.setTimeout(update, 0);
+                    window.setTimeout(() => {
+                        update();
+                        restoreHashScroll();
+                    }, 0);
                 });
             });
 
@@ -1315,8 +1342,19 @@
             window.addEventListener('scroll', update, { passive: true });
             window.addEventListener('beforeprint', () => setExpanded(true));
             window.addEventListener('afterprint', update);
-            window.addEventListener('load', measure);
+            window.addEventListener('load', () => {
+                measure();
+                restoreHashScroll();
+            });
+            window.addEventListener('hashchange', () => {
+                userExpandedWhileDocked = false;
+                window.setTimeout(() => {
+                    update();
+                    restoreHashScroll();
+                }, 0);
+            });
             measure();
+            restoreHashScroll();
         })();
     </script>
 </body>
