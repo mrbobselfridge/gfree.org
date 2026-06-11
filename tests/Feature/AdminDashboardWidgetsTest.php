@@ -29,7 +29,7 @@ class AdminDashboardWidgetsTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get('/admin')
             ->assertOk()
-            ->assertSee('Custom Church Name');
+            ->assertSee('Custom Church Name Dashboard');
 
         $this->assertFalse(CmsDashboard::shouldRegisterNavigation());
     }

@@ -1461,9 +1461,9 @@ class AdminPanelProvider extends PanelProvider
     private function brandName(): string
     {
         if (! Schema::hasTable('site_settings')) {
-            return 'TwyxtCo Church';
+            return 'TwyxtCo Church Dashboard';
         }
 
-        return SiteSetting::query()->value('church_name') ?: 'TwyxtCo Church';
+        return (SiteSetting::query()->value('church_name') ?: 'TwyxtCo Church').' Dashboard';
     }
 }
