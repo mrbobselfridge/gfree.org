@@ -205,9 +205,7 @@ class ContentBlockBuilder
                                     }),
                                 TextInput::make('title')
                                     ->required()
-                                    ->maxLength(160)->columnSpanFull(),
-                                Textarea::make('summary')
-                                    ->rows(2)->columnSpanFull(),
+                                    ->maxLength(160),
                                 Select::make('type')
                                     ->label('Card type')
                                     ->options(fn (): array => LinkCard::typeOptions(CodeBlockAccess::canManage()))
@@ -218,7 +216,10 @@ class ContentBlockBuilder
                                         }
                                     })
                                     ->required()
-                                    ->live()->columnSpanFull(),
+                                    ->live(),
+                                Textarea::make('summary')
+                                    ->rows(2)
+                                    ->columnSpanFull(),
                                 Textarea::make('url')
                                     ->label('URL / href')
                                     ->rows(2)
@@ -229,20 +230,23 @@ class ContentBlockBuilder
                                     ->rows(7)
                                     ->helperText('Trusted raw HTML shown on the back of the flip card.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
-                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage()),
+                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
+                                    ->columnSpanFull(),
                                 Placeholder::make('widget_id')
                                     ->label('Widget div ID')
                                     ->content(fn (Get $get): HtmlString => new HtmlString('<code>'.e(LinkCard::widgetId($get('key'))).'</code>'))
-                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET),
+                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
+                                    ->columnSpanFull(),
                                 Textarea::make('javascript')
                                     ->label('JavaScript')
                                     ->rows(9)
                                     ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
-                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage()),
+                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
+                                    ->columnSpanFull(),
                             ])
                             ->addActionLabel('Add card')
-                            ->columns(3)
+                            ->columns(2)
                             ->minItems(1)
                             ->columnSpanFull(),
                         ...self::scheduleFields($withScheduleFields),
