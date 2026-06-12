@@ -130,6 +130,18 @@ class PageForm
                             ->columnSpan(2),
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
                             ->columnSpan(2),
+                        TextInput::make('seo_title')
+                            ->label('SEO title')
+                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
+                            ->maxLength(255)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
+                        Textarea::make('seo_description')
+                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
+                            ->label('SEO description')
+                            ->rows(1)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
                     ])
                     ->columns(4)
                     ->columnSpanFull()
@@ -173,18 +185,6 @@ class PageForm
                         DateTimePicker::make('expires_at')
                             ->label('Expires at')
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
-                            ->columnSpan(2),
-                        TextInput::make('seo_title')
-                            ->label('SEO title')
-                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                            ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
-                        Textarea::make('seo_description')
-                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                            ->label('SEO description')
-                            ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->columnSpan(2),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
