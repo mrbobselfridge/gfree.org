@@ -71,7 +71,7 @@ class PageForm
                     ->key('pages-section-controls')
                     ->columnSpanFull(),
 
-                self::section('Page Settings', 'pages-settings')
+                self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the URL, ordering, publish window, and page hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
@@ -143,8 +143,8 @@ class PageForm
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
-                self::section('Page Display', 'pages-display')
-                    ->description('Controls the public page frame, header copy, and listing image.')
+                self::section('Page Display', 'pages-display', collapsedOnEdit: true)
+                    ->description('Controls the public page frame, header copy, listing image, and optional SEO Title/Description.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->schema([
                         ToggleButtons::make('show_site_chrome')
@@ -206,14 +206,14 @@ class PageForm
             ]);
     }
 
-    private static function section(string $heading, string $id): Section
+    private static function section(string $heading, string $id, bool $collapsedOnEdit = false): Section
     {
         return Section::make($heading)
             ->id($id)
             ->key($id, isInheritable: false)
             ->collapsible()
-            ->collapsed(false)
-            ->persistCollapsed();
+            ->collapsed(fn (?string $operation): bool => $operation === 'edit' && $collapsedOnEdit)
+            ->persistCollapsed(fn (?string $operation): bool => $operation === 'edit');
     }
 
     public static function parentPageOptions(?Page $record = null): array

@@ -46,15 +46,15 @@ class PageParentPageTest extends TestCase
             ->assertSchemaComponentHidden('pages-redirect')
             ->assertSchemaComponentExists(
                 'pages-display',
-                checkComponentUsing: fn (Section $component): bool => $this->isExpandablePageSection($component),
+                checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
             )
             ->assertSchemaComponentExists(
                 'pages-content-blocks',
-                checkComponentUsing: fn (Section $component): bool => $this->isExpandablePageSection($component),
+                checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
             )
             ->assertSchemaComponentExists(
                 'pages-settings',
-                checkComponentUsing: fn (Section $component): bool => $this->isExpandablePageSection($component),
+                checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
             )
             ->assertFormFieldVisible('show_site_chrome')
             ->assertFormFieldVisible('show_page_header')
@@ -73,6 +73,34 @@ class PageParentPageTest extends TestCase
             ->assertSee('Expand all');
     }
 
+    public function test_edit_page_form_defaults_content_open_and_settings_display_closed(): void
+    {
+        $page = Page::query()->create([
+            'title' => 'Contact',
+            'slug' => 'contact',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditPage::class, ['record' => $page->getKey()])
+            ->assertSchemaComponentExists(
+                'pages-settings',
+                checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
+                    && $component->isCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'pages-display',
+                checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
+                    && $component->isCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'pages-content-blocks',
+                checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
+                    && ! $component->isCollapsed(),
+            )
+            ->assertSchemaComponentHidden('pages-redirect');
+    }
+
     public function test_redirect_pages_show_redirect_section_and_hide_normal_page_sections(): void
     {
         Livewire::actingAs(User::factory()->create())
@@ -82,7 +110,7 @@ class PageParentPageTest extends TestCase
                 'pages-redirect',
                 checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
                     && ! $component->isCollapsed()
-                    && $component->shouldPersistCollapsed(),
+                    && ! $component->shouldPersistCollapsed(),
             )
             ->assertSchemaComponentHidden('pages-display')
             ->assertSchemaComponentHidden('pages-content-blocks')
@@ -297,10 +325,16 @@ class PageParentPageTest extends TestCase
             ->assertHasFormErrors(['parent_page_id']);
     }
 
-    private function isExpandablePageSection(Section $component): bool
+    private function isOpenCreatePageSection(Section $component): bool
     {
         return $component->isCollapsible()
             && ! $component->isCollapsed()
+            && ! $component->shouldPersistCollapsed();
+    }
+
+    private function isPersistedEditPageSection(Section $component): bool
+    {
+        return $component->isCollapsible()
             && $component->shouldPersistCollapsed();
     }
 }
