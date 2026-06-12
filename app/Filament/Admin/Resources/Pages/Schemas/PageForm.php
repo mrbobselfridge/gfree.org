@@ -47,14 +47,6 @@ class PageForm
                         ? $set('slug', Str::slug($state))
                         : null)
                     ->columnSpan(2),
-                ToggleButtons::make('is_published')
-                    ->label('Make Page Live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->live()
-                    ->required()
-                    ->columnSpan(2),
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
@@ -62,8 +54,16 @@ class PageForm
                     ->live()
                     ->default(false)
                     ->required()
-                    ->columnSpan(2),
+                    ->columnSpan(1),
 
+                ToggleButtons::make('is_published')
+                    ->label('Make Page Live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->live()
+                    ->required()
+                    ->columnSpan(1),
                 View::make('filament.admin.section-controls')
                     ->viewData([
                         'sectionIds' => self::SECTION_IDS,
