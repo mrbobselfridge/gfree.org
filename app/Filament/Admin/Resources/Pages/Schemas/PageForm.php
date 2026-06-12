@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\Pages\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
-use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\Page;
@@ -13,7 +12,6 @@ use App\Rules\ValidPageParent;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
@@ -102,7 +100,7 @@ class PageForm
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
                 self::section('Page Settings', 'pages-settings')
-                    ->description('Controls the URL, ordering, publish window, search metadata, and page hierarchy.')
+                    ->description('Controls the URL, ordering, publish window, and page hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
                         TextInput::make('slug')
@@ -153,52 +151,6 @@ class PageForm
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
                             ->columnSpanFull(),
-                    ])
-                    ->columns(4)
-                    ->columnSpanFull()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                self::section('Page Display', 'pages-display')
-                    ->description('Controls the public page frame, header copy, and listing image.')
-                    ->icon(Heroicon::OutlinedRectangleGroup)
-                    ->schema([
-                        ToggleButtons::make('show_site_chrome')
-                            ->label('Show navigation and footer')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->columnSpan(2),
-                        ToggleButtons::make('show_page_header')
-                            ->label('Show page header')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->columnSpan(2),
-                        TextInput::make('hero_label')
-                            ->label('Small label')
-                            ->maxLength(255)
-                            ->columnSpan(2),
-                        Textarea::make('intro')
-                            ->rows(1)
-                            ->columnSpan(2),
-                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                            ->columnSpan(2),
-                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
-                            ->columnSpan(2),
-                        TextInput::make('seo_title')
-                            ->label('SEO title')
-                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                            ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
-                        Textarea::make('seo_description')
-                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                            ->label('SEO description')
-                            ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
                     ])
                     ->columns(4)
                     ->columnSpanFull()
