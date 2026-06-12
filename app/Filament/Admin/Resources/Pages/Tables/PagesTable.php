@@ -11,6 +11,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class PagesTable
 {
@@ -19,17 +21,27 @@ class PagesTable
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('is_redirect')
                     ->label('Type')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Redirect' : 'Page')
-                    ->color(fn (bool $state): string => $state ? 'warning' : 'success'),
+                    ->color(fn (bool $state): string => $state ? 'warning' : 'success')
+                    ->searchable(query: fn (Builder $query, string $search): Builder => self::applyBooleanSearch(
+                        query: $query,
+                        search: $search,
+                        column: 'is_redirect',
+                        trueTerms: ['redirect', 'redirects', 'forward', 'forwarding', '1', 'yes', 'true'],
+                        falseTerms: ['page', 'pages', 'content', 'content page', 'content pages', '0', 'no', 'false'],
+                    ))
+                    ->sortable(),
                 TextColumn::make('slug')
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('redirect_url')
                     ->label('Redirects To')
                     ->placeholder('Not a redirect')
@@ -56,14 +68,24 @@ class PagesTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_published')
                     ->label('Live')
-                    ->boolean(),
+                    ->boolean()
+                    ->searchable(query: fn (Builder $query, string $search): Builder => self::applyBooleanSearch(
+                        query: $query,
+                        search: $search,
+                        column: 'is_published',
+                        trueTerms: ['live', 'published', 'active', '1', 'yes', 'true'],
+                        falseTerms: ['draft', 'unpublished', 'inactive', '0', 'no', 'false'],
+                    ))
+                    ->sortable(),
                 TextColumn::make('publish_at')
                     ->label('Publish at')
                     ->dateTime()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('expires_at')
                     ->label('Expires at')
                     ->dateTime()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -87,7 +109,9 @@ class PagesTable
                         default => $query,
                     }),
             ])
-            ->defaultSort('sort_order')
+            ->defaultSort('title')
+            ->persistSortInSession()
+            ->persistColumnsInSession()
             ->recordAction(null)
             ->recordUrl(null)
             ->recordActions(StandardTableActions::make(), position: RecordActionsPosition::BeforeColumns)
@@ -96,5 +120,25 @@ class PagesTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function applyBooleanSearch(
+        Builder $query,
+        string $search,
+        string $column,
+        array $trueTerms,
+        array $falseTerms,
+    ): Builder {
+        $search = Str::of($search)->lower()->trim()->toString();
+
+        if (in_array($search, $trueTerms, true)) {
+            return $query->where($column, true);
+        }
+
+        if (in_array($search, $falseTerms, true)) {
+            return $query->where($column, false);
+        }
+
+        return $query->whereRaw('0 = 1');
     }
 }

@@ -127,25 +127,80 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldHidden('parent_page_id');
     }
 
-    public function test_pages_table_defaults_to_sort_order(): void
+    public function test_pages_table_defaults_to_title_order(): void
     {
-        Page::query()->create([
-            'title' => 'Second Page',
-            'slug' => 'second-page',
-            'sort_order' => 20,
+        $zebra = Page::query()->create([
+            'title' => 'Zebra Page',
+            'slug' => 'zebra-page',
+            'sort_order' => 10,
             'is_published' => true,
         ]);
 
-        Page::query()->create([
-            'title' => 'First Page',
-            'slug' => 'first-page',
-            'sort_order' => 10,
+        $alpha = Page::query()->create([
+            'title' => 'Alpha Page',
+            'slug' => 'alpha-page',
+            'sort_order' => 20,
             'is_published' => true,
         ]);
 
         Livewire::actingAs(User::factory()->create())
             ->test(ListPages::class)
-            ->assertSeeInOrder(['First Page', 'Second Page']);
+            ->assertCanSeeTableRecords([$alpha, $zebra], inOrder: true);
+    }
+
+    public function test_pages_table_sort_search_and_column_visibility_preferences_are_session_persisted(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->assertTableColumnExists('title', fn ($column): bool => $column->isSortable() && $column->isGloballySearchable())
+            ->assertTableColumnExists('is_published', fn ($column): bool => $column->isSortable() && $column->isGloballySearchable())
+            ->assertTableColumnExists('slug', fn ($column): bool => $column->isSortable() && $column->isGloballySearchable())
+            ->assertTableColumnExists('is_redirect', fn ($column): bool => $column->isSortable() && $column->isGloballySearchable())
+            ->assertTableColumnExists('publish_at', fn ($column): bool => $column->isSortable() && $column->isGloballySearchable())
+            ->assertTableColumnExists('expires_at', fn ($column): bool => $column->isSortable() && $column->isGloballySearchable())
+            ->assertTableColumnExists('sort_order', fn ($column): bool => $column->isSortable())
+            ->tap(function ($component): void {
+                $table = $component->instance()->getTable();
+
+                $this->assertSame('title', $table->getDefaultSortColumn());
+                $this->assertTrue($table->persistsSortInSession());
+                $this->assertTrue($table->persistsColumnsInSession());
+            });
+    }
+
+    public function test_pages_table_searches_live_and_type_labels(): void
+    {
+        $livePage = Page::query()->create([
+            'title' => 'Alpha',
+            'slug' => 'alpha',
+            'is_published' => true,
+        ]);
+
+        $draftPage = Page::query()->create([
+            'title' => 'Beta',
+            'slug' => 'beta',
+            'is_published' => false,
+        ]);
+
+        $redirectPage = Page::query()->create([
+            'title' => 'Gamma',
+            'slug' => 'gamma',
+            'is_published' => true,
+            'is_redirect' => true,
+            'redirect_url' => '/alpha',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->searchTable('live')
+            ->assertCanSeeTableRecords([$livePage, $redirectPage])
+            ->assertCanNotSeeTableRecords([$draftPage])
+            ->searchTable('redirect')
+            ->assertCanSeeTableRecords([$redirectPage])
+            ->assertCanNotSeeTableRecords([$livePage, $draftPage])
+            ->searchTable('page')
+            ->assertCanSeeTableRecords([$livePage, $draftPage])
+            ->assertCanNotSeeTableRecords([$redirectPage]);
     }
 
     public function test_page_can_belong_to_another_page(): void
