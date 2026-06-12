@@ -19,6 +19,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\HtmlString;
@@ -26,6 +27,13 @@ use Illuminate\Support\Str;
 
 class PageForm
 {
+    private const SECTION_IDS = [
+        'pages-redirect',
+        'pages-display',
+        'pages-content-blocks',
+        'pages-settings',
+    ];
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -44,25 +52,6 @@ class PageForm
                     ->default(false)
                     ->live()
                     ->required(),
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                TextInput::make('slug')
-                    ->prefix('/')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->rule(new PageSlugPath)
-                    ->suffixAction(SlugRebuildAction::make('title'))
-                    ->maxLength(255),
-                Textarea::make('intro')
-                    ->rows(1)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
@@ -71,27 +60,22 @@ class PageForm
                     ->default(false)
                     ->required(),
 
-                Placeholder::make('redirect_inactive_notice')
-                    ->label('Redirect inactive')
-                    ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
-                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect') && ! (bool) $get('is_published'))
+                View::make('filament.admin.section-controls')
+                    ->viewData([
+                        'sectionIds' => self::SECTION_IDS,
+                    ])
+                    ->key('pages-section-controls')
                     ->columnSpanFull(),
 
-                DateTimePicker::make('publish_at')
-                    ->label('Publish at'),
-                DateTimePicker::make('expires_at')
-                    ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
-
-                ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                Section::make('Redirect')
+                self::section('Redirect', 'pages-redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
                     ->icon(Heroicon::OutlinedArrowRightCircle)
                     ->schema([
+                        Placeholder::make('redirect_inactive_notice')
+                            ->label('Redirect inactive')
+                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
+                            ->columnSpanFull(),
                         TextInput::make('redirect_url')
                             ->label('Send visitors to')
                             ->helperText('Use a local path like /new-here or a full https:// URL.')
@@ -112,7 +96,36 @@ class PageForm
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
-                Section::make('Page Content Blocks')
+                self::section('Page Display', 'pages-display')
+                    ->description('Controls the public page frame, header copy, and listing image.')
+                    ->icon(Heroicon::OutlinedRectangleGroup)
+                    ->schema([
+                        ToggleButtons::make('show_site_chrome')
+                            ->label('Show navigation and footer')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required(),
+                        ToggleButtons::make('show_page_header')
+                            ->label('Show page header')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required(),
+                        TextInput::make('hero_label')
+                            ->label('Small label')
+                            ->maxLength(255),
+                        Textarea::make('intro')
+                            ->rows(1)
+                            ->columnSpanFull(),
+                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
+                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image'),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                self::section('Page Content Blocks', 'pages-content-blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->iconColor('success')
@@ -124,47 +137,64 @@ class PageForm
                     ])
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ToggleButtons::make('show_site_chrome')
-                    ->label('Show navigation and footer')
-                    ->boolean()
-                    ->inline()
-                    ->default(true)
-                    ->required()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                ToggleButtons::make('show_page_header')
-                    ->label('Show page header')
-                    ->boolean()
-                    ->inline()
-                    ->default(true)
-                    ->required()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
-                TextInput::make('seo_title')
-                    ->label('SEO title')
-                    ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                    ->maxLength(255)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                Textarea::make('seo_description')
-                    ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                    ->label('SEO description')
-                    ->rows(1)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                Select::make('parent_page_id')
-                    ->label('Parent Page - optional')
-                    ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                    ->searchable()
-                    ->preload()
-                    ->native(false)
-                    ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-                Placeholder::make('direct_child_pages')
-                    ->label('Parent to the following child pages')
-                    ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                    ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
+                self::section('Page Settings', 'pages-settings')
+                    ->description('Controls the URL, ordering, publish window, search metadata, and page hierarchy.')
+                    ->icon(Heroicon::OutlinedCog6Tooth)
+                    ->schema([
+                        TextInput::make('slug')
+                            ->prefix('/')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->rule(new PageSlugPath)
+                            ->suffixAction(SlugRebuildAction::make('title'))
+                            ->maxLength(255),
+                        TextInput::make('sort_order')
+                            ->required()
+                            ->numeric()
+                            ->default(0),
+                        DateTimePicker::make('publish_at')
+                            ->label('Publish at'),
+                        DateTimePicker::make('expires_at')
+                            ->label('Expires at')
+                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+                        TextInput::make('seo_title')
+                            ->label('SEO title')
+                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
+                            ->maxLength(255)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                        Textarea::make('seo_description')
+                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
+                            ->label('SEO description')
+                            ->rows(1)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                        Select::make('parent_page_id')
+                            ->label('Parent Page - optional')
+                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                        Placeholder::make('direct_child_pages')
+                            ->label('Parent to the following child pages')
+                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
 
             ]);
+    }
+
+    private static function section(string $heading, string $id): Section
+    {
+        return Section::make($heading)
+            ->id($id)
+            ->key($id, isInheritable: false)
+            ->collapsible()
+            ->collapsed(false)
+            ->persistCollapsed();
     }
 
     public static function parentPageOptions(?Page $record = null): array

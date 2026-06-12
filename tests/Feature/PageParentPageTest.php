@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Models\Page;
 use App\Models\User;
+use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
@@ -32,6 +33,70 @@ class PageParentPageTest extends TestCase
             'slug' => 'sorted-page',
             'sort_order' => 17,
         ]);
+    }
+
+    public function test_page_form_groups_fields_into_collapsible_sections(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->assertFormFieldVisible('title')
+            ->assertFormFieldVisible('is_published')
+            ->assertFormFieldVisible('is_redirect')
+            ->assertSchemaComponentExists('pages-section-controls')
+            ->assertSchemaComponentHidden('pages-redirect')
+            ->assertSchemaComponentExists(
+                'pages-display',
+                checkComponentUsing: fn (Section $component): bool => $this->isExpandablePageSection($component),
+            )
+            ->assertSchemaComponentExists(
+                'pages-content-blocks',
+                checkComponentUsing: fn (Section $component): bool => $this->isExpandablePageSection($component),
+            )
+            ->assertSchemaComponentExists(
+                'pages-settings',
+                checkComponentUsing: fn (Section $component): bool => $this->isExpandablePageSection($component),
+            )
+            ->assertFormFieldVisible('show_site_chrome')
+            ->assertFormFieldVisible('show_page_header')
+            ->assertFormFieldVisible('hero_label')
+            ->assertFormFieldVisible('intro')
+            ->assertFormFieldVisible('hero_image_path')
+            ->assertFormFieldVisible('card_image_path')
+            ->assertFormFieldVisible('slug')
+            ->assertFormFieldVisible('sort_order')
+            ->assertFormFieldVisible('publish_at')
+            ->assertFormFieldVisible('expires_at')
+            ->assertFormFieldVisible('seo_title')
+            ->assertFormFieldVisible('seo_description')
+            ->assertFormFieldVisible('parent_page_id')
+            ->assertSee('Collapse all')
+            ->assertSee('Expand all');
+    }
+
+    public function test_redirect_pages_show_redirect_section_and_hide_normal_page_sections(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.is_redirect', true)
+            ->assertSchemaComponentExists(
+                'pages-redirect',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && ! $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentHidden('pages-display')
+            ->assertSchemaComponentHidden('pages-content-blocks')
+            ->assertSchemaComponentVisible('pages-settings')
+            ->assertFormFieldVisible('redirect_url')
+            ->assertFormFieldVisible('redirect_status_code')
+            ->assertFormFieldVisible('slug')
+            ->assertFormFieldVisible('sort_order')
+            ->assertFormFieldVisible('publish_at')
+            ->assertFormFieldVisible('expires_at')
+            ->assertFormFieldHidden('show_site_chrome')
+            ->assertFormFieldHidden('seo_title')
+            ->assertFormFieldHidden('seo_description')
+            ->assertFormFieldHidden('parent_page_id');
     }
 
     public function test_pages_table_defaults_to_sort_order(): void
@@ -230,5 +295,12 @@ class PageParentPageTest extends TestCase
             ->set('data.parent_page_id', $child->getKey())
             ->call('save')
             ->assertHasFormErrors(['parent_page_id']);
+    }
+
+    private function isExpandablePageSection(Section $component): bool
+    {
+        return $component->isCollapsible()
+            && ! $component->isCollapsed()
+            && $component->shouldPersistCollapsed();
     }
 }
