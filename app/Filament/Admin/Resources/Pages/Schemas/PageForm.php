@@ -71,36 +71,6 @@ class PageForm
                     ->key('pages-section-controls')
                     ->columnSpanFull(),
 
-                self::section('Redirect', 'pages-redirect')
-                    ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
-                    ->icon(Heroicon::OutlinedArrowRightCircle)
-                    ->schema([
-                        Placeholder::make('redirect_inactive_notice')
-                            ->label('Redirect inactive')
-                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
-                            ->columnSpanFull(),
-                        TextInput::make('redirect_url')
-                            ->label('Send visitors to')
-                            ->helperText('Use a local path like /new-here or a full https:// URL.')
-                            ->placeholder('/new-here')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
-                            ->maxLength(2048)
-                            ->columnSpan(2),
-                        ToggleButtons::make('redirect_status_code')
-                            ->label('Redirect type')
-                            ->options(Page::redirectStatusOptions())
-                            ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
-                            ->inline()
-                            ->default(Page::REDIRECT_TEMPORARY)
-                            ->required()
-                            ->columnSpan(2),
-                    ])
-                    ->columns(4)
-                    ->columnSpanFull()
-                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
-
                 self::section('Page Settings', 'pages-settings')
                     ->description('Controls the URL, ordering, publish window, and page hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
@@ -142,6 +112,36 @@ class PageForm
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
+
+                self::section('Redirect', 'pages-redirect')
+                    ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
+                    ->icon(Heroicon::OutlinedArrowRightCircle)
+                    ->schema([
+                        Placeholder::make('redirect_inactive_notice')
+                            ->label('Redirect inactive')
+                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
+                            ->columnSpanFull(),
+                        TextInput::make('redirect_url')
+                            ->label('Send visitors to')
+                            ->helperText('Use a local path like /new-here or a full https:// URL.')
+                            ->placeholder('/new-here')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
+                            ->maxLength(2048)
+                            ->columnSpan(2),
+                        ToggleButtons::make('redirect_status_code')
+                            ->label('Redirect type')
+                            ->options(Page::redirectStatusOptions())
+                            ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
+                            ->inline()
+                            ->default(Page::REDIRECT_TEMPORARY)
+                            ->required()
+                            ->columnSpan(2),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
                 self::section('Page Display', 'pages-display')
                     ->description('Controls the public page frame, header copy, and listing image.')
