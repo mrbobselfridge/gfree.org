@@ -40,6 +40,9 @@ class PagesTable
                     ->label('Parent Page')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('sort_order')
+                    ->numeric()
+                    ->sortable(),
                 ImageColumn::make('hero_image_path')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -84,7 +87,7 @@ class PagesTable
                         default => $query,
                     }),
             ])
-            ->defaultSort('title')
+            ->defaultSort('sort_order')
             ->recordAction(null)
             ->recordUrl(null)
             ->recordActions(StandardTableActions::make(), position: RecordActionsPosition::BeforeColumns)

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
+use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Models\Page;
 use App\Models\User;
@@ -14,6 +16,44 @@ use Tests\TestCase;
 class PageParentPageTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_page_sort_order_can_be_saved_from_the_admin_form(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.title', 'Sorted Page')
+            ->set('data.slug', 'sorted-page')
+            ->set('data.sort_order', 17)
+            ->call('create')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas(Page::class, [
+            'title' => 'Sorted Page',
+            'slug' => 'sorted-page',
+            'sort_order' => 17,
+        ]);
+    }
+
+    public function test_pages_table_defaults_to_sort_order(): void
+    {
+        Page::query()->create([
+            'title' => 'Second Page',
+            'slug' => 'second-page',
+            'sort_order' => 20,
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'First Page',
+            'slug' => 'first-page',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->assertSeeInOrder(['First Page', 'Second Page']);
+    }
 
     public function test_page_can_belong_to_another_page(): void
     {
@@ -47,18 +87,24 @@ class PageParentPageTest extends TestCase
         $active = Page::query()->create([
             'title' => 'Active Parent',
             'slug' => 'active-parent',
+            'sort_order' => 20,
             'is_published' => true,
         ]);
 
         $inactive = Page::query()->create([
             'title' => 'Inactive Parent',
             'slug' => 'inactive-parent',
+            'sort_order' => 10,
             'is_published' => false,
         ]);
 
         $options = PageForm::parentPageOptions($target);
 
         $this->assertArrayNotHasKey((string) $target->getKey(), $options);
+        $this->assertSame([
+            $inactive->getKey(),
+            $active->getKey(),
+        ], array_keys($options));
         $this->assertSame('Active Parent (/active-parent) - Active', $options[(string) $active->getKey()]);
         $this->assertSame('Inactive Parent (/inactive-parent) - Inactive', $options[(string) $inactive->getKey()]);
     }
@@ -77,6 +123,7 @@ class PageParentPageTest extends TestCase
             'slug' => 'about/beliefs',
             'hero_label' => 'What We Believe',
             'intro' => 'Core beliefs and doctrine.',
+            'sort_order' => 20,
             'is_published' => true,
         ]);
 
@@ -91,12 +138,18 @@ class PageParentPageTest extends TestCase
             'parent_page_id' => $parent->getKey(),
             'title' => 'Draft Child',
             'slug' => 'about/draft-child',
+            'sort_order' => 10,
             'is_published' => false,
         ]);
 
         $content = (string) PageForm::directChildPagesContent($parent);
 
+        $this->assertStringContainsString('Draft Child', $content);
         $this->assertStringContainsString('Beliefs', $content);
+        $this->assertLessThan(
+            strpos($content, 'Beliefs'),
+            strpos($content, 'Draft Child'),
+        );
         $this->assertStringContainsString('/about/beliefs', $content);
         $this->assertStringContainsString('title="Active"', $content);
         $this->assertStringContainsString('title="Inactive"', $content);

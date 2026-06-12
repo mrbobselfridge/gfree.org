@@ -162,6 +162,7 @@ class Page extends Model implements HasPublicUrl
     {
         return [
             'content_blocks' => 'array',
+            'sort_order' => 'integer',
             'publish_at' => 'datetime',
             'expires_at' => 'datetime',
             'is_published' => 'boolean',

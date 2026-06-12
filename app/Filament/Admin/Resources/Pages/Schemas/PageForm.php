@@ -58,6 +58,10 @@ class PageForm
                 Textarea::make('intro')
                     ->rows(1)
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
 
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
@@ -167,8 +171,9 @@ class PageForm
     {
         return Page::query()
             ->when($record?->getKey(), fn ($query, int $pageId) => $query->whereKeyNot($pageId))
+            ->orderBy('sort_order')
             ->orderBy('title')
-            ->get(['id', 'title', 'slug', 'is_published'])
+            ->get(['id', 'title', 'slug', 'sort_order', 'is_published'])
             ->mapWithKeys(fn (Page $page): array => [
                 (string) $page->getKey() => self::parentPageOptionLabel($page),
             ])
@@ -189,8 +194,9 @@ class PageForm
         }
 
         $children = $record->childPages()
+            ->orderBy('sort_order')
             ->orderBy('title')
-            ->get(['id', 'title', 'slug', 'hero_label', 'intro', 'is_published']);
+            ->get(['id', 'title', 'slug', 'hero_label', 'intro', 'sort_order', 'is_published']);
 
         if ($children->isEmpty()) {
             return new HtmlString('<span class="text-sm text-gray-500 dark:text-gray-400">No direct subpages currently use this page as a parent.</span>');
