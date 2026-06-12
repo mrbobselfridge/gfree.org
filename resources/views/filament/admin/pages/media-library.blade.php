@@ -3,6 +3,11 @@
         $images = $this->libraryTab === 'images' && $this->canAccessImages() ? $this->getImages() : collect();
         $totalImages = $this->libraryTab === 'images' && $this->canAccessImages() ? $this->getTotalImageCount() : 0;
         $sortOptions = $this->getSortOptions();
+        $addAction = match (true) {
+            $this->libraryTab === 'files' && $this->canAccessFiles() => 'createFile',
+            $this->libraryTab === 'images' && $this->canAccessImages() => 'uploadImages',
+            default => null,
+        };
     @endphp
 
     <style>
@@ -69,6 +74,28 @@
         .dark .twyxtco-library-tabs__button--active:focus {
             background: rgb(217 119 6);
             color: white;
+        }
+
+        .twyxtco-library-tabs__add {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            margin-left: auto;
+            border-radius: 0.5rem;
+            background: rgb(217 119 6);
+            color: white;
+        }
+
+        .twyxtco-library-tabs__add:hover,
+        .twyxtco-library-tabs__add:focus {
+            background: rgb(180 83 9);
+        }
+
+        .twyxtco-library-tabs__add svg {
+            width: 1rem;
+            height: 1rem;
         }
 
         .twyxtco-media-summary {
@@ -283,13 +310,38 @@
                     Files
                 </button>
             @endif
+
+            @if ($addAction)
+                <button
+                    type="button"
+                    class="twyxtco-library-tabs__add"
+                    wire:click="mountAction('{{ $addAction }}')"
+                    title="Add"
+                    aria-label="Add"
+                >
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+                    </svg>
+                </button>
+            @endif
         </div>
 
         @if ($this->libraryTab === 'files' && $this->canAccessFiles())
+            <div class="twyxtco-media-summary">
+                <div>
+                    <div>
+                        <h2 class="text-base font-semibold text-gray-950 dark:text-white">File Library</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Manage documents, PDFs, and other downloadable files.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {{ $this->table }}
         @elseif ($this->canAccessImages())
             <div class="twyxtco-media-summary">
-                <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
                     <div>
                         <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -433,4 +485,6 @@
             @endif
         @endif
     </div>
+
+    <x-filament-actions::modals />
 </x-filament-panels::page>

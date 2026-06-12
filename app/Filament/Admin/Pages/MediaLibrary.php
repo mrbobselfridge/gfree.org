@@ -6,18 +6,26 @@ use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\FileDocuments\Tables\FileDocumentsTable;
 use App\Filament\Admin\Support\IconOnlyAction;
-use App\Filament\Admin\Support\WorkflowNotificationActions;
+use App\Models\FileDocument;
 use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
+use App\Support\FileLibrary;
 use App\Support\MediaLibrary as MediaLibrarySupport;
 use App\Support\MediaUsage;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -157,65 +165,147 @@ class MediaLibrary extends Page implements HasTable
 
     protected function getHeaderActions(): array
     {
-        if ($this->libraryTab === 'files') {
-            return $this->canAccessFiles()
-                ? [
-                    IconOnlyAction::make(
-                        Action::make('createFile')
-                            ->label('New file')
-                            ->color('success')
-                            ->url(FileDocumentResource::getUrl('create')),
-                        Heroicon::OutlinedPlus,
-                    ),
-                ]
-                : [];
-        }
+        return [];
+    }
 
-        if (! $this->canAccessImages()) {
-            return [];
-        }
+    protected function uploadImagesAction(): Action
+    {
+        return Action::make('uploadImages')
+            ->label('Upload new')
+            ->color('success')
+            ->modalHeading('Upload images')
+            ->modalSubmitActionLabel('Upload')
+            ->schema([
+                FileUpload::make('images')
+                    ->label('Images')
+                    ->image()
+                    ->multiple()
+                    ->disk('public')
+                    ->directory('media-library')
+                    ->required(),
+            ])
+            ->action(function (array $data): void {
+                $count = count($data['images'] ?? []);
 
-        return [
-            ...WorkflowNotificationActions::notifyTeamForAreaActions(
-                AdminAccess::MEDIA_LIBRARY,
-                'media-library',
-                'Media Library',
-                static::getUrl(),
-            ),
-            IconOnlyAction::make(
-                Action::make('uploadImages')
-                    ->label('Upload new')
-                    ->color('success')
-                    ->schema([
-                        FileUpload::make('images')
-                            ->label('Images')
-                            ->image()
-                            ->multiple()
-                            ->disk('public')
-                            ->directory('media-library')
-                            ->required(),
+                collect($data['images'] ?? [])
+                    ->map(fn (mixed $path): string => (string) $path)
+                    ->each(fn (string $path): mixed => app(WorkflowNotificationService::class)->automatic(
+                        area: AdminAccess::MEDIA_LIBRARY,
+                        trigger: WorkflowNotificationRule::TRIGGER_CREATED,
+                        recordKey: 'media-library:'.$path,
+                        recordLabel: basename($path),
+                        adminUrl: static::getUrl(),
+                    ));
+
+                Notification::make()
+                    ->title($count === 1 ? 'Image uploaded' : "{$count} images uploaded")
+                    ->success()
+                    ->send();
+            });
+    }
+
+    protected function createFileAction(): Action
+    {
+        return Action::make('createFile')
+            ->label('New file')
+            ->color('success')
+            ->modalHeading('New file')
+            ->modalSubmitActionLabel('Create file')
+            ->schema([
+                TextInput::make('title')
+                    ->required()
+                    ->live(onBlur: true)
+                    ->maxLength(255)
+                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('file_name', FileDocument::makeUniqueFileName($state))),
+                TextInput::make('file_name')
+                    ->label('Optional filename')
+                    ->helperText('Used for the stable public link, like /files/connection-card.')
+                    ->prefix('/files/')
+                    ->maxLength(255)
+                    ->rule('alpha_dash'),
+                Select::make('category')
+                    ->options(fn (): array => FileDocument::categoryOptions())
+                    ->searchable()
+                    ->default('Other')
+                    ->required(),
+                ToggleButtons::make('visibility')
+                    ->options([
+                        FileDocument::VISIBILITY_PUBLIC => 'Public',
+                        FileDocument::VISIBILITY_PRIVATE => 'Private',
                     ])
-                    ->action(function (array $data): void {
-                        $count = count($data['images'] ?? []);
+                    ->colors([
+                        FileDocument::VISIBILITY_PUBLIC => 'success',
+                        FileDocument::VISIBILITY_PRIVATE => 'warning',
+                    ])
+                    ->icons([
+                        FileDocument::VISIBILITY_PUBLIC => 'heroicon-o-globe-americas',
+                        FileDocument::VISIBILITY_PRIVATE => 'heroicon-o-lock-closed',
+                    ])
+                    ->inline()
+                    ->default(FileDocument::VISIBILITY_PUBLIC)
+                    ->required(),
+                FileUpload::make('pending_upload')
+                    ->label('File')
+                    ->acceptedFileTypes(FileLibrary::allowedMimeTypes())
+                    ->disk(FileLibrary::DISK)
+                    ->directory(FileLibrary::DIRECTORY)
+                    ->storeFileNamesIn('pending_original_name')
+                    ->required()
+                    ->downloadable()
+                    ->columnSpanFull(),
+                TextInput::make('pending_original_name')
+                    ->hidden(),
+                Textarea::make('description')
+                    ->rows(3)
+                    ->columnSpanFull(),
+                DateTimePicker::make('expires_at')
+                    ->label('Expiration date'),
+                TagsInput::make('tags'),
+            ])
+            ->action(function (array $data): void {
+                $uploadPath = FileLibrary::normalizeUploadPath($data['pending_upload'] ?? null);
 
-                        collect($data['images'] ?? [])
-                            ->map(fn (mixed $path): string => (string) $path)
-                            ->each(fn (string $path): mixed => app(WorkflowNotificationService::class)->automatic(
-                                area: AdminAccess::MEDIA_LIBRARY,
-                                trigger: WorkflowNotificationRule::TRIGGER_CREATED,
-                                recordKey: 'media-library:'.$path,
-                                recordLabel: basename($path),
-                                adminUrl: static::getUrl(),
-                            ));
+                if (! $uploadPath) {
+                    Notification::make()
+                        ->title('File upload is required')
+                        ->danger()
+                        ->send();
 
-                        Notification::make()
-                            ->title($count === 1 ? 'Image uploaded' : "{$count} images uploaded")
-                            ->success()
-                            ->send();
-                    }),
-                Heroicon::OutlinedArrowUpTray,
-            ),
-        ];
+                    return;
+                }
+
+                $document = FileDocument::query()->create([
+                    'title' => $data['title'] ?? null,
+                    'file_name' => FileDocument::makeUniqueFileName($data['file_name'] ?? $data['title'] ?? null),
+                    'category' => $data['category'] ?? 'Other',
+                    'visibility' => $data['visibility'] ?? FileDocument::VISIBILITY_PUBLIC,
+                    'description' => $data['description'] ?? null,
+                    'tags' => $data['tags'] ?? [],
+                    'expires_at' => $data['expires_at'] ?? null,
+                    'uploaded_by_id' => Filament::auth()->id(),
+                    'updated_by_id' => Filament::auth()->id(),
+                ]);
+
+                FileLibrary::createVersion(
+                    $document,
+                    $uploadPath,
+                    FileLibrary::normalizeOriginalName($data['pending_original_name'] ?? null),
+                    Filament::auth()->user(),
+                );
+
+                app(WorkflowNotificationService::class)->automaticForRecord(
+                    $document->refresh(),
+                    WorkflowNotificationRule::TRIGGER_CREATED,
+                );
+
+                $this->libraryTab = 'files';
+                $this->resetTable();
+
+                Notification::make()
+                    ->title('File created')
+                    ->success()
+                    ->send();
+            });
     }
 
     protected function replaceImageAction(): Action

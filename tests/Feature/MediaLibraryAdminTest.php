@@ -53,7 +53,9 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('An: Church Picnic | Announceme..')
             ->assertSee('unused.jpg')
             ->assertSee('Unused')
-            ->assertSee('Upload new')
+            ->assertSee("mountAction('uploadImages')", false)
+            ->assertSee('title="Add"', false)
+            ->assertSee('wire:partial="action-modals"', false)
             ->assertSee('title="Open"', false)
             ->assertSee('title="Download"', false)
             ->assertSee('title="Copy URL"', false)
@@ -64,6 +66,7 @@ class MediaLibraryAdminTest extends TestCase
             ->assertDontSee('>Copy URL<', false)
             ->assertDontSee('>Replace image<', false)
             ->assertDontSee('>Delete image<', false)
+            ->assertDontSee('>Upload new<', false)
             ->assertDontSee('bulletin.pdf');
     }
 

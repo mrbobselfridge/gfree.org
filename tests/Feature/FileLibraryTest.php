@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
@@ -59,7 +60,10 @@ class FileLibraryTest extends TestCase
             ->assertSee('Images')
             ->assertSee('Files')
             ->assertSee('Connection Card')
-            ->assertSee('New file')
+            ->assertSee("mountAction('createFile')", false)
+            ->assertSee('title="Add"', false)
+            ->assertDontSee('>New file<', false)
+            ->assertDontSee('/admin/file-documents/create')
             ->assertDontSee('Uploaded images');
     }
 
@@ -125,6 +129,37 @@ class FileLibraryTest extends TestCase
         $this->get('/files/connection-card')
             ->assertOk()
             ->assertHeader('content-disposition', 'attachment; filename=connection-card.pdf');
+    }
+
+    public function test_file_can_be_created_from_combined_media_library_tab(): void
+    {
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(MediaLibraryPage::class)
+            ->set('libraryTab', 'files')
+            ->callAction('createFile', [
+                'title' => 'Connection Card',
+                'file_name' => 'connection-card',
+                'category' => 'Form',
+                'visibility' => FileDocument::VISIBILITY_PUBLIC,
+                'pending_upload' => UploadedFile::fake()->create('connection-card.pdf', 25, 'application/pdf'),
+                'pending_original_name' => 'connection-card.pdf',
+            ])
+            ->assertHasNoActionErrors()
+            ->assertSet('libraryTab', 'files');
+
+        $document = FileDocument::query()->where('file_name', 'connection-card')->firstOrFail();
+
+        $this->assertSame('Connection Card', $document->title);
+        $this->assertSame($admin->getKey(), $document->uploaded_by_id);
+        $this->assertNotNull($document->current_version_id);
+        $this->assertSame('connection-card.pdf', $document->currentVersion->original_name);
+        Storage::disk(FileLibrary::DISK)->assertExists($document->currentVersion->path);
     }
 
     public function test_private_files_are_not_available_on_public_route_but_admin_can_download(): void
