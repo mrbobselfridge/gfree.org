@@ -37,6 +37,7 @@ class PageForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(4)
             ->components([
                 TextInput::make('title')
                     ->required()
@@ -44,21 +45,24 @@ class PageForm
                     ->maxLength(255)
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
-                        : null),
+                        : null)
+                    ->columnSpan(2),
                 ToggleButtons::make('is_published')
                     ->label('Make Page Live')
                     ->boolean()
                     ->inline()
                     ->default(false)
                     ->live()
-                    ->required(),
+                    ->required()
+                    ->columnSpan(2),
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
                     ->inline()
                     ->live()
                     ->default(false)
-                    ->required(),
+                    ->required()
+                    ->columnSpan(2),
 
                 View::make('filament.admin.section-controls')
                     ->viewData([
@@ -83,16 +87,17 @@ class PageForm
                             ->rules([new HttpOrRelativeUrl])
                             ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
                             ->maxLength(2048)
-                            ->columnSpanFull(),
+                            ->columnSpan(2),
                         ToggleButtons::make('redirect_status_code')
                             ->label('Redirect type')
                             ->options(Page::redirectStatusOptions())
                             ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
                             ->inline()
                             ->default(Page::REDIRECT_TEMPORARY)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(2),
                     ])
-                    ->columns(2)
+                    ->columns(4)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
@@ -105,23 +110,28 @@ class PageForm
                             ->boolean()
                             ->inline()
                             ->default(true)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(2),
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
                             ->boolean()
                             ->inline()
                             ->default(true)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(2),
                         TextInput::make('hero_label')
                             ->label('Small label')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan(2),
                         Textarea::make('intro')
                             ->rows(1)
-                            ->columnSpanFull(),
-                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image'),
-                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image'),
+                            ->columnSpan(2),
+                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                            ->columnSpan(2),
+                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
+                            ->columnSpan(2),
                     ])
-                    ->columns(2)
+                    ->columns(4)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
@@ -133,8 +143,10 @@ class PageForm
                         'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
                     ])
                     ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true),
+                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
+                            ->columnSpanFull(),
                     ])
+                    ->columns(4)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
@@ -148,26 +160,32 @@ class PageForm
                             ->unique(ignoreRecord: true)
                             ->rule(new PageSlugPath)
                             ->suffixAction(SlugRebuildAction::make('title'))
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan(2),
                         TextInput::make('sort_order')
                             ->required()
                             ->numeric()
-                            ->default(0),
+                            ->default(0)
+                            ->columnSpan(2),
                         DateTimePicker::make('publish_at')
-                            ->label('Publish at'),
+                            ->label('Publish at')
+                            ->columnSpan(2),
                         DateTimePicker::make('expires_at')
                             ->label('Expires at')
-                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at')),
+                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
+                            ->columnSpan(2),
                         TextInput::make('seo_title')
                             ->label('SEO title')
                             ->helperText('Alternative for additional SEO content in the page BROWSER title.')
                             ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
                         Textarea::make('seo_description')
                             ->helperText('Only for search engines review - not seen by users for SEO rankings.')
                             ->label('SEO description')
                             ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -175,13 +193,15 @@ class PageForm
                             ->preload()
                             ->native(false)
                             ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following child pages')
                             ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect')),
+                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
                     ])
-                    ->columns(2)
+                    ->columns(4)
                     ->columnSpanFull(),
 
             ]);
