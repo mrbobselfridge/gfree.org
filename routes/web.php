@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BackupDownloadController;
+use App\Http\Controllers\Admin\MediaImageDownloadController;
 use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
 use App\Http\Controllers\AnnouncementController;
@@ -39,6 +40,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/files/versions/{fileDocumentVersion}/download', [FileDocumentController::class, 'downloadVersion'])
         ->name('admin.files.versions.download');
+
+    Route::get('/admin/media-images/download', MediaImageDownloadController::class)
+        ->name('admin.media-images.download');
 });
 
 Route::get('/admin/page-visual-snapshots/preview/{type}/{record?}', PageVisualSnapshotPreviewController::class)

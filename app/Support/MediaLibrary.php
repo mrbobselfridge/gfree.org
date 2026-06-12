@@ -27,6 +27,7 @@ class MediaLibrary
                     'name' => basename($path),
                     'directory' => dirname($path) === '.' ? '' : dirname($path),
                     'url' => $disk->url($path),
+                    'download_url' => route('admin.media-images.download', ['path' => $path]),
                     'size' => $disk->size($path),
                     'size_for_humans' => Number::fileSize($disk->size($path)),
                     'modified' => $disk->lastModified($path),

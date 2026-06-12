@@ -436,8 +436,7 @@
                                     </svg>
                                 </a>
                                 <a
-                                    href="{{ $image['url'] }}"
-                                    download="{{ $image['name'] }}"
+                                    href="{{ $image['download_url'] }}"
                                     title="Download"
                                     aria-label="Download"
                                 >

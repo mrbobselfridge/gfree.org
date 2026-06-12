@@ -58,6 +58,7 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('wire:partial="action-modals"', false)
             ->assertSee('title="Open"', false)
             ->assertSee('title="Download"', false)
+            ->assertSee('/admin/media-images/download?path=announcements%2Fpicnic.jpg', false)
             ->assertSee('title="Copy URL"', false)
             ->assertSee('title="Replace"', false)
             ->assertSee('title="Delete"', false)
@@ -68,6 +69,20 @@ class MediaLibraryAdminTest extends TestCase
             ->assertDontSee('>Delete image<', false)
             ->assertDontSee('>Upload new<', false)
             ->assertDontSee('bulletin.pdf');
+    }
+
+    public function test_image_download_route_forces_attachment_response(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('picnic.jpg', 1200, 630)
+            ->storeAs('announcements', 'picnic.jpg', 'public');
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('admin.media-images.download', ['path' => 'announcements/picnic.jpg']))
+            ->assertOk()
+            ->assertHeader('content-disposition', 'attachment; filename=picnic.jpg');
     }
 
     public function test_media_library_builds_existing_image_picker_options(): void
