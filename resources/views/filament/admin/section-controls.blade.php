@@ -1,5 +1,6 @@
 <div
-    class="flex w-full justify-end text-sm"
+    class="text-sm"
+    style="display: block; width: 100%; text-align: right;"
     x-data="{ sectionIds: @js($sectionIds) }"
 >
     <button
