@@ -101,6 +101,63 @@ class PageForm
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
+                self::section('Page Settings', 'pages-settings')
+                    ->description('Controls the URL, ordering, publish window, search metadata, and page hierarchy.')
+                    ->icon(Heroicon::OutlinedCog6Tooth)
+                    ->schema([
+                        TextInput::make('slug')
+                            ->prefix('/')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->rule(new PageSlugPath)
+                            ->suffixAction(SlugRebuildAction::make('title'))
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                        TextInput::make('sort_order')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->columnSpan(2),
+                        DateTimePicker::make('publish_at')
+                            ->label('Publish at')
+                            ->columnSpan(2),
+                        DateTimePicker::make('expires_at')
+                            ->label('Expires at')
+                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
+                            ->columnSpan(2),
+                        Select::make('parent_page_id')
+                            ->label('Parent Page - optional')
+                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
+                        Placeholder::make('direct_child_pages')
+                            ->label('Parent to the following child pages')
+                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                self::section('Page Content Blocks', 'pages-content-blocks')
+                    ->description('Build the visible page body here. Each block becomes a public section on the page.')
+                    ->icon(Heroicon::OutlinedRectangleGroup)
+                    ->iconColor('success')
+                    ->extraAttributes([
+                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
+                    ])
+                    ->schema([
+                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
                 self::section('Page Display', 'pages-display')
                     ->description('Controls the public page frame, header copy, and listing image.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -146,63 +203,6 @@ class PageForm
                     ->columns(4)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                self::section('Page Content Blocks', 'pages-content-blocks')
-                    ->description('Build the visible page body here. Each block becomes a public section on the page.')
-                    ->icon(Heroicon::OutlinedRectangleGroup)
-                    ->iconColor('success')
-                    ->extraAttributes([
-                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
-                    ])
-                    ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(4)
-                    ->columnSpanFull()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
-                self::section('Page Settings', 'pages-settings')
-                    ->description('Controls the URL, ordering, publish window, search metadata, and page hierarchy.')
-                    ->icon(Heroicon::OutlinedCog6Tooth)
-                    ->schema([
-                        TextInput::make('slug')
-                            ->prefix('/')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->rule(new PageSlugPath)
-                            ->suffixAction(SlugRebuildAction::make('title'))
-                            ->maxLength(255)
-                            ->columnSpan(2),
-                        TextInput::make('sort_order')
-                            ->required()
-                            ->numeric()
-                            ->default(0)
-                            ->columnSpan(2),
-                        DateTimePicker::make('publish_at')
-                            ->label('Publish at')
-                            ->columnSpan(2),
-                        DateTimePicker::make('expires_at')
-                            ->label('Expires at')
-                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
-                            ->columnSpan(2),
-                        Select::make('parent_page_id')
-                            ->label('Parent Page - optional')
-                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
-                        Placeholder::make('direct_child_pages')
-                            ->label('Parent to the following child pages')
-                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
-                    ])
-                    ->columns(4)
-                    ->columnSpanFull(),
 
             ]);
     }
