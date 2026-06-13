@@ -73,10 +73,13 @@ class EditFileDocument extends EditRecord
             $data['replacement_original_name'],
         );
 
-        $data['file_name'] = FileDocument::makeUniqueFileName(
-            $data['file_name'] ?? $data['title'] ?? null,
-            $this->getRecord(),
-        );
+        $data['file_name'] = filled($data['file_name'] ?? null)
+            ? FileDocument::makeUniqueFileName($data['file_name'], $this->getRecord())
+            : FileDocument::makeUniqueFileNameForCategoryTitle(
+                $data['category'] ?? null,
+                $data['title'] ?? null,
+                $this->getRecord(),
+            );
         $data['updated_by_id'] = Filament::auth()->id();
 
         return $data;

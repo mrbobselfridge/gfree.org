@@ -83,13 +83,13 @@ class RichTextFileLibraryTest extends TestCase
 
         $this->assertInstanceOf(FileDocument::class, $document);
         $this->assertSame('New Form', $document->title);
-        $this->assertSame('new-form', $document->file_name);
+        $this->assertSame('form-new-form', $document->file_name);
         $this->assertSame('Form', $document->category);
         $this->assertTrue($document->is_published);
         $this->assertSame(FileDocument::VISIBILITY_PUBLIC, $document->visibility);
         $this->assertSame($admin->getKey(), $document->uploaded_by_id);
-        $this->assertSame(route('files.show', ['fileName' => 'new-form']), $document->publicUrl());
-        $this->assertSame('new-form.pdf', $document->currentVersion->original_name);
+        $this->assertSame(route('files.show', ['fileName' => 'form-new-form']), $document->publicUrl());
+        $this->assertSame('form-new-form.pdf', $document->currentVersion->original_name);
         Storage::disk(FileLibrary::DISK)->assertExists($document->currentVersion->path);
     }
 

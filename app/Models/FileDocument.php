@@ -71,6 +71,19 @@ class FileDocument extends Model implements HasPublicUrl
         return $candidate;
     }
 
+    public static function makeFileNameSource(?string $category, ?string $title): string
+    {
+        return collect([$category, $title])
+            ->map(fn (?string $part): string => trim((string) $part))
+            ->filter()
+            ->implode(' ');
+    }
+
+    public static function makeUniqueFileNameForCategoryTitle(?string $category, ?string $title, ?self $ignore = null): string
+    {
+        return self::makeUniqueFileName(self::makeFileNameSource($category, $title), $ignore);
+    }
+
     public function publicUrl(): ?string
     {
         return $this->isLive() ? route('files.show', ['fileName' => $this->file_name]) : null;

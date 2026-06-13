@@ -30,25 +30,37 @@ class FileDocumentForm
             ->components([
                 Section::make('File Details')
                     ->schema([
-                        TextInput::make('title')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->maxLength(255)
-                            ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation): mixed => $operation === 'create'
-                                ? $set('file_name', FileDocument::makeUniqueFileName($state))
-                                : null),
+                        Select::make('category')
+                            ->options(fn (?FileDocument $record): array => FileCategory::options($record?->category))
+                            ->searchable()
+                            ->preload()
+                            ->default(FileCategory::DEFAULT_NAME)
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $old, $get('title'), $record)) {
+                                    return;
+                                }
+
+                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($state, $get('title'), $record));
+                            })
+                            ->required(),
                         ToggleButtons::make('is_published')
                             ->label('Make File Live')
                             ->boolean()
                             ->inline()
                             ->default(true)
                             ->required(),
-                        Select::make('category')
-                            ->options(fn (?FileDocument $record): array => FileCategory::options($record?->category))
-                            ->searchable()
-                            ->preload()
-                            ->default(FileCategory::DEFAULT_NAME)
-                            ->required(),
+                        TextInput::make('title')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->maxLength(255)
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
+                                    return;
+                                }
+
+                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
+                            }),
                         ToggleButtons::make('visibility')
                             ->label('Public or private')
                             ->options([
@@ -67,7 +79,7 @@ class FileDocumentForm
                             ->default(FileDocument::VISIBILITY_PUBLIC)
                             ->required(),
                         TextInput::make('file_name')
-                            ->label('Optional filename')
+                            ->label('Slug')
                             ->prefix('/files/')
                             ->live(onBlur: true)
                             ->maxLength(255)
@@ -81,12 +93,12 @@ class FileDocumentForm
                                     ->color('gray')
                                     ->action(fn (Get $get, Set $set, ?FileDocument $record): mixed => $set(
                                         'file_name',
-                                        FileDocument::makeUniqueFileName($get('title'), $record),
+                                        FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $get('title'), $record),
                                     )),
                             )
                             ->dehydrateStateUsing(fn (?string $state, Get $get, ?FileDocument $record): string => filled($state)
                                 ? Str::slug($state)
-                                : FileDocument::makeUniqueFileName($get('title'), $record)),
+                                : FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $get('title'), $record)),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (): array => PageForm::parentPageOptions())
@@ -165,5 +177,16 @@ class FileDocumentForm
                     ->columns(2)
                     ->columnSpanFull(),
             ]);
+    }
+
+    private static function shouldUpdateGeneratedFileName(Get $get, ?string $previousCategory, ?string $previousTitle, ?FileDocument $record): bool
+    {
+        $current = trim((string) $get('file_name'));
+
+        if (blank($current)) {
+            return true;
+        }
+
+        return $current === FileDocument::makeUniqueFileNameForCategoryTitle($previousCategory, $previousTitle, $record);
     }
 }

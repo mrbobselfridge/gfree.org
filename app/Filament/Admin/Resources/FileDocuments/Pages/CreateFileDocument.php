@@ -34,8 +34,10 @@ class CreateFileDocument extends CreateRecord
             $data['replacement_original_name'],
         );
 
-        $data['file_name'] = FileDocument::makeUniqueFileName($data['file_name'] ?? $data['title'] ?? null);
         $data['category'] = $data['category'] ?? FileCategory::DEFAULT_NAME;
+        $data['file_name'] = filled($data['file_name'] ?? null)
+            ? FileDocument::makeUniqueFileName($data['file_name'])
+            : FileDocument::makeUniqueFileNameForCategoryTitle($data['category'], $data['title'] ?? null);
         $data['uploaded_by_id'] = Filament::auth()->id();
         $data['updated_by_id'] = Filament::auth()->id();
 

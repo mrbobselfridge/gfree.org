@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Announcements\Pages\CreateAnnouncement;
 use App\Filament\Admin\Resources\Announcements\Pages\EditAnnouncement;
+use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
 use App\Filament\Admin\Resources\Ministries\Pages\EditMinistry;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
@@ -99,7 +100,7 @@ class SlugAutoUpdateTest extends TestCase
             ->assertSet('data.slug', 'changed-leader-name');
     }
 
-    public function test_file_library_filename_can_be_rebuilt_from_title(): void
+    public function test_file_library_slug_can_be_rebuilt_from_category_and_title(): void
     {
         $document = FileDocument::query()->create([
             'title' => 'Original File',
@@ -114,6 +115,15 @@ class SlugAutoUpdateTest extends TestCase
             ->assertSet('data.file_name', 'stable-file-url')
             ->assertFormComponentActionExists('file_name', 'rebuildFileName')
             ->callFormComponentAction('file_name', 'rebuildFileName')
-            ->assertSet('data.file_name', 'changed-file-title');
+            ->assertSet('data.file_name', 'form-changed-file-title');
+    }
+
+    public function test_file_library_slug_defaults_from_category_and_title_on_create(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreateFileDocument::class)
+            ->set('data.category', 'Bulletin')
+            ->set('data.title', 'Sunday Worship Guide')
+            ->assertSet('data.file_name', 'bulletin-sunday-worship-guide');
     }
 }

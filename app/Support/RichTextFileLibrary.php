@@ -85,10 +85,12 @@ class RichTextFileLibrary
             $title = 'Untitled File';
         }
 
+        $category = trim((string) ($data['new_category'] ?? '')) ?: FileCategory::DEFAULT_NAME;
+
         $document = FileDocument::query()->create([
             'title' => $title,
-            'file_name' => FileDocument::makeUniqueFileName($title),
-            'category' => trim((string) ($data['new_category'] ?? '')) ?: FileCategory::DEFAULT_NAME,
+            'file_name' => FileDocument::makeUniqueFileNameForCategoryTitle($category, $title),
+            'category' => $category,
             'is_published' => true,
             'visibility' => FileDocument::VISIBILITY_PUBLIC,
             'uploaded_by_id' => $user?->getKey(),
