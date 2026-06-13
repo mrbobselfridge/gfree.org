@@ -16,6 +16,7 @@ use Illuminate\Validation\ValidationException;
     'title',
     'slug',
     'intro',
+    'message',
     'hero_label',
     'body',
     'content_blocks',

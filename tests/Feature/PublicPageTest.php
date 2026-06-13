@@ -188,6 +188,37 @@ class PublicPageTest extends TestCase
             ->assertSee('New Here');
     }
 
+    public function test_page_message_renders_in_header_box_only_when_present(): void
+    {
+        Page::query()->create([
+            'title' => 'Kids',
+            'slug' => 'kids',
+            'hero_label' => 'Children & Youth',
+            'intro' => 'Sunday morning ministry for children.',
+            'message' => "First-time family check-in is available at the Kids desk.\n\nOur team is ready to help.",
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Students',
+            'slug' => 'students',
+            'intro' => 'Student ministry.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/kids')
+            ->assertOk()
+            ->assertSee('page-hero--page-message', false)
+            ->assertSee('ministry-hero-contact leadership-hero-contact page-hero-message', false)
+            ->assertSee('First-time family check-in is available at the Kids desk.')
+            ->assertSee('Our team is ready to help.');
+
+        $this->get('/students')
+            ->assertOk()
+            ->assertDontSee('page-hero--page-message', false)
+            ->assertDontSee('page-hero-message', false);
+    }
+
     public function test_unpublished_pages_are_not_public(): void
     {
         Page::query()->create([
@@ -264,12 +295,6 @@ class PublicPageTest extends TestCase
                         'content_width' => 'small',
                     ],
                 ],
-                [
-                    'type' => 'header_message_box',
-                    'data' => [
-                        'body' => '<p>gFree Church is a relaxed, welcoming place.</p>',
-                    ],
-                ],
             ],
             'is_published' => true,
         ]);
@@ -285,8 +310,6 @@ class PublicPageTest extends TestCase
             ->assertSee('page-block__inner--text-small', false)
             ->assertSee('<strong>note</strong>', false)
             ->assertSee('Contact Us')
-            ->assertSee('page-block--header-message-box', false)
-            ->assertSee('gFree Church is a relaxed, welcoming place.')
             ->assertDontSee('Legacy fallback text.');
     }
 

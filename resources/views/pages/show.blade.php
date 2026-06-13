@@ -28,20 +28,38 @@
 
     <main class="public-page__main">
         @if ($page->show_page_header)
-            <section @class(['page-hero', 'page-hero--image' => filled($heroImageUrl)])>
+            @php($hasPageMessage = filled($page->message))
+
+            <section @class([
+                'page-hero',
+                'page-hero--image' => filled($heroImageUrl),
+                'page-hero--page-message' => $hasPageMessage,
+            ])>
                 @if ($heroImageUrl)
                     <div class="page-hero__image" style="background-image: url('{{ $heroImageUrl }}')"></div>
                 @endif
 
                 <div class="page-hero__content">
-                    @if ($page->hero_label)
-                        <p class="concept-eyebrow">{{ $page->hero_label }}</p>
-                    @endif
+                    <div class="page-hero__text">
+                        @if ($page->hero_label)
+                            <p class="concept-eyebrow">{{ $page->hero_label }}</p>
+                        @endif
 
-                    <h1>{{ $page->title }}</h1>
+                        <h1>{{ $page->title }}</h1>
 
-                    @if ($page->intro)
-                        <p>{{ $page->intro }}</p>
+                        @if ($page->intro)
+                            <p>{{ $page->intro }}</p>
+                        @endif
+                    </div>
+
+                    @if ($hasPageMessage)
+                        <div class="ministry-hero-contact leadership-hero-contact page-hero-message" aria-label="Page message">
+                            <div class="page-hero-message__body">
+                                @foreach (preg_split('/\R{2,}/', trim((string) $page->message)) as $paragraph)
+                                    <p>{!! nl2br(e($paragraph)) !!}</p>
+                                @endforeach
+                            </div>
+                        </div>
                     @endif
                 </div>
             </section>

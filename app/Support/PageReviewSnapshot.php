@@ -52,6 +52,7 @@ class PageReviewSnapshot
             'slug',
             'hero_label',
             'intro',
+            'message',
             'content_blocks',
             'hero_image_path',
             'card_image_path',
