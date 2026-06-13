@@ -16,10 +16,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\HtmlString;
@@ -72,15 +72,28 @@ class PageForm
                     ->columnSpan(1),
 
                 Textarea::make('intro')
-                    ->rows(2)
+                    ->rows(1)
                     ->columnSpan(2),
 
-                View::make('filament.admin.section-controls')
+                TextInput::make('slug')
+                    ->prefix('/')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->rule(new PageSlugPath)
+                    ->suffixAction(SlugRebuildAction::make('title'))
+                    ->maxLength(255)
+                    ->columnSpan(1),
+
+                ViewField::make('section_controls')
+                    ->label('Section controls')
+                    ->hiddenLabel()
+                    ->view('filament.admin.section-controls')
                     ->viewData([
                         'sectionIds' => self::SECTION_IDS,
                     ])
+                    ->dehydrated(false)
                     ->key('pages-section-controls')
-                    ->columnSpanFull(),
+                    ->columnSpan(1),
 
                 self::section('Redirect', 'pages-redirect')
                     ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
@@ -132,27 +145,47 @@ class PageForm
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
 
+                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                            ->columnSpan(1),
+
+                        ToggleButtons::make('show_page_header')
+                            ->label('Show page header')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required()
+                            ->columnSpan(1),
+
+                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
+                            ->columnSpan(1),
+
+                        ToggleButtons::make('show_site_chrome')
+                            ->label('Show navigation and footer')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required()
+                            ->columnSpan(1),
+
                         DateTimePicker::make('publish_at')
                             ->label('Publish at')
-                            ->columnSpan(2),
+                            ->columnSpan(1),
                         DateTimePicker::make('expires_at')
                             ->label('Expires at')
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
-                            ->columnSpan(2),
+                            ->columnSpan(1),
 
-                        TextInput::make('slug')
-                            ->prefix('/')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->rule(new PageSlugPath)
-                            ->suffixAction(SlugRebuildAction::make('title'))
+                        TextInput::make('seo_title')
+                            ->label('SEO title')
                             ->maxLength(255)
-                            ->columnSpan(2),
-                        TextInput::make('sort_order')
-                            ->required()
-                            ->numeric()
-                            ->default(0)
-                            ->columnSpan(2),
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(1),
+                        Textarea::make('seo_description')
+                            ->label('SEO description')
+                            ->rows(1)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(1),
+
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -162,23 +195,13 @@ class PageForm
                             ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->columnSpan(2),
+
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following child pages')
                             ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                             ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
                             ->columnSpan(2),
-                        TextInput::make('seo_title')
-                            ->label('SEO title')
-                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                            ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
-                        Textarea::make('seo_description')
-                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                            ->label('SEO description')
-                            ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
+
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
@@ -187,24 +210,6 @@ class PageForm
                     ->description('Controls the public page frame, header copy, listing image, and optional SEO Title/Description.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->schema([
-                        ToggleButtons::make('show_site_chrome')
-                            ->label('Show navigation and footer')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->columnSpan(1),
-                        ToggleButtons::make('show_page_header')
-                            ->label('Show page header')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->columnSpan(1),
-                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                            ->columnSpan(2),
-                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
-                            ->columnSpan(2),
                     ])
                     ->columns(4)
                     ->columnSpanFull()
