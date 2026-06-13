@@ -141,7 +141,7 @@ class PageForm
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
                 self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
-                    ->description('Controls the URL, ordering, publish window, and page hierarchy.')
+                    ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
 
