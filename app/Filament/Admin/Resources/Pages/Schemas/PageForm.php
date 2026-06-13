@@ -45,7 +45,13 @@ class PageForm
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null)
-                    ->columnSpan(2),
+                    ->columnSpan(1),
+
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255)
+                    ->columnSpan(1),
+
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
                     ->boolean()
@@ -63,11 +69,6 @@ class PageForm
                     ->live()
                     ->required()
                     ->columnSpan(1),
-
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255)
-                    ->columnSpan(2),
 
                 Textarea::make('intro')
                     ->rows(1)
