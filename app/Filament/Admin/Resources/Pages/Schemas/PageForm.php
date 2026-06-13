@@ -149,6 +149,7 @@ class PageForm
                             ->numeric()
                             ->default(0)
                             ->columnSpan(1),
+
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -157,13 +158,21 @@ class PageForm
                             ->native(false)
                             ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(1),
+                            ->columnSpan(2),
 
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following child pages')
                             ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                             ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
+                            ->columnSpan(1),
+
+                        ToggleButtons::make('show_site_chrome')
+                            ->label('Show navigation and footer')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required()
+                            ->columnSpan(1),
 
                     ])
                     ->columns(4)
