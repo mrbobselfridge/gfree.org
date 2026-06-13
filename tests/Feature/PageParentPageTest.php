@@ -66,8 +66,8 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('sort_order')
             ->assertFormFieldVisible('publish_at')
             ->assertFormFieldVisible('expires_at')
-            ->assertFormFieldVisible('featured_at')
-            ->assertFormFieldVisible('feature_expires_at')
+            ->assertFormFieldHidden('featured_at')
+            ->assertFormFieldHidden('feature_expires_at')
             ->assertFormFieldVisible('seo_title')
             ->assertFormFieldVisible('seo_description')
             ->assertFormFieldVisible('parent_page_id')
@@ -123,18 +123,42 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('sort_order')
             ->assertFormFieldVisible('publish_at')
             ->assertFormFieldVisible('expires_at')
-            ->assertFormFieldVisible('featured_at')
-            ->assertFormFieldVisible('feature_expires_at')
+            ->assertFormFieldHidden('featured_at')
+            ->assertFormFieldHidden('feature_expires_at')
             ->assertFormFieldHidden('show_site_chrome')
             ->assertFormFieldHidden('seo_title')
             ->assertFormFieldHidden('seo_description')
             ->assertFormFieldHidden('parent_page_id');
     }
 
-    public function test_page_feature_dates_can_be_saved_from_the_admin_form(): void
+    public function test_page_feature_dates_show_only_after_a_parent_page_is_selected(): void
     {
+        $parent = Page::query()->create([
+            'title' => 'Parent Page',
+            'slug' => 'parent-page',
+            'is_published' => true,
+        ]);
+
         Livewire::actingAs(User::factory()->create())
             ->test(CreatePage::class)
+            ->assertFormFieldHidden('featured_at')
+            ->assertFormFieldHidden('feature_expires_at')
+            ->set('data.parent_page_id', $parent->getKey())
+            ->assertFormFieldVisible('featured_at')
+            ->assertFormFieldVisible('feature_expires_at');
+    }
+
+    public function test_page_feature_dates_can_be_saved_from_the_admin_form(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Parent Page',
+            'slug' => 'parent-page',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.parent_page_id', $parent->getKey())
             ->set('data.title', 'Featured Page')
             ->set('data.slug', 'featured-page')
             ->set('data.publish_at', '2026-06-13 09:00:00')

@@ -43,6 +43,11 @@ class PageForm
                     ->required()
                     ->live(onBlur: true)
                     ->maxLength(255)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Main page name shown in the admin and usually used to build the slug.'
+                    )
+                    ->hintColor('gray')
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
                         : null)
@@ -51,6 +56,11 @@ class PageForm
                 TextInput::make('hero_label')
                     ->label('Small label')
                     ->maxLength(255)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional short label shown above the page title.'
+                    )
+                    ->hintColor('gray')
                     ->columnSpan(1),
 
                 ToggleButtons::make('is_redirect')
@@ -60,6 +70,11 @@ class PageForm
                     ->live()
                     ->default(false)
                     ->required()
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Use this when the page URL should forward visitors somewhere else.'
+                    )
+                    ->hintColor('gray')
                     ->columnSpan(1),
 
                 ToggleButtons::make('is_published')
@@ -69,14 +84,29 @@ class PageForm
                     ->default(false)
                     ->live()
                     ->required()
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Controls whether visitors can view this page, subject to publish and expiration dates.'
+                    )
+                    ->hintColor('gray')
                     ->columnSpan(1),
 
                 Textarea::make('intro')
                     ->rows(1)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional intro text shown near the top of the page.'
+                    )
+                    ->hintColor('gray')
                     ->columnSpan(1),
 
                 Textarea::make('message')
                     ->rows(1)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional supporting message shown with the page header content.'
+                    )
+                    ->hintColor('gray')
                     ->columnSpan(1),
 
                 TextInput::make('slug')
@@ -86,6 +116,11 @@ class PageForm
                     ->rule(new PageSlugPath)
                     ->suffixAction(SlugRebuildAction::make('title'))
                     ->maxLength(255)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Public URL path for this page. Use lowercase words separated by dashes.'
+                    )
+                    ->hintColor('gray')
                     ->columnSpan(1),
 
                 ViewField::make('section_controls')
@@ -110,9 +145,11 @@ class PageForm
                             ->inline()
                             ->default(true)
                             ->required()
-                            ->columnSpan(1),
-
-                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Turn off for standalone campaign or embedded pages that should not show the site frame.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(1),
 
                         ToggleButtons::make('show_page_header')
@@ -121,28 +158,67 @@ class PageForm
                             ->inline()
                             ->default(true)
                             ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Controls whether the public page shows its title/header area.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(1),
+
+                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional image used in the page header.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(1),
 
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional image used when this page appears in cards or listings.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(1),
 
                         DateTimePicker::make('publish_at')
                             ->label('Publish at')
-                            ->columnSpan(1),
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Leave empty to allow the page to be visible immediately when live.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
                         DateTimePicker::make('expires_at')
                             ->label('Expires at')
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
-                            ->columnSpan(1),
-                        TextInput::make('seo_title')
-                            ->label('SEO title')
-                            ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(1),
-                        Textarea::make('seo_description')
-                            ->label('SEO description')
-                            ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(1),
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Leave empty to keep the page visible indefinitely.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+                        DateTimePicker::make('featured_at')
+                            ->label('Featured at')
+                            ->visible(fn (Get $get): bool => filled($get('parent_page_id')))
+                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. If empty, featured page areas can use Publish at.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+                        DateTimePicker::make('feature_expires_at')
+                            ->label('Featured expires at')
+                            ->visible(fn (Get $get): bool => filled($get('parent_page_id')))
+                            ->afterOrEqual(fn (Get $get): ?string => $get('featured_at'))
+                            ->beforeOrEqual(fn (Get $get): ?string => $get('expires_at'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. If empty, featured page areas can use Expires at.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
 
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
@@ -152,29 +228,54 @@ class PageForm
                             ->native(false)
                             ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Makes this page a child of another page and enables parent-page feature dates.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(2),
 
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following child pages')
                             ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                             ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shows direct child pages attached to this page.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(2),
 
+                        TextInput::make('seo_title')
+                            ->label('SEO title')
+                            ->maxLength(255)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional browser and search title. Leave empty to use the page title.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(1),
+
+                        Textarea::make('seo_description')
+                            ->label('SEO description')
+                            ->rows(1)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional short search/social description for this page.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
                         TextInput::make('sort_order')
                             ->required()
                             ->numeric()
                             ->default(0)
-                            ->columnSpan(1),
-                        DateTimePicker::make('featured_at')
-                            ->label('Featured at')
-                            ->helperText('Optional. If empty, featured page areas can use Publish at.')
-                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
-                            ->columnSpan(1),
-                        DateTimePicker::make('feature_expires_at')
-                            ->label('Featured expires at')
-                            ->helperText('Optional. If empty, featured page areas can use Expires at.')
-                            ->afterOrEqual(fn (Get $get): ?string => $get('featured_at'))
-                            ->beforeOrEqual(fn (Get $get): ?string => $get('expires_at'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Lower numbers appear earlier where pages are ordered manually.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(1),
 
                     ])
@@ -190,22 +291,35 @@ class PageForm
                             ->label('Redirect inactive')
                             ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Redirects only work publicly when the page is live.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpanFull(),
                         TextInput::make('redirect_url')
                             ->label('Send visitors to')
-                            ->helperText('Use a local path like /new-here or a full https:// URL.')
                             ->placeholder('/new-here')
                             ->rules([new HttpOrRelativeUrl])
                             ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
                             ->maxLength(2048)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Use a local path like /new-here or a full https:// URL.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(2),
                         ToggleButtons::make('redirect_status_code')
                             ->label('Redirect type')
                             ->options(Page::redirectStatusOptions())
-                            ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
                             ->inline()
                             ->default(Page::REDIRECT_TEMPORARY)
                             ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Temporary is safest for links that may change. Permanent is for URLs that permanently moved.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpan(2),
                     ])
                     ->columns(4)
@@ -221,6 +335,11 @@ class PageForm
                     ])
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Add and reorder the visible content sections for this page.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpanFull(),
                     ])
                     ->columns(4)
