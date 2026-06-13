@@ -205,7 +205,7 @@ class PageForm
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
-
+                /********************************
                 self::section('Page Display', 'pages-display', collapsedOnEdit: true)
                     ->description('Controls the public page frame, header copy, listing image, and optional SEO Title/Description.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -214,7 +214,7 @@ class PageForm
                     ->columns(4)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
-
+***********************************/
             ]);
     }
 
