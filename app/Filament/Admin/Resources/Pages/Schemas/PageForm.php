@@ -71,7 +71,7 @@ class PageForm
                     ->columnSpan(1),
 
                 Textarea::make('intro')
-                    ->rows(1)
+                    ->rows(2)
                     ->columnSpan(2),
 
                 View::make('filament.admin.section-controls')
@@ -130,6 +130,15 @@ class PageForm
                     ->description('Controls the URL, ordering, publish window, and page hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
+
+                        DateTimePicker::make('publish_at')
+                            ->label('Publish at')
+                            ->columnSpan(2),
+                        DateTimePicker::make('expires_at')
+                            ->label('Expires at')
+                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
+                            ->columnSpan(2),
+
                         TextInput::make('slug')
                             ->prefix('/')
                             ->required()
