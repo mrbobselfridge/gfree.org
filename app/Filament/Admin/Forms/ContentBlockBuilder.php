@@ -400,10 +400,10 @@ class ContentBlockBuilder
                     ->columns(2)
                     ->maxItems(1),
                 Block::make('related_content')
-                    ->label(fn (?array $state): string => self::blockLabel('Related', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Child Cards', $state))
                     ->schema([
                         ToggleButtons::make('is_visible')
-                            ->label('Show related content')
+                            ->label('Show child cards')
                             ->boolean()
                             ->inline()
                             ->default(true)
@@ -415,7 +415,7 @@ class ContentBlockBuilder
                             ->required(),
                         TextInput::make('heading')
                             ->live(onBlur: true)
-                            ->default('Related Content')
+                            ->default('Child Cards')
                             ->maxLength(255)
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
                                 $current = trim((string) $get('listing_slug'));
@@ -476,7 +476,7 @@ class ContentBlockBuilder
                             ->prefix('parent-page/')
                             ->rule('alpha_dash')
                             ->maxLength(80)
-                            ->dehydrateStateUsing(fn (?string $state, Get $get): string => Str::slug($state ?: $get('heading') ?: 'related-content')),
+                            ->dehydrateStateUsing(fn (?string $state, Get $get): string => Str::slug($state ?: $get('heading') ?: 'child-cards')),
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),

@@ -132,7 +132,7 @@ class ContentBlocks
     {
         return Str::slug($data['listing_slug'] ?? null)
             ?: Str::slug($data['heading'] ?? null)
-            ?: 'related-content';
+            ?: 'child-cards';
     }
 
     public static function featuredAnnouncementUpdates(): Collection
@@ -176,7 +176,8 @@ class ContentBlocks
     private static function relatedContentDefaults(array $data): array
     {
         $data['is_visible'] = $data['is_visible'] ?? true;
-        $data['heading'] = $data['heading'] ?? 'Related Content';
+        $data['heading'] = $data['heading'] ?? 'Child Cards';
+        $data['intro'] = $data['intro'] ?? null;
         $data['background'] = $data['background'] ?? 'white';
         $data['content_type'] = in_array($data['content_type'] ?? null, self::relatedContentTypeOptions(), true)
             ? $data['content_type']

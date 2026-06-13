@@ -836,6 +836,76 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Draft Resource');
     }
 
+    public function test_related_content_block_defaults_to_child_cards_label_and_slug(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'content_blocks' => [
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'item_limit' => 1,
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'First Child',
+            'slug' => 'resources/first-child',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Second Child',
+            'slug' => 'resources/second-child',
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('Child Cards')
+            ->assertSee('/resources/child-cards')
+            ->assertDontSee('Related Content');
+
+        $this->get('/resources/child-cards')
+            ->assertOk()
+            ->assertSee('<h1>Child Cards</h1>', false)
+            ->assertSee('First Child')
+            ->assertSee('Second Child')
+            ->assertDontSee('Related Content');
+    }
+
+    public function test_related_content_block_does_not_render_without_child_content(): void
+    {
+        Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'body' => 'Parent page body.',
+            'content_blocks' => [
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'heading' => 'Child Cards',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('Parent page body.')
+            ->assertDontSee('Child Cards')
+            ->assertDontSee('Related Content');
+
+        $this->get('/resources/child-cards')->assertNotFound();
+    }
+
     public function test_real_page_slug_takes_priority_over_related_content_listing_slug(): void
     {
         $parent = Page::query()->create([

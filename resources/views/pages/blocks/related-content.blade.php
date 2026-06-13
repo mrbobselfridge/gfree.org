@@ -10,7 +10,7 @@
         <div class="concept-updates__inner">
             <div class="concept-updates__header">
                 <div>
-                    <h2>{{ $data['heading'] ?? 'Related Content' }}</h2>
+                    <h2>{{ $data['heading'] ?? 'Child Cards' }}</h2>
 
                     @if (filled($data['intro'] ?? null))
                         <span>{{ $data['intro'] }}</span>

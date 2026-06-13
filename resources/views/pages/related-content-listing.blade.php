@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.analytics-head')
-    <title>{{ $data['heading'] ?? 'Related Content' }} | {{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
+    <title>{{ $data['heading'] ?? 'Child Cards' }} | {{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
     <meta name="description" content="{{ $data['intro'] ?: $page->seo_description ?: $page->intro ?: $settings?->tagline }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -30,7 +30,7 @@
             <div class="page-hero__content">
                 <div class="page-hero__text">
                     <p class="concept-eyebrow">{{ $page->title }}</p>
-                    <h1>{{ $data['heading'] ?? 'Related Content' }}</h1>
+                    <h1>{{ $data['heading'] ?? 'Child Cards' }}</h1>
 
                     @if (filled($data['intro'] ?? null))
                         <p>{{ $data['intro'] }}</p>
