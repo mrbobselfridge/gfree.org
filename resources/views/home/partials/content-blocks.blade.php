@@ -8,6 +8,10 @@
                     @include('pages.blocks.text')
                     @break
 
+                @case('header_message_box')
+                    @include('pages.blocks.header-message-box')
+                    @break
+
                 @case('image_text')
                     @include('pages.blocks.image-text')
                     @break

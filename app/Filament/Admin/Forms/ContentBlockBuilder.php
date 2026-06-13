@@ -69,6 +69,16 @@ class ContentBlockBuilder
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
+                Block::make('header_message_box')
+                    ->label(fn (?array $state): string => self::blockLabel('Header Message Box', $state))
+                    ->schema([
+                        RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false)
+                            ->label('Message')
+                            ->required()
+                            ->columnSpanFull(),
+                        ...self::scheduleFields($withScheduleFields),
+                    ])
+                    ->columns(2),
                 Block::make('image_text')
                     ->label(fn (?array $state): string => self::blockLabel('Image', $state))
                     ->schema([

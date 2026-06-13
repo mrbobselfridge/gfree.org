@@ -264,6 +264,12 @@ class PublicPageTest extends TestCase
                         'content_width' => 'small',
                     ],
                 ],
+                [
+                    'type' => 'header_message_box',
+                    'data' => [
+                        'body' => '<p>gFree Church is a relaxed, welcoming place.</p>',
+                    ],
+                ],
             ],
             'is_published' => true,
         ]);
@@ -279,6 +285,8 @@ class PublicPageTest extends TestCase
             ->assertSee('page-block__inner--text-small', false)
             ->assertSee('<strong>note</strong>', false)
             ->assertSee('Contact Us')
+            ->assertSee('page-block--header-message-box', false)
+            ->assertSee('gFree Church is a relaxed, welcoming place.')
             ->assertDontSee('Legacy fallback text.');
     }
 

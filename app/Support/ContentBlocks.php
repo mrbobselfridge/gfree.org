@@ -128,6 +128,7 @@ class ContentBlocks
             'text' => self::hasText($data['eyebrow'] ?? null)
                 || self::hasText($data['heading'] ?? null)
                 || self::hasText($data['body'] ?? null),
+            'header_message_box' => self::hasText($data['body'] ?? null),
             'image_text' => filled($data['image_url'] ?? null)
                 || self::hasText($data['eyebrow'] ?? null)
                 || self::hasText($data['heading'] ?? null)

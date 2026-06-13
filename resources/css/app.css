@@ -705,6 +705,42 @@
     height: auto;
 }
 
+.page-block--header-message-box {
+    padding: clamp(28px, 5vw, 56px) 0;
+    background: white;
+}
+
+.page-header-message-box__inner {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.page-header-message-box {
+    width: min(640px, 100%);
+    margin-top: 0;
+    padding: clamp(24px, 4vw, 36px);
+}
+
+.page-header-message-box__content {
+    max-width: none;
+    margin-top: 0;
+    color: var(--site-ink);
+}
+
+.page-header-message-box__content > :first-child {
+    margin-top: 0;
+}
+
+.page-header-message-box__content > :last-child {
+    margin-bottom: 0;
+}
+
+.page-header-message-box__content h2,
+.page-header-message-box__content h3,
+.page-header-message-box__content h4 {
+    color: var(--site-accent-text);
+}
+
 .sermon-index {
     padding: 0 0 96px;
 }
@@ -1620,6 +1656,10 @@
     .page-hero--leader-detail .leadership-hero-contact {
         justify-self: start;
         margin-top: 28px;
+    }
+
+    .page-header-message-box__inner {
+        justify-content: flex-start;
     }
 
     .sermon-index__header {
