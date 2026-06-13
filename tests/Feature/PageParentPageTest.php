@@ -66,6 +66,8 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('sort_order')
             ->assertFormFieldVisible('publish_at')
             ->assertFormFieldVisible('expires_at')
+            ->assertFormFieldVisible('featured_at')
+            ->assertFormFieldVisible('feature_expires_at')
             ->assertFormFieldVisible('seo_title')
             ->assertFormFieldVisible('seo_description')
             ->assertFormFieldVisible('parent_page_id')
@@ -121,10 +123,31 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('sort_order')
             ->assertFormFieldVisible('publish_at')
             ->assertFormFieldVisible('expires_at')
+            ->assertFormFieldVisible('featured_at')
+            ->assertFormFieldVisible('feature_expires_at')
             ->assertFormFieldHidden('show_site_chrome')
             ->assertFormFieldHidden('seo_title')
             ->assertFormFieldHidden('seo_description')
             ->assertFormFieldHidden('parent_page_id');
+    }
+
+    public function test_page_feature_dates_can_be_saved_from_the_admin_form(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.title', 'Featured Page')
+            ->set('data.slug', 'featured-page')
+            ->set('data.publish_at', '2026-06-13 09:00:00')
+            ->set('data.expires_at', '2026-06-30 17:00:00')
+            ->set('data.featured_at', '2026-06-14 09:00:00')
+            ->set('data.feature_expires_at', '2026-06-20 17:00:00')
+            ->call('create')
+            ->assertHasNoErrors();
+
+        $page = Page::query()->where('slug', 'featured-page')->firstOrFail();
+
+        $this->assertSame('2026-06-14 09:00:00', $page->featured_at?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-06-20 17:00:00', $page->feature_expires_at?->format('Y-m-d H:i:s'));
     }
 
     public function test_pages_table_defaults_to_title_order(): void
