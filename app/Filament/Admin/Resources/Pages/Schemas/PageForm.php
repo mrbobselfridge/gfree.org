@@ -174,7 +174,6 @@ class PageForm
                             ->label('Expires at')
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
                             ->columnSpan(1),
-
                         TextInput::make('seo_title')
                             ->label('SEO title')
                             ->maxLength(255)
@@ -186,6 +185,11 @@ class PageForm
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->columnSpan(1),
 
+                        TextInput::make('sort_order')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->columnSpan(1),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -194,7 +198,7 @@ class PageForm
                             ->native(false)
                             ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
+                            ->columnSpan(1),
 
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following child pages')
