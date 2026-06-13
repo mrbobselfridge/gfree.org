@@ -36,6 +36,11 @@ class FileDocumentForm
                             ->preload()
                             ->default(FileCategory::DEFAULT_NAME)
                             ->live()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Groups this file for filtering and controls the category-specific AI extraction instructions.'
+                            )
+                            ->hintColor('gray')
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
                                 if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $old, $get('title'), $record)) {
                                     return;
@@ -49,11 +54,21 @@ class FileDocumentForm
                             ->boolean()
                             ->inline()
                             ->default(true)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Controls whether this file URL can load publicly, subject to publish and expiration dates.'
+                            )
+                            ->hintColor('gray')
                             ->required(),
                         TextInput::make('title')
                             ->required()
                             ->live(onBlur: true)
                             ->maxLength(255)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Admin and public title for this file. New files use this with Category to build the first slug.'
+                            )
+                            ->hintColor('gray')
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
                                 if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
                                     return;
@@ -77,6 +92,11 @@ class FileDocumentForm
                             ])
                             ->inline()
                             ->default(FileDocument::VISIBILITY_PUBLIC)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Public files can be viewed by anyone. Private published files require a user or admin login.'
+                            )
+                            ->hintColor('gray')
                             ->required(),
                         TextInput::make('file_name')
                             ->label('Slug')
@@ -98,7 +118,12 @@ class FileDocumentForm
                             )
                             ->dehydrateStateUsing(fn (?string $state, Get $get, ?FileDocument $record): string => filled($state)
                                 ? Str::slug($state)
-                                : FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $get('title'), $record)),
+                                : FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $get('title'), $record))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Stable URL ending under /files/. Defaults to category-title and can be rebuilt with the refresh icon.'
+                            )
+                            ->hintColor('gray'),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (): array => PageForm::parentPageOptions())
@@ -120,6 +145,11 @@ class FileDocumentForm
                             ->required(fn (?string $operation): bool => $operation === 'create')
                             ->downloadable()
                             ->visible(fn (?string $operation): bool => $operation === 'create')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Upload the first file version. Accepted types are limited to the File Library allowed document types.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpanFull(),
                         TextInput::make('pending_original_name')
                             ->hidden(),
@@ -141,6 +171,11 @@ class FileDocumentForm
                             ->deletable(false)
                             ->dehydrated(false)
                             ->visible(fn (?string $operation, ?FileDocument $record): bool => $operation === 'edit' && $record?->currentVersion !== null)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shows the currently active file version. Use Replace file to upload a new version.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpanFull(),
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
@@ -151,6 +186,11 @@ class FileDocumentForm
                             ->storeFileNamesIn('replacement_original_name')
                             ->downloadable()
                             ->visible(fn (?string $operation): bool => $operation === 'edit')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Uploading here creates a new current version and preserves older versions below.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpanFull(),
                         TextInput::make('replacement_original_name')
                             ->hidden(),
@@ -162,17 +202,42 @@ class FileDocumentForm
                         RichEditorDefaults::configure(RichEditor::make('content'))
                             ->label('Optional content')
                             ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional rich text shown with the file record. AI extraction can place reviewed content here.'
+                            )
+                            ->hintColor('gray')
                             ->columnSpanFull(),
                         DateTimePicker::make('publish_at')
-                            ->label('Publish date'),
+                            ->label('Publish date')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Leave empty to allow the file to be available immediately once Make File Live is Yes.'
+                            )
+                            ->hintColor('gray'),
                         DateTimePicker::make('expires_at')
-                            ->label('Expiration date'),
+                            ->label('Expiration date')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Use for temporary files that should stop loading after a certain date.'
+                            )
+                            ->hintColor('gray'),
                         Placeholder::make('created_at')
                             ->label('Created Date')
-                            ->content(fn (?FileDocument $record): string => $record?->created_at?->toDayDateTimeString() ?? 'Set when the file is created'),
+                            ->content(fn (?FileDocument $record): string => $record?->created_at?->toDayDateTimeString() ?? 'Set when the file is created')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Set automatically when the file record is first created.'
+                            )
+                            ->hintColor('gray'),
                         Placeholder::make('updated_at')
                             ->label('Updated Date')
-                            ->content(fn (?FileDocument $record): string => $record?->updated_at?->toDayDateTimeString() ?? 'Set when the file is saved'),
+                            ->content(fn (?FileDocument $record): string => $record?->updated_at?->toDayDateTimeString() ?? 'Set when the file is saved')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Set automatically each time the file record is saved.'
+                            )
+                            ->hintColor('gray'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

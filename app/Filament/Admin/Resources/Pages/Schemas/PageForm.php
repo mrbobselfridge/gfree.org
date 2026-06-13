@@ -44,7 +44,7 @@ class PageForm
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Main page name shown in the admin and usually used to build the slug.'
+                        'Main page name shown in the admin and public header area. New pages use this to build the first slug.'
                     )
                     ->hintColor('gray')
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
@@ -57,7 +57,7 @@ class PageForm
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional short label shown above the page title.'
+                        'Optional short label shown above the page title, such as New Here or Resources.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -71,7 +71,7 @@ class PageForm
                     ->required()
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Use this when the page URL should forward visitors somewhere else.'
+                        'Use this when this slug should forward visitors somewhere else instead of rendering page content.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -85,7 +85,7 @@ class PageForm
                     ->required()
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Controls whether visitors can view this page, subject to publish and expiration dates.'
+                        'Controls whether visitors can view this page or redirect, subject to publish and expiration dates.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -94,7 +94,7 @@ class PageForm
                     ->rows(1)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional intro text shown near the top of the page.'
+                        'Optional intro text shown near the top of the page when the page header is visible.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -103,7 +103,7 @@ class PageForm
                     ->rows(1)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional supporting message shown with the page header content.'
+                        'Optional supporting message shown with the page header. Keep it short for mobile.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -117,7 +117,7 @@ class PageForm
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Public URL path for this page. Use lowercase words separated by dashes.'
+                        'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -146,7 +146,7 @@ class PageForm
                             ->required()
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Turn off for standalone campaign or embedded pages that should not show the site frame.'
+                                'Turn off only for standalone campaign, embedded, or special-purpose pages that should not show the normal site frame.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(1),
@@ -159,7 +159,7 @@ class PageForm
                             ->required()
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Controls whether the public page shows its title/header area.'
+                                'Controls whether the public page shows its title, intro, message, and header image area.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(1),
@@ -167,7 +167,7 @@ class PageForm
                         ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional image used in the page header.'
+                                'Optional image used in the page header. Landscape photos usually work best.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(1),
@@ -175,7 +175,7 @@ class PageForm
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional image used when this page appears in cards or listings.'
+                                'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(1),
@@ -184,7 +184,7 @@ class PageForm
                             ->label('Publish at')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Leave empty to allow the page to be visible immediately when live.'
+                                'Optional. Leave empty to allow the page to be visible immediately once Make Page Live is Yes.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -193,7 +193,7 @@ class PageForm
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Leave empty to keep the page visible indefinitely.'
+                                'Optional. Leave empty to keep the live page visible indefinitely.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -203,7 +203,7 @@ class PageForm
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. If empty, featured page areas can use Publish at.'
+                                'Optional for child pages. Controls when this page starts being featured under its parent.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -214,7 +214,7 @@ class PageForm
                             ->beforeOrEqual(fn (Get $get): ?string => $get('expires_at'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. If empty, featured page areas can use Expires at.'
+                                'Optional for child pages. Controls when this page stops being featured under its parent.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -229,7 +229,7 @@ class PageForm
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Makes this page a child of another page and enables parent-page feature dates.'
+                                'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -240,7 +240,7 @@ class PageForm
                             ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Shows direct child pages attached to this page.'
+                                'Shows direct child pages attached to this page. Edit the child page to change or remove its parent.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -262,7 +262,7 @@ class PageForm
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional short search/social description for this page.'
+                                'Optional short search/social description for this page. Aim for one clear sentence.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -272,7 +272,7 @@ class PageForm
                             ->default(0)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier where pages are ordered manually.'
+                                'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(1),

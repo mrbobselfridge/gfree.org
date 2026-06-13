@@ -659,6 +659,7 @@
                 <li><a href="#announcements">Announcements</a></li>
                 <li><a href="#bulletins">Bulletins</a></li>
                 <li><a href="#media-library">Media Library</a></li>
+                <li><a href="#file-library">File Library</a></li>
                 <li><a href="#ministries">Ministries</a></li>
                 <li><a href="#pages">Pages</a></li>
                 <li><a href="#leaders">Leaders</a></li>
@@ -892,17 +893,45 @@
                 <li>Use landscape photos for banners and wide image sections.</li>
                 <li>Use portrait or square photos for leaders when the layout expects a profile image.</li>
             </ul>
+        </section>
+
+        <section class="manual-section" id="file-library">
+            <h2>File Library</h2>
+            <p>File Library manages downloadable documents as their own content area. Use it for PDFs, forms, bulletins, policies, spreadsheets, handouts, and other files that need stable links or optional extracted web content.</p>
+            <h3>Common Fields</h3>
+            <ul>
+                <li><strong>Category:</strong> Groups the file and controls category-specific AI extraction instructions.</li>
+                <li><strong>Title:</strong> Admin/public title for the file.</li>
+                <li><strong>Slug:</strong> Stable file URL under <code>/files/</code>. New slugs default to <code>category-title</code>, such as <code>bulletin-sunday-worship-guide</code>.</li>
+                <li><strong>Make File Live:</strong> Turns the public file URL on or off.</li>
+                <li><strong>Public or private:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
+                <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Files are children only.</li>
+                <li><strong>Optional content:</strong> Formatted notes or AI-extracted content for the file record.</li>
+                <li><strong>Publish date, Created Date, Updated Date:</strong> Publish date controls availability; created/updated dates are shown for reference.</li>
+            </ul>
+            <h3>File Categories</h3>
+            <ul>
+                <li>Use the tag-shaped <strong>Categories</strong> icon on the File Library page to manage file categories.</li>
+                <li>File Categories are intentionally not shown as a separate main navigation item.</li>
+                <li>Each category has <strong>Extraction Instructions</strong> used by the file extraction AI action for files in that category.</li>
+                <li>Keep instructions direct. Example: what to preserve, what to ignore, and what output style is useful for that document type.</li>
+            </ul>
+            <h3>AI File Extraction</h3>
+            <ul>
+                <li>Open an existing file record with a saved current file.</li>
+                <li>Choose <strong>Extract File Content</strong>.</li>
+                <li>The tool saves the current file record, sends the saved file and category extraction instructions to OpenAI, then shows the exact prompt used.</li>
+                <li>Review and edit the extracted HTML in the modal before choosing <strong>Use extracted content</strong>.</li>
+                <li>Accepted extracted content is placed into Optional content. Review it before using it publicly.</li>
+            </ul>
             <h3>Document Guidelines</h3>
             <ul>
-                <li>Open <strong>File Library</strong> to create and manage downloadable PDFs, forms, posters, policies, spreadsheets, handouts, and other shared documents.</li>
-                <li>Use Make File Live to turn the file URL on or off. Use Public for links anyone may download, and Private for links that require a user or admin login.</li>
-                <li>Use Parent Page to group files under a related page such as Resources, Forms, or Bulletins.</li>
-                <li>Use Replace file to upload a new version while keeping older versions available.</li>
-                <li>Copy the public link when the file should be linked from a page, announcement, ministry, or email.</li>
                 <li>Prefer PDFs for public visitors because they open consistently across phones, tablets, and computers.</li>
                 <li>Keep source documents such as Word files or spreadsheets private unless visitors truly need them.</li>
                 <li>Use expiration dates for temporary flyers, posters, forms, and event handouts.</li>
                 <li>Use categories so files are easy to find later.</li>
+                <li>Use Replace file to upload a new version while keeping older versions available.</li>
+                <li>Copy the View or Download link when the file should be linked from a page, announcement, ministry, or email.</li>
             </ul>
         </section>
 
@@ -930,18 +959,26 @@
             <h3>Common Fields</h3>
             <ul>
                 <li><strong>Title:</strong> The page name.</li>
-                <li><strong>Slug:</strong> The URL path. Example: a slug of <code>new-here</code> creates <code>/new-here</code>.</li>
-                <li><strong>Body:</strong> Legacy or fallback content.</li>
+                <li><strong>Slug:</strong> The URL path. Example: a slug of <code>new-here</code> creates <code>/new-here</code>. Nested slugs such as <code>resources/forms</code> are allowed.</li>
                 <li><strong>Content blocks:</strong> Preferred flexible page layout.</li>
                 <li><strong>Show navigation and footer:</strong> Turn off only for special landing pages.</li>
+                <li><strong>Parent Page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
                 <li><strong>SEO title and description:</strong> Optional browser/search metadata.</li>
-                <li><strong>Published:</strong> Must be enabled for public display.</li>
+                <li><strong>Make Page Live:</strong> Must be enabled for public display or for a redirect to work.</li>
             </ul>
             <h3>Slug Rules</h3>
             <ul>
-                <li>Use lowercase words separated by hyphens.</li>
+                <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
                 <li>Do not change a public slug casually. Old links may stop working.</li>
                 <li>Avoid slugs already used by system routes such as announcements, bulletins, leadership, ministry, sermons, admin, or manual.</li>
+                <li>Use the rebuild icon to regenerate the slug from the title when needed.</li>
+            </ul>
+            <h3>Parent Pages and Child Pages</h3>
+            <ul>
+                <li>A page can be a parent to other pages.</li>
+                <li>Set Parent Page on the child page, not on the parent.</li>
+                <li>Child pages can use Featured at and Featured expires at for parent-page listing or feature areas.</li>
+                <li>The edit screen shows direct child pages attached to the current page.</li>
             </ul>
             <h3>Redirect Pages</h3>
             <p>A page can also be used as a simple redirect. This is useful for old links, printed QR codes, short campaign URLs, or pages that have moved.</p>
@@ -987,17 +1024,19 @@
             <p>Navigation Links control the public header navigation and dropdown structure.</p>
             <ul>
                 <li><strong>Label:</strong> Text visitors see in the header.</li>
-                <li><strong>URL:</strong> Internal path or full external URL.</li>
-                <li><strong>Parent:</strong> Use to place a link under another link as a dropdown item.</li>
+                <li><strong>URL:</strong> Internal path, file link, or full external URL.</li>
+                <li><strong>Parent link:</strong> Use to place a link under another top-level link as a dropdown item.</li>
                 <li><strong>Sort order:</strong> Controls order in the header or dropdown.</li>
-                <li><strong>Publish and expire dates:</strong> Optional scheduling for seasonal links.</li>
+                <li><strong>Make Link Live, Publish at, Expires at:</strong> Control whether and when the link appears publicly.</li>
+                <li><strong>Page limits:</strong> The list can warn when a navigation link points to a page that is draft, scheduled, expired, or missing.</li>
             </ul>
             <h3>Navigation Checklist</h3>
             <ul class="manual-checklist">
                 <li>Keep top-level navigation short.</li>
                 <li>Use dropdowns for related pages instead of crowding the header.</li>
-                <li>Test every new or changed navigation link.</li>
-                <li>Use external links carefully and only when visitors should leave the site.</li>
+                <li>Test every new or changed navigation link on desktop and mobile.</li>
+                <li>Use Open in new tab mostly for external websites or downloadable files.</li>
+                <li>When linking to a Page record, make sure both the navigation link and the page itself are live for visitors.</li>
             </ul>
         </section>
 
@@ -1011,7 +1050,7 @@
                 <li>Social media links.</li>
                 <li>One Church URL fallback.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
-                <li>AI rewrite and bulletin extraction settings when enabled.</li>
+                <li>OpenAI API key and default AI model settings used by rewrite, bulletin extraction, page review, and file extraction tools when enabled.</li>
                 <li>Sermons page defaults and YouTube feed settings.</li>
                 <li>Google Tag Manager and Google Analytics tracking IDs.</li>
             </ul>
@@ -1094,7 +1133,7 @@
             <h3>Where To Find Them</h3>
             <ul>
                 <li>Open <strong>Workflow Notification Rules</strong> in the admin sidebar.</li>
-                <li>Create a rule for one content area, such as Bulletins, Announcements, Pages, Media Library, Site Settings, Users, Leaders, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
+                <li>Create a rule for one content area, such as Bulletins, Announcements, Pages, Media Library, File Library, Site Settings, Users, Leaders, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
 
@@ -1223,6 +1262,14 @@
                 <li>Confirm the image uploaded successfully.</li>
                 <li>Check whether it was deleted or replaced in the Media Library.</li>
                 <li>Try saving the record again after selecting the image.</li>
+            </ul>
+
+            <h3>A file link is missing or unavailable.</h3>
+            <ul>
+                <li>Confirm the file record is marked Make File Live.</li>
+                <li>Check whether Publish date is in the future or the file has expired.</li>
+                <li>Check whether the file is private. Private published files require a user or admin login.</li>
+                <li>Open the file record in File Library and copy the current View or Download link after saving.</li>
             </ul>
 
             <h3>A link opens the wrong place.</h3>
