@@ -104,6 +104,14 @@ class PageForm
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
 
+                        ToggleButtons::make('show_site_chrome')
+                            ->label('Show navigation and footer')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required()
+                            ->columnSpan(1),
+
                         ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                             ->columnSpan(1),
 
@@ -116,14 +124,6 @@ class PageForm
                             ->columnSpan(1),
 
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
-                            ->columnSpan(1),
-
-                        ToggleButtons::make('show_site_chrome')
-                            ->label('Show navigation and footer')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
                             ->columnSpan(1),
 
                         DateTimePicker::make('publish_at')
