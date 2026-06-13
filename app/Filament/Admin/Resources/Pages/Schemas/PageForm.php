@@ -70,6 +70,51 @@ class PageForm
                     ->key('pages-section-controls')
                     ->columnSpanFull(),
 
+                self::section('Redirect', 'pages-redirect')
+                    ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
+                    ->icon(Heroicon::OutlinedArrowRightCircle)
+                    ->schema([
+                        Placeholder::make('redirect_inactive_notice')
+                            ->label('Redirect inactive')
+                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
+                            ->columnSpanFull(),
+                        TextInput::make('redirect_url')
+                            ->label('Send visitors to')
+                            ->helperText('Use a local path like /new-here or a full https:// URL.')
+                            ->placeholder('/new-here')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
+                            ->maxLength(2048)
+                            ->columnSpan(2),
+                        ToggleButtons::make('redirect_status_code')
+                            ->label('Redirect type')
+                            ->options(Page::redirectStatusOptions())
+                            ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
+                            ->inline()
+                            ->default(Page::REDIRECT_TEMPORARY)
+                            ->required()
+                            ->columnSpan(2),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
+
+                self::section('Page Content Blocks', 'pages-content-blocks')
+                    ->description('Build the visible page body here. Each block becomes a public section on the page.')
+                    ->icon(Heroicon::OutlinedRectangleGroup)
+                    ->iconColor('success')
+                    ->extraAttributes([
+                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
+                    ])
+                    ->schema([
+                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
                 self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the URL, ordering, publish window, and page hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
@@ -117,36 +162,6 @@ class PageForm
                     ->columns(4)
                     ->columnSpanFull(),
 
-                self::section('Redirect', 'pages-redirect')
-                    ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
-                    ->icon(Heroicon::OutlinedArrowRightCircle)
-                    ->schema([
-                        Placeholder::make('redirect_inactive_notice')
-                            ->label('Redirect inactive')
-                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
-                            ->columnSpanFull(),
-                        TextInput::make('redirect_url')
-                            ->label('Send visitors to')
-                            ->helperText('Use a local path like /new-here or a full https:// URL.')
-                            ->placeholder('/new-here')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->required(fn (Get $get): bool => (bool) $get('is_redirect'))
-                            ->maxLength(2048)
-                            ->columnSpan(2),
-                        ToggleButtons::make('redirect_status_code')
-                            ->label('Redirect type')
-                            ->options(Page::redirectStatusOptions())
-                            ->helperText('Temporary is safest for links that may change. Permanent should only be used when an old URL has permanently moved.')
-                            ->inline()
-                            ->default(Page::REDIRECT_TEMPORARY)
-                            ->required()
-                            ->columnSpan(2),
-                    ])
-                    ->columns(4)
-                    ->columnSpanFull()
-                    ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
-
                 self::section('Page Display', 'pages-display', collapsedOnEdit: true)
                     ->description('Controls the public page frame, header copy, listing image, and optional SEO Title/Description.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -181,20 +196,6 @@ class PageForm
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
-                self::section('Page Content Blocks', 'pages-content-blocks')
-                    ->description('Build the visible page body here. Each block becomes a public section on the page.')
-                    ->icon(Heroicon::OutlinedRectangleGroup)
-                    ->iconColor('success')
-                    ->extraAttributes([
-                        'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
-                    ])
-                    ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(4)
-                    ->columnSpanFull()
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
             ]);
     }
 
