@@ -3,15 +3,16 @@
 namespace App\Filament\Admin\Resources\FileDocuments\Schemas;
 
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
@@ -36,9 +37,37 @@ class FileDocumentForm
                             ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation): mixed => $operation === 'create'
                                 ? $set('file_name', FileDocument::makeUniqueFileName($state))
                                 : null),
+                        ToggleButtons::make('is_published')
+                            ->label('Make File Live')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required(),
+                        Select::make('category')
+                            ->options(fn (?FileDocument $record): array => FileCategory::options($record?->category))
+                            ->searchable()
+                            ->preload()
+                            ->default(FileCategory::DEFAULT_NAME)
+                            ->required(),
+                        ToggleButtons::make('visibility')
+                            ->label('Public or private')
+                            ->options([
+                                FileDocument::VISIBILITY_PUBLIC => 'Public',
+                                FileDocument::VISIBILITY_PRIVATE => 'Private',
+                            ])
+                            ->colors([
+                                FileDocument::VISIBILITY_PUBLIC => 'success',
+                                FileDocument::VISIBILITY_PRIVATE => 'warning',
+                            ])
+                            ->icons([
+                                FileDocument::VISIBILITY_PUBLIC => 'heroicon-o-globe-americas',
+                                FileDocument::VISIBILITY_PRIVATE => 'heroicon-o-lock-closed',
+                            ])
+                            ->inline()
+                            ->default(FileDocument::VISIBILITY_PUBLIC)
+                            ->required(),
                         TextInput::make('file_name')
                             ->label('Optional filename')
-                            ->helperText('Used for the stable public link, like /files/connection-card. If blank, one is generated from the title.')
                             ->prefix('/files/')
                             ->live(onBlur: true)
                             ->maxLength(255)
@@ -58,34 +87,18 @@ class FileDocumentForm
                             ->dehydrateStateUsing(fn (?string $state, Get $get, ?FileDocument $record): string => filled($state)
                                 ? Str::slug($state)
                                 : FileDocument::makeUniqueFileName($get('title'), $record)),
-                        Select::make('category')
-                            ->options(fn (): array => FileDocument::categoryOptions())
+                        Select::make('parent_page_id')
+                            ->label('Parent Page - optional')
+                            ->options(fn (): array => PageForm::parentPageOptions())
                             ->searchable()
-                            ->createOptionForm([
-                                TextInput::make('category')
-                                    ->label('Category')
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->createOptionUsing(fn (array $data): string => trim((string) $data['category']))
-                            ->default('Other')
-                            ->required(),
-                        ToggleButtons::make('visibility')
-                            ->options([
-                                FileDocument::VISIBILITY_PUBLIC => 'Public',
-                                FileDocument::VISIBILITY_PRIVATE => 'Private',
-                            ])
-                            ->colors([
-                                FileDocument::VISIBILITY_PUBLIC => 'success',
-                                FileDocument::VISIBILITY_PRIVATE => 'warning',
-                            ])
-                            ->icons([
-                                FileDocument::VISIBILITY_PUBLIC => 'heroicon-o-globe-americas',
-                                FileDocument::VISIBILITY_PRIVATE => 'heroicon-o-lock-closed',
-                            ])
-                            ->inline()
-                            ->default(FileDocument::VISIBILITY_PUBLIC)
-                            ->required(),
+                            ->preload()
+                            ->native(false)
+                            ->exists('pages', 'id')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
+                            )
+                            ->hintColor('gray'),
                         FileUpload::make('pending_upload')
                             ->label('File')
                             ->acceptedFileTypes(FileLibrary::allowedMimeTypes())
@@ -134,16 +147,20 @@ class FileDocumentForm
                     ->columnSpanFull(),
                 Section::make('Document Notes')
                     ->schema([
-                        Textarea::make('description')
-                            ->rows(3)
-                            ->columnSpanFull(),
                         RichEditorDefaults::configure(RichEditor::make('content'))
                             ->label('Optional content')
                             ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
                             ->columnSpanFull(),
+                        DateTimePicker::make('publish_at')
+                            ->label('Publish date'),
                         DateTimePicker::make('expires_at')
                             ->label('Expiration date'),
-                        TagsInput::make('tags'),
+                        Placeholder::make('created_at')
+                            ->label('Created Date')
+                            ->content(fn (?FileDocument $record): string => $record?->created_at?->toDayDateTimeString() ?? 'Set when the file is created'),
+                        Placeholder::make('updated_at')
+                            ->label('Updated Date')
+                            ->content(fn (?FileDocument $record): string => $record?->updated_at?->toDayDateTimeString() ?? 'Set when the file is saved'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

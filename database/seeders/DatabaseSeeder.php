@@ -3,11 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\Announcement;
+use App\Models\FileCategory;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\AiBulletinExtractionPrompt;
+use App\Support\FileCategoryExtractionInstructions;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -32,6 +34,25 @@ class DatabaseSeeder extends Seeder
             'one_church_url' => 'https://twyxtco.onechurchsoftware.com',
             'ai_bulletin_extraction_prompt' => AiBulletinExtractionPrompt::DEFAULT,
         ]);
+
+        collect([
+            'Bulletin',
+            'Newsletter',
+            'Consent Form',
+            'Marketing Form',
+            'Form',
+            'Poster',
+            'Policy',
+            'Ministry Resource',
+            'Event Handout',
+            'Spreadsheet',
+            FileCategory::DEFAULT_NAME,
+        ])->each(fn (string $name, int $index) => FileCategory::updateOrCreate([
+            'name' => $name,
+        ], [
+            'sort_order' => ($index + 1) * 10,
+            'extraction_instructions' => FileCategoryExtractionInstructions::forCategory($name),
+        ]));
 
         HomepageBanner::updateOrCreate([
             'title' => 'Grace for real life.',

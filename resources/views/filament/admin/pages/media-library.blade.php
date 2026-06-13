@@ -1,17 +1,13 @@
 <x-filament-panels::page>
     @php
-        $images = $this->libraryTab === 'images' && $this->canAccessImages() ? $this->getImages() : collect();
-        $totalImages = $this->libraryTab === 'images' && $this->canAccessImages() ? $this->getTotalImageCount() : 0;
+        $images = $this->canAccessImages() ? $this->getImages() : collect();
+        $totalImages = $this->canAccessImages() ? $this->getTotalImageCount() : 0;
         $sortOptions = $this->getSortOptions();
-        $addAction = match (true) {
-            $this->libraryTab === 'files' && $this->canAccessFiles() => 'createFile',
-            $this->libraryTab === 'images' && $this->canAccessImages() => 'uploadImages',
-            default => null,
-        };
+        $addAction = $this->canAccessImages() ? 'uploadImages' : null;
     @endphp
 
     <style>
-        .twyxtco-library-tabs {
+        .twyxtco-media-toolbar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -22,61 +18,23 @@
             padding: 0.625rem;
         }
 
-        .dark .twyxtco-library-tabs {
+        .dark .twyxtco-media-toolbar {
             border-color: rgb(31 41 55);
             background: rgb(17 24 39);
         }
 
-        .twyxtco-library-tabs__label {
+        .twyxtco-media-toolbar__label {
             padding: 0 0.25rem;
             color: rgb(75 85 99);
             font-size: 0.875rem;
             font-weight: 700;
         }
 
-        .dark .twyxtco-library-tabs__label {
+        .dark .twyxtco-media-toolbar__label {
             color: rgb(209 213 219);
         }
 
-        .twyxtco-library-tabs__button {
-            border-radius: 0.5rem;
-            padding: 0.45rem 0.75rem;
-            color: rgb(75 85 99);
-            font-size: 0.8125rem;
-            font-weight: 700;
-        }
-
-        .twyxtco-library-tabs__button:hover,
-        .twyxtco-library-tabs__button:focus {
-            background: rgb(243 244 246);
-            color: rgb(17 24 39);
-        }
-
-        .dark .twyxtco-library-tabs__button {
-            color: rgb(209 213 219);
-        }
-
-        .dark .twyxtco-library-tabs__button:hover,
-        .dark .twyxtco-library-tabs__button:focus {
-            background: rgb(31 41 55);
-            color: white;
-        }
-
-        .twyxtco-library-tabs__button--active {
-            background: rgb(217 119 6);
-            color: white;
-        }
-
-        .twyxtco-library-tabs__button--active:hover,
-        .twyxtco-library-tabs__button--active:focus,
-        .dark .twyxtco-library-tabs__button--active,
-        .dark .twyxtco-library-tabs__button--active:hover,
-        .dark .twyxtco-library-tabs__button--active:focus {
-            background: rgb(217 119 6);
-            color: white;
-        }
-
-        .twyxtco-library-tabs__add {
+        .twyxtco-media-toolbar__add {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -88,12 +46,12 @@
             color: white;
         }
 
-        .twyxtco-library-tabs__add:hover,
-        .twyxtco-library-tabs__add:focus {
+        .twyxtco-media-toolbar__add:hover,
+        .twyxtco-media-toolbar__add:focus {
             background: rgb(180 83 9);
         }
 
-        .twyxtco-library-tabs__add svg {
+        .twyxtco-media-toolbar__add svg {
             width: 1rem;
             height: 1rem;
         }
@@ -286,35 +244,13 @@
     </style>
 
     <div class="space-y-6">
-        <div class="twyxtco-library-tabs" aria-label="Library sections">
-            <span class="twyxtco-library-tabs__label">Library:</span>
-
-            @if ($this->canAccessImages())
-                <button
-                    type="button"
-                    wire:click="setLibraryTab('images')"
-                    class="twyxtco-library-tabs__button {{ $this->libraryTab === 'images' ? 'twyxtco-library-tabs__button--active' : '' }}"
-                    aria-pressed="{{ $this->libraryTab === 'images' ? 'true' : 'false' }}"
-                >
-                    Images
-                </button>
-            @endif
-
-            @if ($this->canAccessFiles())
-                <button
-                    type="button"
-                    wire:click="setLibraryTab('files')"
-                    class="twyxtco-library-tabs__button {{ $this->libraryTab === 'files' ? 'twyxtco-library-tabs__button--active' : '' }}"
-                    aria-pressed="{{ $this->libraryTab === 'files' ? 'true' : 'false' }}"
-                >
-                    Files
-                </button>
-            @endif
+        <div class="twyxtco-media-toolbar" aria-label="Media Library actions">
+            <span class="twyxtco-media-toolbar__label">Images</span>
 
             @if ($addAction)
                 <button
                     type="button"
-                    class="twyxtco-library-tabs__add"
+                    class="twyxtco-media-toolbar__add"
                     wire:click="mountAction('{{ $addAction }}')"
                     title="Add"
                     aria-label="Add"
@@ -326,20 +262,7 @@
             @endif
         </div>
 
-        @if ($this->libraryTab === 'files' && $this->canAccessFiles())
-            <div class="twyxtco-media-summary">
-                <div>
-                    <div>
-                        <h2 class="text-base font-semibold text-gray-950 dark:text-white">File Library</h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Manage documents, PDFs, and other downloadable files.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{ $this->table }}
-        @elseif ($this->canAccessImages())
+        @if ($this->canAccessImages())
             <div class="twyxtco-media-summary">
                 <div>
                     <div>

@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,8 +14,12 @@ class RichTextFileLibrary
     {
         return FileDocument::query()
             ->with('currentVersion')
+            ->where('is_published', true)
             ->where('visibility', FileDocument::VISIBILITY_PUBLIC)
             ->whereNotNull('current_version_id')
+            ->where(fn (Builder $query) => $query
+                ->whereNull('publish_at')
+                ->orWhere('publish_at', '<=', now()))
             ->where(fn (Builder $query) => $query
                 ->whereNull('expires_at')
                 ->orWhere('expires_at', '>=', now()));
@@ -83,7 +88,8 @@ class RichTextFileLibrary
         $document = FileDocument::query()->create([
             'title' => $title,
             'file_name' => FileDocument::makeUniqueFileName($title),
-            'category' => trim((string) ($data['new_category'] ?? '')) ?: 'Other',
+            'category' => trim((string) ($data['new_category'] ?? '')) ?: FileCategory::DEFAULT_NAME,
+            'is_published' => true,
             'visibility' => FileDocument::VISIBILITY_PUBLIC,
             'uploaded_by_id' => $user?->getKey(),
             'updated_by_id' => $user?->getKey(),

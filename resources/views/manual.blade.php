@@ -876,17 +876,13 @@
 
         <section class="manual-section" id="media-library">
             <h2>Media Library</h2>
-            <p>The Media Library is the shared library area for reusable images and downloadable files. Use the tabs at the top of the page to switch between <strong>Images</strong> and <strong>Files</strong>.</p>
+            <p>The Media Library is the shared library area for reusable images used across pages, announcements, ministries, leaders, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
             <h3>Common Tasks</h3>
             <ul>
-                <li>Open <strong>Images</strong> to upload images for pages, announcements, ministries, leaders, and banners.</li>
+                <li>Upload images for pages, announcements, ministries, leaders, and banners.</li>
                 <li>Use image search and sorting to find files by path, filename, size, dimensions, or usage.</li>
                 <li>Replace an image when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
-                <li>Open <strong>Files</strong> to create and manage downloadable PDFs, forms, posters, policies, spreadsheets, handouts, and other shared documents.</li>
-                <li>Use Public for files that visitors may download from a shared link, and Private for internal files that should require an admin login.</li>
-                <li>Use Replace file to upload a new version while keeping older versions available.</li>
-                <li>Copy the public link when the file should be linked from a page, announcement, ministry, or email.</li>
                 <li>Use descriptive filenames when possible.</li>
             </ul>
             <h3>Image Guidelines</h3>
@@ -898,10 +894,15 @@
             </ul>
             <h3>Document Guidelines</h3>
             <ul>
+                <li>Open <strong>File Library</strong> to create and manage downloadable PDFs, forms, posters, policies, spreadsheets, handouts, and other shared documents.</li>
+                <li>Use Make File Live to turn the file URL on or off. Use Public for links anyone may download, and Private for links that require a user or admin login.</li>
+                <li>Use Parent Page to group files under a related page such as Resources, Forms, or Bulletins.</li>
+                <li>Use Replace file to upload a new version while keeping older versions available.</li>
+                <li>Copy the public link when the file should be linked from a page, announcement, ministry, or email.</li>
                 <li>Prefer PDFs for public visitors because they open consistently across phones, tablets, and computers.</li>
                 <li>Keep source documents such as Word files or spreadsheets private unless visitors truly need them.</li>
                 <li>Use expiration dates for temporary flyers, posters, forms, and event handouts.</li>
-                <li>Use tags and categories so files are easy to find later.</li>
+                <li>Use categories so files are easy to find later.</li>
             </ul>
         </section>
 

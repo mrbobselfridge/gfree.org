@@ -4,21 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\FileDocument;
 use App\Models\FileDocumentVersion;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileDocumentController extends Controller
 {
-    public function show(string $fileName): StreamedResponse
+    public function show(string $fileName): StreamedResponse|RedirectResponse
     {
         $document = FileDocument::query()
             ->where('file_name', $fileName)
             ->with('currentVersion')
             ->firstOrFail();
 
-        abort_unless($document->isPublic(), Response::HTTP_NOT_FOUND);
+        abort_unless($document->isLive(), Response::HTTP_NOT_FOUND);
+
+        if (! $document->isPublic()) {
+            return Auth::check()
+                ? $this->streamVersion($document->currentVersion)
+                : redirect()->guest(route('filament.admin.auth.login'));
+        }
 
         return $this->streamVersion($document->currentVersion);
     }

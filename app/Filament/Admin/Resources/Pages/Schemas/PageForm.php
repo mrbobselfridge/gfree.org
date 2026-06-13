@@ -29,7 +29,6 @@ class PageForm
 {
     private const SECTION_IDS = [
         'pages-redirect',
-        'pages-display',
         'pages-content-blocks',
         'pages-settings',
     ];

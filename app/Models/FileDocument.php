@@ -14,10 +14,13 @@ use Illuminate\Support\Str;
     'title',
     'file_name',
     'category',
+    'parent_page_id',
+    'is_published',
     'visibility',
     'description',
     'content',
     'tags',
+    'publish_at',
     'expires_at',
     'current_version_id',
     'uploaded_by_id',
@@ -31,20 +34,12 @@ class FileDocument extends Model implements HasPublicUrl
 
     public static function categories(): array
     {
-        return [
-            'Form' => 'Form',
-            'Poster' => 'Poster',
-            'Policy' => 'Policy',
-            'Ministry Resource' => 'Ministry Resource',
-            'Event Handout' => 'Event Handout',
-            'Spreadsheet' => 'Spreadsheet',
-            'Other' => 'Other',
-        ];
+        return FileCategory::options();
     }
 
     public static function categoryOptions(): array
     {
-        return collect(static::categories())
+        return collect(FileCategory::options())
             ->merge(static::query()
                 ->whereNotNull('category')
                 ->distinct()
@@ -78,7 +73,7 @@ class FileDocument extends Model implements HasPublicUrl
 
     public function publicUrl(): ?string
     {
-        return $this->isPublic() ? route('files.show', ['fileName' => $this->file_name]) : null;
+        return $this->isLive() ? route('files.show', ['fileName' => $this->file_name]) : null;
     }
 
     public function downloadUrl(): string
@@ -88,9 +83,18 @@ class FileDocument extends Model implements HasPublicUrl
 
     public function isPublic(): bool
     {
-        return $this->visibility === self::VISIBILITY_PUBLIC
+        return $this->isLive()
+            && $this->visibility === self::VISIBILITY_PUBLIC;
+    }
+
+    public function isLive(): bool
+    {
+        $now = now();
+
+        return (bool) $this->is_published
             && filled($this->file_name)
             && $this->currentVersion !== null
+            && ($this->publish_at === null || $this->publish_at->lte($now))
             && ! $this->isExpired();
     }
 
@@ -107,6 +111,11 @@ class FileDocument extends Model implements HasPublicUrl
     public function currentVersion(): BelongsTo
     {
         return $this->belongsTo(FileDocumentVersion::class, 'current_version_id');
+    }
+
+    public function parentPage(): BelongsTo
+    {
+        return $this->belongsTo(Page::class, 'parent_page_id');
     }
 
     public function uploadedBy(): BelongsTo
@@ -131,7 +140,9 @@ class FileDocument extends Model implements HasPublicUrl
     protected function casts(): array
     {
         return [
+            'is_published' => 'boolean',
             'tags' => 'array',
+            'publish_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
     }

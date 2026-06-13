@@ -44,10 +44,13 @@ class RichTextFileLibraryTest extends TestCase
         $publicDocument = $this->documentWithVersion('Connection Card', 'connection-card', FileDocument::VISIBILITY_PUBLIC);
         $privateDocument = $this->documentWithVersion('Internal Policy', 'internal-policy', FileDocument::VISIBILITY_PRIVATE);
         $expiredDocument = $this->documentWithVersion('Old Poster', 'old-poster', FileDocument::VISIBILITY_PUBLIC, now()->subDay());
+        $unpublishedDocument = $this->documentWithVersion('Draft Packet', 'draft-packet', FileDocument::VISIBILITY_PUBLIC, null, false);
+        $scheduledDocument = $this->documentWithVersion('Scheduled Packet', 'scheduled-packet', FileDocument::VISIBILITY_PUBLIC, null, true, now()->addDay());
         $missingVersionDocument = FileDocument::query()->create([
             'title' => 'No File Yet',
             'file_name' => 'no-file-yet',
             'category' => 'Other',
+            'is_published' => true,
             'visibility' => FileDocument::VISIBILITY_PUBLIC,
         ]);
 
@@ -56,6 +59,8 @@ class RichTextFileLibraryTest extends TestCase
         $this->assertArrayHasKey($publicDocument->getKey(), $options);
         $this->assertArrayNotHasKey($privateDocument->getKey(), $options);
         $this->assertArrayNotHasKey($expiredDocument->getKey(), $options);
+        $this->assertArrayNotHasKey($unpublishedDocument->getKey(), $options);
+        $this->assertArrayNotHasKey($scheduledDocument->getKey(), $options);
         $this->assertArrayNotHasKey($missingVersionDocument->getKey(), $options);
     }
 
@@ -80,6 +85,7 @@ class RichTextFileLibraryTest extends TestCase
         $this->assertSame('New Form', $document->title);
         $this->assertSame('new-form', $document->file_name);
         $this->assertSame('Form', $document->category);
+        $this->assertTrue($document->is_published);
         $this->assertSame(FileDocument::VISIBILITY_PUBLIC, $document->visibility);
         $this->assertSame($admin->getKey(), $document->uploaded_by_id);
         $this->assertSame(route('files.show', ['fileName' => 'new-form']), $document->publicUrl());
@@ -87,13 +93,15 @@ class RichTextFileLibraryTest extends TestCase
         Storage::disk(FileLibrary::DISK)->assertExists($document->currentVersion->path);
     }
 
-    private function documentWithVersion(string $title, string $fileName, string $visibility, mixed $expiresAt = null): FileDocument
+    private function documentWithVersion(string $title, string $fileName, string $visibility, mixed $expiresAt = null, bool $isPublished = true, mixed $publishAt = null): FileDocument
     {
         $document = FileDocument::query()->create([
             'title' => $title,
             'file_name' => $fileName,
             'category' => 'Other',
+            'is_published' => $isPublished,
             'visibility' => $visibility,
+            'publish_at' => $publishAt,
             'expires_at' => $expiresAt,
         ]);
 

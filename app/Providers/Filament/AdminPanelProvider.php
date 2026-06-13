@@ -119,6 +119,59 @@ class AdminPanelProvider extends PanelProvider
                             overflow-y: auto;
                         }
 
+                        .twyxtco-file-extraction-modal.fi-modal-window,
+                        .twyxtco-file-extraction-modal .fi-modal-window {
+                            display: flex;
+                            flex-direction: column;
+                            max-height: calc(100dvh - 2rem);
+                            min-height: 0;
+                            overflow: hidden;
+                        }
+
+                        .twyxtco-file-extraction-modal form,
+                        .twyxtco-file-extraction-modal .fi-modal-content-ctn {
+                            display: flex;
+                            flex: 1 1 auto;
+                            flex-direction: column;
+                            min-height: 0;
+                        }
+
+                        .twyxtco-file-extraction-modal .fi-modal-content {
+                            flex: 1 1 auto;
+                            min-height: 0;
+                            overflow-y: auto;
+                            overscroll-behavior: contain;
+                            padding-bottom: 2rem;
+                        }
+
+                        .twyxtco-file-extraction-modal .fi-modal-footer {
+                            flex: 0 0 auto;
+                        }
+
+                        .twyxtco-file-extraction-prompt-field textarea {
+                            max-height: 14rem;
+                            overflow-y: auto;
+                            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                            font-size: 0.8125rem;
+                            line-height: 1.45;
+                        }
+
+                        .twyxtco-file-extraction-result-editor {
+                            height: clamp(18rem, calc(100dvh - 34rem), 44rem);
+                            max-height: calc(100dvh - 20px);
+                            min-height: 18rem;
+                            overflow-y: auto !important;
+                            overscroll-behavior: contain;
+                        }
+
+                        .twyxtco-file-extraction-result-editor .fi-fo-rich-editor-content {
+                            height: 100%;
+                            max-height: inherit;
+                            min-height: 100%;
+                            overflow-y: auto;
+                            overscroll-behavior: contain;
+                        }
+
                         .twyxtco-ai-page-review-modal.fi-modal-window,
                         .twyxtco-ai-page-review-modal .fi-modal-window {
                             display: flex;

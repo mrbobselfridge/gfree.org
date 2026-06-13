@@ -9,6 +9,7 @@ use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
+use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
@@ -20,6 +21,7 @@ use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\Announcement;
 use App\Models\Bulletin;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
@@ -146,7 +148,9 @@ class AdminAccess
                 'label' => 'File Library',
                 'group' => 'Content',
                 'model' => FileDocument::class,
+                'models' => [FileDocument::class, FileCategory::class],
                 'resource' => FileDocumentResource::class,
+                'resources' => [FileDocumentResource::class, FileCategoryResource::class],
             ],
             self::NAVIGATION_LINKS => [
                 'label' => 'Navigation Links',
@@ -220,7 +224,10 @@ class AdminAccess
     public static function additionalToolDefinitions(): array
     {
         $knownResourceClasses = collect(self::toolDefinitions())
-            ->pluck('resource')
+            ->flatMap(fn (array $definition): array => array_filter([
+                $definition['resource'] ?? null,
+                ...($definition['resources'] ?? []),
+            ]))
             ->filter()
             ->all();
 
@@ -350,7 +357,8 @@ class AdminAccess
     public static function toolKeyForModel(string $modelClass): ?string
     {
         foreach ([...self::toolDefinitions(), ...self::additionalToolDefinitions()] as $key => $definition) {
-            if (($definition['model'] ?? null) === $modelClass) {
+            if (($definition['model'] ?? null) === $modelClass
+                || in_array($modelClass, $definition['models'] ?? [], true)) {
                 return $key;
             }
         }

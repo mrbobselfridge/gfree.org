@@ -68,6 +68,11 @@ class Page extends Model implements HasPublicUrl
         return $this->hasMany(self::class, 'parent_page_id');
     }
 
+    public function fileDocuments(): HasMany
+    {
+        return $this->hasMany(FileDocument::class, 'parent_page_id');
+    }
+
     public function publicUrl(): ?string
     {
         if (blank($this->slug)) {

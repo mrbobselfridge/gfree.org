@@ -33,7 +33,7 @@ class FileDocumentsTable
                     ->sortable(),
                 TextColumn::make('file_name')
                     ->label('Link')
-                    ->formatStateUsing(fn (FileDocument $record): string => $record->publicUrl() ?? 'Private')
+                    ->formatStateUsing(fn (FileDocument $record): string => $record->publicUrl() ?? 'Not live')
                     ->url(fn (FileDocument $record): ?string => $record->publicUrl(), true)
                     ->copyable(fn (FileDocument $record): bool => filled($record->publicUrl()))
                     ->copyableState(fn (FileDocument $record): ?string => $record->publicUrl())
@@ -42,6 +42,16 @@ class FileDocumentsTable
                 TextColumn::make('category')
                     ->badge()
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('parentPage.title')
+                    ->label('Parent Page')
+                    ->placeholder('None')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                IconColumn::make('is_published')
+                    ->label('Live')
+                    ->boolean()
                     ->sortable(),
                 IconColumn::make('visibility')
                     ->label('Public')
@@ -61,6 +71,11 @@ class FileDocumentsTable
                     ->dateTime()
                     ->sortable()
                     ->placeholder('Never'),
+                TextColumn::make('publish_at')
+                    ->label('Publish date')
+                    ->dateTime()
+                    ->sortable()
+                    ->placeholder('Immediate'),
                 TextColumn::make('updatedBy.name')
                     ->label('Updated by')
                     ->placeholder('Unknown')
@@ -70,6 +85,10 @@ class FileDocumentsTable
                     ->placeholder('Unknown')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

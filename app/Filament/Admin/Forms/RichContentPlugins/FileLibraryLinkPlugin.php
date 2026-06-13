@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Forms\RichContentPlugins;
 
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
 use App\Support\RichTextFileLibrary;
@@ -80,7 +81,7 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                     Heroicon::OutlinedXMark,
                 ))
                 ->fillForm([
-                    'new_category' => 'Other',
+                    'new_category' => FileCategory::DEFAULT_NAME,
                     'open_in_new_tab' => true,
                 ])
                 ->schema([
@@ -108,16 +109,20 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                                         ->maxLength(255),
                                     Select::make('new_category')
                                         ->label('Category')
-                                        ->options(fn (): array => FileDocument::categoryOptions())
+                                        ->options(fn (): array => FileCategory::options())
                                         ->searchable()
+                                        ->preload()
                                         ->createOptionForm([
-                                            TextInput::make('category')
+                                            TextInput::make('name')
                                                 ->label('Category')
                                                 ->required()
+                                                ->unique(table: 'file_categories', column: 'name')
                                                 ->maxLength(255),
                                         ])
-                                        ->createOptionUsing(fn (array $data): string => trim((string) $data['category']))
-                                        ->default('Other')
+                                        ->createOptionUsing(fn (array $data): string => FileCategory::query()
+                                            ->create(['name' => trim((string) $data['name'])])
+                                            ->name)
+                                        ->default(FileCategory::DEFAULT_NAME)
                                         ->required(fn (Get $get): bool => filled($get('upload'))),
                                     FileUpload::make('upload')
                                         ->label('File')

@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\FileDocuments\Pages;
 
 use App\Filament\Admin\Resources\Concerns\UsesStandardCreateActions;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
 use Filament\Facades\Filament;
@@ -34,6 +35,7 @@ class CreateFileDocument extends CreateRecord
         );
 
         $data['file_name'] = FileDocument::makeUniqueFileName($data['file_name'] ?? $data['title'] ?? null);
+        $data['category'] = $data['category'] ?? FileCategory::DEFAULT_NAME;
         $data['uploaded_by_id'] = Filament::auth()->id();
         $data['updated_by_id'] = Filament::auth()->id();
 

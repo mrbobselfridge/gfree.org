@@ -45,10 +45,6 @@ class PageParentPageTest extends TestCase
             ->assertSchemaComponentExists('pages-section-controls')
             ->assertSchemaComponentHidden('pages-redirect')
             ->assertSchemaComponentExists(
-                'pages-display',
-                checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
-            )
-            ->assertSchemaComponentExists(
                 'pages-content-blocks',
                 checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
             )
@@ -75,7 +71,7 @@ class PageParentPageTest extends TestCase
             ->assertSee('Expand all');
     }
 
-    public function test_edit_page_form_defaults_content_open_and_settings_display_closed(): void
+    public function test_edit_page_form_defaults_content_open_and_settings_closed(): void
     {
         $page = Page::query()->create([
             'title' => 'Contact',
@@ -87,11 +83,6 @@ class PageParentPageTest extends TestCase
             ->test(EditPage::class, ['record' => $page->getKey()])
             ->assertSchemaComponentExists(
                 'pages-settings',
-                checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
-                    && $component->isCollapsed(),
-            )
-            ->assertSchemaComponentExists(
-                'pages-display',
                 checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
                     && $component->isCollapsed(),
             )
@@ -114,15 +105,14 @@ class PageParentPageTest extends TestCase
                     && ! $component->isCollapsed()
                     && ! $component->shouldPersistCollapsed(),
             )
-            ->assertSchemaComponentHidden('pages-display')
             ->assertSchemaComponentHidden('pages-content-blocks')
-            ->assertSchemaComponentVisible('pages-settings')
+            ->assertSchemaComponentHidden('pages-settings')
             ->assertFormFieldVisible('redirect_url')
             ->assertFormFieldVisible('redirect_status_code')
             ->assertFormFieldVisible('slug')
-            ->assertFormFieldVisible('sort_order')
-            ->assertFormFieldVisible('publish_at')
-            ->assertFormFieldVisible('expires_at')
+            ->assertFormFieldHidden('sort_order')
+            ->assertFormFieldHidden('publish_at')
+            ->assertFormFieldHidden('expires_at')
             ->assertFormFieldHidden('featured_at')
             ->assertFormFieldHidden('feature_expires_at')
             ->assertFormFieldHidden('show_site_chrome')
