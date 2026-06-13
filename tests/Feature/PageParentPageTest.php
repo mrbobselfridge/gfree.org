@@ -6,6 +6,8 @@ use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
+use App\Models\FileDocument;
+use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\User;
 use Filament\Schemas\Components\Section;
@@ -294,7 +296,7 @@ class PageParentPageTest extends TestCase
         $this->assertSame('Inactive Parent (/inactive-parent) - Inactive', $options[(string) $inactive->getKey()]);
     }
 
-    public function test_edit_form_shows_direct_child_pages(): void
+    public function test_edit_form_shows_direct_child_pages_and_files(): void
     {
         $parent = Page::query()->create([
             'title' => 'About',
@@ -327,19 +329,47 @@ class PageParentPageTest extends TestCase
             'is_published' => false,
         ]);
 
+        $file = FileDocument::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+            'is_published' => true,
+        ]);
+
+        $version = FileDocumentVersion::query()->create([
+            'file_document_id' => $file->getKey(),
+            'disk' => 'local',
+            'path' => 'documents/connection-card.pdf',
+            'original_name' => 'connection-card.pdf',
+            'extension' => 'pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 1000,
+        ]);
+
+        $file->update(['current_version_id' => $version->getKey()]);
+
         $content = (string) PageForm::directChildPagesContent($parent);
 
         $this->assertStringContainsString('Draft Child', $content);
         $this->assertStringContainsString('Beliefs', $content);
+        $this->assertStringContainsString('Connection Card', $content);
+        $this->assertStringContainsString('Page:', $content);
+        $this->assertStringContainsString('File:', $content);
         $this->assertLessThan(
             strpos($content, 'Beliefs'),
             strpos($content, 'Draft Child'),
         );
         $this->assertStringContainsString('/about/beliefs', $content);
+        $this->assertStringContainsString('/files/connection-card', $content);
         $this->assertStringContainsString('title="Active"', $content);
         $this->assertStringContainsString('title="Inactive"', $content);
+        $this->assertStringContainsString('title="Live public file"', $content);
         $this->assertStringContainsString('title="View page"', $content);
         $this->assertStringContainsString('title="Edit page"', $content);
+        $this->assertStringContainsString('title="View file"', $content);
+        $this->assertStringContainsString('title="Edit file"', $content);
         $this->assertStringContainsString('align-items: center;', $content);
         $this->assertStringContainsString('gap: .04rem;', $content);
         $this->assertStringContainsString('color: #9ca3af;', $content);
@@ -350,6 +380,8 @@ class PageParentPageTest extends TestCase
         $this->assertStringContainsString('max-width: 1rem; max-height: 1rem;', $content);
         $this->assertStringContainsString('Small label: What We Believe', $content);
         $this->assertStringContainsString('Intro: Core beliefs and doctrine.', $content);
+        $this->assertStringContainsString('Category: Form', $content);
+        $this->assertStringContainsString('Visibility: Public', $content);
         $this->assertStringNotContainsString('Membership Class', $content);
     }
 

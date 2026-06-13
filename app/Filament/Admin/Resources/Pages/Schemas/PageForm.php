@@ -5,7 +5,9 @@ namespace App\Filament\Admin\Resources\Pages\Schemas;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Models\FileDocument;
 use App\Models\Page;
 use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
@@ -235,12 +237,12 @@ class PageForm
                             ->columnSpan(2),
 
                         Placeholder::make('direct_child_pages')
-                            ->label('Parent to the following child pages')
+                            ->label('Parent to the following pages and files')
                             ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                             ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Shows direct child pages attached to this page. Edit the child page to change or remove its parent.'
+                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -399,24 +401,48 @@ class PageForm
             ->orderBy('title')
             ->get(['id', 'title', 'slug', 'hero_label', 'intro', 'sort_order', 'is_published']);
 
-        if ($children->isEmpty()) {
-            return new HtmlString('<span class="text-sm text-gray-500 dark:text-gray-400">No direct subpages currently use this page as a parent.</span>');
+        $files = $record->fileDocuments()
+            ->orderBy('category')
+            ->orderBy('title')
+            ->get(['id', 'title', 'file_name', 'category', 'is_published', 'visibility', 'publish_at', 'expires_at', 'current_version_id']);
+
+        if ($children->isEmpty() && $files->isEmpty()) {
+            return new HtmlString('<span class="text-sm text-gray-500 dark:text-gray-400">No direct subpages or files currently use this page as a parent.</span>');
         }
 
         $items = $children
-            ->map(function (Page $page): string {
-                return sprintf(
-                    '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
-                    self::pageActionLinks($page),
-                    e(self::pageDetailTooltip($page)),
-                    e($page->title),
-                    e(self::pageDetailTooltip($page)),
-                    e(ltrim((string) $page->slug, '/')),
-                );
-            })
+            ->map(fn (Page $page): string => self::childPageListItem($page))
+            ->merge($files->map(fn (FileDocument $file): string => self::childFileListItem($file)))
             ->implode('');
 
         return new HtmlString('<ul style="display: grid; gap: 1.2rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
+    }
+
+    private static function childPageListItem(Page $page): string
+    {
+        return sprintf(
+            '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">Page:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+            self::pageActionLinks($page),
+            e(self::pageDetailTooltip($page)),
+            e($page->title),
+            e(self::pageDetailTooltip($page)),
+            e(ltrim((string) $page->slug, '/')),
+        );
+    }
+
+    private static function childFileListItem(FileDocument $file): string
+    {
+        $url = $file->publicUrl() ?? $file->downloadUrl();
+        $path = filled($file->file_name) ? '/files/'.ltrim((string) $file->file_name, '/') : 'No public file slug';
+
+        return sprintf(
+            '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">File:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">%s</span></span></li>',
+            self::fileActionLinks($file, $url),
+            e(self::fileDetailTooltip($file)),
+            e($file->title),
+            e(self::fileDetailTooltip($file)),
+            e($path),
+        );
     }
 
     private static function pageActionLinks(Page $page): string
@@ -436,6 +462,26 @@ class PageForm
                 icon: '<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.651 1.651a1.875 1.875 0 0 1 0 2.652L8.625 18.678 4.5 19.5l.822-4.125 9.888-9.888a1.875 1.875 0 0 1 2.652 0Z" />',
             ),
             self::pageStatusIcon($page),
+        );
+    }
+
+    private static function fileActionLinks(FileDocument $file, string $url): string
+    {
+        return sprintf(
+            '<span style="display: inline-flex; flex-shrink: 0; align-items: center; gap: .04rem;">%s%s%s</span>',
+            self::pageIconLink(
+                href: $url,
+                label: 'View file',
+                color: '#9ca3af',
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5A3.375 3.375 0 0 0 10.125 2.25H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />',
+            ),
+            self::pageIconLink(
+                href: FileDocumentResource::getUrl('edit', ['record' => $file]),
+                label: 'Edit file',
+                color: '#f59e0b',
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.651 1.651a1.875 1.875 0 0 1 0 2.652L8.625 18.678 4.5 19.5l.822-4.125 9.888-9.888a1.875 1.875 0 0 1 2.652 0Z" />',
+            ),
+            self::fileStatusIcon($file),
         );
     }
 
@@ -468,6 +514,23 @@ class PageForm
         );
     }
 
+    private static function fileStatusIcon(FileDocument $file): string
+    {
+        if ($file->isLive()) {
+            return self::pageStatusIconMarkup(
+                label: $file->isPublic() ? 'Live public file' : 'Live private file',
+                color: $file->isPublic() ? '#22c55e' : '#f59e0b',
+                icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+            );
+        }
+
+        return self::pageStatusIconMarkup(
+            label: 'Inactive file',
+            color: '#ef4444',
+            icon: '<path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+        );
+    }
+
     private static function pageStatusIconMarkup(string $label, string $color, string $icon): string
     {
         return sprintf(
@@ -485,6 +548,15 @@ class PageForm
             "Small label: %s\nIntro: %s",
             filled($page->hero_label) ? $page->hero_label : 'Not set',
             filled($page->intro) ? $page->intro : 'Not set',
+        );
+    }
+
+    private static function fileDetailTooltip(FileDocument $file): string
+    {
+        return sprintf(
+            "Category: %s\nVisibility: %s",
+            filled($file->category) ? $file->category : 'Not set',
+            filled($file->visibility) ? ucfirst((string) $file->visibility) : 'Not set',
         );
     }
 }
