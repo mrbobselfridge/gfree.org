@@ -261,6 +261,59 @@ class WorkflowNotificationTest extends TestCase
         Mail::assertSent(WorkflowNotificationMail::class, fn (WorkflowNotificationMail $mail): bool => $mail->hasTo('page-review@example.com'));
     }
 
+    public function test_manual_notification_uses_visual_baseline_as_pre_and_current_snapshot_as_post(): void
+    {
+        Mail::fake();
+        $this->mockVisualSnapshots(['page-visual-snapshots/manual-post.png']);
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Manual page review',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_MANUAL],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'Manual page review',
+            'message' => 'Please review the page.',
+            'delay_minutes' => 0,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Workflow Page',
+            'slug' => 'workflow-page',
+            'is_published' => true,
+            'show_site_chrome' => true,
+            'show_page_header' => true,
+        ]);
+
+        WorkflowVisualSnapshot::query()->create([
+            'snapshotable_type' => Page::class,
+            'snapshotable_id' => $page->getKey(),
+            'snapshot_path' => 'page-visual-snapshots/manual-pre.png',
+            'snapshot_captured_at' => now()->subHour(),
+        ]);
+
+        $sentCount = app(WorkflowNotificationService::class)->manualForRecord($page, [$rule->getKey()]);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame(1, $sentCount);
+        $this->assertSame(WorkflowNotificationEvent::STATUS_SENT, $event->status);
+        $this->assertSame('page-visual-snapshots/manual-pre.png', $event->pre_snapshot_path);
+        $this->assertSame('page-visual-snapshots/manual-post.png', $event->post_snapshot_path);
+        $this->assertSame(
+            'page-visual-snapshots/manual-post.png',
+            WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->firstOrFail()->snapshot_path,
+        );
+
+        Mail::assertSent(WorkflowNotificationMail::class, fn (WorkflowNotificationMail $mail): bool => $mail->hasTo('page-review@example.com')
+            && $mail->event->pre_snapshot_path === 'page-visual-snapshots/manual-pre.png'
+            && $mail->event->post_snapshot_path === 'page-visual-snapshots/manual-post.png');
+    }
+
     public function test_repeated_updates_keep_the_original_pre_visual_snapshot(): void
     {
         Queue::fake();

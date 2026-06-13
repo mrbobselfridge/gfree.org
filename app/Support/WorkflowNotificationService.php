@@ -76,7 +76,7 @@ class WorkflowNotificationService
                     'record_key' => $recordKey,
                 ]);
 
-                if ($isNewEvent && $trigger === WorkflowNotificationRule::TRIGGER_UPDATED) {
+                if ($isNewEvent) {
                     $this->fillPreSnapshot($event, $recordType, $recordId);
                 }
 
@@ -173,6 +173,9 @@ class WorkflowNotificationService
                 'scheduled_at' => now(),
                 'recipient_emails' => $recipients->all(),
             ]);
+
+            $this->fillPreSnapshot($event, $recordType, $recordId);
+            $event->save();
 
             $this->send($event);
             $sent++;
@@ -277,13 +280,6 @@ class WorkflowNotificationService
 
     private function capturePostSnapshot(WorkflowNotificationEvent $event): ?PageVisualSnapshotResult
     {
-        if (! in_array($event->trigger, [
-            WorkflowNotificationRule::TRIGGER_CREATED,
-            WorkflowNotificationRule::TRIGGER_UPDATED,
-        ], true)) {
-            return null;
-        }
-
         $record = $this->visualSnapshots->recordFor($event->record_type, $event->record_id);
 
         if (! $record) {
