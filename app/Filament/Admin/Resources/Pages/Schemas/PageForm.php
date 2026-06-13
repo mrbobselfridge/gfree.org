@@ -63,6 +63,16 @@ class PageForm
                     ->live()
                     ->required()
                     ->columnSpan(1),
+
+                TextInput::make('hero_label')
+                    ->label('Small label')
+                    ->maxLength(255)
+                    ->columnSpan(2),
+
+                Textarea::make('intro')
+                    ->rows(1)
+                    ->columnSpan(2),
+
                 View::make('filament.admin.section-controls')
                     ->viewData([
                         'sectionIds' => self::SECTION_IDS,
@@ -166,10 +176,6 @@ class PageForm
                     ->description('Controls the public page frame, header copy, listing image, and optional SEO Title/Description.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->schema([
-                        TextInput::make('hero_label')
-                            ->label('Small label')
-                            ->maxLength(255)
-                            ->columnSpan(2),
                         ToggleButtons::make('show_site_chrome')
                             ->label('Show navigation and footer')
                             ->boolean()
@@ -184,9 +190,6 @@ class PageForm
                             ->default(true)
                             ->required()
                             ->columnSpan(1),
-                        Textarea::make('intro')
-                            ->rows(1)
-                            ->columnSpan(4),
                         ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                             ->columnSpan(2),
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
