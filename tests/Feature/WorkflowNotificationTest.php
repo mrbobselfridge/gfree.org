@@ -401,6 +401,10 @@ class WorkflowNotificationTest extends TestCase
         $this->assertStringContainsString('Visual comparison', $html);
         $this->assertStringContainsString('PRE', $html);
         $this->assertStringContainsString('POST', $html);
+        $this->assertStringContainsString('table-layout: fixed', $html);
+        $this->assertStringContainsString('style="width: 50%;', $html);
+        $this->assertStringContainsString('width="100%" style="display: block; width: 100%; max-width: 100%;', $html);
+        $this->assertStringNotContainsString('max-width: 320px', $html);
         $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/pre.png', $html);
         $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/post.png', $html);
     }

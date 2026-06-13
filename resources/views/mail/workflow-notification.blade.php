@@ -39,22 +39,22 @@
 
     <p><strong>Visual comparison</strong></p>
 
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
         <tr>
             @if ($preSnapshotUrl)
-                <td width="{{ $postSnapshotUrl ? '50%' : '100%' }}" valign="top" style="padding: 0 8px 12px 0;">
+                <td width="{{ $postSnapshotUrl ? '50%' : '100%' }}" valign="top" style="width: {{ $postSnapshotUrl ? '50%' : '100%' }}; padding: 0 8px 12px 0; vertical-align: top;">
                     <p style="margin: 0 0 8px; font-weight: 700;">PRE</p>
                     <a href="{{ $preSnapshotUrl }}">
-                        <img src="{{ $preSnapshotUrl }}" alt="PRE page screenshot" style="display: block; width: 100%; max-width: 320px; height: auto; border: 1px solid #d1d5db;">
+                        <img src="{{ $preSnapshotUrl }}" alt="PRE page screenshot" width="100%" style="display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid #d1d5db;">
                     </a>
                 </td>
             @endif
 
             @if ($postSnapshotUrl)
-                <td width="{{ $preSnapshotUrl ? '50%' : '100%' }}" valign="top" style="padding: 0 0 12px 8px;">
+                <td width="{{ $preSnapshotUrl ? '50%' : '100%' }}" valign="top" style="width: {{ $preSnapshotUrl ? '50%' : '100%' }}; padding: 0 0 12px 8px; vertical-align: top;">
                     <p style="margin: 0 0 8px; font-weight: 700;">POST</p>
                     <a href="{{ $postSnapshotUrl }}">
-                        <img src="{{ $postSnapshotUrl }}" alt="POST page screenshot" style="display: block; width: 100%; max-width: 320px; height: auto; border: 1px solid #d1d5db;">
+                        <img src="{{ $postSnapshotUrl }}" alt="POST page screenshot" width="100%" style="display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid #d1d5db;">
                     </a>
                 </td>
             @endif
