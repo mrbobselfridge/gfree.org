@@ -2,7 +2,9 @@
 
 namespace App\Filament\Admin\Forms;
 
+use App\Models\FileDocument;
 use App\Support\CodeBlockAccess;
+use App\Support\ContentBlocks;
 use App\Support\LinkCard;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
@@ -17,9 +19,11 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use Throwable;
 
 class ContentBlockBuilder
@@ -395,6 +399,87 @@ class ContentBlockBuilder
                     ])
                     ->columns(2)
                     ->maxItems(1),
+                Block::make('related_content')
+                    ->label(fn (?array $state): string => self::blockLabel('Related', $state))
+                    ->schema([
+                        ToggleButtons::make('is_visible')
+                            ->label('Show related content')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required()
+                            ->columnSpanFull(),
+                        Select::make('background')
+                            ->options(self::backgroundOptions())
+                            ->default('white')
+                            ->required(),
+                        TextInput::make('heading')
+                            ->live(onBlur: true)
+                            ->default('Related Content')
+                            ->maxLength(255)
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
+                                $current = trim((string) $get('listing_slug'));
+
+                                if ($current === '' || $current === Str::slug($old)) {
+                                    $set('listing_slug', Str::slug($state));
+                                }
+                            }),
+                        TextInput::make('intro')
+                            ->label('Intro')
+                            ->maxLength(255),
+                        ToggleButtons::make('content_type')
+                            ->label('Show')
+                            ->options([
+                                ContentBlocks::RELATED_CONTENT_TYPE_BOTH => 'Pages + files',
+                                ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'Pages only',
+                                ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'Files only',
+                            ])
+                            ->inline()
+                            ->default(ContentBlocks::RELATED_CONTENT_TYPE_BOTH)
+                            ->required()
+                            ->live(),
+                        ToggleButtons::make('display_mode')
+                            ->label('Mode')
+                            ->options([
+                                ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
+                                ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
+                                ContentBlocks::RELATED_CONTENT_MODE_NEWEST => 'Newest live',
+                            ])
+                            ->inline()
+                            ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
+                            ->required(),
+                        Select::make('file_categories')
+                            ->label('File categories')
+                            ->options(fn (): array => FileDocument::categoryOptions())
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('Leave empty to include all file categories.')
+                            ->visible(fn (Get $get): bool => in_array($get('content_type'), [
+                                ContentBlocks::RELATED_CONTENT_TYPE_BOTH,
+                                ContentBlocks::RELATED_CONTENT_TYPE_FILES,
+                            ], true)),
+                        TextInput::make('item_limit')
+                            ->label('Items shown')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(50)
+                            ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT)
+                            ->required(),
+                        TextInput::make('link_label')
+                            ->label('View more label')
+                            ->default('View more')
+                            ->maxLength(80),
+                        TextInput::make('listing_slug')
+                            ->label('Listing URL slug')
+                            ->helperText('Used for the generated View More page. Leave as-is unless you need to preserve an existing link.')
+                            ->prefix('parent-page/')
+                            ->rule('alpha_dash')
+                            ->maxLength(80)
+                            ->dehydrateStateUsing(fn (?string $state, Get $get): string => Str::slug($state ?: $get('heading') ?: 'related-content')),
+                        ...self::scheduleFields($withScheduleFields),
+                    ])
+                    ->columns(2),
             ])
             ->addActionLabel('Add content block')
             ->cloneable()

@@ -37,7 +37,7 @@ class PageVisualSnapshotPreviewController extends Controller
             ...$this->sharedViewData($settings),
             'settings' => $settings,
             'page' => $page,
-            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, ContentBlocks::featuredAnnouncementUpdates()),
+            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, ContentBlocks::featuredAnnouncementUpdates(), $page),
             'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path),
         ]);
     }

@@ -8,6 +8,7 @@ use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Str;
 
 class PageController extends Controller
@@ -17,7 +18,11 @@ class PageController extends Controller
         $page = Page::query()
             ->where('slug', $slug)
             ->active()
-            ->firstOrFail();
+            ->first();
+
+        if (! $page) {
+            return $this->relatedContentListing($slug);
+        }
 
         if ($page->isRedirect()) {
             $redirectUrl = trim((string) $page->redirect_url);
@@ -28,18 +33,37 @@ class PageController extends Controller
                 : redirect($redirectUrl, $statusCode);
         }
 
+        return view('pages.show', $this->viewData($page));
+    }
+
+    private function relatedContentListing(string $slug): View
+    {
+        $listing = ContentBlocks::relatedContentListing($slug);
+
+        if (! $listing) {
+            throw new NotFoundHttpException;
+        }
+
+        return view('pages.related-content-listing', [
+            ...$this->viewData($listing['page']),
+            'data' => $listing['data'],
+        ]);
+    }
+
+    private function viewData(Page $page): array
+    {
         $settings = SiteSetting::query()->first();
         $defaults = config('twyxtco.homepage');
         $navigationLinks = NavigationLink::topLevelHeaderLinks();
 
-        return view('pages.show', [
+        return [
             'settings' => $settings,
             'page' => $page,
-            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, ContentBlocks::featuredAnnouncementUpdates()),
+            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, ContentBlocks::featuredAnnouncementUpdates(), $page),
             'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'socialLinks' => $this->socialLinks($settings),
-        ]);
+        ];
     }
 
     private function socialLinks(?SiteSetting $settings)

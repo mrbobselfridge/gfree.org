@@ -39,6 +39,10 @@
                 @case('announcements_bar')
                     @include('pages.blocks.announcements-bar')
                     @break
+
+                @case('related_content')
+                    @include('pages.blocks.related-content')
+                    @break
             @endswitch
         @endforeach
     </div>
