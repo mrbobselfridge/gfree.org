@@ -10,7 +10,6 @@ use App\Models\Page;
 use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -88,13 +87,6 @@ class PageForm
                             ->numeric()
                             ->default(0)
                             ->columnSpan(2),
-                        DateTimePicker::make('publish_at')
-                            ->label('Publish at')
-                            ->columnSpan(2),
-                        DateTimePicker::make('expires_at')
-                            ->label('Expires at')
-                            ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
-                            ->columnSpan(2),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (?Page $record): array => self::parentPageOptions($record))
@@ -147,27 +139,27 @@ class PageForm
                     ->description('Controls the public page frame, header copy, listing image, and optional SEO Title/Description.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->schema([
+                        TextInput::make('hero_label')
+                            ->label('Small label')
+                            ->maxLength(255)
+                            ->columnSpan(2),
                         ToggleButtons::make('show_site_chrome')
                             ->label('Show navigation and footer')
                             ->boolean()
                             ->inline()
                             ->default(true)
                             ->required()
-                            ->columnSpan(2),
+                            ->columnSpan(1),
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
                             ->boolean()
                             ->inline()
                             ->default(true)
                             ->required()
-                            ->columnSpan(2),
-                        TextInput::make('hero_label')
-                            ->label('Small label')
-                            ->maxLength(255)
-                            ->columnSpan(2),
+                            ->columnSpan(1),
                         Textarea::make('intro')
                             ->rows(1)
-                            ->columnSpan(2),
+                            ->columnSpan(4),
                         ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                             ->columnSpan(2),
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
