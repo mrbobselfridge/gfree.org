@@ -101,6 +101,18 @@ class PageForm
                             ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
                             ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
                             ->columnSpan(2),
+                        TextInput::make('seo_title')
+                            ->label('SEO title')
+                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
+                            ->maxLength(255)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
+                        Textarea::make('seo_description')
+                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
+                            ->label('SEO description')
+                            ->rows(1)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->columnSpan(2),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
@@ -163,18 +175,6 @@ class PageForm
                         ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
                             ->columnSpan(2),
                         ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
-                            ->columnSpan(2),
-                        TextInput::make('seo_title')
-                            ->label('SEO title')
-                            ->helperText('Alternative for additional SEO content in the page BROWSER title.')
-                            ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->columnSpan(2),
-                        Textarea::make('seo_description')
-                            ->helperText('Only for search engines review - not seen by users for SEO rankings.')
-                            ->label('SEO description')
-                            ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->columnSpan(2),
                     ])
                     ->columns(4)
