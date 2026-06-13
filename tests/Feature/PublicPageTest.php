@@ -188,7 +188,7 @@ class PublicPageTest extends TestCase
             ->assertSee('New Here');
     }
 
-    public function test_page_message_renders_in_header_box_only_when_present(): void
+    public function test_page_message_renders_in_hero_only_when_present(): void
     {
         Page::query()->create([
             'title' => 'Kids',
