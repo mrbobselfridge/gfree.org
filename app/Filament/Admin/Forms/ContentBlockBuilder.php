@@ -484,7 +484,7 @@ class ContentBlockBuilder
 
         return [
             Block::make('related_content')
-                ->label(fn (?array $state): string => self::blockLabel('Parent->Child Cards', $state))
+                ->label(fn (?array $state): string => self::blockLabel('Child Info Cards', $state))
                 ->schema([
                     ToggleButtons::make('is_visible')
                         ->label('Show child cards')
