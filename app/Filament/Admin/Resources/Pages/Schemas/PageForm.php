@@ -93,13 +93,13 @@ class PageForm
                     ->columnSpan(1),
 
                 Textarea::make('intro')
-                    ->rows(1)
+                    ->rows(2)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Optional intro text shown near the top of the page when the page header is visible.'
                     )
                     ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->columnSpan(2),
 
                 Textarea::make('message')
                     ->rows(6)
@@ -124,7 +124,7 @@ class PageForm
                         'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
                     )
                     ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->columnSpan(2),
 
                 ViewField::make('section_controls')
                     ->label('Section controls')
@@ -135,7 +135,7 @@ class PageForm
                     ])
                     ->dehydrated(false)
                     ->key('pages-section-controls')
-                    ->columnSpan(1),
+                    ->columnSpan(2),
 
                 self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
