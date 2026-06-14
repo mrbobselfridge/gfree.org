@@ -880,7 +880,7 @@
             <h3>Common Tasks</h3>
             <ul>
                 <li>Upload one image at a time for pages, announcements, ministries, leaders, and banners.</li>
-                <li>Use image search and sorting to find files by path, filename, size, dimensions, or usage.</li>
+                <li>Use image search and sorting to find files by path, filename, size, dimensions, usage, creator, or tracked dates.</li>
                 <li>Use Edit image to update details or upload a replacement when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
                 <li>Use descriptive filenames when possible.</li>
@@ -891,6 +891,7 @@
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
+                <li><strong>Created, Updated, and By:</strong> Automatically tracked details shown on each image card. These fields are searchable when available.</li>
                 <li>When the last image using a tag is deleted or changed, that tag no longer appears as an option.</li>
                 <li>New uploads use a generated folder with a clean filename, such as <strong>media-library/id/image-name.jpg</strong>.</li>
             </ul>

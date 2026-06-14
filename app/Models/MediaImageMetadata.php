@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -11,6 +12,7 @@ use Illuminate\Support\Str;
     'title',
     'slug',
     'tags',
+    'created_by_user_id',
 ])]
 class MediaImageMetadata extends Model
 {
@@ -139,6 +141,14 @@ class MediaImageMetadata extends Model
         return [
             'tags' => 'array',
         ];
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
     }
 
     public function setTagsAttribute(mixed $value): void

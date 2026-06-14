@@ -232,6 +232,22 @@
             white-space: nowrap;
         }
 
+        .twyxtco-media-card__audit {
+            display: grid;
+            gap: 0.125rem;
+            margin-top: 0.35rem;
+            color: rgb(107 114 128);
+            font-size: 0.6875rem;
+            line-height: 1.2;
+        }
+
+        .twyxtco-media-card__audit span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         a.twyxtco-media-card__usage-line {
             color: rgb(37 99 235);
             text-decoration: none;
@@ -378,6 +394,18 @@
                                 </div>
                             </dl>
 
+                            <div class="twyxtco-media-card__audit">
+                                <span title="{{ $image['created_at_for_humans'] ?? 'Not tracked' }}">
+                                    Created: {{ $image['created_at_for_humans'] ?? 'Not tracked' }}
+                                </span>
+                                <span title="{{ $image['updated_at_for_humans'] ?? 'Not tracked' }}">
+                                    Updated: {{ $image['updated_at_for_humans'] ?? 'Not tracked' }}
+                                </span>
+                                <span title="{{ $image['created_by_email'] ?? $image['created_by_name'] ?? 'Not tracked' }}">
+                                    By: {{ $image['created_by_name'] ?? 'Not tracked' }}
+                                </span>
+                            </div>
+
                             <div class="twyxtco-media-card__usage">
                                 @if ($image['usage_count'] > 0)
                                     <ul class="twyxtco-media-card__usage-list">
@@ -389,6 +417,8 @@
                                                     <a
                                                         href="{{ $usage['edit_url'] }}"
                                                         class="twyxtco-media-card__usage-line"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                         title="{{ $fullUsageText }}"
                                                     >
                                                         {{ str($shortUsageText)->limit(30) }}

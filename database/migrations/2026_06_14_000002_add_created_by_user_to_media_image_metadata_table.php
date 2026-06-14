@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_image_metadata', function (Blueprint $table) {
-            $table->id();
-            $table->string('path')->unique();
-            $table->string('title')->nullable();
-            $table->string('slug')->nullable()->unique();
-            $table->json('tags')->nullable();
+        if (Schema::hasColumn('media_image_metadata', 'created_by_user_id')) {
+            return;
+        }
+
+        Schema::table('media_image_metadata', function (Blueprint $table) {
             $table->foreignId('created_by_user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamps();
         });
     }
 
@@ -27,6 +25,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_image_metadata');
+        if (! Schema::hasColumn('media_image_metadata', 'created_by_user_id')) {
+            return;
+        }
+
+        Schema::table('media_image_metadata', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('created_by_user_id');
+        });
     }
 };

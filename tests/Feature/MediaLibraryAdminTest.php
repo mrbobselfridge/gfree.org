@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Support\MediaLibrary;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -110,12 +111,13 @@ class MediaLibraryAdminTest extends TestCase
     public function test_media_library_can_save_image_title_slug_and_tags(): void
     {
         Storage::fake('public');
+        $user = User::factory()->create(['name' => 'Media Creator']);
 
         UploadedFile::fake()
             ->image('students.png', 800, 600)
             ->storeAs('pages/content-images', 'students.png', 'public');
 
-        Livewire::actingAs(User::factory()->create())
+        Livewire::actingAs($user)
             ->test(MediaLibraryPage::class)
             ->callAction('editImageMetadata', [
                 'title' => 'Student Ministry Hero',
@@ -132,6 +134,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame('Student Ministry Hero', $metadata->title);
         $this->assertSame('resources/student-hero', $metadata->slug);
         $this->assertSame(['Students', 'Hero Image', 'person', 'youth'], $metadata->tags);
+        $this->assertSame($user->id, $metadata->created_by_user_id);
 
         $image = MediaLibrary::images()->firstWhere('path', 'pages/content-images/students.png');
 
@@ -207,6 +210,8 @@ class MediaLibraryAdminTest extends TestCase
             ->get('/admin/media-library')
             ->assertOk()
             ->assertSee('href="'.PageResource::getUrl('edit', ['record' => $page]).'"', false)
+            ->assertSee('target="_blank"', false)
+            ->assertSee('rel="noopener noreferrer"', false)
             ->assertSee('Pg: Students | Content image', false);
     }
 
@@ -370,8 +375,13 @@ class MediaLibraryAdminTest extends TestCase
     public function test_media_library_can_upload_new_images_from_header_action(): void
     {
         Storage::fake('public');
+        $this->travelTo(Carbon::parse('2026-06-14 10:30:00'));
+        $user = User::factory()->create([
+            'name' => 'Noel Meyers',
+            'email' => 'noel@example.test',
+        ]);
 
-        Livewire::actingAs(User::factory()->create())
+        Livewire::actingAs($user)
             ->test(MediaLibraryPage::class)
             ->callAction('uploadImages', [
                 'title' => 'New Upload',
@@ -390,7 +400,24 @@ class MediaLibraryAdminTest extends TestCase
             'title' => 'New Upload',
             'slug' => 'gallery/new-upload',
         ]);
-        $this->assertSame(['Gallery', 'Feature'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
+        $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
+
+        $this->assertSame(['Gallery', 'Feature'], $metadata->tags);
+        $this->assertSame($user->id, $metadata->created_by_user_id);
+
+        $image = MediaLibrary::images()->firstWhere('path', $path);
+
+        $this->assertSame('Jun 14, 2026 10:30 AM', $image['created_at_for_humans']);
+        $this->assertSame('Jun 14, 2026 10:30 AM', $image['updated_at_for_humans']);
+        $this->assertSame('Noel Meyers', $image['created_by_name']);
+        $this->assertSame('noel@example.test', $image['created_by_email']);
+
+        $this->actingAs($user)
+            ->get('/admin/media-library')
+            ->assertOk()
+            ->assertSee('Created: Jun 14, 2026 10:30 AM')
+            ->assertSee('Updated: Jun 14, 2026 10:30 AM')
+            ->assertSee('By: Noel Meyers');
     }
 
     public function test_media_library_defaults_upload_title_from_uploaded_filename(): void
@@ -571,6 +598,11 @@ class MediaLibraryAdminTest extends TestCase
     public function test_media_library_can_search_filename_path_and_usage(): void
     {
         Storage::fake('public');
+        $this->travelTo(Carbon::parse('2026-06-14 09:15:00'));
+        $creator = User::factory()->create([
+            'name' => 'Avery Media Admin',
+            'email' => 'avery.media@example.test',
+        ]);
 
         UploadedFile::fake()
             ->image('picnic.jpg', 800, 600)
@@ -599,6 +631,7 @@ class MediaLibraryAdminTest extends TestCase
             'title' => 'Student Hero',
             'slug' => 'student-ministry/hero',
             'tags' => ['Students'],
+            'created_by_user_id' => $creator->id,
         ]);
 
         $component = Livewire::actingAs(User::factory()->create())
@@ -625,6 +658,27 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame('pages/content-images/students.png', $images->first()['path']);
 
         $component->set('search', 'Students');
+
+        $images = $component->instance()->getImages();
+
+        $this->assertCount(1, $images);
+        $this->assertSame('pages/content-images/students.png', $images->first()['path']);
+
+        $component->set('search', 'Avery Media Admin');
+
+        $images = $component->instance()->getImages();
+
+        $this->assertCount(1, $images);
+        $this->assertSame('pages/content-images/students.png', $images->first()['path']);
+
+        $component->set('search', 'avery.media@example.test');
+
+        $images = $component->instance()->getImages();
+
+        $this->assertCount(1, $images);
+        $this->assertSame('pages/content-images/students.png', $images->first()['path']);
+
+        $component->set('search', 'Jun 14, 2026');
 
         $images = $component->instance()->getImages();
 

@@ -17,6 +17,7 @@ class MediaLibrary
     {
         $disk = Storage::disk('public');
         $metadata = MediaImageMetadata::query()
+            ->with('createdBy')
             ->get()
             ->keyBy('path');
 
@@ -35,6 +36,13 @@ class MediaLibrary
                     'display_title' => $imageMetadata?->title ?: basename($path),
                     'slug' => $imageMetadata?->slug,
                     'tags' => $imageMetadata?->tags ?? [],
+                    'created_at' => $imageMetadata?->created_at,
+                    'updated_at' => $imageMetadata?->updated_at,
+                    'created_at_for_humans' => self::formatMetadataDate($imageMetadata?->created_at),
+                    'updated_at_for_humans' => self::formatMetadataDate($imageMetadata?->updated_at),
+                    'created_by_user_id' => $imageMetadata?->created_by_user_id,
+                    'created_by_name' => $imageMetadata?->createdBy?->name,
+                    'created_by_email' => $imageMetadata?->createdBy?->email,
                     'directory' => dirname($path) === '.' ? '' : dirname($path),
                     'url' => $disk->url($path),
                     'download_url' => route('admin.media-images.download', ['path' => $path]),
@@ -123,6 +131,15 @@ class MediaLibrary
                 </span>
             </span>
         HTML;
+    }
+
+    private static function formatMetadataDate(mixed $date): ?string
+    {
+        if (! $date) {
+            return null;
+        }
+
+        return $date->format('M j, Y g:i A');
     }
 
     /**

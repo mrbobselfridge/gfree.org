@@ -388,15 +388,21 @@ class MediaLibrary extends Page
         ?string $fallbackSlug = null,
     ): void
     {
-        MediaImageMetadata::query()->updateOrCreate(
-            ['path' => $path],
+        $metadata = MediaImageMetadata::query()->firstOrNew(['path' => $path]);
+
+        if (! $metadata->exists) {
+            $metadata->created_by_user_id = $this->currentUserId();
+        }
+
+        $metadata->fill(
             $this->normalizedImageMetadataData(
                 data: $data,
                 ignorePath: $ignorePath ?? $path,
                 fallbackTitle: $fallbackTitle,
                 fallbackSlug: $fallbackSlug,
-            ),
+            )
         );
+        $metadata->save();
     }
 
     /**
@@ -470,10 +476,14 @@ class MediaLibrary extends Page
             ->where('path', $oldPath)
             ->update(['path' => $newPath]);
 
-        MediaImageMetadata::query()->updateOrCreate(
-            ['path' => $newPath],
-            $metadata,
-        );
+        $replacementMetadata = MediaImageMetadata::query()->firstOrNew(['path' => $newPath]);
+
+        if (! $replacementMetadata->exists) {
+            $replacementMetadata->created_by_user_id = $existingMetadata?->created_by_user_id ?? $this->currentUserId();
+        }
+
+        $replacementMetadata->fill($metadata);
+        $replacementMetadata->save();
 
         Storage::disk('public')->delete($oldPath);
 
@@ -566,6 +576,13 @@ class MediaLibrary extends Page
         $set('tags', MediaImageMetadata::mergeAutoTags($get('tags') ?? [], $title));
     }
 
+    private function currentUserId(): ?int
+    {
+        $user = Filament::auth()->user();
+
+        return $user ? (int) $user->getKey() : null;
+    }
+
     private function shouldShowMetadataFields(?string $visibleAfterUploadField, Get $get): bool
     {
         if ($visibleAfterUploadField === null) {
@@ -608,6 +625,10 @@ class MediaLibrary extends Page
             $image['title'] ?? null,
             $image['slug'] ?? null,
             ...($image['tags'] ?? []),
+            $image['created_at_for_humans'] ?? null,
+            $image['updated_at_for_humans'] ?? null,
+            $image['created_by_name'] ?? null,
+            $image['created_by_email'] ?? null,
             $image['path'] ?? null,
             $image['directory'] ?? null,
             $image['usage_summary'] ?? null,
