@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms;
 
+use App\Models\FileDocument;
 use App\Support\CodeBlockAccess;
 use App\Support\ContentBlocks;
 use App\Support\LinkCard;
@@ -426,6 +427,17 @@ class ContentBlockBuilder
                         TextInput::make('intro')
                             ->label('Intro')
                             ->maxLength(255),
+                        ToggleButtons::make('content_type')
+                            ->label('Show')
+                            ->options([
+                                ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'All Pages',
+                                ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'All Files',
+                                ContentBlocks::RELATED_CONTENT_TYPE_BOTH => 'Both',
+                            ])
+                            ->inline()
+                            ->default(ContentBlocks::RELATED_CONTENT_TYPE_BOTH)
+                            ->required()
+                            ->live(),
                         ToggleButtons::make('display_mode')
                             ->label('Mode')
                             ->options([
@@ -436,6 +448,17 @@ class ContentBlockBuilder
                             ->inline()
                             ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
                             ->required(),
+                        Select::make('file_categories')
+                            ->label('File categories')
+                            ->options(fn (): array => FileDocument::categoryOptions())
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->helperText('Leave empty to include all file categories.')
+                            ->visible(fn (Get $get): bool => in_array($get('content_type'), [
+                                ContentBlocks::RELATED_CONTENT_TYPE_BOTH,
+                                ContentBlocks::RELATED_CONTENT_TYPE_FILES,
+                            ], true)),
                         TextInput::make('item_limit')
                             ->label('Items shown')
                             ->numeric()
