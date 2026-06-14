@@ -49,7 +49,7 @@ class ContentBlockBuilder
             ->label($label)
             ->blocks([
                 Block::make('text')
-                    ->label(fn (?array $state): string => self::blockLabel('Text 2222', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Text', $state))
                     ->schema([
                         TextInput::make('eyebrow')
                             ->label('Small label')
@@ -78,7 +78,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('image_text')
-                    ->label(fn (?array $state): string => self::blockLabel('Image', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Image + Text', $state))
                     ->schema([
                         ...ImageUpload::make('image_path', $imageDirectory, 'Image'),
                         TextInput::make('image_alt')
@@ -115,7 +115,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('process_steps')
-                    ->label(fn (?array $state): string => self::blockLabel('Process', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Process List', $state))
                     ->schema([
                         TextInput::make('eyebrow')
                             ->label('Small label')
@@ -145,7 +145,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('cta')
-                    ->label(fn (?array $state): string => self::blockLabel('CTA', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Button + Text', $state))
                     ->schema([
                         TextInput::make('eyebrow')
                             ->label('Small label')
@@ -189,7 +189,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('link_cards')
-                    ->label(fn (?array $state): string => self::blockLabel('Cards', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Info Cards', $state))
                     ->schema([
                         TextInput::make('eyebrow')
                             ->label('Small label')
@@ -292,7 +292,7 @@ class ContentBlockBuilder
                         ...self::scheduleFields($withScheduleFields),
                     ]),
                 Block::make('info_strip')
-                    ->label(fn (?array $state): string => self::blockLabel('Info Strip', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Info Strip (top)', $state))
                     ->schema([
                         Select::make('spacing')
                             ->options([
@@ -330,7 +330,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('embed')
-                    ->label(fn (?array $state): string => self::blockLabel('Embed', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Embeded Content', $state))
                     ->schema([
                         TextInput::make('heading')
                             ->live(onBlur: true)
@@ -349,7 +349,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('code')
-                    ->label(fn (?array $state): string => self::blockLabel('Code', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Code (JS or HTML)', $state))
                     ->maxItems(fn (): ?int => CodeBlockAccess::canManage() ? null : 0)
                     ->schema([
                         TextInput::make('title')
@@ -381,7 +381,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('announcements_bar')
-                    ->label(fn (?array $state): string => self::blockLabel('Announcements', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Announcements Listing', $state))
                     ->schema([
                         ToggleButtons::make('is_visible')
                             ->label('Show announcements')
