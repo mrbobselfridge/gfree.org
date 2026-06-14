@@ -242,6 +242,25 @@ class PublicPageTest extends TestCase
             ->assertDontSee('page-hero-message', false);
     }
 
+    public function test_page_message_can_render_rich_html_in_hero(): void
+    {
+        Page::query()->create([
+            'title' => 'Leadership',
+            'slug' => 'leadership-message',
+            'message' => '<div class="custom-callout" style="color: #123456"><h3>Leadership Contact Info</h3><p><strong>Pastor Noel Meyers</strong></p><ul><li>Available Tuesday</li></ul><p><a href="mailto:thenoel@gfree.org">thenoel@gfree.org</a></p></div>',
+            'is_published' => true,
+        ]);
+
+        $this->get('/leadership-message')
+            ->assertOk()
+            ->assertSee('<div class="custom-callout" style="color: #123456">', false)
+            ->assertSee('<h3>Leadership Contact Info</h3>', false)
+            ->assertSee('<strong>Pastor Noel Meyers</strong>', false)
+            ->assertSee('<ul><li>Available Tuesday</li></ul>', false)
+            ->assertSee('<a href="mailto:thenoel@gfree.org">thenoel@gfree.org</a>', false)
+            ->assertDontSee('&lt;strong&gt;', false);
+    }
+
     public function test_unpublished_pages_are_not_public(): void
     {
         Page::query()->create([

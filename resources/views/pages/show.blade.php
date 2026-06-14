@@ -55,9 +55,15 @@
                     @if ($hasPageMessage)
                         <div class="ministry-hero-contact leadership-hero-contact page-hero-message" aria-label="Page message">
                             <div class="page-hero-message__body">
-                                @foreach (preg_split('/\R{2,}/', trim((string) $page->message)) as $paragraph)
-                                    <p>{!! nl2br(e($paragraph)) !!}</p>
-                                @endforeach
+                                @php($pageMessage = trim((string) $page->message))
+
+                                @if ($pageMessage !== strip_tags($pageMessage))
+                                    {!! $pageMessage !!}
+                                @else
+                                    @foreach (preg_split('/\R{2,}/', $pageMessage) as $paragraph)
+                                        <p>{!! nl2br(e($paragraph)) !!}</p>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                     @endif

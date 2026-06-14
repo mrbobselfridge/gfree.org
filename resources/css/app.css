@@ -401,12 +401,61 @@
     line-height: 1.65;
 }
 
-.page-hero-message__body p {
+.page-hero-message__body > *:first-child {
+    margin-top: 0;
+}
+
+.page-hero-message__body > *:last-child {
+    margin-bottom: 0;
+}
+
+.page-hero-message__body p,
+.page-hero-message__body ul,
+.page-hero-message__body ol,
+.page-hero-message__body blockquote,
+.page-hero-message__body table {
     margin: 0 0 1em;
 }
 
-.page-hero-message__body p:last-child {
-    margin-bottom: 0;
+.page-hero-message__body h2,
+.page-hero-message__body h3,
+.page-hero-message__body h4 {
+    margin: 0 0 0.5em;
+    line-height: 1.15;
+}
+
+.page-hero-message__body ul,
+.page-hero-message__body ol {
+    padding-left: 1.25em;
+}
+
+.page-hero-message__body li + li {
+    margin-top: 0.25em;
+}
+
+.page-hero-message__body a {
+    color: inherit;
+    font-weight: 850;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+.page-hero-message__body blockquote {
+    padding-left: 1em;
+    border-left: 4px solid var(--site-accent);
+}
+
+.page-hero-message__body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.page-hero-message__body th,
+.page-hero-message__body td {
+    padding: 0.45em 0.55em;
+    border: 1px solid color-mix(in srgb, var(--site-ink) 16%, transparent);
+    text-align: left;
 }
 
 .page-content {

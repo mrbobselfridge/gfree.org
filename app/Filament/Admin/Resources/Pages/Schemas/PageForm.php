@@ -102,13 +102,14 @@ class PageForm
                     ->columnSpan(1),
 
                 Textarea::make('message')
-                    ->rows(1)
+                    ->rows(6)
+                    ->helperText('Accepts trusted HTML for styled page-header callouts. Plain text still works.')
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional supporting message shown with the page header. Keep it short for mobile.'
+                        'Optional styled supporting message shown with the page header. HTML is rendered as trusted admin content.'
                     )
                     ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->columnSpan(2),
 
                 TextInput::make('slug')
                     ->label('Path')
