@@ -108,8 +108,8 @@
 
         .twyxtco-media-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 0.75rem;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
         }
 
         .twyxtco-media-card {
@@ -127,7 +127,7 @@
         .twyxtco-media-card__image {
             display: block;
             width: 100%;
-            height: 5.25rem;
+            height: 9rem;
             object-fit: contain;
             background: rgb(243 244 246);
         }
@@ -277,7 +277,17 @@
             }
 
             .twyxtco-media-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: 1fr;
+            }
+
+            .twyxtco-media-card__image {
+                height: 11rem;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1100px) {
+            .twyxtco-media-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
     </style>
