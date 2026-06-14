@@ -61,12 +61,14 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('title="Download"', false)
             ->assertSee('/admin/media-images/download?path=announcements%2Fpicnic.jpg', false)
             ->assertSee('title="Copy URL"', false)
-            ->assertSee('title="Edit details"', false)
-            ->assertSee('title="Replace"', false)
+            ->assertSee('title="Edit image"', false)
+            ->assertDontSee('title="Edit details"', false)
+            ->assertDontSee('title="Replace"', false)
             ->assertSee('title="Delete"', false)
             ->assertDontSee('>Open<', false)
             ->assertDontSee('>Download<', false)
             ->assertDontSee('>Copy URL<', false)
+            ->assertDontSee('>Edit image<', false)
             ->assertDontSee('>Edit details<', false)
             ->assertDontSee('>Replace image<', false)
             ->assertDontSee('>Delete image<', false)
@@ -275,7 +277,7 @@ class MediaLibraryAdminTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
-            ->callAction('replaceImage', [
+            ->callAction('editImageMetadata', [
                 'replacement_image' => UploadedFile::fake()->image('new.jpg', 800, 600),
                 'title' => 'Updated Hero',
                 'slug' => 'resources/updated hero',
@@ -310,7 +312,7 @@ class MediaLibraryAdminTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
-            ->callAction('replaceImage', [
+            ->callAction('editImageMetadata', [
                 'replacement_image' => UploadedFile::fake()->image('new.jpg', 800, 600),
                 'title' => 'Updated Hero',
                 'slug' => 'resources/updated hero',
@@ -349,7 +351,7 @@ class MediaLibraryAdminTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
-            ->callAction('replaceImage', [
+            ->callAction('editImageMetadata', [
                 'replacement_image' => UploadedFile::fake()->image('updated_hero-photo.JPG', 800, 600),
             ], [
                 'path' => 'announcements/old.jpg',

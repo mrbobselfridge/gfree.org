@@ -94,11 +94,6 @@ class MediaLibrary extends Page
         ];
     }
 
-    public function replaceImageClickHandler(string $path): ?string
-    {
-        return $this->replaceImageAction()(['path' => $path])->getLivewireClickHandler();
-    }
-
     public function editImageMetadataClickHandler(string $path): ?string
     {
         return $this->editImageMetadataAction()(['path' => $path])->getLivewireClickHandler();
@@ -149,53 +144,19 @@ class MediaLibrary extends Page
             });
     }
 
-    protected function replaceImageAction(): Action
-    {
-        return IconOnlyAction::make(
-            Action::make('replaceImage')
-                ->label('Replace image')
-                ->modalHeading('Replace image')
-                ->modalDescription('Upload a replacement image. Every tracked place using the selected image will be updated to the new image.')
-                ->modalSubmitActionLabel('Replace image')
-                ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
-                ->schema([
-                    ...$this->imageMetadataFields(),
-                    ...$this->imageUploadFields('replacement_image', 'Replacement image'),
-                ])
-                ->action(function (array $arguments, array $data): void {
-                    $oldPath = (string) ($arguments['path'] ?? '');
-                    $newPath = $this->firstUploadedImagePath($data['replacement_image'] ?? null);
-
-                    if (blank($oldPath) || blank($newPath)) {
-                        return;
-                    }
-
-                    $updated = $this->replaceStoredImage(
-                        oldPath: $oldPath,
-                        newPath: $newPath,
-                        data: $data,
-                        fallbackTitle: $this->titleFromUploadedFilename($data['replacement_image_original_name'] ?? null, $newPath),
-                    );
-
-                    Notification::make()
-                        ->title('Image replaced')
-                        ->body("Updated {$updated} tracked ".str('location')->plural($updated).'.')
-                        ->success()
-                        ->send();
-                }),
-            Heroicon::OutlinedPencilSquare,
-        );
-    }
-
     protected function editImageMetadataAction(): Action
     {
         return IconOnlyAction::make(
             Action::make('editImageMetadata')
-                ->label('Edit details')
-                ->modalHeading('Edit image details')
-                ->modalSubmitActionLabel('Save details')
+                ->label('Edit image')
+                ->modalHeading('Edit image')
+                ->modalDescription('Update image details, or upload a replacement image to update every tracked place using this image.')
+                ->modalSubmitActionLabel('Save image')
                 ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
-                ->schema($this->imageMetadataFields())
+                ->schema([
+                    ...$this->imageMetadataFields(),
+                    ...$this->imageUploadFields('replacement_image', 'Replacement image', required: false),
+                ])
                 ->action(function (array $arguments, array $data): void {
                     $path = (string) ($arguments['path'] ?? '');
 
@@ -203,22 +164,37 @@ class MediaLibrary extends Page
                         return;
                     }
 
-                    $this->saveImageMetadata($path, $data);
+                    $newPath = $this->firstUploadedImagePath($data['replacement_image'] ?? null);
 
-                    app(WorkflowNotificationService::class)->automatic(
-                        area: AdminAccess::MEDIA_LIBRARY,
+                    if (filled($newPath)) {
+                        $updated = $this->replaceStoredImage(
+                            oldPath: $path,
+                            newPath: $newPath,
+                            data: $data,
+                            fallbackTitle: $this->titleFromUploadedFilename($data['replacement_image_original_name'] ?? null, $newPath),
+                        );
+
+                        Notification::make()
+                            ->title('Image saved')
+                            ->body("Replaced the image and updated {$updated} tracked ".str('location')->plural($updated).'.')
+                            ->success()
+                            ->send();
+
+                        return;
+                    }
+
+                    $this->saveImageMetadata($path, $data);
+                    $this->notifyMediaLibraryWorkflow(
                         trigger: WorkflowNotificationRule::TRIGGER_UPDATED,
-                        recordKey: 'media-library:'.$path,
-                        recordLabel: basename($path),
-                        adminUrl: static::getUrl(),
+                        path: $path,
                     );
 
                     Notification::make()
-                        ->title('Image details saved')
+                        ->title('Image saved')
                         ->success()
                         ->send();
                 }),
-            Heroicon::OutlinedTag,
+            Heroicon::OutlinedPencilSquare,
         );
     }
 
@@ -298,19 +274,26 @@ class MediaLibrary extends Page
     /**
      * @return array<int, FileUpload|TextInput>
      */
-    private function imageUploadFields(string $name, string $label): array
+    private function imageUploadFields(string $name, string $label, bool $required = true): array
     {
         $originalNameField = $this->originalFileNameField($name);
 
+        $upload = FileUpload::make($name)
+            ->label($label)
+            ->image()
+            ->disk('public')
+            ->directory(self::IMAGE_DIRECTORY)
+            ->storeFileNamesIn($originalNameField)
+            ->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file): string => $this->storedImageFilename($file));
+
+        if ($required) {
+            $upload->required();
+        } else {
+            $upload->helperText('Optional. Uploading here replaces this image everywhere it is tracked.');
+        }
+
         return [
-            FileUpload::make($name)
-                ->label($label)
-                ->image()
-                ->disk('public')
-                ->directory(self::IMAGE_DIRECTORY)
-                ->storeFileNamesIn($originalNameField)
-                ->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file): string => $this->storedImageFilename($file))
-                ->required(),
+            $upload,
             TextInput::make($originalNameField)
                 ->hidden(),
         ];

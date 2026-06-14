@@ -881,13 +881,13 @@
             <ul>
                 <li>Upload one image at a time for pages, announcements, ministries, leaders, and banners.</li>
                 <li>Use image search and sorting to find files by path, filename, size, dimensions, or usage.</li>
-                <li>Replace an image when the same file is used in multiple tracked places.</li>
+                <li>Use Edit image to update details or upload a replacement when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
                 <li>Use descriptive filenames when possible.</li>
             </ul>
             <h3>Image Details</h3>
             <ul>
-                <li>Upload and replace forms include image details, so title, slug, and tags can be set while choosing the file.</li>
+                <li>Upload image and Edit image include image details, so title, slug, tags, and an optional replacement can be managed together.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, and new tags can be added from the field.</li>

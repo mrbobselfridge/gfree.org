@@ -445,19 +445,8 @@
                                 <button
                                     type="button"
                                     wire:click="{{ $this->editImageMetadataClickHandler($image['path']) }}"
-                                    title="Edit details"
-                                    aria-label="Edit details"
-                                >
-                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.6 4.5h4.8a1.5 1.5 0 0 1 1.06.44l4.1 4.1a1.5 1.5 0 0 1 0 2.12l-8.4 8.4a1.5 1.5 0 0 1-2.12 0l-4.1-4.1a1.5 1.5 0 0 1-.44-1.06V9.6a1.5 1.5 0 0 1 .44-1.06l3.6-3.6A1.5 1.5 0 0 1 9.6 4.5Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 9.75h.01" />
-                                    </svg>
-                                </button>
-                                <button
-                                    type="button"
-                                    wire:click="{{ $this->replaceImageClickHandler($image['path']) }}"
-                                    title="Replace"
-                                    aria-label="Replace"
+                                    title="Edit image"
+                                    aria-label="Edit image"
                                 >
                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.9 4.6 2.5 2.5M4 20h4.2L18.7 9.5a1.8 1.8 0 0 0 0-2.5L17 5.3a1.8 1.8 0 0 0-2.5 0L4 15.8V20Z" />
