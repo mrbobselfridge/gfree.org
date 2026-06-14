@@ -27,6 +27,8 @@ class MediaLibrary extends Page
 {
     use RequiresAdminPageAccess;
 
+    private const IMAGE_DIRECTORY = 'media-library';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
@@ -118,26 +120,10 @@ class MediaLibrary extends Page
             ->modalHeading('Upload images')
             ->modalSubmitActionLabel('Upload')
             ->schema([
-                FileUpload::make('images')
-                    ->label('Images')
-                    ->image()
-                    ->multiple()
-                    ->disk('public')
-                    ->directory('media-library')
-                    ->required(),
+                $this->imageUploadField('images', 'Images', multiple: true),
             ])
             ->action(function (array $data): void {
-                $count = count($data['images'] ?? []);
-
-                collect($data['images'] ?? [])
-                    ->map(fn (mixed $path): string => (string) $path)
-                    ->each(fn (string $path): mixed => app(WorkflowNotificationService::class)->automatic(
-                        area: AdminAccess::MEDIA_LIBRARY,
-                        trigger: WorkflowNotificationRule::TRIGGER_CREATED,
-                        recordKey: 'media-library:'.$path,
-                        recordLabel: basename($path),
-                        adminUrl: static::getUrl(),
-                    ));
+                $count = $this->recordCreatedImages($data['images'] ?? []);
 
                 Notification::make()
                     ->title($count === 1 ? 'Image uploaded' : "{$count} images uploaded")
@@ -155,35 +141,17 @@ class MediaLibrary extends Page
                 ->modalDescription('Upload a replacement image. Every tracked place using the selected image will be updated to the new image.')
                 ->modalSubmitActionLabel('Replace image')
                 ->schema([
-                    FileUpload::make('replacement_image')
-                        ->label('Replacement image')
-                        ->image()
-                        ->disk('public')
-                        ->directory('media-library/replacements')
-                        ->required(),
+                    $this->imageUploadField('replacement_image', 'Replacement image'),
                 ])
                 ->action(function (array $arguments, array $data): void {
                     $oldPath = (string) ($arguments['path'] ?? '');
-                    $replacement = $data['replacement_image'] ?? null;
-                    $newPath = is_array($replacement) ? collect($replacement)->first() : $replacement;
+                    $newPath = $this->firstUploadedImagePath($data['replacement_image'] ?? null);
 
                     if (blank($oldPath) || blank($newPath)) {
                         return;
                     }
 
-                    $updated = MediaUsage::replaceImagePath($oldPath, (string) $newPath);
-                    MediaImageMetadata::query()
-                        ->where('path', $oldPath)
-                        ->update(['path' => (string) $newPath]);
-                    Storage::disk('public')->delete($oldPath);
-
-                    app(WorkflowNotificationService::class)->automatic(
-                        area: AdminAccess::MEDIA_LIBRARY,
-                        trigger: WorkflowNotificationRule::TRIGGER_UPDATED,
-                        recordKey: 'media-library:'.$oldPath,
-                        recordLabel: basename($oldPath),
-                        adminUrl: static::getUrl(),
-                    );
+                    $updated = $this->replaceStoredImage($oldPath, $newPath);
 
                     Notification::make()
                         ->title('Image replaced')
@@ -312,6 +280,71 @@ class MediaLibrary extends Page
             'slug' => $metadata?->slug,
             'tags' => $metadata?->tags ?? [],
         ];
+    }
+
+    private function imageUploadField(string $name, string $label, bool $multiple = false): FileUpload
+    {
+        $field = FileUpload::make($name)
+            ->label($label)
+            ->image()
+            ->disk('public')
+            ->directory(self::IMAGE_DIRECTORY)
+            ->required();
+
+        return $multiple ? $field->multiple() : $field;
+    }
+
+    private function recordCreatedImages(mixed $paths): int
+    {
+        $paths = collect(is_array($paths) ? $paths : [$paths])
+            ->map(fn (mixed $path): string => (string) $path)
+            ->filter()
+            ->values();
+
+        $paths->each(fn (string $path): mixed => $this->notifyMediaLibraryWorkflow(
+            trigger: WorkflowNotificationRule::TRIGGER_CREATED,
+            path: $path,
+        ));
+
+        return $paths->count();
+    }
+
+    private function firstUploadedImagePath(mixed $path): ?string
+    {
+        if (is_array($path)) {
+            $path = collect($path)->first();
+        }
+
+        return filled($path) ? (string) $path : null;
+    }
+
+    private function replaceStoredImage(string $oldPath, string $newPath): int
+    {
+        $updated = MediaUsage::replaceImagePath($oldPath, $newPath);
+
+        MediaImageMetadata::query()
+            ->where('path', $oldPath)
+            ->update(['path' => $newPath]);
+
+        Storage::disk('public')->delete($oldPath);
+
+        $this->notifyMediaLibraryWorkflow(
+            trigger: WorkflowNotificationRule::TRIGGER_UPDATED,
+            path: $oldPath,
+        );
+
+        return $updated;
+    }
+
+    private function notifyMediaLibraryWorkflow(string $trigger, string $path): mixed
+    {
+        return app(WorkflowNotificationService::class)->automatic(
+            area: AdminAccess::MEDIA_LIBRARY,
+            trigger: $trigger,
+            recordKey: 'media-library:'.$path,
+            recordLabel: basename($path),
+            adminUrl: static::getUrl(),
+        );
     }
 
     private function deleteImageDescription(string $path): string

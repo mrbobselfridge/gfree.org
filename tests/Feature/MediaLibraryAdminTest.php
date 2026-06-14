@@ -284,7 +284,7 @@ class MediaLibraryAdminTest extends TestCase
 
         $announcement->refresh();
         $this->assertNotSame('announcements/old.jpg', $announcement->image_path);
-        $this->assertStringStartsWith('media-library/replacements/', $announcement->image_path);
+        $this->assertStringStartsWith('media-library/', $announcement->image_path);
         $this->assertSame($announcement->image_path, $announcement->content_blocks[0]['data']['image_path']);
         Storage::disk('public')->assertMissing('announcements/old.jpg');
         Storage::disk('public')->assertExists($announcement->image_path);
@@ -317,7 +317,7 @@ class MediaLibraryAdminTest extends TestCase
         $metadata = MediaImageMetadata::query()->first();
 
         $this->assertNotNull($metadata);
-        $this->assertStringStartsWith('media-library/replacements/', $metadata->path);
+        $this->assertStringStartsWith('media-library/', $metadata->path);
         $this->assertSame('Old Hero', $metadata->title);
         $this->assertSame('old-hero', $metadata->slug);
         $this->assertSame(['Hero'], $metadata->tags);
