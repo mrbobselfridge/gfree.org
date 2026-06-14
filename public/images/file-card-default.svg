@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">File</title>
+  <desc id="desc">Default file card image</desc>
+  <rect width="640" height="420" fill="#f4f0e8"/>
+  <rect x="214" y="70" width="212" height="280" rx="18" fill="#ffffff" stroke="#263238" stroke-width="14"/>
+  <path d="M352 70v76h74" fill="#d9e6e2" stroke="#263238" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M260 202h120M260 246h120M260 290h86" fill="none" stroke="#7d4f2a" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="454" cy="296" r="54" fill="#2f6f64"/>
+  <path d="M430 296h48M454 272v48" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+</svg>

@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
     'file_name',
     'category',
     'parent_page_id',
+    'card_image_path',
     'is_published',
     'visibility',
     'description',
@@ -31,6 +32,8 @@ class FileDocument extends Model implements HasPublicUrl
     public const VISIBILITY_PUBLIC = 'public';
 
     public const VISIBILITY_PRIVATE = 'private';
+
+    public const DEFAULT_CARD_IMAGE_PATH = 'images/file-card-default.svg';
 
     public static function categories(): array
     {
@@ -92,6 +95,15 @@ class FileDocument extends Model implements HasPublicUrl
     public function downloadUrl(): string
     {
         return $this->publicUrl() ?? route('admin.files.download', ['fileDocument' => $this]);
+    }
+
+    public function cardImageUrl(): string
+    {
+        if (filled($this->card_image_path)) {
+            return Storage::disk('public')->url($this->card_image_path);
+        }
+
+        return asset(self::DEFAULT_CARD_IMAGE_PATH);
     }
 
     public function isPublic(): bool

@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\Announcement;
-use App\Models\FileDocument;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use Illuminate\Support\Collection;
@@ -13,12 +12,6 @@ use Illuminate\Support\Str;
 class ContentBlocks
 {
     public const FEATURED_ANNOUNCEMENT_LIMIT = 10;
-
-    public const RELATED_CONTENT_TYPE_BOTH = 'both';
-
-    public const RELATED_CONTENT_TYPE_PAGES = 'pages';
-
-    public const RELATED_CONTENT_TYPE_FILES = 'files';
 
     public const RELATED_CONTENT_MODE_FEATURED = 'featured';
 
@@ -179,15 +172,11 @@ class ContentBlocks
         $data['heading'] = $data['heading'] ?? 'Child Cards';
         $data['intro'] = $data['intro'] ?? null;
         $data['background'] = $data['background'] ?? 'white';
-        $data['content_type'] = in_array($data['content_type'] ?? null, self::relatedContentTypeOptions(), true)
-            ? $data['content_type']
-            : self::RELATED_CONTENT_TYPE_BOTH;
         $data['display_mode'] = in_array($data['display_mode'] ?? null, self::relatedContentModeOptions(), true)
             ? $data['display_mode']
             : self::RELATED_CONTENT_MODE_FEATURED;
         $data['item_limit'] = self::relatedContentLimit($data);
         $data['link_label'] = $data['link_label'] ?? 'View more';
-        $data['file_categories'] = self::normalizeStringList($data['file_categories'] ?? []);
 
         return $data;
     }
@@ -198,15 +187,7 @@ class ContentBlocks
             return collect();
         }
 
-        $items = collect();
-
-        if (in_array($data['content_type'], [self::RELATED_CONTENT_TYPE_BOTH, self::RELATED_CONTENT_TYPE_PAGES], true)) {
-            $items = $items->merge(self::relatedPageItems($page, $data));
-        }
-
-        if (in_array($data['content_type'], [self::RELATED_CONTENT_TYPE_BOTH, self::RELATED_CONTENT_TYPE_FILES], true)) {
-            $items = $items->merge(self::relatedFileItems($page, $data));
-        }
+        $items = self::relatedPageItems($page, $data);
 
         if ($data['display_mode'] === self::RELATED_CONTENT_MODE_NEWEST) {
             return $items
@@ -253,33 +234,6 @@ class ContentBlocks
             ]);
     }
 
-    private static function relatedFileItems(Page $page, array $data): Collection
-    {
-        $now = now();
-        $categories = self::normalizeStringList($data['file_categories'] ?? []);
-
-        return $page->fileDocuments()
-            ->with('currentVersion')
-            ->where('is_published', true)
-            ->where('visibility', FileDocument::VISIBILITY_PUBLIC)
-            ->whereNotNull('current_version_id')
-            ->where(fn ($query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
-            ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
-            ->when($categories !== [], fn ($query) => $query->whereIn('category', $categories))
-            ->get()
-            ->map(fn (FileDocument $document): array => [
-                'kind' => 'file',
-                'type' => $document->category ?: 'File',
-                'title' => $document->title,
-                'summary' => $document->description ?: self::excerpt($document->content),
-                'image_url' => null,
-                'url' => $document->publicUrl(),
-                'sort_group' => 1,
-                'sort_order' => 0,
-                'sort_date' => ($document->publish_at ?? $document->updated_at)?->toDateTimeString(),
-            ]);
-    }
-
     private static function relatedListingUrl(?Page $page, array $data): ?string
     {
         if (! $page?->getKey()) {
@@ -300,15 +254,6 @@ class ContentBlocks
         return min(50, max(1, (int) ($data['item_limit'] ?? self::RELATED_CONTENT_DEFAULT_LIMIT)));
     }
 
-    private static function relatedContentTypeOptions(): array
-    {
-        return [
-            self::RELATED_CONTENT_TYPE_BOTH,
-            self::RELATED_CONTENT_TYPE_PAGES,
-            self::RELATED_CONTENT_TYPE_FILES,
-        ];
-    }
-
     private static function relatedContentModeOptions(): array
     {
         return [
@@ -316,22 +261,6 @@ class ContentBlocks
             self::RELATED_CONTENT_MODE_ALL,
             self::RELATED_CONTENT_MODE_NEWEST,
         ];
-    }
-
-    private static function normalizeStringList(mixed $value): array
-    {
-        return collect(is_array($value) ? $value : [$value])
-            ->map(fn (mixed $item): string => trim((string) $item))
-            ->filter()
-            ->values()
-            ->all();
-    }
-
-    private static function excerpt(?string $value): ?string
-    {
-        $text = trim(html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-
-        return $text === '' ? null : Str::limit($text, 180);
     }
 
     public static function imageUrl(mixed $path): ?string

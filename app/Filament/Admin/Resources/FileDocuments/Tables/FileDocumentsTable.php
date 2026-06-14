@@ -15,6 +15,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
@@ -28,6 +29,11 @@ class FileDocumentsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('card_image_path')
+                    ->label('Card image')
+                    ->disk('public')
+                    ->defaultImageUrl(fn (): string => asset(FileDocument::DEFAULT_CARD_IMAGE_PATH))
+                    ->toggleable(),
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),

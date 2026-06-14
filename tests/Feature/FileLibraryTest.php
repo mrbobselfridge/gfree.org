@@ -17,6 +17,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AdminAccess;
 use App\Support\FileLibrary;
+use App\Support\MediaUsage;
 use App\Support\OpenAiFileDocumentExtractor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -198,6 +199,7 @@ class FileLibraryTest extends TestCase
             ->test(CreateFileDocument::class)
             ->assertFormFieldExists('category')
             ->assertFormFieldExists('parent_page_id')
+            ->assertFormFieldExists('card_image_path')
             ->assertFormFieldExists('is_published')
             ->assertFormFieldExists('publish_at')
             ->assertFormFieldExists('expires_at')
@@ -209,6 +211,7 @@ class FileLibraryTest extends TestCase
             ->set('data.file_name', 'connection-card')
             ->set('data.category', 'Form')
             ->set('data.parent_page_id', $parent->getKey())
+            ->set('data.card_image_path', ['file-documents/card-images/connection-card.jpg'])
             ->set('data.is_published', true)
             ->set('data.visibility', FileDocument::VISIBILITY_PUBLIC)
             ->set('data.publish_at', $publishAt)
@@ -224,6 +227,8 @@ class FileLibraryTest extends TestCase
         $this->assertSame('Connection Card', $document->title);
         $this->assertSame('Form', $document->category);
         $this->assertTrue($document->parentPage->is($parent));
+        $this->assertSame('file-documents/card-images/connection-card.jpg', $document->card_image_path);
+        $this->assertStringContainsString('/storage/file-documents/card-images/connection-card.jpg', $document->cardImageUrl());
         $this->assertTrue($parent->fileDocuments()->first()->is($document));
         $this->assertTrue($document->is_published);
         $this->assertTrue($document->publish_at->equalTo($publishAt));
@@ -348,6 +353,7 @@ class FileLibraryTest extends TestCase
             ->test(EditFileDocument::class, ['record' => $document->getKey()])
             ->assertFormFieldExists('category')
             ->assertFormFieldExists('parent_page_id')
+            ->assertFormFieldExists('card_image_path')
             ->assertFormFieldExists('is_published')
             ->assertFormFieldExists('publish_at')
             ->assertFormFieldExists('expires_at')
@@ -362,6 +368,42 @@ class FileLibraryTest extends TestCase
             ->assertOk()
             ->assertSee('Current file')
             ->assertSee('Replace file');
+    }
+
+    public function test_file_document_card_image_url_falls_back_to_default_file_image(): void
+    {
+        $document = FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->assertSame(asset(FileDocument::DEFAULT_CARD_IMAGE_PATH), $document->cardImageUrl());
+    }
+
+    public function test_file_document_card_image_is_tracked_by_media_usage(): void
+    {
+        $document = FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'card_image_path' => 'file-documents/card-images/connection-card.jpg',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        $usage = MediaUsage::forImages(['file-documents/card-images/connection-card.jpg']);
+
+        $this->assertSame("File: {$document->title}", $usage['file-documents/card-images/connection-card.jpg'][0]['label']);
+        $this->assertSame('File card image', $usage['file-documents/card-images/connection-card.jpg'][0]['detail']);
+
+        $updated = MediaUsage::replaceImagePath(
+            'file-documents/card-images/connection-card.jpg',
+            'file-documents/card-images/updated-card.jpg',
+        );
+
+        $this->assertSame(1, $updated);
+        $this->assertSame('file-documents/card-images/updated-card.jpg', $document->refresh()->card_image_path);
     }
 
     public function test_edit_file_document_refreshes_view_and_download_actions_after_save(): void

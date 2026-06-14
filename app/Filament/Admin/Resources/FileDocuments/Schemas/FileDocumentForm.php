@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\FileDocuments\Schemas;
 
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Models\FileCategory;
@@ -134,6 +135,12 @@ class FileDocumentForm
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
+                            )
+                            ->hintColor('gray'),
+                        ImageUpload::make('card_image_path', 'file-documents/card-images', 'Card image')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional image used when this file appears in cards or listing areas. If empty, the default file image is used.'
                             )
                             ->hintColor('gray'),
                         FileUpload::make('pending_upload')

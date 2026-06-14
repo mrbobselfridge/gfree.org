@@ -739,7 +739,7 @@ class PublicPageTest extends TestCase
         );
     }
 
-    public function test_related_content_block_renders_limited_parent_pages_and_public_files(): void
+    public function test_child_cards_block_renders_limited_child_pages_only(): void
     {
         $parent = Page::query()->create([
             'title' => 'Resources',
@@ -754,7 +754,7 @@ class PublicPageTest extends TestCase
                         'content_type' => 'both',
                         'display_mode' => 'featured',
                         'file_categories' => ['Form'],
-                        'item_limit' => 3,
+                        'item_limit' => 1,
                         'link_label' => 'View all resources',
                     ],
                 ],
@@ -810,14 +810,13 @@ class PublicPageTest extends TestCase
             ->assertSee('Featured Resources')
             ->assertSee('Useful next steps.')
             ->assertSee('Baptism')
-            ->assertSee('Membership')
-            ->assertSee('Annual Waiver')
             ->assertSee('/storage/pages/cards/baptism.jpg')
             ->assertSee('/resources/baptism')
-            ->assertSee('/files/annual-waiver')
             ->assertSee('View all resources')
             ->assertSee('/resources/featured-resources')
+            ->assertDontSee('Membership')
             ->assertDontSee('Connection Card')
+            ->assertDontSee('Annual Waiver')
             ->assertDontSee('Weekly Bulletin')
             ->assertDontSee('Internal Policy')
             ->assertDontSee('Future Feature')
@@ -828,8 +827,8 @@ class PublicPageTest extends TestCase
             ->assertSee('<h1>Featured Resources</h1>', false)
             ->assertSee('Baptism')
             ->assertSee('Membership')
-            ->assertSee('Connection Card')
-            ->assertSee('Annual Waiver')
+            ->assertDontSee('Connection Card')
+            ->assertDontSee('Annual Waiver')
             ->assertDontSee('Weekly Bulletin')
             ->assertDontSee('Internal Policy')
             ->assertDontSee('Future Feature')
@@ -882,7 +881,7 @@ class PublicPageTest extends TestCase
 
     public function test_related_content_block_does_not_render_without_child_content(): void
     {
-        Page::query()->create([
+        $parent = Page::query()->create([
             'title' => 'Resources',
             'slug' => 'resources',
             'body' => 'Parent page body.',
@@ -897,10 +896,13 @@ class PublicPageTest extends TestCase
             'is_published' => true,
         ]);
 
+        $this->createLiveFileDocument($parent, 'Connection Card', 'connection-card', 'Form', 'Fill this out.');
+
         $this->get('/resources')
             ->assertOk()
             ->assertSee('Parent page body.')
             ->assertDontSee('Child Cards')
+            ->assertDontSee('Connection Card')
             ->assertDontSee('Related Content');
 
         $this->get('/resources/child-cards')->assertNotFound();

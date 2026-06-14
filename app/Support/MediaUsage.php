@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Announcement;
+use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
@@ -105,6 +106,14 @@ class MediaUsage
                 'fields' => [
                     'photo_path' => 'Leadership image',
                     'card_image_path' => 'Leadership card image',
+                ],
+            ],
+            [
+                'model' => FileDocument::class,
+                'record_label' => 'File',
+                'title' => 'title',
+                'fields' => [
+                    'card_image_path' => 'File card image',
                 ],
             ],
             [
