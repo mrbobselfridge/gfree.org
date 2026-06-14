@@ -5,6 +5,7 @@
     $snapshotService = app(\App\Support\PageVisualSnapshot::class);
     $preSnapshotUrl = $event->pre_snapshot_path ? $snapshotService->imageUrl($event->pre_snapshot_path) : null;
     $postSnapshotUrl = $event->post_snapshot_path ? $snapshotService->imageUrl($event->post_snapshot_path) : null;
+    $hasBothSnapshots = $preSnapshotUrl && $postSnapshotUrl;
 @endphp
 
 <p>{!! nl2br(e($rule->message)) !!}</p>
@@ -39,10 +40,10 @@
 
     <p><strong>Visual comparison</strong></p>
 
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width: 100%; max-width: 100%; border-collapse: collapse; table-layout: fixed;">
         <tr>
             @if ($preSnapshotUrl)
-                <td width="{{ $postSnapshotUrl ? '50%' : '100%' }}" valign="top" style="width: {{ $postSnapshotUrl ? '50%' : '100%' }}; padding: 0 8px 12px 0; vertical-align: top;">
+                <td width="{{ $hasBothSnapshots ? '50%' : '100%' }}" valign="top" style="width: {{ $hasBothSnapshots ? '50%' : '100%' }}; max-width: {{ $hasBothSnapshots ? '50%' : '100%' }}; padding: 0 8px 12px 0; vertical-align: top;">
                     <p style="margin: 0 0 8px; font-weight: 700;">PRE</p>
                     <a href="{{ $preSnapshotUrl }}">
                         <img src="{{ $preSnapshotUrl }}" alt="PRE page screenshot" width="100%" style="display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid #d1d5db;">
@@ -51,7 +52,7 @@
             @endif
 
             @if ($postSnapshotUrl)
-                <td width="{{ $preSnapshotUrl ? '50%' : '100%' }}" valign="top" style="width: {{ $preSnapshotUrl ? '50%' : '100%' }}; padding: 0 0 12px 8px; vertical-align: top;">
+                <td width="{{ $hasBothSnapshots ? '50%' : '100%' }}" valign="top" style="width: {{ $hasBothSnapshots ? '50%' : '100%' }}; max-width: {{ $hasBothSnapshots ? '50%' : '100%' }}; padding: 0 0 12px 8px; vertical-align: top;">
                     <p style="margin: 0 0 8px; font-weight: 700;">POST</p>
                     <a href="{{ $postSnapshotUrl }}">
                         <img src="{{ $postSnapshotUrl }}" alt="POST page screenshot" width="100%" style="display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid #d1d5db;">

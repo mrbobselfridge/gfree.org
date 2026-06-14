@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Web page</title>
+  <desc id="desc">Default web page card image</desc>
+  <rect width="640" height="420" fill="#edf3f1"/>
+  <rect x="96" y="78" width="448" height="264" rx="20" fill="#ffffff" stroke="#263238" stroke-width="14"/>
+  <path d="M96 138h448" fill="none" stroke="#263238" stroke-width="14"/>
+  <circle cx="132" cy="108" r="10" fill="#b95c32"/>
+  <circle cx="164" cy="108" r="10" fill="#d7a840"/>
+  <circle cx="196" cy="108" r="10" fill="#2f6f64"/>
+  <rect x="144" y="182" width="174" height="32" rx="16" fill="#2f6f64"/>
+  <rect x="144" y="236" width="300" height="18" rx="9" fill="#8fa49e"/>
+  <rect x="144" y="276" width="224" height="18" rx="9" fill="#8fa49e"/>
+  <rect x="382" y="180" width="90" height="96" rx="12" fill="#d9e6e2" stroke="#263238" stroke-width="10"/>
+</svg>

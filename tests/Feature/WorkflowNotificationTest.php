@@ -258,7 +258,18 @@ class WorkflowNotificationTest extends TestCase
             WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->firstOrFail()->snapshot_path,
         );
 
-        Mail::assertSent(WorkflowNotificationMail::class, fn (WorkflowNotificationMail $mail): bool => $mail->hasTo('page-review@example.com'));
+        Mail::assertSent(WorkflowNotificationMail::class, function (WorkflowNotificationMail $mail): bool {
+            $html = $mail->render();
+
+            return $mail->hasTo('page-review@example.com')
+                && str_contains($html, 'Visual comparison')
+                && str_contains($html, 'PRE')
+                && str_contains($html, 'POST')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/baseline.png')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/post-update.png')
+                && substr_count($html, 'width="50%"') === 2
+                && substr_count($html, 'max-width: 50%') === 2;
+        });
     }
 
     public function test_manual_notification_uses_visual_baseline_as_pre_and_current_snapshot_as_post(): void
@@ -402,7 +413,8 @@ class WorkflowNotificationTest extends TestCase
         $this->assertStringContainsString('PRE', $html);
         $this->assertStringContainsString('POST', $html);
         $this->assertStringContainsString('table-layout: fixed', $html);
-        $this->assertStringContainsString('style="width: 50%;', $html);
+        $this->assertSame(2, substr_count($html, 'width="50%"'));
+        $this->assertSame(2, substr_count($html, 'style="width: 50%; max-width: 50%;'));
         $this->assertStringContainsString('width="100%" style="display: block; width: 100%; max-width: 100%;', $html);
         $this->assertStringNotContainsString('max-width: 320px', $html);
         $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/pre.png', $html);

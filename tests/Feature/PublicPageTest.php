@@ -7,6 +7,7 @@ use App\Models\FileDocument;
 use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\SiteSetting;
+use App\Support\ContentBlocks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -754,7 +755,7 @@ class PublicPageTest extends TestCase
                         'content_type' => 'both',
                         'display_mode' => 'featured',
                         'file_categories' => ['Form'],
-                        'item_limit' => 3,
+                        'item_limit' => 4,
                         'link_label' => 'View all resources',
                     ],
                 ],
@@ -780,7 +781,17 @@ class PublicPageTest extends TestCase
             'title' => 'Membership',
             'slug' => 'resources/membership',
             'intro' => 'Become a member.',
+            'hero_image_path' => 'pages/hero-images/membership.jpg',
             'sort_order' => 20,
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Classes',
+            'slug' => 'resources/classes',
+            'intro' => 'Find a class.',
+            'sort_order' => 30,
             'is_published' => true,
         ]);
 
@@ -811,8 +822,11 @@ class PublicPageTest extends TestCase
             ->assertSee('Useful next steps.')
             ->assertSee('Baptism')
             ->assertSee('Membership')
+            ->assertSee('Classes')
             ->assertSee('Annual Waiver')
             ->assertSee('/storage/pages/cards/baptism.jpg')
+            ->assertSee('/storage/pages/hero-images/membership.jpg')
+            ->assertSee(ContentBlocks::DEFAULT_PAGE_CARD_IMAGE_PATH)
             ->assertSee('/storage/file-documents/card-images/annual-waiver.jpg')
             ->assertSee('/resources/baptism')
             ->assertSee('/files/annual-waiver')
@@ -829,8 +843,10 @@ class PublicPageTest extends TestCase
             ->assertSee('<h1>Featured Resources</h1>', false)
             ->assertSee('Baptism')
             ->assertSee('Membership')
+            ->assertSee('Classes')
             ->assertSee('Connection Card')
             ->assertSee('Annual Waiver')
+            ->assertSee(ContentBlocks::DEFAULT_PAGE_CARD_IMAGE_PATH)
             ->assertSee(FileDocument::DEFAULT_CARD_IMAGE_PATH)
             ->assertDontSee('Weekly Bulletin')
             ->assertDontSee('Internal Policy')

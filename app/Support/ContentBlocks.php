@@ -28,6 +28,8 @@ class ContentBlocks
 
     public const RELATED_CONTENT_DEFAULT_LIMIT = 6;
 
+    public const DEFAULT_PAGE_CARD_IMAGE_PATH = 'images/page-card-default.svg';
+
     public static function prepare(?array $blocks, ?SiteSetting $settings = null, ?Collection $updates = null, ?Page $page = null): array
     {
         return collect($blocks ?? [])
@@ -245,12 +247,19 @@ class ContentBlocks
                 'type' => $child->hero_label ?: 'Page',
                 'title' => $child->title,
                 'summary' => $child->intro ?: $child->message,
-                'image_url' => self::imageUrl($child->card_image_path),
+                'image_url' => self::relatedPageImageUrl($child),
                 'url' => $child->publicUrl(),
                 'sort_group' => 0,
                 'sort_order' => $child->sort_order ?? 0,
                 'sort_date' => ($child->featured_at ?? $child->publish_at ?? $child->updated_at)?->toDateTimeString(),
             ]);
+    }
+
+    private static function relatedPageImageUrl(Page $page): string
+    {
+        return self::imageUrl($page->card_image_path)
+            ?? self::imageUrl($page->hero_image_path)
+            ?? asset(self::DEFAULT_PAGE_CARD_IMAGE_PATH);
     }
 
     private static function relatedFileItems(Page $page, array $data): Collection
