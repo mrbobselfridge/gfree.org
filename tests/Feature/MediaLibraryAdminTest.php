@@ -131,13 +131,13 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertNotNull($metadata);
         $this->assertSame('Student Ministry Hero', $metadata->title);
         $this->assertSame('resources/student-hero', $metadata->slug);
-        $this->assertSame(['Students', 'Hero Image'], $metadata->tags);
+        $this->assertSame(['Students', 'Hero Image', 'person', 'youth'], $metadata->tags);
 
         $image = MediaLibrary::images()->firstWhere('path', 'pages/content-images/students.png');
 
         $this->assertSame('Student Ministry Hero', $image['display_title']);
         $this->assertSame('resources/student-hero', $image['slug']);
-        $this->assertSame(['Students', 'Hero Image'], $image['tags']);
+        $this->assertSame(['Students', 'Hero Image', 'person', 'youth'], $image['tags']);
 
         $this->actingAs(User::factory()->create())
             ->get('/admin/media-library')
@@ -289,7 +289,7 @@ class MediaLibraryAdminTest extends TestCase
 
         $announcement->refresh();
         $this->assertNotSame('announcements/old.jpg', $announcement->image_path);
-        $this->assertStringStartsWith('media-library/', $announcement->image_path);
+        $this->assertNewMediaLibraryImagePath($announcement->image_path, 'new');
         $this->assertSame($announcement->image_path, $announcement->content_blocks[0]['data']['image_path']);
         Storage::disk('public')->assertMissing('announcements/old.jpg');
         Storage::disk('public')->assertExists($announcement->image_path);
@@ -325,7 +325,7 @@ class MediaLibraryAdminTest extends TestCase
         $metadata = MediaImageMetadata::query()->first();
 
         $this->assertNotNull($metadata);
-        $this->assertStringStartsWith('media-library/', $metadata->path);
+        $this->assertNewMediaLibraryImagePath($metadata->path, 'new');
         $this->assertSame('Updated Hero', $metadata->title);
         $this->assertSame('resources/updated-hero', $metadata->slug);
         $this->assertSame(['Hero', 'Updated Hero'], $metadata->tags);
@@ -361,10 +361,10 @@ class MediaLibraryAdminTest extends TestCase
         $metadata = MediaImageMetadata::query()->first();
 
         $this->assertNotNull($metadata);
-        $this->assertStringStartsWith('media-library/', $metadata->path);
+        $this->assertNewMediaLibraryImagePath($metadata->path, 'updated-hero-photo');
         $this->assertSame('Updated Hero Photo', $metadata->title);
         $this->assertSame('updated-hero-photo', $metadata->slug);
-        $this->assertSame(['Hero'], $metadata->tags);
+        $this->assertSame(['Hero', 'picture'], $metadata->tags);
     }
 
     public function test_media_library_can_upload_new_images_from_header_action(): void
@@ -381,9 +381,10 @@ class MediaLibraryAdminTest extends TestCase
             ])
             ->assertHasNoActionErrors();
 
-        $path = Storage::disk('public')->files('media-library')[0] ?? null;
+        $path = Storage::disk('public')->allFiles('media-library')[0] ?? null;
 
         $this->assertNotNull($path);
+        $this->assertNewMediaLibraryImagePath($path, 'new-upload');
         $this->assertDatabaseHas(MediaImageMetadata::class, [
             'path' => $path,
             'title' => 'New Upload',
@@ -405,15 +406,94 @@ class MediaLibraryAdminTest extends TestCase
             ])
             ->assertHasNoActionErrors();
 
-        $path = Storage::disk('public')->files('media-library')[0] ?? null;
+        $path = Storage::disk('public')->allFiles('media-library')[0] ?? null;
 
         $this->assertNotNull($path);
+        $this->assertNewMediaLibraryImagePath($path, 'student-ministry-hero');
         $this->assertDatabaseHas(MediaImageMetadata::class, [
             'path' => $path,
             'title' => 'Student Ministry Hero',
             'slug' => 'student-ministry-hero',
         ]);
-        $this->assertSame(['Students'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
+        $this->assertSame(['Students', 'person', 'youth'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
+    }
+
+    public function test_media_library_updates_upload_title_and_slug_as_soon_as_image_uploads(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->mountAction('uploadImages')
+            ->assertFormFieldVisible('image')
+            ->assertFormFieldHidden('title')
+            ->assertFormFieldHidden('tags')
+            ->assertFormFieldHidden('slug')
+            ->setActionData([
+                'image' => UploadedFile::fake()->image('your-work-matters-church-website-banner.jpg', 1920, 650),
+            ])
+            ->assertFormFieldVisible('title')
+            ->assertFormFieldVisible('tags')
+            ->assertFormFieldVisible('slug')
+            ->assertActionDataSet([
+                'title' => 'Your Work Matters Church Website Banner',
+                'slug' => 'your-work-matters-church-website-banner',
+                'tags' => ['banner'],
+            ]);
+    }
+
+    public function test_media_library_updates_replacement_title_and_slug_as_soon_as_image_uploads_when_existing_values_are_unchanged(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('old.jpg', 800, 600)
+            ->storeAs('announcements', 'old.jpg', 'public');
+
+        MediaImageMetadata::query()->create([
+            'path' => 'announcements/old.jpg',
+            'title' => 'Old Hero',
+            'slug' => 'old-hero',
+            'tags' => ['Hero'],
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->mountAction('editImageMetadata', [
+                'path' => 'announcements/old.jpg',
+            ])
+            ->assertFormFieldVisible('title')
+            ->assertFormFieldVisible('tags')
+            ->assertFormFieldVisible('slug')
+            ->assertActionDataSet([
+                'current_image' => 'announcements/old.jpg',
+                'title' => 'Old Hero',
+                'slug' => 'old-hero',
+            ])
+            ->setActionData([
+                'replacement_image' => UploadedFile::fake()->image('updated_hero-photo.JPG', 800, 600),
+            ])
+            ->assertActionDataSet([
+                'title' => 'Updated Hero Photo',
+                'slug' => 'updated-hero-photo',
+                'tags' => ['Hero', 'picture'],
+            ]);
+    }
+
+    public function test_media_library_adds_auto_tags_when_title_is_manually_changed(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->mountAction('uploadImages')
+            ->setActionData([
+                'title' => 'Night of Worship Graphic',
+            ])
+            ->assertActionDataSet([
+                'title' => 'Night of Worship Graphic',
+                'tags' => ['graphic', 'worship'],
+            ]);
     }
 
     public function test_media_library_makes_filename_default_slug_unique(): void
@@ -443,6 +523,49 @@ class MediaLibraryAdminTest extends TestCase
             'title' => 'Student Ministry Hero',
             'slug' => 'student-ministry-hero-2',
         ]);
+    }
+
+    public function test_media_library_auto_tags_known_title_keywords(): void
+    {
+        $cases = [
+            'Church Website Banner' => ['banner'],
+            'Ministry Graphic Background' => ['graphic'],
+            'Unsplash Photo Image' => ['picture'],
+            'Square Logo Icon' => ['logo'],
+            'Pastor Family Volunteer Hands' => ['person'],
+            'Sunday School VBS Kids' => ['person', 'kids & children', 'event or service'],
+            'Unchained Night' => ['youth'],
+            'Night of Worship Music' => ['worship'],
+            'Good Friday Easter Spring' => ['holiday and seasonal'],
+            'Giving Tithe Offering' => ['giving and offering'],
+            'Prayer and Fasting' => ['prayer'],
+            'Baptism Service Picnic' => ['event or service'],
+        ];
+
+        foreach ($cases as $title => $expectedTags) {
+            $this->assertSame($expectedTags, MediaImageMetadata::autoTagsForTitle($title));
+        }
+    }
+
+    public function test_media_library_auto_tags_are_added_without_removing_manual_tags(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('uploadImages', [
+                'tags' => ['Custom'],
+                'image' => UploadedFile::fake()->image('your-work-matters-church-website-banner.jpg', 1920, 650),
+            ])
+            ->assertHasNoActionErrors();
+
+        $metadata = MediaImageMetadata::query()->first();
+
+        $this->assertNotNull($metadata);
+        $this->assertNewMediaLibraryImagePath($metadata->path, 'your-work-matters-church-website-banner');
+        $this->assertSame('Your Work Matters Church Website Banner', $metadata->title);
+        $this->assertSame('your-work-matters-church-website-banner', $metadata->slug);
+        $this->assertSame(['Custom', 'banner'], $metadata->tags);
     }
 
     public function test_media_library_can_search_filename_path_and_usage(): void
@@ -547,5 +670,13 @@ class MediaLibraryAdminTest extends TestCase
 
         $component->set('sort', 'content_type');
         $this->assertSame('a-folder/alpha.jpg', $component->instance()->getImages()->first()['path']);
+    }
+
+    private function assertNewMediaLibraryImagePath(string $path, string $name): void
+    {
+        $this->assertMatchesRegularExpression(
+            "#^media-library/[0-9a-hjkmnp-tv-z]{26}/{$name}\.(jpg|jpeg|png|gif|webp|avif|svg)$#",
+            $path,
+        );
     }
 }

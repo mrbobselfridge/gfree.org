@@ -18,6 +18,8 @@ use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -117,8 +119,8 @@ class MediaLibrary extends Page
             ->modalHeading('Upload image')
             ->modalSubmitActionLabel('Upload image')
             ->schema([
-                ...$this->imageMetadataFields(),
                 ...$this->imageUploadFields('image', 'Image'),
+                ...$this->imageMetadataFields(visibleAfterUploadField: 'image'),
             ])
             ->action(function (array $data): void {
                 $path = $this->firstUploadedImagePath($data['image'] ?? null);
@@ -156,6 +158,7 @@ class MediaLibrary extends Page
                 ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
                 ->schema([
                     ...$this->imageMetadataFields(),
+                    ...$this->currentImagePreviewFields(),
                     ...$this->imageUploadFields('replacement_image', 'Replacement image', required: false),
                 ])
                 ->action(function (array $arguments, array $data): void {
@@ -242,8 +245,12 @@ class MediaLibrary extends Page
         $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
 
         return [
+            'current_image' => $path,
             'title' => $metadata?->title,
             'slug' => $metadata?->slug,
+            'existing_title' => $metadata?->title,
+            'existing_slug' => $metadata?->slug,
+            'existing_path' => $metadata?->path,
             'tags' => $metadata?->tags ?? [],
         ];
     }
@@ -251,25 +258,56 @@ class MediaLibrary extends Page
     /**
      * @return array<int, TextInput|TagsInput>
      */
-    private function imageMetadataFields(): array
+    private function imageMetadataFields(?string $visibleAfterUploadField = null): array
     {
         return [
             TextInput::make('title')
                 ->label('Title')
                 ->helperText('Leave blank to use the uploaded filename without the extension.')
-                ->maxLength(255),
+                ->live(onBlur: true)
+                ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
+                ->maxLength(255)
+                ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                    $this->mergeAutoTagsIntoForm($set, $get, $state);
+                }),
+            TextInput::make('existing_title')
+                ->hidden(),
             TagsInput::make('tags')
                 ->label('Tags')
                 ->placeholder('Add tag')
                 ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
+                ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
                 ->splitKeys(['Tab', ','])
                 ->reorderable()
                 ->nestedRecursiveRules(['max:80']),
             TextInput::make('slug')
                 ->label('Optional Slug / Path')
                 ->helperText('Optional. Leave blank to use the uploaded filename. Slashes are allowed for grouped paths.')
+                ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
                 ->maxLength(255)
                 ->dehydrateStateUsing(fn (?string $state): ?string => MediaImageMetadata::normalizeSlug($state)),
+            TextInput::make('existing_slug')
+                ->hidden(),
+            TextInput::make('existing_path')
+                ->hidden(),
+        ];
+    }
+
+    /**
+     * @return array<int, FileUpload>
+     */
+    private function currentImagePreviewFields(): array
+    {
+        return [
+            FileUpload::make('current_image')
+                ->label('Current image')
+                ->image()
+                ->disk('public')
+                ->downloadable()
+                ->openable()
+                ->deletable(false)
+                ->dehydrated(false)
+                ->helperText('Shown for reference. Use Replacement image below only if this image should be swapped everywhere it is tracked.'),
         ];
     }
 
@@ -287,6 +325,33 @@ class MediaLibrary extends Page
             ->directory(self::IMAGE_DIRECTORY)
             ->storeFileNamesIn($originalNameField)
             ->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file): string => $this->storedImageFilename($file));
+
+        $upload->afterStateUpdated(function (Set $set, Get $get, mixed $state) use ($originalNameField): void {
+            $path = $this->firstUploadedImagePath($state);
+
+            if (blank($path)) {
+                return;
+            }
+
+            $title = $this->titleFromUploadedFilename($get($originalNameField), $state);
+            $slug = $this->slugFromUploadedFilename($get($originalNameField), $state);
+
+            if (filled($title) && $this->shouldUseUploadedFilenameValue($get('title'), $get('existing_title'))) {
+                $set('title', $title);
+            }
+
+            if (filled($slug) && $this->shouldUseUploadedFilenameValue(
+                MediaImageMetadata::normalizeSlug($get('slug')),
+                MediaImageMetadata::normalizeSlug($get('existing_slug')),
+            )) {
+                $set('slug', $this->uniqueFallbackSlug(
+                    slug: $slug,
+                    ignorePath: filled($get('existing_path')) ? (string) $get('existing_path') : $path,
+                ));
+            }
+
+            $this->mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
+        });
 
         if ($required) {
             $upload->required();
@@ -312,7 +377,7 @@ class MediaLibrary extends Page
         $slug = str($baseName)->slug()->toString() ?: 'image';
         $extension = $file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'jpg';
 
-        return str(Str::ulid().'-'.$slug.'.'.$extension)->lower()->toString();
+        return str(Str::ulid().'/'.$slug.'.'.$extension)->lower()->toString();
     }
 
     private function saveImageMetadata(
@@ -369,7 +434,7 @@ class MediaLibrary extends Page
         return [
             'title' => $title,
             'slug' => $slug,
-            'tags' => MediaImageMetadata::normalizeTags($data['tags'] ?? []),
+            'tags' => MediaImageMetadata::mergeAutoTags($data['tags'] ?? [], $title),
         ];
     }
 
@@ -420,7 +485,7 @@ class MediaLibrary extends Page
         return $updated;
     }
 
-    private function titleFromUploadedFilename(mixed $originalName, string $path): ?string
+    private function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
         $title = str($this->uploadedFilenameStem($originalName, $path))
             ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
@@ -432,7 +497,7 @@ class MediaLibrary extends Page
         return filled($title) ? $title : null;
     }
 
-    private function slugFromUploadedFilename(mixed $originalName, string $path): ?string
+    private function slugFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
         $stem = str($this->uploadedFilenameStem($originalName, $path))
             ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
@@ -441,12 +506,30 @@ class MediaLibrary extends Page
         return MediaImageMetadata::normalizeSlug($stem);
     }
 
-    private function uploadedFilenameStem(mixed $originalName, string $path): string
+    private function uploadedFilenameStem(mixed $originalName, mixed $path): string
     {
         $source = is_array($originalName) ? collect($originalName)->first() : $originalName;
-        $source = filled($source) ? (string) $source : basename($path);
+
+        if (blank($source)) {
+            $source = $this->originalNameFromUploadState($path);
+        }
+
+        $source = filled($source) ? (string) $source : 'image';
 
         return pathinfo($source, PATHINFO_FILENAME);
+    }
+
+    private function originalNameFromUploadState(mixed $state): ?string
+    {
+        if (is_array($state)) {
+            $state = collect($state)->first();
+        }
+
+        if ($state instanceof TemporaryUploadedFile) {
+            return $state->getClientOriginalName();
+        }
+
+        return filled($state) ? basename((string) $state) : null;
     }
 
     private function uniqueFallbackSlug(?string $slug, string $ignorePath): ?string
@@ -468,6 +551,28 @@ class MediaLibrary extends Page
         }
 
         return $candidate;
+    }
+
+    private function shouldUseUploadedFilenameValue(mixed $currentValue, mixed $existingValue): bool
+    {
+        $currentValue = filled($currentValue) ? trim((string) $currentValue) : null;
+        $existingValue = filled($existingValue) ? trim((string) $existingValue) : null;
+
+        return $currentValue === null || ($existingValue !== null && $currentValue === $existingValue);
+    }
+
+    private function mergeAutoTagsIntoForm(Set $set, Get $get, ?string $title): void
+    {
+        $set('tags', MediaImageMetadata::mergeAutoTags($get('tags') ?? [], $title));
+    }
+
+    private function shouldShowMetadataFields(?string $visibleAfterUploadField, Get $get): bool
+    {
+        if ($visibleAfterUploadField === null) {
+            return true;
+        }
+
+        return filled($this->firstUploadedImagePath($get($visibleAfterUploadField)));
     }
 
     private function notifyMediaLibraryWorkflow(string $trigger, string $path): mixed
