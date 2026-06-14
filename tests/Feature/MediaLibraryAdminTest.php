@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
+use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\Announcement;
 use App\Models\MediaImageMetadata;
 use App\Models\Page;
@@ -177,7 +178,7 @@ class MediaLibraryAdminTest extends TestCase
             ->image('students.png', 800, 600)
             ->storeAs('pages/content-images', 'students.png', 'public');
 
-        Page::query()->create([
+        $page = Page::query()->create([
             'title' => 'Students',
             'slug' => 'students',
             'content_blocks' => [
@@ -197,7 +198,14 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame(1, $image['usage_count']);
         $this->assertSame('Page: Students', $image['usage'][0]['label']);
         $this->assertSame('Content image', $image['usage'][0]['detail']);
+        $this->assertSame(PageResource::getUrl('edit', ['record' => $page]), $image['usage'][0]['edit_url']);
         $this->assertSame('Pg: Students - Content image', $image['usage_summary']);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/admin/media-library')
+            ->assertOk()
+            ->assertSee('href="'.PageResource::getUrl('edit', ['record' => $page]).'"', false)
+            ->assertSee('Pg: Students | Content image', false);
     }
 
     public function test_media_library_can_delete_unused_image(): void

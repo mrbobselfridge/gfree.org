@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\Announcement;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
@@ -199,6 +200,7 @@ class MediaUsage
                             $definition['record_label'],
                             self::recordTitle($record, $titleField),
                             $definition['fields'][$field],
+                            self::recordEditUrl($record),
                         );
                     }
                 }
@@ -268,6 +270,7 @@ class MediaUsage
                         $definition['record_label'],
                         self::recordTitle($record, $titleField),
                         'Content image',
+                        self::recordEditUrl($record),
                     );
                 }
             });
@@ -389,15 +392,29 @@ class MediaUsage
     }
 
     /**
-     * @return array{label: string, detail: string}
+     * @return array{label: string, short_label: string, detail: string, edit_url?: string}
      */
-    private static function usageItem(string $recordLabel, string $recordTitle, string $fieldLabel): array
+    private static function usageItem(string $recordLabel, string $recordTitle, string $fieldLabel, ?string $editUrl = null): array
     {
-        return [
+        $item = [
             'label' => "{$recordLabel}: {$recordTitle}",
             'short_label' => self::shortRecordLabel($recordLabel).": {$recordTitle}",
             'detail' => $fieldLabel,
         ];
+
+        if ($editUrl) {
+            $item['edit_url'] = $editUrl;
+        }
+
+        return $item;
+    }
+
+    private static function recordEditUrl(Model $record): ?string
+    {
+        return match (true) {
+            $record instanceof Page => PageResource::getUrl('edit', ['record' => $record]),
+            default => null,
+        };
     }
 
     private static function shortRecordLabel(string $recordLabel): string

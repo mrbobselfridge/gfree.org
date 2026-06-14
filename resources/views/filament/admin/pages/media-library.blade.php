@@ -232,6 +232,19 @@
             white-space: nowrap;
         }
 
+        a.twyxtco-media-card__usage-line {
+            color: rgb(37 99 235);
+            text-decoration: none;
+        }
+
+        a.twyxtco-media-card__usage-line:hover {
+            text-decoration: underline;
+        }
+
+        .dark a.twyxtco-media-card__usage-line {
+            color: rgb(147 197 253);
+        }
+
         .twyxtco-media-card__actions {
             display: flex;
             flex-wrap: wrap;
@@ -362,7 +375,17 @@
                                             @php($fullUsageText = "{$usage['label']} | {$usage['detail']}")
                                             @php($shortUsageText = "{$usage['short_label']} | {$usage['detail']}")
                                             <li>
-                                                <span class="twyxtco-media-card__usage-line" title="{{ $fullUsageText }}">{{ str($shortUsageText)->limit(30) }}</span>
+                                                @if (filled($usage['edit_url'] ?? null))
+                                                    <a
+                                                        href="{{ $usage['edit_url'] }}"
+                                                        class="twyxtco-media-card__usage-line"
+                                                        title="{{ $fullUsageText }}"
+                                                    >
+                                                        {{ str($shortUsageText)->limit(30) }}
+                                                    </a>
+                                                @else
+                                                    <span class="twyxtco-media-card__usage-line" title="{{ $fullUsageText }}">{{ str($shortUsageText)->limit(30) }}</span>
+                                                @endif
                                             </li>
                                         @endforeach
                                     </ul>
