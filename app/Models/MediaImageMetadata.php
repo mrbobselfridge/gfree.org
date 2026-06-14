@@ -84,11 +84,13 @@ class MediaImageMetadata extends Model
         ],
         'worship' => [
             'worship',
+            'sanctuary',
             'music',
+            'praise',
             'spirit and truth',
             'night of worship',
         ],
-        'holiday and seasonal' => [
+        'holiday & seasonal' => [
             'easter',
             'christmas',
             'advent',
@@ -106,7 +108,7 @@ class MediaImageMetadata extends Model
             'summer',
             'spring',
         ],
-        'giving and offering' => [
+        'giving & offering' => [
             'giving',
             'give',
             'offering',
@@ -117,6 +119,14 @@ class MediaImageMetadata extends Model
             'prayer',
             'praying',
             'fasting',
+        ],
+        'building' => [
+            'building',
+            'sanctuary',
+            'hallway',
+            'entry',
+            'activity room',
+            'field',
         ],
         'event or service' => [
             'event',

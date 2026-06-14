@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Forms\RichContentPlugins\HtmlSourcePlugin;
+use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\Page;
 use App\Models\User;
 use App\Support\AdminAccess;
 use App\Support\CodeBlockAccess;
 use App\Support\LinkCard;
+use Filament\Forms\Components\RichEditor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,6 +25,53 @@ class CodeBlockAccessTest extends TestCase
             ->get('/admin/users/create')
             ->assertOk()
             ->assertSee('Code Blocks');
+    }
+
+    public function test_admins_can_see_rich_text_source_tool(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]));
+
+        $editor = RichEditorDefaults::configure(RichEditor::make('body'));
+
+        $this->assertRichEditorHasSourceTool($editor);
+    }
+
+    public function test_editor_with_code_blocks_access_can_see_rich_text_source_tool(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES, AdminAccess::CODE_BLOCKS],
+                'records' => [],
+            ],
+        ]));
+
+        $editor = RichEditorDefaults::configure(RichEditor::make('body'));
+
+        $this->assertRichEditorHasSourceTool($editor);
+    }
+
+    public function test_editor_without_code_blocks_access_cannot_see_rich_text_source_tool(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES],
+                'records' => [],
+            ],
+        ]));
+
+        $editor = RichEditorDefaults::configure(RichEditor::make('body'));
+        $plugins = (fn (): array => $this->plugins)->call($editor);
+        $toolbarButtons = (fn (): array => $this->toolbarButtons)->call($editor);
+
+        $this->assertEmpty(array_filter(
+            $plugins,
+            fn (object $plugin): bool => $plugin instanceof HtmlSourcePlugin,
+        ));
+        $this->assertNotContains(HtmlSourcePlugin::TOOL, collect($toolbarButtons)->flatten()->all());
     }
 
     public function test_editor_without_code_blocks_access_cannot_change_existing_code_block_data(): void
@@ -301,5 +351,20 @@ class CodeBlockAccessTest extends TestCase
             ->assertSee('Flip Image')
             ->assertSee('Flip HTML')
             ->assertSee('JavaScript widget');
+    }
+
+    private function assertRichEditorHasSourceTool(RichEditor $editor): void
+    {
+        $plugins = (fn (): array => $this->plugins)->call($editor);
+        $toolbarButtons = (fn (): array => $this->toolbarButtons)->call($editor);
+
+        $sourcePlugins = array_filter(
+            $plugins,
+            fn (object $plugin): bool => $plugin instanceof HtmlSourcePlugin,
+        );
+
+        $this->assertNotEmpty($sourcePlugins);
+        $this->assertContainsOnlyInstancesOf(HtmlSourcePlugin::class, $sourcePlugins);
+        $this->assertContains(HtmlSourcePlugin::TOOL, collect($toolbarButtons)->flatten()->all());
     }
 }

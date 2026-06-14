@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Forms\RichContentPlugins\AiContentRewritePlugin;
+use App\Filament\Admin\Forms\RichContentPlugins\HtmlSourcePlugin;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\SiteSetting;
+use App\Models\User;
+use App\Support\AdminAccess;
 use App\Support\OpenAiContentRewriter;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -74,6 +77,22 @@ class OpenAiContentRewriteTest extends TestCase
         $this->assertSame('aiRewrite', $plugin->getEditorActions()[0]->getName());
     }
 
+    public function test_html_source_plugin_provides_view_only_source_action(): void
+    {
+        $plugin = new HtmlSourcePlugin;
+        $action = $plugin->getEditorActions()[0];
+        $schema = (fn (): array => $this->schema)->call($action);
+
+        $this->assertSame(HtmlSourcePlugin::TOOL, $plugin->getEditorTools()[0]->getName());
+        $this->assertSame(HtmlSourcePlugin::TOOL, $action->getName());
+        $this->assertSame(['source_html' => '<p><strong>Hello</strong></p>'], HtmlSourcePlugin::formDataFromArguments([
+            'content' => '<p><strong>Hello</strong></p>',
+        ]));
+        $this->assertSame('source_html', $schema[0]->getName());
+        $this->assertTrue($schema[0]->isReadOnly());
+        $this->assertFalse($schema[0]->isDehydrated());
+    }
+
     public function test_rich_editor_defaults_can_disable_ai_rewrite_tool(): void
     {
         $editor = RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false);
@@ -102,6 +121,50 @@ class OpenAiContentRewriteTest extends TestCase
         $this->assertSame('Current Content', $fieldLabels['source_preview_html']);
         $this->assertSame('Current Content', $fieldLabels['source_compare_html']);
         $this->assertSame('Suggested Content Rewrite', $fieldLabels['suggested_html']);
+    }
+
+    public function test_ai_rewrite_suggestion_editor_includes_source_for_approved_users_only(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES, AdminAccess::CODE_BLOCKS],
+                'records' => [],
+            ],
+        ]));
+
+        $approvedAction = (new AiContentRewritePlugin)->getEditorActions()[0];
+        $approvedSuggestedEditor = $this->findComponentByName(
+            (fn (): array => $this->schema)->call($approvedAction),
+            'suggested_html',
+        );
+
+        $this->assertInstanceOf(RichEditor::class, $approvedSuggestedEditor);
+        $this->assertContains(
+            HtmlSourcePlugin::TOOL,
+            collect((fn (): array => $this->toolbarButtons)->call($approvedSuggestedEditor))->flatten()->all(),
+        );
+
+        auth()->logout();
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES],
+                'records' => [],
+            ],
+        ]));
+
+        $unapprovedAction = (new AiContentRewritePlugin)->getEditorActions()[0];
+        $unapprovedSuggestedEditor = $this->findComponentByName(
+            (fn (): array => $this->schema)->call($unapprovedAction),
+            'suggested_html',
+        );
+
+        $this->assertInstanceOf(RichEditor::class, $unapprovedSuggestedEditor);
+        $this->assertNotContains(
+            HtmlSourcePlugin::TOOL,
+            collect((fn (): array => $this->toolbarButtons)->call($unapprovedSuggestedEditor))->flatten()->all(),
+        );
     }
 
     public function test_ai_rewrite_accept_button_renders_valid_livewire_arguments(): void
@@ -191,5 +254,43 @@ class OpenAiContentRewriteTest extends TestCase
         }
 
         return $labels;
+    }
+
+    /**
+     * @param  array<int|string, mixed>  $components
+     */
+    private function findComponentByName(array $components, string $name): ?object
+    {
+        foreach ($components as $component) {
+            if (is_array($component)) {
+                $match = $this->findComponentByName($component, $name);
+
+                if ($match) {
+                    return $match;
+                }
+
+                continue;
+            }
+
+            if (! is_object($component) || $component instanceof \Closure) {
+                continue;
+            }
+
+            if (method_exists($component, 'getName') && $component->getName() === $name) {
+                return $component;
+            }
+
+            $children = (fn (): array => $this->childComponents ?? [])->call($component);
+
+            if ($children !== []) {
+                $match = $this->findComponentByName($children, $name);
+
+                if ($match) {
+                    return $match;
+                }
+            }
+        }
+
+        return null;
     }
 }

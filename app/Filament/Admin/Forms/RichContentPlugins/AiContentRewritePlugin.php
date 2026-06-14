@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms\RichContentPlugins;
 
+use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\SiteSetting;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiContentRewriter;
@@ -117,18 +118,20 @@ class AiContentRewritePlugin implements RichContentPlugin
                                 ->extraInputAttributes([
                                     'class' => 'twyxtco-ai-rewrite-comparison-editor',
                                 ]),
-                            RichEditor::make('suggested_html')
-                                ->label('Suggested Content Rewrite')
-                                ->helperText('Review and tweak this version, then choose Accept to place it into the original rich text box.')
-                                ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-suggestion-field'])
-                                ->toolbarButtons([
+                            RichEditorDefaults::configureSourceViewer(
+                                RichEditor::make('suggested_html')
+                                    ->label('Suggested Content Rewrite')
+                                    ->helperText('Review and tweak this version, then choose Accept to place it into the original rich text box.')
+                                    ->extraFieldWrapperAttributes(['class' => 'twyxtco-ai-rewrite-suggestion-field']),
+                                [
                                     ['bold', 'italic', 'underline', 'strike', 'link', 'clearFormatting'],
                                     ['h2', 'h3', 'h4', 'paragraph', 'lead', 'small'],
                                     ['alignStart', 'alignCenter', 'alignEnd'],
                                     ['blockquote', 'bulletList', 'orderedList'],
                                     ['table', 'horizontalRule'],
                                     ['undo', 'redo'],
-                                ])
+                                ],
+                            )
                                 ->extraInputAttributes([
                                     'class' => 'twyxtco-ai-rewrite-comparison-editor',
                                 ]),
