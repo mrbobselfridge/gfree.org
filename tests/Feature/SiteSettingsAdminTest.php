@@ -42,8 +42,9 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Can also be managed in the Ministries area.')
             ->assertSee('Leaders Settings')
             ->assertSee('Can also be managed in the Leaders area.')
-            ->assertSee('Sermons Settings')
-            ->assertSee('Can also be managed in the Sermons area.')
+            ->assertDontSee('Sermons Settings')
+            ->assertDontSee('Can also be managed in the Sermons area.')
+            ->assertDontSee('Sermons YouTube feed URL')
             ->assertSee('Bulletins Settings')
             ->assertSee('Can also be managed in the Bulletins area.')
             ->assertSee('Bulletins small label')
@@ -78,18 +79,6 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->shouldPersistCollapsed(),
             )
             ->assertSet('data.ai_bulletin_extraction_prompt', AiBulletinExtractionPrompt::DEFAULT);
-    }
-
-    public function test_site_settings_sermons_channel_url_fills_feed_url(): void
-    {
-        $settings = SiteSetting::query()->create([
-            'church_name' => 'TwyxtCo Church',
-        ]);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
-            ->set('data.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCSiteSettingsChannelId/videos')
-            ->assertSet('data.sermons_youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSiteSettingsChannelId');
     }
 
     public function test_site_settings_ai_content_prompt_can_be_saved(): void
@@ -162,8 +151,6 @@ class SiteSettingsAdminTest extends TestCase
             ->set('data.facebook_url', 'http://facebook.example/twyxtco')
             ->set('data.instagram_url', '/instagram')
             ->set('data.youtube_url', '/sermons')
-            ->set('data.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCSiteSettingsLocalUrlTest')
-            ->set('data.sermons_youtube_feed_url', '/sermons-feed')
             ->call('save')
             ->assertHasNoFormErrors();
 
@@ -175,8 +162,6 @@ class SiteSettingsAdminTest extends TestCase
             'facebook_url' => 'http://facebook.example/twyxtco',
             'instagram_url' => '/instagram',
             'youtube_url' => '/sermons',
-            'sermons_youtube_channel_url' => 'https://www.youtube.com/channel/UCSiteSettingsLocalUrlTest',
-            'sermons_youtube_feed_url' => '/sermons-feed',
         ]);
     }
 

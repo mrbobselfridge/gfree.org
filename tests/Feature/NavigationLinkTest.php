@@ -7,7 +7,6 @@ use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -284,12 +283,8 @@ class NavigationLinkTest extends TestCase
             ->assertDontSee('>Give</a>', false);
     }
 
-    public function test_sermons_header_navigation_is_not_limited_to_five_links(): void
+    public function test_header_navigation_is_not_limited_to_five_links(): void
     {
-        Http::fake([
-            'youtube.com/feeds/videos.xml*' => Http::response('', 500),
-        ]);
-
         foreach (range(1, 6) as $index) {
             NavigationLink::query()->create([
                 'label' => "Header Link {$index}",
@@ -300,7 +295,7 @@ class NavigationLinkTest extends TestCase
             ]);
         }
 
-        $this->get('/sermons')
+        $this->get('/')
             ->assertOk()
             ->assertSee('Header Link 1')
             ->assertSee('Header Link 5')

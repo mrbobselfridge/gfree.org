@@ -44,7 +44,6 @@ class AdminDashboardWidgetsTest extends TestCase
 
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
-            'sermons_youtube_channel_url' => 'https://www.youtube.com/@twyxtcosermons9521',
         ]);
 
         NavigationLink::query()->create([
@@ -151,7 +150,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('twyxtco-dashboard-widget-count--success', false)
             ->assertSee('1 high priority item')
             ->assertSee('4 review items')
-            ->assertSee('2 good items')
+            ->assertSee('1 good item')
             ->assertSee('/admin/site-settings/1/edit" class="twyxtco-dashboard-widget-row-status" wire:navigate', false)
             ->assertSee('Backups')
             ->assertSee('data-twyxtco-dashboard-widget="backup-status-widget"', false)

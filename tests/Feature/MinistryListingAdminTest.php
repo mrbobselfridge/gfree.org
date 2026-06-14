@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Pages\Sermons as SermonsPage;
 use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
 use App\Filament\Admin\Resources\Bulletins\Pages\ListBulletins;
 use App\Filament\Admin\Resources\Ministries\Pages\ListMinistries;
@@ -10,7 +9,6 @@ use App\Filament\Admin\Resources\StaffMembers\Pages\ListStaffMembers;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -165,75 +163,10 @@ class MinistryListingAdminTest extends TestCase
         ]);
     }
 
-    public function test_sermons_landing_page_settings_have_a_dedicated_admin_page(): void
+    public function test_sermons_admin_page_is_removed(): void
     {
         $this->actingAs(User::factory()->create())
             ->get('/admin/sermons')
-            ->assertOk()
-            ->assertSee('Sermons Landing Page Content')
-            ->assertSee('Sermons small label')
-            ->assertSee('Sermons title')
-            ->assertSee('Sermons subtitle')
-            ->assertSee('Sermons text')
-            ->assertSee('View on YouTube text')
-            ->assertSee('Sermons YouTube feed URL')
-            ->assertSee('Sermons YouTube channel URL')
-            ->assertSee('Sermons image')
-            ->assertSee('Save Landing Page Settings');
-    }
-
-    public function test_sermons_landing_page_settings_can_be_saved(): void
-    {
-        $user = User::factory()->create();
-
-        Livewire::actingAs($user)
-            ->test(SermonsPage::class)
-            ->set('listingSettingsData.sermons_small_label', 'Messages')
-            ->set('listingSettingsData.sermons_title', 'Latest sermons')
-            ->set('listingSettingsData.sermons_subtitle', '<p>Messages for real life.</p>')
-            ->set('listingSettingsData.sermons_text', '<p>Catch up on Sunday teaching.</p>')
-            ->set('listingSettingsData.sermons_youtube_link_label', 'Open the sermon channel')
-            ->set('listingSettingsData.sermons_youtube_feed_url', 'https://example.com/sermons.xml')
-            ->set('listingSettingsData.sermons_youtube_channel_url', 'https://www.youtube.com/@customsermons/videos')
-            ->call('saveListingSettings')
-            ->assertHasNoErrors();
-
-        $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'TwyxtCo Church',
-            'sermons_small_label' => 'Messages',
-            'sermons_title' => 'Latest sermons',
-            'sermons_subtitle' => '<p>Messages for real life.</p>',
-            'sermons_text' => '<p>Catch up on Sunday teaching.</p>',
-            'sermons_youtube_link_label' => 'Open the sermon channel',
-            'sermons_youtube_feed_url' => 'https://example.com/sermons.xml',
-            'sermons_youtube_channel_url' => 'https://www.youtube.com/@customsermons/videos',
-        ]);
-    }
-
-    public function test_sermons_channel_url_with_channel_id_fills_feed_url(): void
-    {
-        $user = User::factory()->create();
-
-        Livewire::actingAs($user)
-            ->test(SermonsPage::class)
-            ->set('listingSettingsData.sermons_youtube_channel_url', 'https://www.youtube.com/channel/UCDirectChannelId/videos')
-            ->assertSet('listingSettingsData.sermons_youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCDirectChannelId');
-    }
-
-    public function test_sermons_channel_handle_fills_feed_url_when_youtube_page_has_channel_id(): void
-    {
-        Http::fake([
-            'https://www.youtube.com/@customsermons/videos' => Http::response(
-                '<html><head><meta itemprop="channelId" content="UCResolvedChannelId"></head></html>',
-                200,
-            ),
-        ]);
-
-        $user = User::factory()->create();
-
-        Livewire::actingAs($user)
-            ->test(SermonsPage::class)
-            ->set('listingSettingsData.sermons_youtube_channel_url', 'https://www.youtube.com/@customsermons/videos')
-            ->assertSet('listingSettingsData.sermons_youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCResolvedChannelId');
+            ->assertNotFound();
     }
 }

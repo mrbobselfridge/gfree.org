@@ -37,6 +37,24 @@ class PublicPageTest extends TestCase
             ->assertDontSee('<p class="concept-eyebrow">TwyxtCo Church</p>', false);
     }
 
+    public function test_sermons_slug_can_be_used_by_a_normal_page(): void
+    {
+        Page::query()->create([
+            'title' => 'Messages',
+            'slug' => 'sermons',
+            'intro' => 'Current teaching and message links.',
+            'body' => 'This is a normal page now.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/sermons')
+            ->assertOk()
+            ->assertSee('Messages')
+            ->assertSee('Current teaching and message links.')
+            ->assertSee('This is a normal page now.')
+            ->assertDontSee('Sermons are currently available on YouTube.');
+    }
+
     public function test_published_pages_are_available_by_nested_slug_path(): void
     {
         Page::query()->create([

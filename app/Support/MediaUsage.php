@@ -124,7 +124,6 @@ class MediaUsage
                     'announcements_image_path' => 'Announcements landing image',
                     'leadership_image_path' => 'Leadership landing image',
                     'ministry_image_path' => 'Ministries landing image',
-                    'sermons_image_path' => 'Sermons landing image',
                     'bulletins_image_path' => 'Bulletins landing image',
                 ],
             ],

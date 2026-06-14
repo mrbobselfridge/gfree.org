@@ -9,8 +9,7 @@ Recommended top-level navigation:
 1. New Here
 2. About
 3. Ministries
-4. Sermons
-5. Connect
+4. Connect
 
 Keep Give out of the hard-coded/default navigation. Manage it manually as a normal navigation link when needed.
 
@@ -75,30 +74,6 @@ Suggested route structure:
 - `/ministry/groups`
 - `/ministry/outreach`
 
-### Sermons
-
-Purpose: give people a simple way to watch recent teaching.
-
-Current build supports:
-
-- `/sermons`
-- Latest YouTube RSS video grid
-- Configurable feed URL
-- Configurable YouTube/channel URL
-- Configurable hero small label, title, subtitle, text, image, and button label through Site Settings
-
-Current RSS limitation:
-
-- The YouTube RSS feed works well for recent/latest videos.
-- It does not support a full archive, true pagination, popular sorting, or oldest-first sorting.
-- The current practical limit is 12 recent videos.
-
-Future upgrade path:
-
-- Add local Sermon records in Filament for a full archive.
-- Store YouTube URL, title, date, speaker, series, scripture, description, and thumbnail.
-- Optionally use RSS/API import later to prefill sermon records.
-
 ### Connect
 
 Purpose: combine practical next steps, connection form, and current-week bulletin content.
@@ -133,7 +108,7 @@ Suggested bulletin fields:
 - Optional PDF upload
 - Optional service order
 - Optional announcements list
-- Optional sermon notes or scripture
+- Optional notes or scripture
 
 Future admin model idea:
 
@@ -149,10 +124,9 @@ Recommended homepage order:
 2. Sunday service information
 3. New Here / Plan a Visit CTA
 4. Ministries preview
-5. Latest sermons preview
-6. Announcements preview
-7. Connect / bulletin CTA
-8. Location and footer
+5. Announcements preview
+6. Connect / bulletin CTA
+7. Location and footer
 
 Current build already supports:
 
@@ -200,7 +174,6 @@ Current or recommended:
 - Announcements
 - Ministries
 - Leadership
-- Sermons
 - Future bulletins
 
 ## Admin Content Map
@@ -217,8 +190,7 @@ Use for global and listing-page settings:
 - Livestream URL
 - One Church URL
 - Giving URL
-- Listing hero settings for Announcements, Ministries, Leadership, Sermons
-- Sermons feed/channel settings
+- Listing hero settings for Announcements, Ministries, Leadership, and Bulletins
 
 ### Homepage Banners
 
@@ -295,12 +267,10 @@ Use for all public header links:
 
 ## Recommended Build Priority
 
-1. Finish Sermons page polish and navigation entry.
-2. Add Connect page.
-3. Add connection form handling.
-4. Add bulletin content management.
-5. Add latest sermon preview block to homepage if desired.
-6. Add local sermon archive only if RSS becomes too limiting.
+1. Add Connect page.
+2. Add connection form handling.
+3. Add bulletin content management.
+4. Refine homepage content blocks around guest and next-step paths.
 
 ## Suggested URL Map
 
@@ -310,7 +280,6 @@ Use for all public header links:
 - `/leadership`
 - `/ministry`
 - `/ministry/{slug}`
-- `/sermons`
 - `/connect`
 - `/announcements`
 - `/announcements/{slug}`

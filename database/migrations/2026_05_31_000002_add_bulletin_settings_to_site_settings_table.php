@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('site_settings', function (Blueprint $table) {
-            $table->string('bulletins_small_label')->nullable()->after('sermons_image_path');
+            $table->string('bulletins_small_label')->nullable()->after('ministry_image_path');
             $table->string('bulletins_title')->nullable()->after('bulletins_small_label');
             $table->text('bulletins_subtitle')->nullable()->after('bulletins_title');
             $table->string('bulletins_image_path')->nullable()->after('bulletins_subtitle');

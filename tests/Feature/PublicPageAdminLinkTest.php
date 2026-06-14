@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\HomepageContent;
-use App\Filament\Admin\Pages\Sermons as SermonsPage;
 use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
@@ -115,14 +114,6 @@ class PublicPageAdminLinkTest extends TestCase
             ->assertDontSee('View Public Page')
             ->assertDontSee('View public page')
             ->assertFormComponentActionHasUrl('listing-settings-actions', 'viewPublicListingPage', route('announcements.index'), formName: 'listingSettingsForm')
-            ->assertFormComponentActionShouldOpenUrlInNewTab('listing-settings-actions', 'viewPublicListingPage', formName: 'listingSettingsForm');
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(SermonsPage::class)
-            ->assertSee('View')
-            ->assertDontSee('View Public Page')
-            ->assertDontSee('View public page')
-            ->assertFormComponentActionHasUrl('listing-settings-actions', 'viewPublicListingPage', route('sermons.index'), formName: 'listingSettingsForm')
             ->assertFormComponentActionShouldOpenUrlInNewTab('listing-settings-actions', 'viewPublicListingPage', formName: 'listingSettingsForm');
     }
 

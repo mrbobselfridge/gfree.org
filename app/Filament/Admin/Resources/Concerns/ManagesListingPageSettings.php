@@ -185,7 +185,6 @@ trait ManagesListingPageSettings
             'bulletins' => route('bulletins.index'),
             'leadership' => route('leadership.index'),
             'ministry' => route('ministries.index'),
-            'sermons' => route('sermons.index'),
             default => null,
         };
     }

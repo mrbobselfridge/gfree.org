@@ -8,13 +8,11 @@ use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiBulletinExtractionPrompt;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiSiteSettings;
-use App\Support\YoutubeFeedUrl;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 
@@ -28,7 +26,6 @@ class SiteSettingForm
         'site-settings-announcements-settings',
         'site-settings-ministries-settings',
         'site-settings-leaders-settings',
-        'site-settings-sermons-settings',
         'site-settings-bulletins-settings',
     ];
 
@@ -189,42 +186,6 @@ class SiteSettingForm
                         RichEditorDefaults::configure(RichEditor::make('leadership_subtitle'))
                             ->label('Leadership subtitle'),
                         ImageUpload::make('leadership_image_path', 'site-settings/leadership', 'Leadership Image'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                self::section('Sermons Settings', 'site-settings-sermons-settings')
-                    ->description('Can also be managed in the Sermons area.')
-                    ->schema([
-                        TextInput::make('sermons_small_label')
-                            ->label('Sermons small label')
-                            ->maxLength(255),
-                        TextInput::make('sermons_title')
-                            ->label('Sermons title')
-                            ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('sermons_subtitle'))
-                            ->label('Sermons subtitle'),
-                        RichEditorDefaults::configure(RichEditor::make('sermons_text'))
-                            ->label('Sermons text'),
-                        TextInput::make('sermons_youtube_channel_url')
-                            ->label('Sermons YouTube channel URL')
-                            ->helperText('Optional. Used for the View on YouTube link when the feed source changes. The RSS feed URL is filled automatically when a channel ID can be found.')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (Set $set, ?string $state): void {
-                                $feedUrl = YoutubeFeedUrl::fromChannelUrl($state);
-
-                                if ($feedUrl) {
-                                    $set('sermons_youtube_feed_url', $feedUrl);
-                                }
-                            }),
-                        TextInput::make('sermons_youtube_feed_url')
-                            ->label('Sermons YouTube feed URL')
-                            ->helperText('Optional. Paste a YouTube RSS feed URL to replace the default sermon channel feed.')
-                            ->rules([new HttpOrRelativeUrl]),
-                        TextInput::make('sermons_youtube_link_label')
-                            ->label('View on YouTube text')
-                            ->maxLength(255),
-                        ImageUpload::make('sermons_image_path', 'site-settings/sermons', 'Sermons image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

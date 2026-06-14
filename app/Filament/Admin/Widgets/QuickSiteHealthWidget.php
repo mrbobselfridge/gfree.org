@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
-use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Models\NavigationLink;
@@ -77,7 +76,6 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         $rows = [
             ...$this->siteSettingsRows(),
             ...$this->navigationRows(),
-            ...$this->sermonRows(),
             ...$this->mediaRows(),
         ];
 
@@ -175,7 +173,6 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
             'announcements' => $settings->announcements_image_path,
             'ministries' => $settings->ministry_image_path,
             'leaders' => $settings->leadership_image_path,
-            'sermons' => $settings->sermons_image_path,
             'bulletins' => $settings->bulletins_image_path,
         ])
             ->filter(fn (?string $value): bool => blank($value))
@@ -211,28 +208,6 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         return [
             $this->row('Navigation Links', 'Header navigation', 'No active header navigation links are currently available.', $this->resourceUrl(NavigationLinkResource::class), 'Missing', 'danger'),
-        ];
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function sermonRows(): array
-    {
-        if (! $this->canAccessTool(AdminAccess::SERMONS)) {
-            return [];
-        }
-
-        $settings = SiteSetting::query()->first();
-
-        if ($settings && (filled($settings->sermons_youtube_channel_url) || filled($settings->sermons_youtube_feed_url))) {
-            return [
-                $this->row('Sermons', 'Sermons YouTube source', 'A YouTube channel or feed URL is configured.', Sermons::getUrl(), 'Good', 'success'),
-            ];
-        }
-
-        return [
-            $this->row('Sermons', 'Sermons YouTube source', 'No sermon YouTube channel or RSS feed URL is configured.', Sermons::getUrl(), 'Review', 'warning'),
         ];
     }
 

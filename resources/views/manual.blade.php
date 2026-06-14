@@ -663,7 +663,6 @@
                 <li><a href="#ministries">Ministries</a></li>
                 <li><a href="#pages">Pages</a></li>
                 <li><a href="#leaders">Leaders</a></li>
-                <li><a href="#sermons">Sermons</a></li>
                 <li><a href="#navigation">Navigation Links</a></li>
                 <li><a href="#settings">Site Settings</a></li>
                 <li><a href="#analytics">Analytics</a></li>
@@ -970,7 +969,7 @@
             <ul>
                 <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
                 <li>Do not change a public path casually. Old links may stop working.</li>
-                <li>Avoid paths already used by system routes such as announcements, bulletins, leadership, ministry, sermons, admin, or manual.</li>
+                <li>Avoid paths already used by system routes such as announcements, bulletins, leadership, ministry, admin, or manual.</li>
                 <li>Use the generate icon to regenerate the path from the title when needed.</li>
             </ul>
             <h3>Parent Pages and Child Pages</h3>
@@ -1008,17 +1007,6 @@
             </div>
         </section>
 
-        <section class="manual-section" id="sermons">
-            <h2>Sermons</h2>
-            <p>Sermons manages the public sermons landing page and YouTube feed settings.</p>
-            <ul>
-                <li>Update the sermons title, subtitle, intro text, image, and YouTube link label.</li>
-                <li>Paste a YouTube channel URL when the system can derive the RSS feed automatically.</li>
-                <li>Use a custom YouTube RSS feed URL only when needed.</li>
-                <li>Open the public sermons page after saving to confirm videos load.</li>
-            </ul>
-        </section>
-
         <section class="manual-section" id="navigation">
             <h2>Navigation Links</h2>
             <p>Navigation Links control the public header navigation and dropdown structure.</p>
@@ -1051,7 +1039,6 @@
                 <li>One Church URL fallback.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
                 <li>OpenAI API key and default AI model settings used by rewrite, bulletin extraction, page review, and file extraction tools when enabled.</li>
-                <li>Sermons page defaults and YouTube feed settings.</li>
                 <li>Google Tag Manager and Google Analytics tracking IDs.</li>
             </ul>
             <div class="manual-note">

@@ -21,7 +21,6 @@ class PageSlugs
         'livewire',
         'manual',
         'ministry',
-        'sermons',
         'storage',
         'up',
     ];

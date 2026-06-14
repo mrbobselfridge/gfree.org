@@ -6,7 +6,6 @@ use App\Filament\Admin\Pages\Analytics;
 use App\Filament\Admin\Pages\Backups;
 use App\Filament\Admin\Pages\HomepageContent;
 use App\Filament\Admin\Pages\MediaLibrary;
-use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
@@ -54,8 +53,6 @@ class AdminAccess
     public const PAGES = 'pages';
 
     public const LEADERS = 'leaders';
-
-    public const SERMONS = 'sermons';
 
     public const CODE_BLOCKS = 'code_blocks';
 
@@ -118,11 +115,6 @@ class AdminAccess
                 'group' => 'Content',
                 'model' => StaffMember::class,
                 'resource' => StaffMemberResource::class,
-            ],
-            self::SERMONS => [
-                'label' => 'Sermons',
-                'group' => 'Content',
-                'page' => Sermons::class,
             ],
             self::CODE_BLOCKS => [
                 'label' => 'Code Blocks',

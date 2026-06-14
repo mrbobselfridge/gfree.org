@@ -11,7 +11,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadershipController;
 use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\SermonController;
 use App\Models\SiteSetting;
 use App\Support\PageSlugs;
 use Illuminate\Support\Facades\Route;
@@ -58,8 +57,6 @@ Route::get('/leadership/{slug}', [LeadershipController::class, 'show'])->name('l
 
 Route::get('/ministry', [MinistryController::class, 'index'])->name('ministries.index');
 Route::get('/ministry/{slug}', [MinistryController::class, 'show'])->name('ministries.show');
-
-Route::get('/sermons', SermonController::class)->name('sermons.index');
 
 Route::get('/manual', function () {
     return view('manual', [

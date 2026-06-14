@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
-use App\Filament\Admin\Pages\Sermons;
 use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
 use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
@@ -365,7 +364,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_image_path', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_image_path', $settings, MinistryResource::getUrl()),
             $this->landingCheck('Leaders Landing Page', AdminAccess::LEADERS, 'leadership_image_path', $settings, StaffMemberResource::getUrl()),
-            $this->landingCheck('Sermons Landing Page', AdminAccess::SERMONS, 'sermons_image_path', $settings, Sermons::getUrl()),
         ]);
     }
 
@@ -379,7 +377,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_small_label', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_small_label', $settings, MinistryResource::getUrl()),
             $this->landingCheck('Leaders Landing Page', AdminAccess::LEADERS, 'leadership_small_label', $settings, StaffMemberResource::getUrl()),
-            $this->landingCheck('Sermons Landing Page', AdminAccess::SERMONS, 'sermons_small_label', $settings, Sermons::getUrl()),
         ]);
     }
 
@@ -393,7 +390,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_subtitle', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_subtitle', $settings, MinistryResource::getUrl()),
             $this->landingCheck('Leaders Landing Page', AdminAccess::LEADERS, 'leadership_subtitle', $settings, StaffMemberResource::getUrl()),
-            $this->landingCheck('Sermons Landing Page', AdminAccess::SERMONS, 'sermons_subtitle', $settings, Sermons::getUrl()),
         ]);
     }
 
