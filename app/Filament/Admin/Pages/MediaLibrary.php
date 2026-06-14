@@ -131,6 +131,7 @@ class MediaLibrary extends Page
                     path: $path,
                     data: $data,
                     fallbackTitle: $this->titleFromUploadedFilename($data['image_original_name'] ?? null, $path),
+                    fallbackSlug: $this->slugFromUploadedFilename($data['image_original_name'] ?? null, $path),
                 );
                 $this->notifyMediaLibraryWorkflow(
                     trigger: WorkflowNotificationRule::TRIGGER_CREATED,
@@ -172,6 +173,7 @@ class MediaLibrary extends Page
                             newPath: $newPath,
                             data: $data,
                             fallbackTitle: $this->titleFromUploadedFilename($data['replacement_image_original_name'] ?? null, $newPath),
+                            fallbackSlug: $this->slugFromUploadedFilename($data['replacement_image_original_name'] ?? null, $newPath),
                         );
 
                         Notification::make()
@@ -265,7 +267,7 @@ class MediaLibrary extends Page
                 ->nestedRecursiveRules(['max:80']),
             TextInput::make('slug')
                 ->label('Optional Slug / Path')
-                ->helperText('Optional. Use lowercase words separated by dashes. Slashes are allowed for grouped paths.')
+                ->helperText('Optional. Leave blank to use the uploaded filename. Slashes are allowed for grouped paths.')
                 ->maxLength(255)
                 ->dehydrateStateUsing(fn (?string $state): ?string => MediaImageMetadata::normalizeSlug($state)),
         ];
@@ -313,20 +315,41 @@ class MediaLibrary extends Page
         return str(Str::ulid().'-'.$slug.'.'.$extension)->lower()->toString();
     }
 
-    private function saveImageMetadata(string $path, array $data, ?string $ignorePath = null, ?string $fallbackTitle = null): void
+    private function saveImageMetadata(
+        string $path,
+        array $data,
+        ?string $ignorePath = null,
+        ?string $fallbackTitle = null,
+        ?string $fallbackSlug = null,
+    ): void
     {
         MediaImageMetadata::query()->updateOrCreate(
             ['path' => $path],
-            $this->normalizedImageMetadataData($data, $ignorePath ?? $path, $fallbackTitle),
+            $this->normalizedImageMetadataData(
+                data: $data,
+                ignorePath: $ignorePath ?? $path,
+                fallbackTitle: $fallbackTitle,
+                fallbackSlug: $fallbackSlug,
+            ),
         );
     }
 
     /**
      * @return array{title: ?string, slug: ?string, tags: array<int, string>}
      */
-    private function normalizedImageMetadataData(array $data, string $ignorePath, ?string $fallbackTitle = null, ?string $replaceTitle = null): array
+    private function normalizedImageMetadataData(
+        array $data,
+        string $ignorePath,
+        ?string $fallbackTitle = null,
+        ?string $fallbackSlug = null,
+        ?string $replaceTitle = null,
+        ?string $replaceSlug = null,
+    ): array
     {
-        $slug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
+        $submittedSlug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
+        $slug = ($submittedSlug === null || ($replaceSlug !== null && $submittedSlug === $replaceSlug))
+            ? $this->uniqueFallbackSlug($fallbackSlug, $ignorePath)
+            : $submittedSlug;
         $submittedTitle = filled($data['title'] ?? null) ? trim((string) $data['title']) : null;
         $title = ($submittedTitle === null || ($replaceTitle !== null && $submittedTitle === $replaceTitle))
             ? $fallbackTitle
@@ -359,10 +382,23 @@ class MediaLibrary extends Page
         return filled($path) ? (string) $path : null;
     }
 
-    private function replaceStoredImage(string $oldPath, string $newPath, array $data, ?string $fallbackTitle = null): int
+    private function replaceStoredImage(
+        string $oldPath,
+        string $newPath,
+        array $data,
+        ?string $fallbackTitle = null,
+        ?string $fallbackSlug = null,
+    ): int
     {
-        $existingTitle = MediaImageMetadata::query()->where('path', $oldPath)->value('title');
-        $metadata = $this->normalizedImageMetadataData($data, $oldPath, $fallbackTitle, $existingTitle);
+        $existingMetadata = MediaImageMetadata::query()->firstWhere('path', $oldPath);
+        $metadata = $this->normalizedImageMetadataData(
+            data: $data,
+            ignorePath: $oldPath,
+            fallbackTitle: $fallbackTitle,
+            fallbackSlug: $fallbackSlug,
+            replaceTitle: $existingMetadata?->title,
+            replaceSlug: $existingMetadata?->slug,
+        );
         $updated = MediaUsage::replaceImagePath($oldPath, $newPath);
 
         MediaImageMetadata::query()
@@ -386,11 +422,7 @@ class MediaLibrary extends Page
 
     private function titleFromUploadedFilename(mixed $originalName, string $path): ?string
     {
-        $source = is_array($originalName) ? collect($originalName)->first() : $originalName;
-        $source = filled($source) ? (string) $source : basename($path);
-        $name = pathinfo($source, PATHINFO_FILENAME);
-
-        $title = str($name)
+        $title = str($this->uploadedFilenameStem($originalName, $path))
             ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
             ->replaceMatches('/[\s_.-]+/', ' ')
             ->trim()
@@ -398,6 +430,44 @@ class MediaLibrary extends Page
             ->toString();
 
         return filled($title) ? $title : null;
+    }
+
+    private function slugFromUploadedFilename(mixed $originalName, string $path): ?string
+    {
+        $stem = str($this->uploadedFilenameStem($originalName, $path))
+            ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
+            ->toString();
+
+        return MediaImageMetadata::normalizeSlug($stem);
+    }
+
+    private function uploadedFilenameStem(mixed $originalName, string $path): string
+    {
+        $source = is_array($originalName) ? collect($originalName)->first() : $originalName;
+        $source = filled($source) ? (string) $source : basename($path);
+
+        return pathinfo($source, PATHINFO_FILENAME);
+    }
+
+    private function uniqueFallbackSlug(?string $slug, string $ignorePath): ?string
+    {
+        if (blank($slug)) {
+            return null;
+        }
+
+        $baseSlug = $slug;
+        $candidate = $baseSlug;
+        $suffix = 2;
+
+        while (MediaImageMetadata::query()
+            ->where('slug', $candidate)
+            ->where('path', '!=', $ignorePath)
+            ->exists()) {
+            $candidate = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        return $candidate;
     }
 
     private function notifyMediaLibraryWorkflow(string $trigger, string $path): mixed

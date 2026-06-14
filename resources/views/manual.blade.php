@@ -889,7 +889,7 @@
             <ul>
                 <li>Upload image and Edit image include image details, so title, slug, tags, and an optional replacement can be managed together.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
-                <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location.</li>
+                <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, and new tags can be added from the field.</li>
                 <li>When the last image using a tag is deleted or changed, that tag no longer appears as an option.</li>
             </ul>

@@ -363,7 +363,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertNotNull($metadata);
         $this->assertStringStartsWith('media-library/', $metadata->path);
         $this->assertSame('Updated Hero Photo', $metadata->title);
-        $this->assertSame('old-hero', $metadata->slug);
+        $this->assertSame('updated-hero-photo', $metadata->slug);
         $this->assertSame(['Hero'], $metadata->tags);
     }
 
@@ -399,7 +399,6 @@ class MediaLibraryAdminTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
             ->callAction('uploadImages', [
-                'slug' => 'gallery/student hero',
                 'tags' => ['Students'],
                 'image' => UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600),
                 'image_original_name' => 'student_ministry-hero.JPG',
@@ -412,9 +411,38 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertDatabaseHas(MediaImageMetadata::class, [
             'path' => $path,
             'title' => 'Student Ministry Hero',
-            'slug' => 'gallery/student-hero',
+            'slug' => 'student-ministry-hero',
         ]);
         $this->assertSame(['Students'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
+    }
+
+    public function test_media_library_makes_filename_default_slug_unique(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('existing.jpg', 800, 600)
+            ->storeAs('media-library', 'existing.jpg', 'public');
+
+        MediaImageMetadata::query()->create([
+            'path' => 'media-library/existing.jpg',
+            'title' => 'Existing',
+            'slug' => 'student-ministry-hero',
+            'tags' => [],
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('uploadImages', [
+                'image' => UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600),
+                'image_original_name' => 'student_ministry-hero.JPG',
+            ])
+            ->assertHasNoActionErrors();
+
+        $this->assertDatabaseHas(MediaImageMetadata::class, [
+            'title' => 'Student Ministry Hero',
+            'slug' => 'student-ministry-hero-2',
+        ]);
     }
 
     public function test_media_library_can_search_filename_path_and_usage(): void
