@@ -484,7 +484,7 @@ class ContentBlockBuilder
 
         return [
             Block::make('related_content')
-                ->label(fn (?array $state): string => self::blockLabel('Child Cards', $state))
+                ->label(fn (?array $state): string => self::blockLabel('Parent->Child Cards', $state))
                 ->schema([
                     ToggleButtons::make('is_visible')
                         ->label('Show child cards')
@@ -565,7 +565,7 @@ class ContentBlockBuilder
                 ])
                 ->columns(2),
             Block::make('youtube_feed')
-                ->label(fn (?array $state): string => self::blockLabel('YouTube Feed', $state))
+                ->label(fn (?array $state): string => self::blockLabel('YouTube Feed Listing', $state))
                 ->schema([
                     TextInput::make('youtube_channel_url')
                         ->label('YouTube Channel URL')
