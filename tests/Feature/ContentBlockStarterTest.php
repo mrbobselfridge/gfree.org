@@ -21,7 +21,9 @@ class ContentBlockStarterTest extends TestCase
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreatePage::class)
-            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks));
+            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
+            ->assertSee('YouTube Feed')
+            ->assertSee('Child Cards');
     }
 
     public function test_create_announcements_start_with_a_text_content_block(): void
@@ -30,21 +32,27 @@ class ContentBlockStarterTest extends TestCase
             ->test(CreateAnnouncement::class)
             ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
             ->assertSee('Small label')
-            ->assertSee('Content width');
+            ->assertSee('Content width')
+            ->assertDontSee('YouTube Feed')
+            ->assertDontSee('Child Cards');
     }
 
     public function test_create_ministries_start_with_a_text_content_block(): void
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreateMinistry::class)
-            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks));
+            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
+            ->assertDontSee('YouTube Feed')
+            ->assertDontSee('Child Cards');
     }
 
     public function test_create_leaders_start_with_a_text_content_block(): void
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreateStaffMember::class)
-            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks));
+            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
+            ->assertDontSee('YouTube Feed')
+            ->assertDontSee('Child Cards');
     }
 
     public function test_edit_pages_without_content_blocks_do_not_get_new_starter_blocks(): void
@@ -59,6 +67,23 @@ class ContentBlockStarterTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditPage::class, ['record' => $page->getKey()])
             ->assertSet('data.content_blocks', []);
+    }
+
+    public function test_page_youtube_feed_block_channel_url_fills_feed_url(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.content_blocks', [
+                [
+                    'type' => 'youtube_feed',
+                    'data' => [
+                        'youtube_channel_url' => null,
+                        'youtube_feed_url' => null,
+                    ],
+                ],
+            ])
+            ->set('data.content_blocks.0.data.youtube_channel_url', 'https://www.youtube.com/channel/UCPageBlockChannelId/videos')
+            ->assertSet('data.content_blocks.0.data.youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCPageBlockChannelId');
     }
 
     private function hasOneStarterTextBlock(array $blocks): bool

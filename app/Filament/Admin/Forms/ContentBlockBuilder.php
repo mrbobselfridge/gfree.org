@@ -3,9 +3,11 @@
 namespace App\Filament\Admin\Forms;
 
 use App\Models\FileDocument;
+use App\Rules\HttpOrRelativeUrl;
 use App\Support\CodeBlockAccess;
 use App\Support\ContentBlocks;
 use App\Support\LinkCard;
+use App\Support\YoutubeFeedUrl;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
@@ -34,6 +36,7 @@ class ContentBlockBuilder
         string $label = 'Page Content',
         bool $withStarterTextBlock = false,
         bool $withScheduleFields = false,
+        bool $withPageBlocks = false,
     ): Builder {
         $builder = Builder::make($field);
 
@@ -399,87 +402,7 @@ class ContentBlockBuilder
                     ])
                     ->columns(2)
                     ->maxItems(1),
-                Block::make('related_content')
-                    ->label(fn (?array $state): string => self::blockLabel('Child Cards', $state))
-                    ->schema([
-                        ToggleButtons::make('is_visible')
-                            ->label('Show child cards')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->columnSpanFull(),
-                        Select::make('background')
-                            ->options(self::backgroundOptions())
-                            ->default('white')
-                            ->required(),
-                        TextInput::make('heading')
-                            ->live(onBlur: true)
-                            ->default('Child Cards')
-                            ->maxLength(255)
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
-                                $current = trim((string) $get('listing_slug'));
-
-                                if ($current === '' || $current === Str::slug($old)) {
-                                    $set('listing_slug', Str::slug($state));
-                                }
-                            }),
-                        TextInput::make('intro')
-                            ->label('Intro')
-                            ->maxLength(255),
-                        ToggleButtons::make('content_type')
-                            ->label('Show')
-                            ->options([
-                                ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'All Pages',
-                                ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'All Files',
-                                ContentBlocks::RELATED_CONTENT_TYPE_BOTH => 'Both',
-                            ])
-                            ->inline()
-                            ->default(ContentBlocks::RELATED_CONTENT_TYPE_BOTH)
-                            ->required()
-                            ->live(),
-                        ToggleButtons::make('display_mode')
-                            ->label('Mode')
-                            ->options([
-                                ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
-                                ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
-                                ContentBlocks::RELATED_CONTENT_MODE_NEWEST => 'Newest live',
-                            ])
-                            ->inline()
-                            ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
-                            ->required(),
-                        Select::make('file_categories')
-                            ->label('File categories')
-                            ->options(fn (): array => FileDocument::categoryOptions())
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
-                            ->helperText('Leave empty to include all file categories.')
-                            ->visible(fn (Get $get): bool => in_array($get('content_type'), [
-                                ContentBlocks::RELATED_CONTENT_TYPE_BOTH,
-                                ContentBlocks::RELATED_CONTENT_TYPE_FILES,
-                            ], true)),
-                        TextInput::make('item_limit')
-                            ->label('Items shown')
-                            ->numeric()
-                            ->minValue(1)
-                            ->maxValue(50)
-                            ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT)
-                            ->required(),
-                        TextInput::make('link_label')
-                            ->label('View more label')
-                            ->default('View more')
-                            ->maxLength(80),
-                        TextInput::make('listing_slug')
-                            ->label('Listing URL path')
-                            ->helperText('Used for the generated View More page path. Leave as-is unless you need to preserve an existing link.')
-                            ->prefix('parent-page/')
-                            ->rule('alpha_dash')
-                            ->maxLength(80)
-                            ->dehydrateStateUsing(fn (?string $state, Get $get): string => Str::slug($state ?: $get('heading') ?: 'child-cards')),
-                        ...self::scheduleFields($withScheduleFields),
-                    ])
-                    ->columns(2),
+                ...self::pageOnlyBlocks($withPageBlocks, $withScheduleFields),
             ])
             ->addActionLabel('Add content block')
             ->cloneable()
@@ -544,6 +467,130 @@ class ContentBlockBuilder
                     'content_width' => 'medium',
                 ],
             ],
+        ];
+    }
+
+    private static function pageOnlyBlocks(bool $withPageBlocks, bool $withScheduleFields): array
+    {
+        if (! $withPageBlocks) {
+            return [];
+        }
+
+        return [
+            Block::make('related_content')
+                ->label(fn (?array $state): string => self::blockLabel('Child Cards', $state))
+                ->schema([
+                    ToggleButtons::make('is_visible')
+                        ->label('Show child cards')
+                        ->boolean()
+                        ->inline()
+                        ->default(true)
+                        ->required()
+                        ->columnSpanFull(),
+                    Select::make('background')
+                        ->options(self::backgroundOptions())
+                        ->default('white')
+                        ->required(),
+                    TextInput::make('heading')
+                        ->live(onBlur: true)
+                        ->default('Child Cards')
+                        ->maxLength(255)
+                        ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
+                            $current = trim((string) $get('listing_slug'));
+
+                            if ($current === '' || $current === Str::slug($old)) {
+                                $set('listing_slug', Str::slug($state));
+                            }
+                        }),
+                    TextInput::make('intro')
+                        ->label('Intro')
+                        ->maxLength(255),
+                    ToggleButtons::make('content_type')
+                        ->label('Show')
+                        ->options([
+                            ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'All Pages',
+                            ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'All Files',
+                            ContentBlocks::RELATED_CONTENT_TYPE_BOTH => 'Both',
+                        ])
+                        ->inline()
+                        ->default(ContentBlocks::RELATED_CONTENT_TYPE_BOTH)
+                        ->required()
+                        ->live(),
+                    ToggleButtons::make('display_mode')
+                        ->label('Mode')
+                        ->options([
+                            ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
+                            ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
+                            ContentBlocks::RELATED_CONTENT_MODE_NEWEST => 'Newest live',
+                        ])
+                        ->inline()
+                        ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
+                        ->required(),
+                    Select::make('file_categories')
+                        ->label('File categories')
+                        ->options(fn (): array => FileDocument::categoryOptions())
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->helperText('Leave empty to include all file categories.')
+                        ->visible(fn (Get $get): bool => in_array($get('content_type'), [
+                            ContentBlocks::RELATED_CONTENT_TYPE_BOTH,
+                            ContentBlocks::RELATED_CONTENT_TYPE_FILES,
+                        ], true)),
+                    TextInput::make('item_limit')
+                        ->label('Items shown')
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(50)
+                        ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT)
+                        ->required(),
+                    TextInput::make('link_label')
+                        ->label('View more label')
+                        ->default('View more')
+                        ->maxLength(80),
+                    TextInput::make('listing_slug')
+                        ->label('Listing URL path')
+                        ->helperText('Used for the generated View More page path. Leave as-is unless you need to preserve an existing link.')
+                        ->prefix('parent-page/')
+                        ->rule('alpha_dash')
+                        ->maxLength(80)
+                        ->dehydrateStateUsing(fn (?string $state, Get $get): string => Str::slug($state ?: $get('heading') ?: 'child-cards')),
+                    ...self::scheduleFields($withScheduleFields),
+                ])
+                ->columns(2),
+            Block::make('youtube_feed')
+                ->label(fn (?array $state): string => self::blockLabel('YouTube Feed', $state))
+                ->schema([
+                    TextInput::make('youtube_channel_url')
+                        ->label('YouTube Channel URL')
+                        ->helperText('Paste the public YouTube channel URL. The RSS feed URL is filled automatically when a channel ID can be found.')
+                        ->rules([new HttpOrRelativeUrl])
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function (Set $set, ?string $state): void {
+                            $feedUrl = YoutubeFeedUrl::fromChannelUrl($state);
+
+                            if ($feedUrl) {
+                                $set('youtube_feed_url', $feedUrl);
+                            }
+                        }),
+                    TextInput::make('youtube_feed_url')
+                        ->label('YouTube RSS feed URL')
+                        ->helperText('Optional. Paste a YouTube RSS feed URL when the channel URL cannot be resolved automatically.')
+                        ->rules([new HttpOrRelativeUrl]),
+                    TextInput::make('youtube_link_label')
+                        ->label('View on YouTube text')
+                        ->default('View more on YouTube')
+                        ->maxLength(255),
+                    TextInput::make('item_limit')
+                        ->label('Items shown')
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(50)
+                        ->default(ContentBlocks::YOUTUBE_FEED_DEFAULT_LIMIT)
+                        ->required(),
+                    ...self::scheduleFields($withScheduleFields),
+                ])
+                ->columns(2),
         ];
     }
 

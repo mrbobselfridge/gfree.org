@@ -336,7 +336,7 @@ class PageForm
                         'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
                     ])
                     ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true)
+                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true, withPageBlocks: true)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Add and reorder the visible content sections for this page.'

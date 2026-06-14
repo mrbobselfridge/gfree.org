@@ -28,6 +28,8 @@ class ContentBlocks
 
     public const RELATED_CONTENT_DEFAULT_LIMIT = 6;
 
+    public const YOUTUBE_FEED_DEFAULT_LIMIT = 12;
+
     public const DEFAULT_PAGE_CARD_IMAGE_PATH = 'images/page-card-default.svg';
 
     public static function prepare(?array $blocks, ?SiteSetting $settings = null, ?Collection $updates = null, ?Page $page = null): array
@@ -58,6 +60,10 @@ class ContentBlocks
                     $data = self::prepareRelatedContentBlock($page, $data);
                 }
 
+                if ($type === 'youtube_feed') {
+                    $data = self::prepareYoutubeFeedBlock($data);
+                }
+
                 return [
                     'type' => $type,
                     'data' => $data,
@@ -70,6 +76,7 @@ class ContentBlocks
             ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || filled($block['data']['updates'] ?? []))
             ->filter(fn (array $block): bool => $block['type'] !== 'related_content' || (bool) ($block['data']['is_visible'] ?? true))
             ->filter(fn (array $block): bool => $block['type'] !== 'related_content' || filled($block['data']['items'] ?? []))
+            ->filter(fn (array $block): bool => $block['type'] !== 'youtube_feed' || filled($block['data']['videos'] ?? []) || filled($block['data']['channel_url'] ?? null))
             ->values()
             ->all();
     }
@@ -309,6 +316,43 @@ class ContentBlocks
         return min(50, max(1, (int) ($data['item_limit'] ?? self::RELATED_CONTENT_DEFAULT_LIMIT)));
     }
 
+    private static function prepareYoutubeFeedBlock(array $data): array
+    {
+        $channelUrl = self::youtubeVideosUrl($data['youtube_channel_url'] ?? null);
+        $feedUrl = filled($data['youtube_feed_url'] ?? null)
+            ? trim((string) $data['youtube_feed_url'])
+            : null;
+        $limit = self::youtubeFeedLimit($data);
+
+        $data['channel_url'] = $channelUrl;
+        $data['youtube_feed_url'] = $feedUrl;
+        $data['youtube_link_label'] = filled($data['youtube_link_label'] ?? null)
+            ? (string) $data['youtube_link_label']
+            : 'View more on YouTube';
+        $data['item_limit'] = $limit;
+        $data['videos'] = filled($feedUrl)
+            ? app(YoutubeSermonFeed::class)->latest(limit: $limit, feedUrl: $feedUrl)
+            : [];
+
+        return $data;
+    }
+
+    private static function youtubeFeedLimit(array $data): int
+    {
+        return min(50, max(1, (int) ($data['item_limit'] ?? self::YOUTUBE_FEED_DEFAULT_LIMIT)));
+    }
+
+    private static function youtubeVideosUrl(mixed $channelUrl): ?string
+    {
+        if (blank($channelUrl)) {
+            return null;
+        }
+
+        $channelUrl = rtrim((string) $channelUrl, '/');
+
+        return str_ends_with($channelUrl, '/videos') ? $channelUrl : "{$channelUrl}/videos";
+    }
+
     private static function relatedContentTypeOptions(): array
     {
         return [
@@ -412,7 +456,7 @@ class ContentBlocks
             'link_cards' => filled($data['cards'] ?? []),
             'embed' => self::hasText($data['heading'] ?? null) || filled($data['embed_code'] ?? null),
             'code' => filled($data['code'] ?? null),
-            'info_strip', 'announcements_bar', 'related_content' => true,
+            'info_strip', 'announcements_bar', 'related_content', 'youtube_feed' => true,
             default => true,
         };
     }

@@ -9,6 +9,8 @@ use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PublicPageTest extends TestCase
@@ -1005,6 +1007,108 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Second Child');
     }
 
+    public function test_youtube_feed_block_renders_recent_videos_on_public_pages(): void
+    {
+        $feedUrl = 'https://example.com/page-youtube-feed.xml';
+
+        Cache::forget($this->youtubeCacheKey($feedUrl, 12));
+
+        Http::fake([
+            $feedUrl => Http::response($this->youtubeFeed(), 200, [
+                'Content-Type' => 'application/xml',
+            ]),
+        ]);
+
+        Page::query()->create([
+            'title' => 'Messages',
+            'slug' => 'messages',
+            'content_blocks' => [
+                [
+                    'type' => 'youtube_feed',
+                    'data' => [
+                        'youtube_channel_url' => 'https://www.youtube.com/@gfreesermons9521',
+                        'youtube_feed_url' => $feedUrl,
+                        'youtube_link_label' => 'View more on YouTube',
+                        'item_limit' => 12,
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/messages')
+            ->assertOk()
+            ->assertSee('sermon-index', false)
+            ->assertSee('sermon-grid', false)
+            ->assertSee('Latest Teaching Video')
+            ->assertSee('https://i2.ytimg.com/vi/pagevideo123/hqdefault.jpg')
+            ->assertSee('https://www.youtube.com/watch?v=pagevideo123')
+            ->assertSee('Jun 2, 2026')
+            ->assertSee('A page block video description.')
+            ->assertSee('https://www.youtube.com/@gfreesermons9521/videos')
+            ->assertSee('View more on YouTube')
+            ->assertDontSee('Videos are currently available on YouTube.');
+    }
+
+    public function test_youtube_feed_block_falls_back_to_channel_link_when_feed_fails(): void
+    {
+        $feedUrl = 'https://example.com/page-youtube-feed-failing.xml';
+
+        Cache::forget($this->youtubeCacheKey($feedUrl, 12));
+
+        Http::fake([
+            $feedUrl => Http::response('', 500),
+        ]);
+
+        Page::query()->create([
+            'title' => 'Messages',
+            'slug' => 'messages',
+            'content_blocks' => [
+                [
+                    'type' => 'youtube_feed',
+                    'data' => [
+                        'youtube_channel_url' => 'https://www.youtube.com/@gfreesermons9521',
+                        'youtube_feed_url' => $feedUrl,
+                        'youtube_link_label' => 'Watch more on YouTube',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/messages')
+            ->assertOk()
+            ->assertSee('Videos are currently available on YouTube.')
+            ->assertSee('https://www.youtube.com/@gfreesermons9521/videos')
+            ->assertSee('Watch more on YouTube')
+            ->assertDontSee('sermon-grid', false);
+    }
+
+    public function test_youtube_feed_block_does_not_render_without_a_source(): void
+    {
+        Page::query()->create([
+            'title' => 'Messages',
+            'slug' => 'messages',
+            'body' => 'Messages page body.',
+            'content_blocks' => [
+                [
+                    'type' => 'youtube_feed',
+                    'data' => [
+                        'youtube_link_label' => 'View more on YouTube',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/messages')
+            ->assertOk()
+            ->assertSee('Messages page body.')
+            ->assertDontSee('sermon-index', false)
+            ->assertDontSee('View more on YouTube')
+            ->assertDontSee('Videos are currently available on YouTube.');
+    }
+
     public function test_embed_blocks_render_raw_provider_code_on_public_pages(): void
     {
         $embedCode = '<div class="ocs-embed" data-ocs-bg="#ffffff" data-ocs-tenant="twyxtco" data-ocs-embed="events/calendar" data-ocs-calendars="1,17,16,2,7,10,6,5"></div>'
@@ -1077,6 +1181,32 @@ class PublicPageTest extends TestCase
 
             $previousPosition = $position;
         }
+    }
+
+    private function youtubeFeed(): string
+    {
+        return <<<'XML'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+            <entry>
+                <id>yt:video:pagevideo123</id>
+                <yt:videoId>pagevideo123</yt:videoId>
+                <title>Latest Teaching Video</title>
+                <link rel="alternate" href="https://www.youtube.com/watch?v=pagevideo123"/>
+                <published>2026-06-02T12:00:00+00:00</published>
+                <media:group>
+                    <media:title>Latest Teaching Video</media:title>
+                    <media:thumbnail url="https://i2.ytimg.com/vi/pagevideo123/hqdefault.jpg" width="480" height="360"/>
+                    <media:description>A page block video description.</media:description>
+                </media:group>
+            </entry>
+        </feed>
+        XML;
+    }
+
+    private function youtubeCacheKey(string $feedUrl, int $limit): string
+    {
+        return 'youtube-sermons-feed-v3-'.sha1($feedUrl)."-{$limit}";
     }
 
     private function createLiveFileDocument(
