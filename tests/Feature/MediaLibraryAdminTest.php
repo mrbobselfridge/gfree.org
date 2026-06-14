@@ -277,6 +277,9 @@ class MediaLibraryAdminTest extends TestCase
             ->test(MediaLibraryPage::class)
             ->callAction('replaceImage', [
                 'replacement_image' => UploadedFile::fake()->image('new.jpg', 800, 600),
+                'title' => 'Updated Hero',
+                'slug' => 'resources/updated hero',
+                'tags' => ['Hero', 'Updated Hero'],
             ], [
                 'path' => 'announcements/old.jpg',
             ])
@@ -309,6 +312,9 @@ class MediaLibraryAdminTest extends TestCase
             ->test(MediaLibraryPage::class)
             ->callAction('replaceImage', [
                 'replacement_image' => UploadedFile::fake()->image('new.jpg', 800, 600),
+                'title' => 'Updated Hero',
+                'slug' => 'resources/updated hero',
+                'tags' => ['Hero', 'Updated Hero'],
             ], [
                 'path' => 'announcements/old.jpg',
             ])
@@ -318,9 +324,9 @@ class MediaLibraryAdminTest extends TestCase
 
         $this->assertNotNull($metadata);
         $this->assertStringStartsWith('media-library/', $metadata->path);
-        $this->assertSame('Old Hero', $metadata->title);
-        $this->assertSame('old-hero', $metadata->slug);
-        $this->assertSame(['Hero'], $metadata->tags);
+        $this->assertSame('Updated Hero', $metadata->title);
+        $this->assertSame('resources/updated-hero', $metadata->slug);
+        $this->assertSame(['Hero', 'Updated Hero'], $metadata->tags);
         $this->assertDatabaseMissing(MediaImageMetadata::class, [
             'path' => 'announcements/old.jpg',
         ]);
@@ -333,13 +339,22 @@ class MediaLibraryAdminTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
             ->callAction('uploadImages', [
-                'images' => [
-                    UploadedFile::fake()->image('new-upload.jpg', 800, 600),
-                ],
+                'title' => 'New Upload',
+                'slug' => 'gallery/new upload',
+                'tags' => ['Gallery', 'Feature'],
+                'image' => UploadedFile::fake()->image('new-upload.jpg', 800, 600),
             ])
             ->assertHasNoActionErrors();
 
-        $this->assertCount(1, Storage::disk('public')->files('media-library'));
+        $path = Storage::disk('public')->files('media-library')[0] ?? null;
+
+        $this->assertNotNull($path);
+        $this->assertDatabaseHas(MediaImageMetadata::class, [
+            'path' => $path,
+            'title' => 'New Upload',
+            'slug' => 'gallery/new-upload',
+        ]);
+        $this->assertSame(['Gallery', 'Feature'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
     }
 
     public function test_media_library_can_search_filename_path_and_usage(): void

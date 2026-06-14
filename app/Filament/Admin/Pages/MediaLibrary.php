@@ -115,18 +115,29 @@ class MediaLibrary extends Page
     protected function uploadImagesAction(): Action
     {
         return Action::make('uploadImages')
-            ->label('Upload new')
+            ->label('Upload image')
             ->color('success')
-            ->modalHeading('Upload images')
-            ->modalSubmitActionLabel('Upload')
+            ->modalHeading('Upload image')
+            ->modalSubmitActionLabel('Upload image')
             ->schema([
-                $this->imageUploadField('images', 'Images', multiple: true),
+                ...$this->imageMetadataFields(),
+                $this->imageUploadField('image', 'Image'),
             ])
             ->action(function (array $data): void {
-                $count = $this->recordCreatedImages($data['images'] ?? []);
+                $path = $this->firstUploadedImagePath($data['image'] ?? null);
+
+                if (blank($path)) {
+                    return;
+                }
+
+                $this->saveImageMetadata($path, $data);
+                $this->notifyMediaLibraryWorkflow(
+                    trigger: WorkflowNotificationRule::TRIGGER_CREATED,
+                    path: $path,
+                );
 
                 Notification::make()
-                    ->title($count === 1 ? 'Image uploaded' : "{$count} images uploaded")
+                    ->title('Image uploaded')
                     ->success()
                     ->send();
             });
@@ -140,7 +151,9 @@ class MediaLibrary extends Page
                 ->modalHeading('Replace image')
                 ->modalDescription('Upload a replacement image. Every tracked place using the selected image will be updated to the new image.')
                 ->modalSubmitActionLabel('Replace image')
+                ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
                 ->schema([
+                    ...$this->imageMetadataFields(),
                     $this->imageUploadField('replacement_image', 'Replacement image'),
                 ])
                 ->action(function (array $arguments, array $data): void {
@@ -151,7 +164,7 @@ class MediaLibrary extends Page
                         return;
                     }
 
-                    $updated = $this->replaceStoredImage($oldPath, $newPath);
+                    $updated = $this->replaceStoredImage($oldPath, $newPath, $data);
 
                     Notification::make()
                         ->title('Image replaced')
@@ -171,23 +184,7 @@ class MediaLibrary extends Page
                 ->modalHeading('Edit image details')
                 ->modalSubmitActionLabel('Save details')
                 ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
-                ->schema([
-                    TextInput::make('title')
-                        ->label('Title')
-                        ->maxLength(255),
-                    TextInput::make('slug')
-                        ->label('Optional Slug / Path')
-                        ->helperText('Optional. Use lowercase words separated by dashes. Slashes are allowed for grouped paths.')
-                        ->maxLength(255)
-                        ->dehydrateStateUsing(fn (?string $state): ?string => MediaImageMetadata::normalizeSlug($state)),
-                    TagsInput::make('tags')
-                        ->label('Tags')
-                        ->placeholder('Add tag')
-                        ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
-                        ->splitKeys(['Tab', ','])
-                        ->reorderable()
-                        ->nestedRecursiveRules(['max:80']),
-                ])
+                ->schema($this->imageMetadataFields())
                 ->action(function (array $arguments, array $data): void {
                     $path = (string) ($arguments['path'] ?? '');
 
@@ -195,27 +192,7 @@ class MediaLibrary extends Page
                         return;
                     }
 
-                    $slug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
-
-                    validator(
-                        ['slug' => $slug],
-                        [
-                            'slug' => [
-                                'nullable',
-                                'max:255',
-                                Rule::unique('media_image_metadata', 'slug')->ignore($path, 'path'),
-                            ],
-                        ],
-                    )->validate();
-
-                    MediaImageMetadata::query()->updateOrCreate(
-                        ['path' => $path],
-                        [
-                            'title' => filled($data['title'] ?? null) ? trim((string) $data['title']) : null,
-                            'slug' => $slug,
-                            'tags' => MediaImageMetadata::normalizeTags($data['tags'] ?? []),
-                        ],
-                    );
+                    $this->saveImageMetadata($path, $data);
 
                     app(WorkflowNotificationService::class)->automatic(
                         area: AdminAccess::MEDIA_LIBRARY,
@@ -282,31 +259,71 @@ class MediaLibrary extends Page
         ];
     }
 
-    private function imageUploadField(string $name, string $label, bool $multiple = false): FileUpload
+    /**
+     * @return array<int, TextInput|TagsInput>
+     */
+    private function imageMetadataFields(): array
     {
-        $field = FileUpload::make($name)
+        return [
+            TextInput::make('title')
+                ->label('Title')
+                ->maxLength(255),
+            TagsInput::make('tags')
+                ->label('Tags')
+                ->placeholder('Add tag')
+                ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
+                ->splitKeys(['Tab', ','])
+                ->reorderable()
+                ->nestedRecursiveRules(['max:80']),
+            TextInput::make('slug')
+                ->label('Optional Slug / Path')
+                ->helperText('Optional. Use lowercase words separated by dashes. Slashes are allowed for grouped paths.')
+                ->maxLength(255)
+                ->dehydrateStateUsing(fn (?string $state): ?string => MediaImageMetadata::normalizeSlug($state)),
+        ];
+    }
+
+    private function imageUploadField(string $name, string $label): FileUpload
+    {
+        return FileUpload::make($name)
             ->label($label)
             ->image()
             ->disk('public')
             ->directory(self::IMAGE_DIRECTORY)
             ->required();
-
-        return $multiple ? $field->multiple() : $field;
     }
 
-    private function recordCreatedImages(mixed $paths): int
+    private function saveImageMetadata(string $path, array $data, ?string $ignorePath = null): void
     {
-        $paths = collect(is_array($paths) ? $paths : [$paths])
-            ->map(fn (mixed $path): string => (string) $path)
-            ->filter()
-            ->values();
+        MediaImageMetadata::query()->updateOrCreate(
+            ['path' => $path],
+            $this->normalizedImageMetadataData($data, $ignorePath ?? $path),
+        );
+    }
 
-        $paths->each(fn (string $path): mixed => $this->notifyMediaLibraryWorkflow(
-            trigger: WorkflowNotificationRule::TRIGGER_CREATED,
-            path: $path,
-        ));
+    /**
+     * @return array{title: ?string, slug: ?string, tags: array<int, string>}
+     */
+    private function normalizedImageMetadataData(array $data, string $ignorePath): array
+    {
+        $slug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
 
-        return $paths->count();
+        validator(
+            ['slug' => $slug],
+            [
+                'slug' => [
+                    'nullable',
+                    'max:255',
+                    Rule::unique('media_image_metadata', 'slug')->ignore($ignorePath, 'path'),
+                ],
+            ],
+        )->validate();
+
+        return [
+            'title' => filled($data['title'] ?? null) ? trim((string) $data['title']) : null,
+            'slug' => $slug,
+            'tags' => MediaImageMetadata::normalizeTags($data['tags'] ?? []),
+        ];
     }
 
     private function firstUploadedImagePath(mixed $path): ?string
@@ -318,13 +335,19 @@ class MediaLibrary extends Page
         return filled($path) ? (string) $path : null;
     }
 
-    private function replaceStoredImage(string $oldPath, string $newPath): int
+    private function replaceStoredImage(string $oldPath, string $newPath, array $data): int
     {
+        $metadata = $this->normalizedImageMetadataData($data, $oldPath);
         $updated = MediaUsage::replaceImagePath($oldPath, $newPath);
 
         MediaImageMetadata::query()
             ->where('path', $oldPath)
             ->update(['path' => $newPath]);
+
+        MediaImageMetadata::query()->updateOrCreate(
+            ['path' => $newPath],
+            $metadata,
+        );
 
         Storage::disk('public')->delete($oldPath);
 

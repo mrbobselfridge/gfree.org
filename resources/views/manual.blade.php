@@ -879,7 +879,7 @@
             <p>The Media Library is the shared library area for reusable images used across pages, announcements, ministries, leaders, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
             <h3>Common Tasks</h3>
             <ul>
-                <li>Upload images for pages, announcements, ministries, leaders, and banners.</li>
+                <li>Upload one image at a time for pages, announcements, ministries, leaders, and banners.</li>
                 <li>Use image search and sorting to find files by path, filename, size, dimensions, or usage.</li>
                 <li>Replace an image when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
@@ -887,6 +887,7 @@
             </ul>
             <h3>Image Details</h3>
             <ul>
+                <li>Upload and replace forms include image details, so title, slug, and tags can be set while choosing the file.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, and new tags can be added from the field.</li>
