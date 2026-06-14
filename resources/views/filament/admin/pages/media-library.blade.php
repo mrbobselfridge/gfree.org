@@ -199,6 +199,32 @@
             line-height: inherit;
         }
 
+        .twyxtco-media-card__tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: 0.35rem;
+        }
+
+        .twyxtco-media-card__tag {
+            display: inline-flex;
+            max-width: 100%;
+            overflow: hidden;
+            border: 1px solid rgb(229 231 235);
+            border-radius: 999px;
+            padding: 0.0625rem 0.375rem;
+            color: rgb(75 85 99);
+            font-size: 0.625rem;
+            font-weight: 650;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dark .twyxtco-media-card__tag {
+            border-color: rgb(55 65 81);
+            color: rgb(209 213 219);
+        }
+
         .twyxtco-media-card__usage-line {
             display: block;
             overflow: hidden;
@@ -313,6 +339,13 @@
                         </a>
 
                         <div class="twyxtco-media-card__body">
+                            <span class="twyxtco-media-card__title" title="{{ $image['display_title'] }}">{{ $image['display_title'] }}</span>
+                            <span class="twyxtco-media-card__path" title="{{ $image['path'] }}">{{ $image['path'] }}</span>
+
+                            @if (filled($image['slug']))
+                                <span class="twyxtco-media-card__meta" title="{{ $image['slug'] }}">/{{ $image['slug'] }}</span>
+                            @endif
+
                             <dl class="twyxtco-media-card__stats">
                                 <div>
                                     <dd>{{ $image['size_for_humans'] }}</dd>
@@ -346,6 +379,14 @@
                                 @endif
                             </div>
 
+                            @if (filled($image['tags']))
+                                <div class="twyxtco-media-card__tags" aria-label="Tags">
+                                    @foreach ($image['tags'] as $tag)
+                                        <span class="twyxtco-media-card__tag" title="{{ $tag }}">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
                             <div class="twyxtco-media-card__actions">
                                 <a
                                     href="{{ $image['url'] }}"
@@ -376,6 +417,17 @@
                                 >
                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 8V5.5A1.5 1.5 0 0 1 9.5 4h8A1.5 1.5 0 0 1 19 5.5v8A1.5 1.5 0 0 1 17.5 15H15M6.5 9h8A1.5 1.5 0 0 1 16 10.5v8a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 18.5v-8A1.5 1.5 0 0 1 6.5 9Z" />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    wire:click="{{ $this->editImageMetadataClickHandler($image['path']) }}"
+                                    title="Edit details"
+                                    aria-label="Edit details"
+                                >
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.6 4.5h4.8a1.5 1.5 0 0 1 1.06.44l4.1 4.1a1.5 1.5 0 0 1 0 2.12l-8.4 8.4a1.5 1.5 0 0 1-2.12 0l-4.1-4.1a1.5 1.5 0 0 1-.44-1.06V9.6a1.5 1.5 0 0 1 .44-1.06l3.6-3.6A1.5 1.5 0 0 1 9.6 4.5Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 9.75h.01" />
                                     </svg>
                                 </button>
                                 <button

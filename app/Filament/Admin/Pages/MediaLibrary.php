@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Models\MediaImageMetadata;
 use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
 use App\Support\MediaLibrary as MediaLibrarySupport;
@@ -13,11 +14,14 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class MediaLibrary extends Page
 {
@@ -89,6 +93,11 @@ class MediaLibrary extends Page
     public function replaceImageClickHandler(string $path): ?string
     {
         return $this->replaceImageAction()(['path' => $path])->getLivewireClickHandler();
+    }
+
+    public function editImageMetadataClickHandler(string $path): ?string
+    {
+        return $this->editImageMetadataAction()(['path' => $path])->getLivewireClickHandler();
     }
 
     public function deleteImageClickHandler(string $path): ?string
@@ -163,6 +172,9 @@ class MediaLibrary extends Page
                     }
 
                     $updated = MediaUsage::replaceImagePath($oldPath, (string) $newPath);
+                    MediaImageMetadata::query()
+                        ->where('path', $oldPath)
+                        ->update(['path' => (string) $newPath]);
                     Storage::disk('public')->delete($oldPath);
 
                     app(WorkflowNotificationService::class)->automatic(
@@ -180,6 +192,77 @@ class MediaLibrary extends Page
                         ->send();
                 }),
             Heroicon::OutlinedPencilSquare,
+        );
+    }
+
+    protected function editImageMetadataAction(): Action
+    {
+        return IconOnlyAction::make(
+            Action::make('editImageMetadata')
+                ->label('Edit details')
+                ->modalHeading('Edit image details')
+                ->modalSubmitActionLabel('Save details')
+                ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
+                ->schema([
+                    TextInput::make('title')
+                        ->label('Title')
+                        ->maxLength(255),
+                    TextInput::make('slug')
+                        ->label('Optional Slug / Path')
+                        ->helperText('Optional. Use lowercase words separated by dashes. Slashes are allowed for grouped paths.')
+                        ->maxLength(255)
+                        ->dehydrateStateUsing(fn (?string $state): ?string => MediaImageMetadata::normalizeSlug($state)),
+                    TagsInput::make('tags')
+                        ->label('Tags')
+                        ->placeholder('Add tag')
+                        ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
+                        ->splitKeys(['Tab', ','])
+                        ->reorderable()
+                        ->nestedRecursiveRules(['max:80']),
+                ])
+                ->action(function (array $arguments, array $data): void {
+                    $path = (string) ($arguments['path'] ?? '');
+
+                    if (blank($path)) {
+                        return;
+                    }
+
+                    $slug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
+
+                    validator(
+                        ['slug' => $slug],
+                        [
+                            'slug' => [
+                                'nullable',
+                                'max:255',
+                                Rule::unique('media_image_metadata', 'slug')->ignore($path, 'path'),
+                            ],
+                        ],
+                    )->validate();
+
+                    MediaImageMetadata::query()->updateOrCreate(
+                        ['path' => $path],
+                        [
+                            'title' => filled($data['title'] ?? null) ? trim((string) $data['title']) : null,
+                            'slug' => $slug,
+                            'tags' => MediaImageMetadata::normalizeTags($data['tags'] ?? []),
+                        ],
+                    );
+
+                    app(WorkflowNotificationService::class)->automatic(
+                        area: AdminAccess::MEDIA_LIBRARY,
+                        trigger: WorkflowNotificationRule::TRIGGER_UPDATED,
+                        recordKey: 'media-library:'.$path,
+                        recordLabel: basename($path),
+                        adminUrl: static::getUrl(),
+                    );
+
+                    Notification::make()
+                        ->title('Image details saved')
+                        ->success()
+                        ->send();
+                }),
+            Heroicon::OutlinedTag,
         );
     }
 
@@ -201,6 +284,7 @@ class MediaLibrary extends Page
                     }
 
                     Storage::disk('public')->delete($path);
+                    MediaImageMetadata::query()->where('path', $path)->delete();
 
                     app(WorkflowNotificationService::class)->automatic(
                         area: AdminAccess::MEDIA_LIBRARY,
@@ -217,6 +301,17 @@ class MediaLibrary extends Page
                 }),
             Heroicon::OutlinedTrash,
         );
+    }
+
+    private function imageMetadataFormData(string $path): array
+    {
+        $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
+
+        return [
+            'title' => $metadata?->title,
+            'slug' => $metadata?->slug,
+            'tags' => $metadata?->tags ?? [],
+        ];
     }
 
     private function deleteImageDescription(string $path): string
@@ -238,6 +333,9 @@ class MediaLibrary extends Page
     {
         return collect([
             $image['name'] ?? null,
+            $image['title'] ?? null,
+            $image['slug'] ?? null,
+            ...($image['tags'] ?? []),
             $image['path'] ?? null,
             $image['directory'] ?? null,
             $image['usage_summary'] ?? null,

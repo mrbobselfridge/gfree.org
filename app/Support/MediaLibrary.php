@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\MediaImageMetadata;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
@@ -15,16 +16,25 @@ class MediaLibrary
     public static function images(): Collection
     {
         $disk = Storage::disk('public');
+        $metadata = MediaImageMetadata::query()
+            ->get()
+            ->keyBy('path');
 
         $images = collect($disk->allFiles())
             ->filter(fn (string $path): bool => self::isImage($path))
-            ->map(function (string $path) use ($disk): array {
+            ->map(function (string $path) use ($disk, $metadata): array {
                 $absolutePath = method_exists($disk, 'path') ? $disk->path($path) : null;
                 $dimensions = self::dimensions($absolutePath);
+                /** @var MediaImageMetadata|null $imageMetadata */
+                $imageMetadata = $metadata->get($path);
 
                 return [
                     'path' => $path,
                     'name' => basename($path),
+                    'title' => $imageMetadata?->title,
+                    'display_title' => $imageMetadata?->title ?: basename($path),
+                    'slug' => $imageMetadata?->slug,
+                    'tags' => $imageMetadata?->tags ?? [],
                     'directory' => dirname($path) === '.' ? '' : dirname($path),
                     'url' => $disk->url($path),
                     'download_url' => route('admin.media-images.download', ['path' => $path]),
@@ -52,6 +62,27 @@ class MediaLibrary
             });
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public static function tagOptions(): array
+    {
+        $existingPaths = self::images()->pluck('path')->all();
+
+        if ($existingPaths === []) {
+            return [];
+        }
+
+        return MediaImageMetadata::query()
+            ->whereIn('path', $existingPaths)
+            ->pluck('tags')
+            ->flatMap(fn (?array $tags): array => MediaImageMetadata::normalizeTags($tags ?? []))
+            ->unique(fn (string $tag): string => Str::of($tag)->lower()->toString())
+            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
+            ->mapWithKeys(fn (string $tag): array => [$tag => $tag])
+            ->all();
+    }
+
     public static function imageOptions(): array
     {
         return self::images()
@@ -73,10 +104,11 @@ class MediaLibrary
 
     private static function optionLabel(array $image): string
     {
-        $name = e($image['name']);
+        $name = e($image['display_title'] ?: $image['name']);
         $path = e($image['path']);
         $url = e($image['url']);
-        $meta = collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])
+        $tags = collect($image['tags'] ?? [])->implode(', ');
+        $meta = collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null, $tags ?: null])
             ->filter()
             ->implode(' | ');
 

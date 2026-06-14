@@ -885,6 +885,13 @@
                 <li>Review image usage before deleting media.</li>
                 <li>Use descriptive filenames when possible.</li>
             </ul>
+            <h3>Image Details</h3>
+            <ul>
+                <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results.</li>
+                <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location.</li>
+                <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, and new tags can be added from the field.</li>
+                <li>When the last image using a tag is deleted or changed, that tag no longer appears as an option.</li>
+            </ul>
             <h3>Image Guidelines</h3>
             <ul>
                 <li>Use clear, bright photos.</li>
