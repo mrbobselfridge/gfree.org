@@ -45,6 +45,7 @@ class StaffMemberForm
                 TextInput::make('availability')
                     ->maxLength(255),
                 TextInput::make('slug')
+                    ->label('Path')
                     ->prefix('/leadership/')
                     ->required()
                     ->unique(ignoreRecord: true)

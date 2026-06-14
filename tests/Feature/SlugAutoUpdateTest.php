@@ -42,7 +42,7 @@ class SlugAutoUpdateTest extends TestCase
             ->set('data.title', 'Changed Page Title')
             ->assertSet('data.slug', 'stable-page-url')
             ->assertFormComponentActionExists('slug', 'rebuildSlug')
-            ->assertFormComponentActionHasLabel('slug', 'rebuildSlug', 'Rebuild slug')
+            ->assertFormComponentActionHasLabel('slug', 'rebuildSlug', 'Generate path')
             ->callFormComponentAction('slug', 'rebuildSlug')
             ->assertSet('data.slug', 'changed-page-title');
     }
@@ -114,6 +114,7 @@ class SlugAutoUpdateTest extends TestCase
             ->set('data.title', 'Changed File Title')
             ->assertSet('data.file_name', 'stable-file-url')
             ->assertFormComponentActionExists('file_name', 'rebuildFileName')
+            ->assertFormComponentActionHasLabel('file_name', 'rebuildFileName', 'Generate path')
             ->callFormComponentAction('file_name', 'rebuildFileName')
             ->assertSet('data.file_name', 'form-changed-file-title');
     }

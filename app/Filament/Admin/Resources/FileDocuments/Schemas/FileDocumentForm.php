@@ -67,7 +67,7 @@ class FileDocumentForm
                             ->maxLength(255)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Admin and public title for this file. New files use this with Category to build the first slug.'
+                                'Admin and public title for this file. New files use this with Category to build the first path.'
                             )
                             ->hintColor('gray')
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
@@ -100,7 +100,7 @@ class FileDocumentForm
                             ->hintColor('gray')
                             ->required(),
                         TextInput::make('file_name')
-                            ->label('Slug')
+                            ->label('Path')
                             ->prefix('/files/')
                             ->live(onBlur: true)
                             ->maxLength(255)
@@ -108,8 +108,8 @@ class FileDocumentForm
                             ->unique(ignoreRecord: true)
                             ->suffixAction(
                                 Action::make('rebuildFileName')
-                                    ->label('Rebuild slug')
-                                    ->tooltip('Rebuild slug')
+                                    ->label('Generate path')
+                                    ->tooltip('Generate path')
                                     ->icon(Heroicon::OutlinedArrowPath)
                                     ->color('gray')
                                     ->action(fn (Get $get, Set $set, ?FileDocument $record): mixed => $set(
@@ -122,7 +122,7 @@ class FileDocumentForm
                                 : FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $get('title'), $record))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Stable URL ending under /files/. Defaults to category-title and can be rebuilt with the refresh icon.'
+                                'Stable URL path ending under /files/. Defaults to category-title and can be generated with the refresh icon.'
                             )
                             ->hintColor('gray'),
                         Select::make('parent_page_id')

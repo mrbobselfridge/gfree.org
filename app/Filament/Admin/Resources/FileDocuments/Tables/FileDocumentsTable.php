@@ -38,7 +38,7 @@ class FileDocumentsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('file_name')
-                    ->label('Link')
+                    ->label('Path')
                     ->formatStateUsing(fn (FileDocument $record): string => $record->publicUrl() ?? 'Not live')
                     ->url(fn (FileDocument $record): ?string => $record->publicUrl(), true)
                     ->copyable(fn (FileDocument $record): bool => filled($record->publicUrl()))

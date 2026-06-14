@@ -37,6 +37,7 @@ class PagesTable
                     ))
                     ->sortable(),
                 TextColumn::make('slug')
+                    ->label('Path')
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()

@@ -20,6 +20,7 @@ class MinistriesTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Path')
                     ->formatStateUsing(fn (string $state): string => '/ministry/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/ministry/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()

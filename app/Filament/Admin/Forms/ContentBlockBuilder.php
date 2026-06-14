@@ -471,8 +471,8 @@ class ContentBlockBuilder
                             ->default('View more')
                             ->maxLength(80),
                         TextInput::make('listing_slug')
-                            ->label('Listing URL slug')
-                            ->helperText('Used for the generated View More page. Leave as-is unless you need to preserve an existing link.')
+                            ->label('Listing URL path')
+                            ->helperText('Used for the generated View More page path. Leave as-is unless you need to preserve an existing link.')
                             ->prefix('parent-page/')
                             ->rule('alpha_dash')
                             ->maxLength(80)

@@ -46,7 +46,7 @@ class PageForm
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Main page name shown in the admin and public header area. New pages use this to build the first slug.'
+                        'Main page name shown in the admin and public header area. New pages use this to build the first path.'
                     )
                     ->hintColor('gray')
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
@@ -73,7 +73,7 @@ class PageForm
                     ->required()
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Use this when this slug should forward visitors somewhere else instead of rendering page content.'
+                        'Use this when this path should forward visitors somewhere else instead of rendering page content.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
@@ -111,6 +111,7 @@ class PageForm
                     ->columnSpan(1),
 
                 TextInput::make('slug')
+                    ->label('Path')
                     ->prefix('/')
                     ->required()
                     ->unique(ignoreRecord: true)
@@ -285,7 +286,7 @@ class PageForm
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
                 self::section('Redirect', 'pages-redirect')
-                    ->description('Use this page slug as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
+                    ->description('Use this page path as a simple forwarding URL for old links, QR codes, campaigns, or moved pages.')
                     ->icon(Heroicon::OutlinedArrowRightCircle)
                     ->schema([
                         Placeholder::make('redirect_inactive_notice')
@@ -433,7 +434,7 @@ class PageForm
     private static function childFileListItem(FileDocument $file): string
     {
         $url = $file->publicUrl() ?? $file->downloadUrl();
-        $path = filled($file->file_name) ? '/files/'.ltrim((string) $file->file_name, '/') : 'No public file slug';
+        $path = filled($file->file_name) ? '/files/'.ltrim((string) $file->file_name, '/') : 'No public file path';
 
         return sprintf(
             '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">File:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">%s</span></span></li>',

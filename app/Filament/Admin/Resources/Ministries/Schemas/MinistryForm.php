@@ -36,6 +36,7 @@ class MinistryForm
                 Textarea::make('short_summary')
                     ->rows(2),
                 TextInput::make('slug')
+                    ->label('Path')
                     ->prefix('/ministry/')
                     ->required()
                     ->unique(ignoreRecord: true)

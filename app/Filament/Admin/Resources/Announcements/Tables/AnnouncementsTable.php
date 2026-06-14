@@ -20,6 +20,7 @@ class AnnouncementsTable
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Path')
                     ->formatStateUsing(fn (string $state): string => '/announcements/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/announcements/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()

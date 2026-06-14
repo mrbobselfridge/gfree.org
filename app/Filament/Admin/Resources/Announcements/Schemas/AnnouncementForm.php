@@ -51,6 +51,7 @@ class AnnouncementForm
                     ->label('Button URL')
                     ->maxLength(255),
                 TextInput::make('slug')
+                    ->label('Path')
                     ->prefix('/announcements/')
                     ->required()
                     ->unique(ignoreRecord: true)

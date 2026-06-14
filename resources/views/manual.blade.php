@@ -902,7 +902,7 @@
             <ul>
                 <li><strong>Category:</strong> Groups the file and controls category-specific AI extraction instructions.</li>
                 <li><strong>Title:</strong> Admin/public title for the file.</li>
-                <li><strong>Slug:</strong> Stable file URL under <code>/files/</code>. New slugs default to <code>category-title</code>, such as <code>bulletin-sunday-worship-guide</code>.</li>
+                <li><strong>Path:</strong> Stable file URL under <code>/files/</code>. New paths default to <code>category-title</code>, such as <code>bulletin-sunday-worship-guide</code>.</li>
                 <li><strong>Make File Live:</strong> Turns the public file URL on or off.</li>
                 <li><strong>Public or private:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
                 <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Files are children only.</li>
@@ -939,7 +939,7 @@
             <h2>Ministries</h2>
             <p>Ministries control the ministry listing page and individual ministry detail pages.</p>
             <ul>
-                <li><strong>Title and slug:</strong> Public name and URL.</li>
+                <li><strong>Title and path:</strong> Public name and URL.</li>
                 <li><strong>Summary:</strong> Short listing text.</li>
                 <li><strong>Description or content blocks:</strong> Main detail page content.</li>
                 <li><strong>Image:</strong> Listing/detail image.</li>
@@ -959,19 +959,19 @@
             <h3>Common Fields</h3>
             <ul>
                 <li><strong>Title:</strong> The page name.</li>
-                <li><strong>Slug:</strong> The URL path. Example: a slug of <code>new-here</code> creates <code>/new-here</code>. Nested slugs such as <code>resources/forms</code> are allowed.</li>
+                <li><strong>Path:</strong> The URL path. Example: a path of <code>new-here</code> creates <code>/new-here</code>. Nested paths such as <code>resources/forms</code> are allowed.</li>
                 <li><strong>Content blocks:</strong> Preferred flexible page layout.</li>
                 <li><strong>Show navigation and footer:</strong> Turn off only for special landing pages.</li>
                 <li><strong>Parent Page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
                 <li><strong>SEO title and description:</strong> Optional browser/search metadata.</li>
                 <li><strong>Make Page Live:</strong> Must be enabled for public display or for a redirect to work.</li>
             </ul>
-            <h3>Slug Rules</h3>
+            <h3>Path Rules</h3>
             <ul>
                 <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
-                <li>Do not change a public slug casually. Old links may stop working.</li>
-                <li>Avoid slugs already used by system routes such as announcements, bulletins, leadership, ministry, sermons, admin, or manual.</li>
-                <li>Use the rebuild icon to regenerate the slug from the title when needed.</li>
+                <li>Do not change a public path casually. Old links may stop working.</li>
+                <li>Avoid paths already used by system routes such as announcements, bulletins, leadership, ministry, sermons, admin, or manual.</li>
+                <li>Use the generate icon to regenerate the path from the title when needed.</li>
             </ul>
             <h3>Parent Pages and Child Pages</h3>
             <ul>
@@ -984,7 +984,7 @@
             <p>A page can also be used as a simple redirect. This is useful for old links, printed QR codes, short campaign URLs, or pages that have moved.</p>
             <ul>
                 <li>Turn on <strong>Redirect this page</strong>.</li>
-                <li>Enter the slug visitors will use, such as <code>/visit-us</code>.</li>
+                <li>Enter the path visitors will use, such as <code>/visit-us</code>.</li>
                 <li>Enter the destination, such as <code>/new-here</code> or a full <code>https://</code> URL.</li>
                 <li>Use <strong>Temporary</strong> for most redirects unless the old URL has permanently moved.</li>
                 <li>A redirect page must be marked live before visitors can use it.</li>

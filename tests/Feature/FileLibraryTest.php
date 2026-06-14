@@ -207,6 +207,7 @@ class FileLibraryTest extends TestCase
             ->assertSchemaComponentExists('updated_at')
             ->assertFormFieldDoesNotExist('description')
             ->assertFormFieldDoesNotExist('tags')
+            ->assertSee('Path')
             ->set('data.title', 'Connection Card')
             ->set('data.file_name', 'connection-card')
             ->set('data.category', 'Form')

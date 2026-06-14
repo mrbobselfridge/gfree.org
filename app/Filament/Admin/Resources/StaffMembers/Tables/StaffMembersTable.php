@@ -20,6 +20,7 @@ class StaffMembersTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Path')
                     ->searchable()
                     ->formatStateUsing(fn (string $state): string => '/leadership/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/leadership/'.ltrim((string) $record->slug, '/')))

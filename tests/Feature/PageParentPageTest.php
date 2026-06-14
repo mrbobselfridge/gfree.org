@@ -69,6 +69,7 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('seo_title')
             ->assertFormFieldVisible('seo_description')
             ->assertFormFieldVisible('parent_page_id')
+            ->assertSee('Path')
             ->assertSee('Collapse all')
             ->assertSee('Expand all');
     }
