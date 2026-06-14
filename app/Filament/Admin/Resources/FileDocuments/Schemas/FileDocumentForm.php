@@ -137,12 +137,17 @@ class FileDocumentForm
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
                             )
                             ->hintColor('gray'),
-                        ImageUpload::make('card_image_path', 'file-documents/card-images', 'Card image')
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional image used when this file appears in cards or listing areas. If empty, the default file image is used.'
-                            )
-                            ->hintColor('gray'),
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'file-documents/card-images',
+                            'Card image',
+                            fn (FileUpload $upload): FileUpload => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this file appears in cards or listing areas. If empty, the default file image is used.'
+                                )
+                                ->hintColor('gray'),
+                        ),
                         FileUpload::make('pending_upload')
                             ->label('File')
                             ->acceptedFileTypes(FileLibrary::allowedMimeTypes())

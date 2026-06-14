@@ -6,6 +6,7 @@ use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -79,8 +80,12 @@ class AnnouncementForm
                         ContentBlockBuilder::make('content_blocks', 'announcements/content-images', 'Announcement Content', true),
                     ])
                     ->columnSpanFull(),
-                ImageUpload::make('image_path', 'announcements', 'Announcement Image')
-                    ->columnSpanFull(),
+                ...ImageUpload::make(
+                    'image_path',
+                    'announcements',
+                    'Announcement Image',
+                    fn (FileUpload $upload): FileUpload => $upload->columnSpanFull(),
+                ),
                 DateTimePicker::make('publish_at'),
                 DateTimePicker::make('expires_at'),
                 DateTimePicker::make('featured_at')

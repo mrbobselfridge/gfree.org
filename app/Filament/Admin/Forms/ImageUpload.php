@@ -5,12 +5,15 @@ namespace App\Filament\Admin\Forms;
 use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
 use App\Models\MediaImageMetadata;
 use App\Support\MediaLibrary as MediaLibrarySupport;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
@@ -19,18 +22,53 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ImageUpload
 {
-    public static function make(string $name, string $directory, ?string $label = null): FileUpload
+    /**
+     * @return array<int, FileUpload|TextInput|TagsInput>
+     */
+    public static function make(string $name, string $directory, ?string $label = null, ?Closure $configureUpload = null): array
     {
+        $titleField = self::metadataFieldName($name, 'title');
+        $slugField = self::metadataFieldName($name, 'slug');
+        $tagsField = self::metadataFieldName($name, 'tags');
+
         $upload = FileUpload::make($name)
             ->image()
             ->disk('public')
             ->directory($directory)
             ->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file): string => self::storedImageFilename($file))
-            ->saveUploadedFileUsing(function (FileUpload $component, TemporaryUploadedFile $file): ?string {
+            ->afterStateUpdated(function (Set $set, Get $get, mixed $state) use ($name, $titleField, $slugField, $tagsField): void {
+                $file = self::firstTemporaryUploadedFile($state);
+
+                if (! $file) {
+                    return;
+                }
+
+                $title = self::titleFromUploadedFile($file);
+                $slug = self::uniqueSlug(self::slugFromUploadedFile($file), $name);
+
+                if (filled($title) && blank($get($titleField))) {
+                    $set($titleField, $title);
+                }
+
+                if (filled($slug) && blank(MediaImageMetadata::normalizeSlug($get($slugField)))) {
+                    $set($slugField, $slug);
+                }
+
+                $set($tagsField, MediaImageMetadata::mergeAutoTags($get($tagsField) ?? [], $title));
+            })
+            ->saveUploadedFileUsing(function (FileUpload $component, TemporaryUploadedFile $file, Get $get) use ($name, $titleField, $slugField, $tagsField): ?string {
                 $path = $component->saveUploadedFile($file);
 
                 if (filled($path)) {
-                    self::saveDefaultMetadataForState($path);
+                    self::saveMetadataForPath(
+                        path: $path,
+                        data: [
+                            'title' => $get($titleField) ?: self::titleFromUploadedFile($file),
+                            'slug' => $get($slugField) ?: self::slugFromUploadedFile($file),
+                            'tags' => $get($tagsField) ?? [],
+                        ],
+                        markCreatorForNew: true,
+                    );
                 }
 
                 return $path;
@@ -40,7 +78,14 @@ class ImageUpload
             $upload->label($label);
         }
 
-        return self::configure($upload);
+        if ($configureUpload) {
+            $upload = $configureUpload($upload) ?? $upload;
+        }
+
+        return [
+            self::configure($upload),
+            ...self::metadataFields($name, $titleField, $slugField, $tagsField),
+        ];
     }
 
     public static function configure(FileUpload $upload): FileUpload
@@ -124,6 +169,46 @@ class ImageUpload
         return str(Str::ulid().'/'.$slug.'.'.$extension)->lower()->toString();
     }
 
+    private static function metadataFieldName(string $name, string $field): string
+    {
+        return str($name)->replace('.', '_')->replace('*', 'item')->append('_media_', $field)->toString();
+    }
+
+    /**
+     * @return array<int, TextInput|TagsInput>
+     */
+    private static function metadataFields(string $uploadField, string $titleField, string $slugField, string $tagsField): array
+    {
+        return [
+            TextInput::make($titleField)
+                ->label('Title')
+                ->helperText('Leave blank to use the uploaded filename without the extension.')
+                ->live(onBlur: true)
+                ->visible(fn (Get $get): bool => self::hasTemporaryUpload($get($uploadField)))
+                ->maxLength(255)
+                ->dehydrated(false)
+                ->afterStateUpdated(function (Set $set, Get $get, ?string $state) use ($tagsField): void {
+                    $set($tagsField, MediaImageMetadata::mergeAutoTags($get($tagsField) ?? [], $state));
+                }),
+            TagsInput::make($tagsField)
+                ->label('Tags')
+                ->placeholder('Add tag')
+                ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
+                ->visible(fn (Get $get): bool => self::hasTemporaryUpload($get($uploadField)))
+                ->splitKeys(['Tab', ','])
+                ->reorderable()
+                ->nestedRecursiveRules(['max:80'])
+                ->dehydrated(false),
+            TextInput::make($slugField)
+                ->label('Optional Slug / Path')
+                ->helperText('Optional. Leave blank to use the uploaded filename. Slashes are allowed for grouped paths.')
+                ->visible(fn (Get $get): bool => self::hasTemporaryUpload($get($uploadField)))
+                ->maxLength(255)
+                ->dehydrateStateUsing(fn (?string $state): ?string => MediaImageMetadata::normalizeSlug($state))
+                ->dehydrated(false),
+        ];
+    }
+
     private static function saveDefaultMetadataForState(mixed $state): void
     {
         $path = self::firstUploadedImagePath($state);
@@ -200,6 +285,36 @@ class ImageUpload
         }
 
         return filled($path) ? (string) $path : null;
+    }
+
+    private static function hasTemporaryUpload(mixed $state): bool
+    {
+        return self::firstTemporaryUploadedFile($state) !== null;
+    }
+
+    private static function firstTemporaryUploadedFile(mixed $state): ?TemporaryUploadedFile
+    {
+        if (is_array($state)) {
+            $state = collect($state)->first();
+        }
+
+        return $state instanceof TemporaryUploadedFile ? $state : null;
+    }
+
+    private static function titleFromUploadedFile(TemporaryUploadedFile $file): ?string
+    {
+        $title = str(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
+            ->replaceMatches('/[\s_.-]+/', ' ')
+            ->trim()
+            ->headline()
+            ->toString();
+
+        return filled($title) ? $title : null;
+    }
+
+    private static function slugFromUploadedFile(TemporaryUploadedFile $file): ?string
+    {
+        return MediaImageMetadata::normalizeSlug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
     }
 
     private static function titleFromPath(string $path): ?string

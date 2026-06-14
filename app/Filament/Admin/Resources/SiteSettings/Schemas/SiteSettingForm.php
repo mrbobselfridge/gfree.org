@@ -8,6 +8,7 @@ use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiBulletinExtractionPrompt;
 use App\Support\AiContentPrompt;
 use App\Support\OpenAiSiteSettings;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -56,8 +57,13 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('sunday_service_times')),
                         RichEditorDefaults::configure(RichEditor::make('address')),
-                        ImageUpload::make('site_logo_path', 'site-settings/logo', 'Site logo')
-                            ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
+                        ...ImageUpload::make(
+                            'site_logo_path',
+                            'site-settings/logo',
+                            'Site logo',
+                            fn (FileUpload $upload): FileUpload => $upload
+                                ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
+                        ),
                         RichEditorDefaults::configure(RichEditor::make('office_hours')),
                     ])
                     ->columns(2)
@@ -155,7 +161,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('announcements_subtitle'))
                             ->label('Announcements subtitle'),
-                        ImageUpload::make('announcements_image_path', 'site-settings/announcements', 'Announcements Image'),
+                        ...ImageUpload::make('announcements_image_path', 'site-settings/announcements', 'Announcements Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -170,7 +176,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('ministry_subtitle'))
                             ->label('Ministry subtitle'),
-                        ImageUpload::make('ministry_image_path', 'site-settings/ministry', 'Ministry image'),
+                        ...ImageUpload::make('ministry_image_path', 'site-settings/ministry', 'Ministry image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -185,7 +191,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('leadership_subtitle'))
                             ->label('Leadership subtitle'),
-                        ImageUpload::make('leadership_image_path', 'site-settings/leadership', 'Leadership Image'),
+                        ...ImageUpload::make('leadership_image_path', 'site-settings/leadership', 'Leadership Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -200,7 +206,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('bulletins_subtitle'))
                             ->label('Bulletins subtitle'),
-                        ImageUpload::make('bulletins_image_path', 'site-settings/bulletins', 'Bulletins Image'),
+                        ...ImageUpload::make('bulletins_image_path', 'site-settings/bulletins', 'Bulletins Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

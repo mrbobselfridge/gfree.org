@@ -142,7 +142,7 @@ trait ManagesListingPageSettings
                 ->maxLength(255),
             RichEditorDefaults::configure(RichEditor::make("{$prefix}_subtitle"))
                 ->label("{$labelPrefix} subtitle"),
-            ImageUpload::make("{$prefix}_image_path", 'site-settings/'.$this->getListingSettingsImageDirectory(), "{$labelPrefix} image"),
+            ...ImageUpload::make("{$prefix}_image_path", 'site-settings/'.$this->getListingSettingsImageDirectory(), "{$labelPrefix} image"),
         ];
     }
 

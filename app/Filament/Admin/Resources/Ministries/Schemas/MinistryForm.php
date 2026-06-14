@@ -54,8 +54,8 @@ class MinistryForm
                         ContentBlockBuilder::make('content_blocks', 'ministries/content-images', 'Ministry Content', true),
                     ])
                     ->columnSpanFull(),
-                ImageUpload::make('hero_image_path', 'ministries/hero-images', 'Hero image'),
-                ImageUpload::make('card_image_path', 'ministries/card-images', 'Card image'),
+                ...ImageUpload::make('hero_image_path', 'ministries/hero-images', 'Hero image'),
+                ...ImageUpload::make('card_image_path', 'ministries/card-images', 'Card image'),
                 TextInput::make('category')
                     ->maxLength(255),
                 TextInput::make('meeting_time')

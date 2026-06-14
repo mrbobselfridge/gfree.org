@@ -12,6 +12,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -79,7 +80,7 @@ class ContentBlockBuilder
                 Block::make('image_text')
                     ->label(fn (?array $state): string => self::blockLabel('Image', $state))
                     ->schema([
-                        ImageUpload::make('image_path', $imageDirectory, 'Image'),
+                        ...ImageUpload::make('image_path', $imageDirectory, 'Image'),
                         TextInput::make('image_alt')
                             ->label('Image description')
                             ->maxLength(255),
@@ -233,9 +234,14 @@ class ContentBlockBuilder
                                     ->helperText('Use a site path like /give or a full https:// URL.')
                                     ->visible(fn (Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true))
                                     ->columnSpanFull(),
-                                ImageUpload::make('image_path', $imageDirectory, 'Flip image')
-                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpanFull(),
+                                ...ImageUpload::make(
+                                    'image_path',
+                                    $imageDirectory,
+                                    'Flip image',
+                                    fn (FileUpload $upload): FileUpload => $upload
+                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpanFull(),
+                                ),
                                 TextInput::make('image_alt')
                                     ->label('Image description')
                                     ->maxLength(255)

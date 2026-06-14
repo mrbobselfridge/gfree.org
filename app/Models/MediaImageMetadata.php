@@ -90,7 +90,7 @@ class MediaImageMetadata extends Model
             'spirit and truth',
             'night of worship',
         ],
-        'holiday & seasonal' => [
+        'holiday and seasonal' => [
             'easter',
             'christmas',
             'advent',
@@ -108,7 +108,7 @@ class MediaImageMetadata extends Model
             'summer',
             'spring',
         ],
-        'giving & offering' => [
+        'giving and offering' => [
             'giving',
             'give',
             'offering',

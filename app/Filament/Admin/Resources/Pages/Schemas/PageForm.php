@@ -13,6 +13,7 @@ use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -167,21 +168,31 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(1),
 
-                        ImageUpload::make('hero_image_path', 'pages/hero-images', 'Header Image')
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional image used in the page header. Landscape photos usually work best.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
+                        ...ImageUpload::make(
+                            'hero_image_path',
+                            'pages/hero-images',
+                            'Header Image',
+                            fn (FileUpload $upload): FileUpload => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used in the page header. Landscape photos usually work best.'
+                                )
+                                ->hintColor('gray')
+                                ->columnSpan(1),
+                        ),
 
-                        ImageUpload::make('card_image_path', 'pages/card-images', 'Card image')
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'pages/card-images',
+                            'Card image',
+                            fn (FileUpload $upload): FileUpload => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
+                                )
+                                ->hintColor('gray')
+                                ->columnSpan(1),
+                        ),
 
                         DateTimePicker::make('publish_at')
                             ->label('Publish at')

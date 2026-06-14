@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\HomepageBanners\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -96,13 +97,18 @@ class HomepageBannerForm
                         'Optional destination for the second button. Use a local path or a full https:// URL.'
                     )
                     ->hintColor('gray'),
-                ImageUpload::make('image_path', 'homepage-banners', 'Banner Image')
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Primary homepage banner image. Use a wide, high-quality image that still works when cropped on mobile.'
-                    )
-                    ->hintColor('gray')
-                    ->columnSpanFull(),
+                ...ImageUpload::make(
+                    'image_path',
+                    'homepage-banners',
+                    'Banner Image',
+                    fn (FileUpload $upload): FileUpload => $upload
+                        ->hintIcon(
+                            Heroicon::OutlinedInformationCircle,
+                            'Primary homepage banner image. Use a wide, high-quality image that still works when cropped on mobile.'
+                        )
+                        ->hintColor('gray')
+                        ->columnSpanFull(),
+                ),
 
             ]);
     }

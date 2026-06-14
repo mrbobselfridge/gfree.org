@@ -429,9 +429,21 @@ class MediaLibraryAdminTest extends TestCase
         Livewire::actingAs($user)
             ->test(CreatePage::class)
             ->assertSee('Image details')
+            ->assertFormFieldHidden('hero_image_path_media_title')
+            ->assertFormFieldHidden('hero_image_path_media_tags')
+            ->assertFormFieldHidden('hero_image_path_media_slug')
             ->set('data.title', 'Student Ministry')
             ->set('data.slug', 'student-ministry')
             ->set('data.hero_image_path', UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600))
+            ->assertFormFieldVisible('hero_image_path_media_title')
+            ->assertFormFieldVisible('hero_image_path_media_tags')
+            ->assertFormFieldVisible('hero_image_path_media_slug')
+            ->assertSet('data.hero_image_path_media_title', 'Student Ministry Hero')
+            ->assertSet('data.hero_image_path_media_slug', 'student-ministry-hero')
+            ->assertSet('data.hero_image_path_media_tags', ['person', 'youth'])
+            ->set('data.hero_image_path_media_title', 'Custom Student Ministry Hero')
+            ->set('data.hero_image_path_media_slug', 'custom/student ministry hero')
+            ->set('data.hero_image_path_media_tags', ['Manual'])
             ->call('create')
             ->assertHasNoErrors();
 
@@ -446,9 +458,9 @@ class MediaLibraryAdminTest extends TestCase
         $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
 
         $this->assertNotNull($metadata);
-        $this->assertSame('Student Ministry Hero', $metadata->title);
-        $this->assertSame('student-ministry-hero', $metadata->slug);
-        $this->assertSame(['person', 'youth'], $metadata->tags);
+        $this->assertSame('Custom Student Ministry Hero', $metadata->title);
+        $this->assertSame('custom/student-ministry-hero', $metadata->slug);
+        $this->assertSame(['Manual', 'person', 'youth'], $metadata->tags);
         $this->assertSame($user->id, $metadata->created_by_user_id);
     }
 

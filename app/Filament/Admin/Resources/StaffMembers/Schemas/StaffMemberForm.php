@@ -66,8 +66,8 @@ class StaffMemberForm
                         ContentBlockBuilder::make('content_blocks', 'leadership/content-images', 'Leadership Content', true),
                     ])
                     ->columnSpanFull(),
-                ImageUpload::make('photo_path', 'leadership', 'Leadership Image'),
-                ImageUpload::make('card_image_path', 'leadership/card-images', 'Card image'),
+                ...ImageUpload::make('photo_path', 'leadership', 'Leadership Image'),
+                ...ImageUpload::make('card_image_path', 'leadership/card-images', 'Card image'),
             ]);
     }
 }
