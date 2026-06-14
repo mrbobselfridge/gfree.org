@@ -21,7 +21,9 @@ use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class MediaLibrary extends Page
 {
@@ -121,7 +123,7 @@ class MediaLibrary extends Page
             ->modalSubmitActionLabel('Upload image')
             ->schema([
                 ...$this->imageMetadataFields(),
-                $this->imageUploadField('image', 'Image'),
+                ...$this->imageUploadFields('image', 'Image'),
             ])
             ->action(function (array $data): void {
                 $path = $this->firstUploadedImagePath($data['image'] ?? null);
@@ -130,7 +132,11 @@ class MediaLibrary extends Page
                     return;
                 }
 
-                $this->saveImageMetadata($path, $data);
+                $this->saveImageMetadata(
+                    path: $path,
+                    data: $data,
+                    fallbackTitle: $this->titleFromUploadedFilename($data['image_original_name'] ?? null, $path),
+                );
                 $this->notifyMediaLibraryWorkflow(
                     trigger: WorkflowNotificationRule::TRIGGER_CREATED,
                     path: $path,
@@ -154,7 +160,7 @@ class MediaLibrary extends Page
                 ->fillForm(fn (array $arguments): array => $this->imageMetadataFormData((string) ($arguments['path'] ?? '')))
                 ->schema([
                     ...$this->imageMetadataFields(),
-                    $this->imageUploadField('replacement_image', 'Replacement image'),
+                    ...$this->imageUploadFields('replacement_image', 'Replacement image'),
                 ])
                 ->action(function (array $arguments, array $data): void {
                     $oldPath = (string) ($arguments['path'] ?? '');
@@ -164,7 +170,12 @@ class MediaLibrary extends Page
                         return;
                     }
 
-                    $updated = $this->replaceStoredImage($oldPath, $newPath, $data);
+                    $updated = $this->replaceStoredImage(
+                        oldPath: $oldPath,
+                        newPath: $newPath,
+                        data: $data,
+                        fallbackTitle: $this->titleFromUploadedFilename($data['replacement_image_original_name'] ?? null, $newPath),
+                    );
 
                     Notification::make()
                         ->title('Image replaced')
@@ -267,6 +278,7 @@ class MediaLibrary extends Page
         return [
             TextInput::make('title')
                 ->label('Title')
+                ->helperText('Leave blank to use the uploaded filename without the extension.')
                 ->maxLength(255),
             TagsInput::make('tags')
                 ->label('Tags')
@@ -283,30 +295,59 @@ class MediaLibrary extends Page
         ];
     }
 
-    private function imageUploadField(string $name, string $label): FileUpload
+    /**
+     * @return array<int, FileUpload|TextInput>
+     */
+    private function imageUploadFields(string $name, string $label): array
     {
-        return FileUpload::make($name)
-            ->label($label)
-            ->image()
-            ->disk('public')
-            ->directory(self::IMAGE_DIRECTORY)
-            ->required();
+        $originalNameField = $this->originalFileNameField($name);
+
+        return [
+            FileUpload::make($name)
+                ->label($label)
+                ->image()
+                ->disk('public')
+                ->directory(self::IMAGE_DIRECTORY)
+                ->storeFileNamesIn($originalNameField)
+                ->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file): string => $this->storedImageFilename($file))
+                ->required(),
+            TextInput::make($originalNameField)
+                ->hidden(),
+        ];
     }
 
-    private function saveImageMetadata(string $path, array $data, ?string $ignorePath = null): void
+    private function originalFileNameField(string $name): string
+    {
+        return $name.'_original_name';
+    }
+
+    private function storedImageFilename(TemporaryUploadedFile $file): string
+    {
+        $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $slug = str($baseName)->slug()->toString() ?: 'image';
+        $extension = $file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'jpg';
+
+        return str(Str::ulid().'-'.$slug.'.'.$extension)->lower()->toString();
+    }
+
+    private function saveImageMetadata(string $path, array $data, ?string $ignorePath = null, ?string $fallbackTitle = null): void
     {
         MediaImageMetadata::query()->updateOrCreate(
             ['path' => $path],
-            $this->normalizedImageMetadataData($data, $ignorePath ?? $path),
+            $this->normalizedImageMetadataData($data, $ignorePath ?? $path, $fallbackTitle),
         );
     }
 
     /**
      * @return array{title: ?string, slug: ?string, tags: array<int, string>}
      */
-    private function normalizedImageMetadataData(array $data, string $ignorePath): array
+    private function normalizedImageMetadataData(array $data, string $ignorePath, ?string $fallbackTitle = null, ?string $replaceTitle = null): array
     {
         $slug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
+        $submittedTitle = filled($data['title'] ?? null) ? trim((string) $data['title']) : null;
+        $title = ($submittedTitle === null || ($replaceTitle !== null && $submittedTitle === $replaceTitle))
+            ? $fallbackTitle
+            : $submittedTitle;
 
         validator(
             ['slug' => $slug],
@@ -320,7 +361,7 @@ class MediaLibrary extends Page
         )->validate();
 
         return [
-            'title' => filled($data['title'] ?? null) ? trim((string) $data['title']) : null,
+            'title' => $title,
             'slug' => $slug,
             'tags' => MediaImageMetadata::normalizeTags($data['tags'] ?? []),
         ];
@@ -335,9 +376,10 @@ class MediaLibrary extends Page
         return filled($path) ? (string) $path : null;
     }
 
-    private function replaceStoredImage(string $oldPath, string $newPath, array $data): int
+    private function replaceStoredImage(string $oldPath, string $newPath, array $data, ?string $fallbackTitle = null): int
     {
-        $metadata = $this->normalizedImageMetadataData($data, $oldPath);
+        $existingTitle = MediaImageMetadata::query()->where('path', $oldPath)->value('title');
+        $metadata = $this->normalizedImageMetadataData($data, $oldPath, $fallbackTitle, $existingTitle);
         $updated = MediaUsage::replaceImagePath($oldPath, $newPath);
 
         MediaImageMetadata::query()
@@ -357,6 +399,22 @@ class MediaLibrary extends Page
         );
 
         return $updated;
+    }
+
+    private function titleFromUploadedFilename(mixed $originalName, string $path): ?string
+    {
+        $source = is_array($originalName) ? collect($originalName)->first() : $originalName;
+        $source = filled($source) ? (string) $source : basename($path);
+        $name = pathinfo($source, PATHINFO_FILENAME);
+
+        $title = str($name)
+            ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
+            ->replaceMatches('/[\s_.-]+/', ' ')
+            ->trim()
+            ->headline()
+            ->toString();
+
+        return filled($title) ? $title : null;
     }
 
     private function notifyMediaLibraryWorkflow(string $trigger, string $path): mixed

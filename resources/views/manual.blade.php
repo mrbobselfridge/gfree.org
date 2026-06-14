@@ -888,7 +888,7 @@
             <h3>Image Details</h3>
             <ul>
                 <li>Upload and replace forms include image details, so title, slug, and tags can be set while choosing the file.</li>
-                <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results.</li>
+                <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, and new tags can be added from the field.</li>
                 <li>When the last image using a tag is deleted or changed, that tag no longer appears as an option.</li>

@@ -332,6 +332,39 @@ class MediaLibraryAdminTest extends TestCase
         ]);
     }
 
+    public function test_media_library_defaults_replacement_title_from_uploaded_filename_when_title_is_unchanged(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('old.jpg', 800, 600)
+            ->storeAs('announcements', 'old.jpg', 'public');
+
+        MediaImageMetadata::query()->create([
+            'path' => 'announcements/old.jpg',
+            'title' => 'Old Hero',
+            'slug' => 'old-hero',
+            'tags' => ['Hero'],
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('replaceImage', [
+                'replacement_image' => UploadedFile::fake()->image('updated_hero-photo.JPG', 800, 600),
+            ], [
+                'path' => 'announcements/old.jpg',
+            ])
+            ->assertHasNoActionErrors();
+
+        $metadata = MediaImageMetadata::query()->first();
+
+        $this->assertNotNull($metadata);
+        $this->assertStringStartsWith('media-library/', $metadata->path);
+        $this->assertSame('Updated Hero Photo', $metadata->title);
+        $this->assertSame('old-hero', $metadata->slug);
+        $this->assertSame(['Hero'], $metadata->tags);
+    }
+
     public function test_media_library_can_upload_new_images_from_header_action(): void
     {
         Storage::fake('public');
@@ -355,6 +388,31 @@ class MediaLibraryAdminTest extends TestCase
             'slug' => 'gallery/new-upload',
         ]);
         $this->assertSame(['Gallery', 'Feature'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
+    }
+
+    public function test_media_library_defaults_upload_title_from_uploaded_filename(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('uploadImages', [
+                'slug' => 'gallery/student hero',
+                'tags' => ['Students'],
+                'image' => UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600),
+                'image_original_name' => 'student_ministry-hero.JPG',
+            ])
+            ->assertHasNoActionErrors();
+
+        $path = Storage::disk('public')->files('media-library')[0] ?? null;
+
+        $this->assertNotNull($path);
+        $this->assertDatabaseHas(MediaImageMetadata::class, [
+            'path' => $path,
+            'title' => 'Student Ministry Hero',
+            'slug' => 'gallery/student-hero',
+        ]);
+        $this->assertSame(['Students'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
     }
 
     public function test_media_library_can_search_filename_path_and_usage(): void
