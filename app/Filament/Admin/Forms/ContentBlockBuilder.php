@@ -49,7 +49,7 @@ class ContentBlockBuilder
             ->label($label)
             ->blocks([
                 Block::make('text')
-                    ->label(fn (?array $state): string => self::blockLabel('Text', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Text 2222', $state))
                     ->schema([
                         TextInput::make('eyebrow')
                             ->label('Small label')
