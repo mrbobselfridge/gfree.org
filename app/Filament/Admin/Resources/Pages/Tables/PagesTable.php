@@ -43,16 +43,16 @@ class PagesTable
                     ->openUrlInNewTab()
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('parentPage.title')
+                    ->label('Parent Page')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('redirect_url')
                     ->label('Redirects To')
                     ->placeholder('Not a redirect')
                     ->limit(44)
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('parentPage.title')
-                    ->label('Parent Page')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),
