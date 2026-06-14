@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
+use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\Announcement;
 use App\Models\MediaImageMetadata;
@@ -418,6 +419,37 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('Created: Jun 14, 2026 10:30 AM')
             ->assertSee('Updated: Jun 14, 2026 10:30 AM')
             ->assertSee('By: Noel Meyers');
+    }
+
+    public function test_page_image_upload_creates_clean_media_metadata_immediately(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreatePage::class)
+            ->assertSee('Image details')
+            ->set('data.title', 'Student Ministry')
+            ->set('data.slug', 'student-ministry')
+            ->set('data.hero_image_path', UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600))
+            ->call('create')
+            ->assertHasNoErrors();
+
+        $path = Storage::disk('public')->allFiles('pages/hero-images')[0] ?? null;
+
+        $this->assertNotNull($path);
+        $this->assertMatchesRegularExpression(
+            '#^pages/hero-images/[0-9a-hjkmnp-tv-z]{26}/student-ministry-hero\.(jpg|jpeg|png|gif|webp|avif|svg)$#',
+            $path,
+        );
+
+        $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
+
+        $this->assertNotNull($metadata);
+        $this->assertSame('Student Ministry Hero', $metadata->title);
+        $this->assertSame('student-ministry-hero', $metadata->slug);
+        $this->assertSame(['person', 'youth'], $metadata->tags);
+        $this->assertSame($user->id, $metadata->created_by_user_id);
     }
 
     public function test_media_library_defaults_upload_title_from_uploaded_filename(): void
