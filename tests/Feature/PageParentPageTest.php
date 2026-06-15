@@ -244,7 +244,7 @@ class PageParentPageTest extends TestCase
             ->assertCanNotSeeTableRecords([$redirectPage]);
     }
 
-    public function test_pages_table_parent_page_filter_shows_direct_children(): void
+    public function test_pages_table_parent_page_filter_shows_parent_and_direct_children(): void
     {
         $parent = Page::query()->create([
             'title' => 'Resources',
@@ -289,8 +289,8 @@ class PageParentPageTest extends TestCase
             ->test(ListPages::class)
             ->assertTableFilterExists('parent_page_id')
             ->filterTable('parent_page_id', $parent)
-            ->assertCanSeeTableRecords([$child])
-            ->assertCanNotSeeTableRecords([$parent, $grandchild, $otherParent, $otherChild, $topLevel]);
+            ->assertCanSeeTableRecords([$parent, $child])
+            ->assertCanNotSeeTableRecords([$grandchild, $otherParent, $otherChild, $topLevel]);
     }
 
     public function test_pages_table_parent_page_column_links_to_parent_filter(): void

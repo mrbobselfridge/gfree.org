@@ -125,6 +125,11 @@ class PagesTable
                 SelectFilter::make('parent_page_id')
                     ->label('Parent Page')
                     ->options(fn (): array => PageForm::parentPageOptions())
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
+                        ? $query->where(fn (Builder $query): Builder => $query
+                            ->whereKey($data['value'])
+                            ->orWhere('parent_page_id', $data['value']))
+                        : $query)
                     ->searchable()
                     ->preload(),
             ])
