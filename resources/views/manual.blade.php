@@ -971,6 +971,7 @@
             <ul>
                 <li>Church name.</li>
                 <li>Site logo used in the public header and footer.</li>
+                <li>Default page header image used on pages that show a header but do not have their own Header Image selected.</li>
                 <li>Address, email, phone, office hours, and Sunday service times.</li>
                 <li>Social media links.</li>
                 <li>One Church URL fallback.</li>

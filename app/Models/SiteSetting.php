@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 #[Fillable([
     'church_name',
     'site_logo_path',
+    'default_page_header_image_path',
     'tagline',
     'sunday_service_times',
     'address',

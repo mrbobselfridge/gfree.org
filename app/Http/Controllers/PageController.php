@@ -60,7 +60,8 @@ class PageController extends Controller
             'settings' => $settings,
             'page' => $page,
             'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, page: $page),
-            'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path),
+            'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path)
+                ?: ContentBlocks::imageUrl($settings?->default_page_header_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'socialLinks' => $this->socialLinks($settings),
         ];

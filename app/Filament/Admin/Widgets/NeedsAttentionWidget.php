@@ -177,7 +177,7 @@ class NeedsAttentionWidget extends CmsDashboardWidget
                 ->each(fn (Ministry $ministry) => $items->push($this->missingItem('Ministry: '.$ministry->name, $this->editUrl(MinistryResource::class, $ministry))));
         }
 
-        if ($this->canAccessTool(AdminAccess::PAGES)) {
+        if ($this->canAccessTool(AdminAccess::PAGES) && blank($settings?->default_page_header_image_path)) {
             $this->queryFor(Page::class)
                 ->where('is_published', true)
                 ->where('show_page_header', true)

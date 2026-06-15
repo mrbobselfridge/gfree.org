@@ -25,6 +25,7 @@ class SiteSettingsAdminTest extends TestCase
             ->assertOk()
             ->assertSee('Organizational Information')
             ->assertSee('Site logo')
+            ->assertSee('Default page header image')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
             ->assertSee('AI Content Prompt')
@@ -87,6 +88,24 @@ class SiteSettingsAdminTest extends TestCase
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
             'ai_content_prompt' => 'Rewrite this for local church visitors.',
+        ]);
+    }
+
+    public function test_default_page_header_image_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.default_page_header_image_path', ['site-settings/page-header-images/default-banner.jpg'])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'default_page_header_image_path' => 'site-settings/page-header-images/default-banner.jpg',
         ]);
     }
 

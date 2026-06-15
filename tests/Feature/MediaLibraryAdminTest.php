@@ -7,8 +7,10 @@ use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Models\MediaImageMetadata;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\MediaLibrary;
+use App\Support\MediaUsage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -726,6 +728,19 @@ class MediaLibraryAdminTest extends TestCase
 
         $this->assertCount(1, $images);
         $this->assertSame('pages/content-images/students.png', $images->first()['path']);
+    }
+
+    public function test_site_default_page_header_image_is_tracked_as_media_usage(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'default_page_header_image_path' => 'site-settings/page-header-images/default-banner.jpg',
+        ]);
+
+        $usage = MediaUsage::forImages(['site-settings/page-header-images/default-banner.jpg']);
+
+        $this->assertSame('Site Settings: TwyxtCo Church', $usage['site-settings/page-header-images/default-banner.jpg'][0]['label']);
+        $this->assertSame('Default page header image', $usage['site-settings/page-header-images/default-banner.jpg'][0]['detail']);
     }
 
     public function test_media_library_can_sort_images(): void

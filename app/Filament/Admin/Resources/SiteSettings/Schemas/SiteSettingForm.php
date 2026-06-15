@@ -58,6 +58,13 @@ class SiteSettingForm
                             fn (FileUpload $upload): FileUpload => $upload
                                 ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
                         ),
+                        ...ImageUpload::make(
+                            'default_page_header_image_path',
+                            'site-settings/page-header-images',
+                            'Default page header image',
+                            fn (FileUpload $upload): FileUpload => $upload
+                                ->helperText('Used on public pages when Show page header is on but that page has no Header Image selected.'),
+                        ),
                         RichEditorDefaults::configure(RichEditor::make('office_hours')),
                     ])
                     ->columns(2)

@@ -103,6 +103,7 @@ class MediaUsage
                 'record_label' => 'Site Settings',
                 'title' => 'church_name',
                 'fields' => [
+                    'default_page_header_image_path' => 'Default page header image',
                     'ministry_image_path' => 'Ministries landing image',
                 ],
             ],

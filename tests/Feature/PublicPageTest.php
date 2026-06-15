@@ -210,6 +210,39 @@ class PublicPageTest extends TestCase
             ->assertSee('New Here');
     }
 
+    public function test_pages_without_header_images_use_site_default_page_header_image(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'default_page_header_image_path' => 'site-settings/page-header-images/default-banner.jpg',
+        ]);
+
+        Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'intro' => 'Useful links and forms.',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Serve',
+            'slug' => 'serve',
+            'intro' => 'Find a team.',
+            'hero_image_path' => 'pages/hero-images/serve.jpg',
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('page-hero--image', false)
+            ->assertSee('/storage/site-settings/page-header-images/default-banner.jpg', false);
+
+        $this->get('/serve')
+            ->assertOk()
+            ->assertSee('/storage/pages/hero-images/serve.jpg', false)
+            ->assertDontSee('/storage/site-settings/page-header-images/default-banner.jpg', false);
+    }
+
     public function test_page_message_renders_in_hero_only_when_present(): void
     {
         Page::query()->create([
