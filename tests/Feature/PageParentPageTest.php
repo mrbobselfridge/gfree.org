@@ -367,14 +367,14 @@ class PageParentPageTest extends TestCase
             ->test(ListPages::class)
             ->assertTableColumnExists('parentPage.title', fn ($column): bool => $column->isGloballySearchable())
             ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === $expectedParentUrl
-                && $column->getIcon($column->getState()) === null
+                && $column->getIcon($column->getState()) === Heroicon::OutlinedFunnel
+                && $column->getIconColor($column->getState()) === 'warning'
                 && $column->getExtraAttributes() === $actionableAttributes, $child)
             ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === null
                 && $column->getIcon($column->getState()) === null
                 && $column->getExtraAttributes() === [], $topLevel)
             ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === $expectedTitleUrl
-                && $column->getIcon($column->getState()) === Heroicon::OutlinedFunnel
-                && $column->getIconColor($column->getState()) === 'warning'
+                && $column->getIcon($column->getState()) === null
                 && $column->getExtraAttributes() === $actionableAttributes, $child)
             ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === null
                 && $column->getIcon($column->getState()) === null

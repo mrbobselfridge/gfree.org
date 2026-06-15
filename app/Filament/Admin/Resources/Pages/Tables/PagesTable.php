@@ -28,10 +28,6 @@ class PagesTable
                     ->url(fn (Page $record): ?string => ((int) ($record->child_pages_count ?? 0)) > 0
                         ? self::pageHierarchyFilterUrl($record->getKey())
                         : null)
-                    ->icon(fn (Page $record): ?Heroicon => ((int) ($record->child_pages_count ?? 0)) > 0
-                        ? Heroicon::OutlinedFunnel
-                        : null)
-                    ->iconColor('warning')
                     ->extraAttributes(fn (Page $record): array => ((int) ($record->child_pages_count ?? 0)) > 0
                         ? self::actionableHierarchyAttributes()
                         : [])
@@ -62,6 +58,10 @@ class PagesTable
                     ->url(fn (Page $record): ?string => filled($record->parent_page_id)
                         ? self::pageHierarchyFilterUrl((int) $record->parent_page_id)
                         : null)
+                    ->icon(fn (Page $record): ?Heroicon => filled($record->parent_page_id)
+                        ? Heroicon::OutlinedFunnel
+                        : null)
+                    ->iconColor('warning')
                     ->extraAttributes(fn (Page $record): array => filled($record->parent_page_id)
                         ? self::actionableHierarchyAttributes()
                         : [])

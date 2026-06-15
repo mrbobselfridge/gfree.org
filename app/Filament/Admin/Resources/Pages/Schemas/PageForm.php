@@ -194,7 +194,7 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
-                        ImageUpload::make(
+                        ...ImageUpload::make(
                             'hero_image_path',
                             'pages/hero-images',
                             'Header Image',
