@@ -893,7 +893,7 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Draft Resource');
     }
 
-    public function test_related_content_block_defaults_to_child_cards_label_and_slug(): void
+    public function test_related_content_block_with_empty_heading_keeps_child_cards_slug_without_displaying_default_label(): void
     {
         $parent = Page::query()->create([
             'title' => 'Resources',
@@ -925,8 +925,9 @@ class PublicPageTest extends TestCase
 
         $this->get('/resources')
             ->assertOk()
-            ->assertSee('Child Cards')
             ->assertSee('/resources/child-cards')
+            ->assertSee('View more')
+            ->assertDontSee('Child Cards')
             ->assertDontSee('Related Content');
 
         $this->get('/resources/child-cards')

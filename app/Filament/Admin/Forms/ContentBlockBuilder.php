@@ -499,7 +499,6 @@ class ContentBlockBuilder
                         ->required(),
                     TextInput::make('heading')
                         ->live(onBlur: true)
-                        ->default('Child Cards')
                         ->maxLength(255)
                         ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
                             $current = trim((string) $get('listing_slug'));

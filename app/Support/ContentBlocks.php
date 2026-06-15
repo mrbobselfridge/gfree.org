@@ -185,7 +185,7 @@ class ContentBlocks
     private static function relatedContentDefaults(array $data): array
     {
         $data['is_visible'] = $data['is_visible'] ?? true;
-        $data['heading'] = $data['heading'] ?? 'Child Cards';
+        $data['heading'] = $data['heading'] ?? null;
         $data['intro'] = $data['intro'] ?? null;
         $data['background'] = $data['background'] ?? 'white';
         $data['content_type'] = in_array($data['content_type'] ?? null, self::relatedContentTypeOptions(), true)

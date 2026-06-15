@@ -23,7 +23,7 @@ class ContentBlockStarterTest extends TestCase
             ->test(CreatePage::class)
             ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
             ->assertSee('YouTube Feed')
-            ->assertSee('Child Cards');
+            ->assertSee('Child Info Cards');
     }
 
     public function test_create_announcements_start_with_a_text_content_block(): void
