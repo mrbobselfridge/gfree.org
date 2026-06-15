@@ -11,7 +11,8 @@
     $limitStatePath = $getLimitStatePath();
     $nextLimit = $getNextLimit();
     $statePath = $getStatePath();
-    $wireModelAttribute = $applyStateBindingModifiers('wire:model');
+    $selectedState = $getState();
+    $selectedPath = is_array($selectedState) ? collect($selectedState)->first() : $selectedState;
 @endphp
 
 <x-dynamic-component :component="$fieldWrapperView" :field="$field">
@@ -144,6 +145,27 @@
             margin-top: 0.75rem;
         }
 
+        .twyxtco-image-picker-actions {
+            position: sticky;
+            bottom: 0;
+            z-index: 2;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.75rem;
+            padding: 0.75rem 0 0;
+            background: color-mix(in srgb, white 92%, transparent);
+            backdrop-filter: blur(8px);
+        }
+
+        .dark .twyxtco-image-picker-actions {
+            background: color-mix(in srgb, rgb(17 24 39) 90%, transparent);
+        }
+
+        .twyxtco-image-picker-submit:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
         @media (min-width: 1280px) {
             .twyxtco-image-picker {
                 grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -157,7 +179,45 @@
         }
     </style>
 
-    <div x-data>
+    <div
+        x-data="{
+            selectedPath: @js(filled($selectedPath) ? (string) $selectedPath : null),
+            submitting: false,
+            async selectImage(path, submit = false) {
+                this.selectedPath = path;
+                await $wire.set(@js($statePath), path, false);
+
+                if (submit) {
+                    await this.useSelectedImage();
+                }
+            },
+            async useSelectedImage() {
+                if (! this.selectedPath || this.submitting) {
+                    return;
+                }
+
+                this.submitting = true;
+
+                const scrollX = window.scrollX;
+                const scrollY = window.scrollY;
+
+                try {
+                    await $wire.set(@js($statePath), this.selectedPath);
+                    await $wire.callMountedAction();
+                } finally {
+                    requestAnimationFrame(() => {
+                        window.scrollTo({
+                            left: scrollX,
+                            top: scrollY,
+                            behavior: 'auto',
+                        });
+                    });
+
+                    this.submitting = false;
+                }
+            },
+        }"
+    >
         <div class="twyxtco-image-picker-header">
             <p class="twyxtco-image-picker-summary">
                 {{ $images->count() }} of {{ $filteredImages }} {{ \Illuminate\Support\Str::plural('image', $filteredImages) }} shown
@@ -168,9 +228,8 @@
             <button
                 type="button"
                 class="twyxtco-image-picker-submit"
-                wire:click="callMountedAction"
-                wire:loading.attr="disabled"
-                wire:target="callMountedAction"
+                x-on:click.prevent.stop="useSelectedImage()"
+                x-bind:disabled="! selectedPath || submitting"
             >
                 Use selected image
             </button>
@@ -194,14 +253,15 @@
                 <label
                     for="{{ $optionId }}"
                     class="twyxtco-image-picker-option"
-                    x-on:dblclick.prevent="$wire.set(@js($statePath), @js($image['path'])); $nextTick(() => $wire.callMountedAction())"
+                    x-on:dblclick.prevent="selectImage(@js($image['path']), true)"
                 >
                     <input
                         id="{{ $optionId }}"
                         type="radio"
                         name="{{ $id }}"
                         value="{{ $image['path'] }}"
-                        {{ $wireModelAttribute }}="{{ $statePath }}"
+                        x-bind:checked="selectedPath === @js($image['path'])"
+                        x-on:change="selectImage($event.target.value)"
                         class="twyxtco-image-picker-input"
                     >
 
@@ -246,6 +306,17 @@
                     </button>
                 </div>
             @endif
+
+            <div class="twyxtco-image-picker-actions">
+                <button
+                    type="button"
+                    class="twyxtco-image-picker-submit"
+                    x-on:click.prevent.stop="useSelectedImage()"
+                    x-bind:disabled="! selectedPath || submitting"
+                >
+                    Use selected image
+                </button>
+            </div>
         @endif
     </div>
 </x-dynamic-component>
