@@ -57,6 +57,7 @@ class PagesTable
                             ],
                         ])
                         : null)
+                    ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('sort_order')
