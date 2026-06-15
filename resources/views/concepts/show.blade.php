@@ -22,7 +22,7 @@
         <nav class="concept-nav" aria-label="Concept navigation">
             <a href="#">New Here</a>
             <a href="#">Sundays</a>
-            <a href="#">Ministries</a>
+            <a href="#">Resources</a>
             <a href="#">Messages</a>
             <a href="#" class="concept-nav__give">Give</a>
         </nav>
@@ -109,7 +109,7 @@
             <div>
                 <p class="concept-eyebrow">Featured</p>
                 <h2>One Church handles the moving parts.</h2>
-                <p>Forms, event registrations, giving, and ministry signups can stay in One Church while the website stays focused on welcome, clarity, and direction.</p>
+                <p>Forms, event registrations, giving, and team signups can stay in One Church while the website stays focused on welcome, clarity, and direction.</p>
                 <a href="#" class="concept-text-link">Open One Church</a>
             </div>
         </section>
@@ -131,7 +131,7 @@
                     <span>Watch the latest sermon</span>
                 </article>
                 <article>
-                    <p>Ministry</p>
+                    <p>Resources</p>
                     <h3>Students summer schedule</h3>
                     <span>See upcoming gatherings</span>
                 </article>

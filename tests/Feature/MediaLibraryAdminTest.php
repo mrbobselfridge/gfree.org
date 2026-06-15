@@ -98,15 +98,15 @@ class MediaLibraryAdminTest extends TestCase
 
         UploadedFile::fake()
             ->image('students.png', 800, 600)
-            ->storeAs('ministries/content-images', 'students.png', 'public');
+            ->storeAs('pages/content-images', 'students.png', 'public');
 
         $options = MediaLibrary::imageOptions();
 
-        $this->assertArrayHasKey('ministries/content-images', $options);
-        $this->assertArrayHasKey('ministries/content-images/students.png', $options['ministries/content-images']);
-        $this->assertStringContainsString('students.png', $options['ministries/content-images']['ministries/content-images/students.png']);
-        $this->assertStringContainsString('/storage/ministries/content-images/students.png', $options['ministries/content-images']['ministries/content-images/students.png']);
-        $this->assertStringContainsString('Unused', $options['ministries/content-images']['ministries/content-images/students.png']);
+        $this->assertArrayHasKey('pages/content-images', $options);
+        $this->assertArrayHasKey('pages/content-images/students.png', $options['pages/content-images']);
+        $this->assertStringContainsString('students.png', $options['pages/content-images']['pages/content-images/students.png']);
+        $this->assertStringContainsString('/storage/pages/content-images/students.png', $options['pages/content-images']['pages/content-images/students.png']);
+        $this->assertStringContainsString('Unused', $options['pages/content-images']['pages/content-images/students.png']);
     }
 
     public function test_media_library_can_save_image_title_slug_and_tags(): void
@@ -121,7 +121,7 @@ class MediaLibraryAdminTest extends TestCase
         Livewire::actingAs($user)
             ->test(MediaLibraryPage::class)
             ->callAction('editImageMetadata', [
-                'title' => 'Student Ministry Hero',
+                'title' => 'Student Page Hero',
                 'slug' => 'resources/student hero',
                 'tags' => ['Students', 'Hero Image', 'students'],
             ], [
@@ -132,21 +132,21 @@ class MediaLibraryAdminTest extends TestCase
         $metadata = MediaImageMetadata::query()->firstWhere('path', 'pages/content-images/students.png');
 
         $this->assertNotNull($metadata);
-        $this->assertSame('Student Ministry Hero', $metadata->title);
+        $this->assertSame('Student Page Hero', $metadata->title);
         $this->assertSame('resources/student-hero', $metadata->slug);
         $this->assertSame(['Students', 'Hero Image', 'person', 'youth'], $metadata->tags);
         $this->assertSame($user->id, $metadata->created_by_user_id);
 
         $image = MediaLibrary::images()->firstWhere('path', 'pages/content-images/students.png');
 
-        $this->assertSame('Student Ministry Hero', $image['display_title']);
+        $this->assertSame('Student Page Hero', $image['display_title']);
         $this->assertSame('resources/student-hero', $image['slug']);
         $this->assertSame(['Students', 'Hero Image', 'person', 'youth'], $image['tags']);
 
         $this->actingAs(User::factory()->create())
             ->get('/admin/media-library')
             ->assertOk()
-            ->assertSee('Student Ministry Hero')
+            ->assertSee('Student Page Hero')
             ->assertSee('/resources/student-hero')
             ->assertSee('Students')
             ->assertSee('Hero Image');
@@ -432,17 +432,17 @@ class MediaLibraryAdminTest extends TestCase
             ->assertFormFieldHidden('hero_image_path_media_title')
             ->assertFormFieldHidden('hero_image_path_media_tags')
             ->assertFormFieldHidden('hero_image_path_media_slug')
-            ->set('data.title', 'Student Ministry')
-            ->set('data.slug', 'student-ministry')
-            ->set('data.hero_image_path', UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600))
+            ->set('data.title', 'Student Page')
+            ->set('data.slug', 'student-page')
+            ->set('data.hero_image_path', UploadedFile::fake()->image('student_page-hero.JPG', 800, 600))
             ->assertFormFieldVisible('hero_image_path_media_title')
             ->assertFormFieldVisible('hero_image_path_media_tags')
             ->assertFormFieldVisible('hero_image_path_media_slug')
-            ->assertSet('data.hero_image_path_media_title', 'Student Ministry Hero')
-            ->assertSet('data.hero_image_path_media_slug', 'student-ministry-hero')
+            ->assertSet('data.hero_image_path_media_title', 'Student Page Hero')
+            ->assertSet('data.hero_image_path_media_slug', 'student-page-hero')
             ->assertSet('data.hero_image_path_media_tags', ['person', 'youth'])
-            ->set('data.hero_image_path_media_title', 'Custom Student Ministry Hero')
-            ->set('data.hero_image_path_media_slug', 'custom/student ministry hero')
+            ->set('data.hero_image_path_media_title', 'Custom Student Page Hero')
+            ->set('data.hero_image_path_media_slug', 'custom/student page hero')
             ->set('data.hero_image_path_media_tags', ['Manual'])
             ->call('create')
             ->assertHasNoErrors();
@@ -451,15 +451,15 @@ class MediaLibraryAdminTest extends TestCase
 
         $this->assertNotNull($path);
         $this->assertMatchesRegularExpression(
-            '#^pages/hero-images/[0-9a-hjkmnp-tv-z]{26}/student-ministry-hero\.(jpg|jpeg|png|gif|webp|avif|svg)$#',
+            '#^pages/hero-images/[0-9a-hjkmnp-tv-z]{26}/student-page-hero\.(jpg|jpeg|png|gif|webp|avif|svg)$#',
             $path,
         );
 
         $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
 
         $this->assertNotNull($metadata);
-        $this->assertSame('Custom Student Ministry Hero', $metadata->title);
-        $this->assertSame('custom/student-ministry-hero', $metadata->slug);
+        $this->assertSame('Custom Student Page Hero', $metadata->title);
+        $this->assertSame('custom/student-page-hero', $metadata->slug);
         $this->assertSame(['Manual', 'person', 'youth'], $metadata->tags);
         $this->assertSame($user->id, $metadata->created_by_user_id);
     }
@@ -472,19 +472,19 @@ class MediaLibraryAdminTest extends TestCase
             ->test(MediaLibraryPage::class)
             ->callAction('uploadImages', [
                 'tags' => ['Students'],
-                'image' => UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600),
-                'image_original_name' => 'student_ministry-hero.JPG',
+                'image' => UploadedFile::fake()->image('student_page-hero.JPG', 800, 600),
+                'image_original_name' => 'student_page-hero.JPG',
             ])
             ->assertHasNoActionErrors();
 
         $path = Storage::disk('public')->allFiles('media-library')[0] ?? null;
 
         $this->assertNotNull($path);
-        $this->assertNewMediaLibraryImagePath($path, 'student-ministry-hero');
+        $this->assertNewMediaLibraryImagePath($path, 'student-page-hero');
         $this->assertDatabaseHas(MediaImageMetadata::class, [
             'path' => $path,
-            'title' => 'Student Ministry Hero',
-            'slug' => 'student-ministry-hero',
+            'title' => 'Student Page Hero',
+            'slug' => 'student-page-hero',
         ]);
         $this->assertSame(['Students', 'person', 'youth'], MediaImageMetadata::query()->firstWhere('path', $path)->tags);
     }
@@ -578,21 +578,21 @@ class MediaLibraryAdminTest extends TestCase
         MediaImageMetadata::query()->create([
             'path' => 'media-library/existing.jpg',
             'title' => 'Existing',
-            'slug' => 'student-ministry-hero',
+            'slug' => 'student-page-hero',
             'tags' => [],
         ]);
 
         Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
             ->callAction('uploadImages', [
-                'image' => UploadedFile::fake()->image('student_ministry-hero.JPG', 800, 600),
-                'image_original_name' => 'student_ministry-hero.JPG',
+                'image' => UploadedFile::fake()->image('student_page-hero.JPG', 800, 600),
+                'image_original_name' => 'student_page-hero.JPG',
             ])
             ->assertHasNoActionErrors();
 
         $this->assertDatabaseHas(MediaImageMetadata::class, [
-            'title' => 'Student Ministry Hero',
-            'slug' => 'student-ministry-hero-2',
+            'title' => 'Student Page Hero',
+            'slug' => 'student-page-hero-2',
         ]);
     }
 
@@ -600,7 +600,7 @@ class MediaLibraryAdminTest extends TestCase
     {
         $cases = [
             'Church Website Banner' => ['banner'],
-            'Ministry Graphic Background' => ['graphic'],
+            'Website Graphic Background' => ['graphic'],
             'Unsplash Photo Image' => ['picture'],
             'Square Logo Icon' => ['logo'],
             'Pastor Family Volunteer Hands' => ['person'],
@@ -657,7 +657,7 @@ class MediaLibraryAdminTest extends TestCase
             ->storeAs('pages/content-images', 'students.png', 'public');
 
         Page::query()->create([
-            'title' => 'Student Ministry',
+            'title' => 'Student Page',
             'slug' => 'students',
             'content_blocks' => [
                 [
@@ -673,14 +673,14 @@ class MediaLibraryAdminTest extends TestCase
         MediaImageMetadata::query()->create([
             'path' => 'pages/content-images/students.png',
             'title' => 'Student Hero',
-            'slug' => 'student-ministry/hero',
+            'slug' => 'student-page/hero',
             'tags' => ['Students'],
             'created_by_user_id' => $creator->id,
         ]);
 
         $component = Livewire::actingAs(User::factory()->create())
             ->test(MediaLibraryPage::class)
-            ->set('search', 'Student Ministry');
+            ->set('search', 'Student Page');
 
         $images = $component->instance()->getImages();
 
@@ -694,7 +694,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertCount(1, $images);
         $this->assertSame('uploads/picnic.jpg', $images->first()['path']);
 
-        $component->set('search', 'student-ministry/hero');
+        $component->set('search', 'student-page/hero');
 
         $images = $component->instance()->getImages();
 

@@ -21,11 +21,6 @@ return new class extends Migration
             $table->string('leadership_title')->nullable()->after('leadership_small_label');
             $table->text('leadership_subtitle')->nullable()->after('leadership_title');
             $table->string('leadership_image_path')->nullable()->after('leadership_subtitle');
-
-            $table->string('ministry_small_label')->nullable()->after('leadership_image_path');
-            $table->string('ministry_title')->nullable()->after('ministry_small_label');
-            $table->text('ministry_subtitle')->nullable()->after('ministry_title');
-            $table->string('ministry_image_path')->nullable()->after('ministry_subtitle');
         });
     }
 
@@ -44,10 +39,6 @@ return new class extends Migration
                 'leadership_title',
                 'leadership_subtitle',
                 'leadership_image_path',
-                'ministry_small_label',
-                'ministry_title',
-                'ministry_subtitle',
-                'ministry_image_path',
             ]);
         });
     }

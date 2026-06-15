@@ -224,7 +224,7 @@ return new class extends Migration
 
     private function removeAnnouncementBlocks(): void
     {
-        foreach (['homepage_contents', 'pages', 'ministries'] as $table) {
+        foreach (['homepage_contents', 'pages'] as $table) {
             if (! Schema::hasTable($table) || ! Schema::hasColumn($table, 'content_blocks')) {
                 continue;
             }

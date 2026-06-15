@@ -43,7 +43,7 @@ return new class extends Migration
     {
         if (! Schema::hasColumn('site_settings', 'sermons_small_label')) {
             Schema::table('site_settings', function (Blueprint $table): void {
-                $table->string('sermons_small_label')->nullable()->after('ministry_image_path');
+                $table->string('sermons_small_label')->nullable()->after('youtube_url');
             });
         }
 

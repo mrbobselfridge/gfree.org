@@ -6,7 +6,6 @@ use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
-use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use Illuminate\Database\Eloquent\Model;
@@ -73,15 +72,6 @@ class MediaUsage
                 ],
             ],
             [
-                'model' => Ministry::class,
-                'record_label' => 'Ministry',
-                'title' => 'name',
-                'fields' => [
-                    'hero_image_path' => 'Hero image',
-                    'card_image_path' => 'Card image',
-                ],
-            ],
-            [
                 'model' => Page::class,
                 'record_label' => 'Page',
                 'title' => 'title',
@@ -104,7 +94,6 @@ class MediaUsage
                 'title' => 'church_name',
                 'fields' => [
                     'default_page_header_image_path' => 'Default page header image',
-                    'ministry_image_path' => 'Ministries landing image',
                 ],
             ],
         ];
@@ -126,12 +115,6 @@ class MediaUsage
                 'model' => Page::class,
                 'record_label' => 'Page',
                 'title' => 'title',
-                'field' => 'content_blocks',
-            ],
-            [
-                'model' => Ministry::class,
-                'record_label' => 'Ministry',
-                'title' => 'name',
                 'field' => 'content_blocks',
             ],
         ];
@@ -387,7 +370,6 @@ class MediaUsage
     private static function shortRecordLabel(string $recordLabel): string
     {
         return match ($recordLabel) {
-            'Ministry' => 'Mn',
             'Site Settings' => 'Ss',
             'Homepage Banner' => 'Hb',
             'Homepage Content' => 'Hc',

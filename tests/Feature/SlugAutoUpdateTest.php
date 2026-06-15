@@ -4,11 +4,9 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
-use App\Filament\Admin\Resources\Ministries\Pages\EditMinistry;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Models\FileDocument;
-use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,22 +38,6 @@ class SlugAutoUpdateTest extends TestCase
             ->assertFormComponentActionHasLabel('slug', 'rebuildSlug', 'Generate path')
             ->callFormComponentAction('slug', 'rebuildSlug')
             ->assertSet('data.slug', 'changed-page-title');
-    }
-
-    public function test_ministry_slug_does_not_auto_update_on_edit(): void
-    {
-        $ministry = Ministry::query()->create([
-            'name' => 'Original Ministry',
-            'slug' => 'stable-ministry-url',
-            'is_published' => true,
-        ]);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(EditMinistry::class, ['record' => $ministry->getKey()])
-            ->set('data.name', 'Changed Ministry Name')
-            ->assertSet('data.slug', 'stable-ministry-url')
-            ->callFormComponentAction('slug', 'rebuildSlug')
-            ->assertSet('data.slug', 'changed-ministry-name');
     }
 
     public function test_file_library_slug_can_be_rebuilt_from_category_and_title(): void

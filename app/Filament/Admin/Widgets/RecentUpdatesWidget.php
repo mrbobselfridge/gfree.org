@@ -3,12 +3,10 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
-use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Models\HomepageBanner;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -37,7 +35,6 @@ class RecentUpdatesWidget extends CmsDashboardWidget
     protected function rows(): array
     {
         return collect([
-            ...$this->recentRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
             ...$this->recentRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
             ...$this->recentRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
             ...$this->recentRows(AdminAccess::NAVIGATION_LINKS, NavigationLink::class, NavigationLinkResource::class, 'Navigation Link', 'label'),

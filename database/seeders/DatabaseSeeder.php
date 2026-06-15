@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\FileCategory;
 use App\Models\HomepageBanner;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\FileCategoryExtractionInstructions;
@@ -66,42 +65,13 @@ class DatabaseSeeder extends Seeder
         collect([
             ['label' => 'New Here', 'url' => '/new-here', 'sort_order' => 1],
             ['label' => 'Sundays', 'url' => '/sundays', 'sort_order' => 2],
-            ['label' => 'Ministries', 'url' => '/ministry', 'sort_order' => 3],
-            ['label' => 'Messages', 'url' => '/messages', 'sort_order' => 4],
+            ['label' => 'Messages', 'url' => '/messages', 'sort_order' => 3],
         ])->each(fn (array $link) => NavigationLink::updateOrCreate([
             'label' => $link['label'],
             'location' => 'header',
         ], [
             'url' => $link['url'],
             'sort_order' => $link['sort_order'],
-            'is_published' => true,
-        ]));
-
-        collect([
-            [
-                'name' => 'Visit Sunday',
-                'slug' => 'visit-sunday',
-                'short_summary' => 'Service times, what to expect, kids check-in, and where to go.',
-                'sort_order' => 1,
-            ],
-            [
-                'name' => 'Find Community',
-                'slug' => 'find-community',
-                'short_summary' => 'Groups, kids, students, and ways to belong beyond Sunday.',
-                'sort_order' => 2,
-            ],
-            [
-                'name' => 'Start Serving',
-                'slug' => 'start-serving',
-                'short_summary' => 'A direct path into teams, prayer, events, giving, and One Church.',
-                'sort_order' => 3,
-            ],
-        ])->each(fn (array $ministry) => Ministry::updateOrCreate([
-            'slug' => $ministry['slug'],
-        ], [
-            'name' => $ministry['name'],
-            'short_summary' => $ministry['short_summary'],
-            'sort_order' => $ministry['sort_order'],
             'is_published' => true,
         ]));
 

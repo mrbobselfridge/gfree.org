@@ -37,7 +37,6 @@ class UserResource extends Resource
         'users-content-tools',
         'users-sitewide-tools',
         'users-additional-tools',
-        'users-individual-ministry-entries',
         'users-individual-page-entries',
     ];
 
@@ -106,7 +105,7 @@ class UserResource extends Resource
                         CheckboxList::make('admin_permissions.tool_groups.content')
                             ->label('')
                             ->options(AdminAccess::toolOptionsForGroup('Content'))
-                            ->helperText('Selecting Ministries or Pages here grants access to all current and future entries in that area.')
+                            ->helperText('Selecting Pages here grants access to all current and future page entries.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
@@ -130,18 +129,6 @@ class UserResource extends Resource
                         CheckboxList::make('admin_permissions.tool_groups.additional')
                             ->label('')
                             ->options(AdminAccess::additionalToolOptions())
-                            ->extraAlpineAttributes(self::permissionListAttributes())
-                            ->bulkToggleable()
-                            ->columns(2),
-                    ])
-                    ->columnSpanFull(),
-                self::section('Individual Ministry Entries', 'users-individual-ministry-entries')
-                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
-                    ->schema([
-                        CheckboxList::make('admin_permissions.records.ministries')
-                            ->label('')
-                            ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::MINISTRIES))
-                            ->helperText('Leave blank if the user has full Ministries access above.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),

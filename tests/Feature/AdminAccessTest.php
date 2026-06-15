@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Users\Pages\CreateUser;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -30,8 +29,8 @@ class AdminAccessTest extends TestCase
             ->assertSee('Sitewide')
             ->assertSee('Homepage Content')
             ->assertSee('Homepage Banners')
-            ->assertSee('Ministries')
             ->assertSee('Pages')
+            ->assertDontSee('Ministries')
             ->assertDontSee('Sermons')
             ->assertDontSee('Announcements')
             ->assertDontSee('Bulletins')
@@ -42,7 +41,6 @@ class AdminAccessTest extends TestCase
             ->assertSee('Workflow Notifications')
             ->assertSee('Navigation Links')
             ->assertSee('Users')
-            ->assertSee('Individual Ministry Entries')
             ->assertSee('Individual Page Entries')
             ->assertSee('Collapse all')
             ->assertSee('Expand all');
@@ -82,10 +80,7 @@ class AdminAccessTest extends TestCase
                 'users-sitewide-tools',
                 checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
             )
-            ->assertSchemaComponentExists(
-                'users-individual-ministry-entries',
-                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
-            )
+            ->assertSchemaComponentDoesNotExist('users-individual-ministry-entries')
             ->assertSchemaComponentExists(
                 'users-individual-page-entries',
                 checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
@@ -176,12 +171,6 @@ class AdminAccessTest extends TestCase
             'role' => User::ROLE_ADMIN,
         ]);
 
-        $ministry = Ministry::query()->create([
-            'name' => 'Worship Ministry',
-            'slug' => 'worship-ministry',
-            'is_published' => true,
-        ]);
-
         Livewire::actingAs($admin)
             ->test(CreateUser::class)
             ->set('data.name', 'Content Editor')
@@ -190,7 +179,6 @@ class AdminAccessTest extends TestCase
             ->set('data.role', User::ROLE_EDITOR)
             ->set('data.admin_permissions.tool_groups.content', [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::MEDIA_LIBRARY])
             ->set('data.admin_permissions.tool_groups.sitewide', [AdminAccess::SITE_SETTINGS])
-            ->set('data.admin_permissions.records.ministries', [(string) $ministry->getKey()])
             ->call('create')
             ->assertHasNoErrors();
 
@@ -198,49 +186,36 @@ class AdminAccessTest extends TestCase
 
         $this->assertSame(User::ROLE_EDITOR, $editor->role);
         $this->assertSame([AdminAccess::HOMEPAGE_CONTENT, AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS], $editor->admin_permissions['tools']);
-        $this->assertEquals([(string) $ministry->getKey()], $editor->admin_permissions['records']['ministries']);
+        $this->assertArrayNotHasKey('ministries', $editor->admin_permissions['records']);
 
         $this->actingAs($editor)
             ->get('/admin/media-library')
             ->assertOk();
     }
 
-    public function test_editor_with_individual_ministry_access_only_sees_assigned_ministries(): void
+    public function test_ministries_admin_area_is_removed(): void
     {
-        $allowed = Ministry::query()->create([
-            'name' => 'Allowed Ministry',
-            'slug' => 'allowed-ministry',
-            'is_published' => true,
-        ]);
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->get('/admin/ministries')
+            ->assertNotFound();
+    }
 
-        $blocked = Ministry::query()->create([
-            'name' => 'Blocked Ministry',
-            'slug' => 'blocked-ministry',
-            'is_published' => true,
-        ]);
-
+    public function test_legacy_ministry_permissions_are_ignored(): void
+    {
         $editor = User::factory()->create([
             'role' => User::ROLE_EDITOR,
             'admin_permissions' => [
-                'tools' => [],
+                'tools' => ['ministries'],
                 'records' => [
-                    AdminAccess::MINISTRIES => [(string) $allowed->getKey()],
+                    'ministries' => ['1'],
                 ],
             ],
         ]);
 
         $this->actingAs($editor)
             ->get('/admin/ministries')
-            ->assertOk()
-            ->assertSee('Allowed Ministry')
-            ->assertDontSee('Blocked Ministry');
-
-        $this->actingAs($editor)
-            ->get("/admin/ministries/{$allowed->getKey()}/edit")
-            ->assertOk();
-
-        $this->actingAs($editor)
-            ->get("/admin/ministries/{$blocked->getKey()}/edit")
             ->assertNotFound();
     }
 }

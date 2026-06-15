@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\HomepageContent;
-use App\Models\Ministry;
 use App\Models\Page;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Process;
@@ -98,7 +97,6 @@ class PageVisualSnapshot
     {
         return match (true) {
             $record instanceof Page => ['type' => 'page', 'record' => $record->getKey()],
-            $record instanceof Ministry => ['type' => 'ministry', 'record' => $record->getKey()],
             $record instanceof HomepageContent => ['type' => 'homepage'],
             default => null,
         };

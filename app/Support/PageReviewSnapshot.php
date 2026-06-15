@@ -4,7 +4,6 @@ namespace App\Support;
 
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
-use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +18,6 @@ class PageReviewSnapshot
     {
         return match (true) {
             $record instanceof Page => $this->page($record),
-            $record instanceof Ministry => $this->ministry($record),
             $record instanceof HomepageContent => $this->homepage($record),
             default => [],
         };
@@ -58,29 +56,6 @@ class PageReviewSnapshot
             'expires_at',
             'show_site_chrome',
             'show_page_header',
-            'is_published',
-        ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function ministry(Ministry $ministry): array
-    {
-        return $this->snapshot('Individual Ministry', $ministry->name, $ministry->publicUrl(), $ministry, [
-            'name',
-            'slug',
-            'short_summary',
-            'content_blocks',
-            'hero_image_path',
-            'card_image_path',
-            'category',
-            'meeting_time',
-            'location',
-            'leader_name',
-            'leader_email',
-            'leader_phone',
-            'one_church_url',
             'is_published',
         ]);
     }

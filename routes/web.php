@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
 use App\Http\Controllers\FileDocumentController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\PageController;
 use App\Models\SiteSetting;
 use App\Support\PageSlugs;
@@ -40,9 +39,6 @@ Route::get('/admin/page-visual-snapshots/preview/{type}/{record?}', PageVisualSn
 Route::get('/admin/page-visual-snapshots/image', PageVisualSnapshotImageController::class)
     ->middleware('signed')
     ->name('admin.page-visual-snapshots.image');
-
-Route::get('/ministry', [MinistryController::class, 'index'])->name('ministries.index');
-Route::get('/ministry/{slug}', [MinistryController::class, 'show'])->name('ministries.show');
 
 Route::get('/manual', function () {
     return view('manual', [

@@ -26,10 +26,6 @@ use Illuminate\Support\Facades\Storage;
     'youtube_url',
     'google_tag_manager_id',
     'google_analytics_measurement_id',
-    'ministry_small_label',
-    'ministry_title',
-    'ministry_subtitle',
-    'ministry_image_path',
 ])]
 class SiteSetting extends Model
 {

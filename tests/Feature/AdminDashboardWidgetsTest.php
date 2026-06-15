@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\CmsDashboard;
 use App\Models\AnalyticsPageView;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -51,12 +50,6 @@ class AdminDashboardWidgetsTest extends TestCase
             'is_published' => true,
         ]);
 
-        Ministry::query()->create([
-            'name' => 'Draft ministry',
-            'slug' => 'draft-ministry',
-            'is_published' => false,
-        ]);
-
         Page::query()->create([
             'title' => 'Draft page',
             'slug' => 'draft-page',
@@ -78,10 +71,10 @@ class AdminDashboardWidgetsTest extends TestCase
         ]);
 
         AnalyticsPageView::query()->create([
-            'url' => 'https://twyxtco.org/ministry',
-            'path' => '/ministry',
-            'route_name' => 'ministries.index',
-            'page_title' => 'Ministries',
+            'url' => 'https://twyxtco.org/new-here',
+            'path' => '/new-here',
+            'route_name' => 'pages.show',
+            'page_title' => 'New Here',
             'referrer_domain' => 'google.com',
             'browser' => 'Safari',
             'platform' => 'iOS',
@@ -101,17 +94,15 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('data-twyxtco-dashboard-widget-collapse', false)
             ->assertSee('Move')
             ->assertSee('Collapse')
-            ->assertSee('Ministry')
             ->assertSee('Page')
             ->assertSee('Site Settings')
             ->assertSee('Media Library')
-            ->assertSee('Draft ministry')
             ->assertSee('Missing Header Images')
             ->assertSee('Missing Small Labels')
             ->assertSee('Missing Intros')
-            ->assertSee('Ministry Landing Page')
+            ->assertDontSee('Ministry Landing Page')
             ->assertSee('3 high priority items')
-            ->assertSee('2 medium priority items')
+            ->assertSee('1 medium priority item')
             ->assertSee('Recent Updates')
             ->assertSee('New Media')
             ->assertSee('target="_blank"', false)
@@ -174,12 +165,6 @@ class AdminDashboardWidgetsTest extends TestCase
         Page::query()->create([
             'title' => 'Allowed page',
             'slug' => 'allowed-page',
-            'is_published' => false,
-        ]);
-
-        Ministry::query()->create([
-            'name' => 'Hidden ministry',
-            'slug' => 'hidden-ministry',
             'is_published' => false,
         ]);
 

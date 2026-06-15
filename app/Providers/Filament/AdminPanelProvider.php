@@ -14,7 +14,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -968,16 +967,6 @@ class AdminPanelProvider extends PanelProvider
                         }
                     </style>
                 HTML),
-            )
-            ->renderHook(
-                TablesRenderHook::TOOLBAR_START,
-                fn (): HtmlString => request()->is('admin/ministries')
-                    ? new HtmlString(<<<'HTML'
-                        <h2 class="twyxtco-ministry-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
-                            Individual Ministries
-                        </h2>
-                    HTML)
-                    : new HtmlString(''),
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,

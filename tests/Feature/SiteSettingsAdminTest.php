@@ -33,12 +33,12 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Google Tracking')
             ->assertSee('Google Tag Manager container ID')
             ->assertSee('Google Analytics measurement ID')
-            ->assertSee('Ministries Settings')
-            ->assertSee('Can also be managed in the Ministries area.')
+            ->assertDontSee('Ministries Settings')
             ->assertDontSee('Sermons Settings')
             ->assertDontSee('Leaders Settings')
             ->assertDontSee('Announcements Settings')
             ->assertDontSee('Bulletins Settings')
+            ->assertDontSee('Can also be managed in the Ministries area.')
             ->assertDontSee('Can also be managed in the Sermons area.')
             ->assertDontSee('Can also be managed in the Leaders area.')
             ->assertDontSee('Can also be managed in the Announcements area.')
@@ -65,12 +65,7 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->isCollapsed()
                     && $component->shouldPersistCollapsed(),
             )
-            ->assertSchemaComponentExists(
-                'site-settings-ministries-settings',
-                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
-                    && $component->isCollapsed()
-                    && $component->shouldPersistCollapsed(),
-            );
+            ->assertSchemaComponentDoesNotExist('site-settings-ministries-settings');
     }
 
     public function test_site_settings_ai_content_prompt_can_be_saved(): void

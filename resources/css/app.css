@@ -258,7 +258,6 @@
     max-width: 900px;
 }
 
-.page-hero--ministry-detail .page-hero__content,
 .page-hero--leader-detail .page-hero__content,
 .page-hero--page-message .page-hero__content {
     display: grid;
@@ -333,7 +332,6 @@
     border-left: 10px solid var(--site-accent);
 }
 
-.page-hero--ministry-detail .ministry-hero-contact,
 .page-hero--page-message .page-hero-message {
     margin-top: 0;
     justify-self: end;
@@ -1146,11 +1144,6 @@
     line-height: 1.6;
 }
 
-.ministry-index {
-    padding: 88px max(16px, calc((100vw - 1180px) / 2));
-    background: white;
-}
-
 .listing-search {
     width: min(760px, 100%);
     margin: 0 auto 36px;
@@ -1208,27 +1201,6 @@
     background: transparent;
 }
 
-.ministry-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-}
-
-.ministry-card {
-    min-height: 100%;
-    color: var(--site-ink);
-    background: var(--site-paper);
-    border: 1px solid var(--site-line);
-    transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-}
-
-.ministry-card:hover,
-.ministry-card:focus-within {
-    border-color: color-mix(in srgb, var(--site-accent) 58%, var(--site-line));
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-}
-
 .listing-card__link {
     display: flex;
     min-height: 100%;
@@ -1242,32 +1214,11 @@
     outline-offset: 4px;
 }
 
-.ministry-card img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-}
-
 .listing-card__content {
     display: flex;
     flex: 1;
     flex-direction: column;
     padding: 28px;
-}
-
-.ministry-card p {
-    margin: 0 0 18px;
-    color: var(--site-accent-text);
-    font-size: 1rem;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.ministry-card h2 {
-    margin: 0;
-    font-size: 1.7rem;
-    line-height: 1.08;
 }
 
 .listing-card__summary {
@@ -1295,10 +1246,6 @@
     content: '→';
     margin-left: 9px;
     font-weight: 900;
-}
-
-.ministry-detail {
-    margin: 0;
 }
 
 .site-service-strip {
@@ -1627,7 +1574,6 @@
     .site-service-strip,
     .site-card-row,
     .site-updates__grid,
-    .ministry-grid,
     .sermon-grid,
     .page-image-text,
     .page-link-cards,
@@ -1639,13 +1585,11 @@
         flex-basis: 100%;
     }
 
-    .page-hero--ministry-detail .page-hero__content,
     .page-hero--page-message .page-hero__content {
         grid-template-columns: 1fr;
         gap: 0;
     }
 
-    .page-hero--ministry-detail .ministry-hero-contact,
     .page-hero--page-message .page-hero-message {
         justify-self: start;
         margin-top: 28px;

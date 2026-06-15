@@ -63,8 +63,8 @@ class NavigationLinkTest extends TestCase
     public function test_header_navigation_renders_active_child_links_in_dropdowns(): void
     {
         $parent = NavigationLink::query()->create([
-            'label' => 'Ministries',
-            'url' => '/ministry',
+            'label' => 'Resources',
+            'url' => '/resources',
             'location' => 'header',
             'sort_order' => 1,
             'is_published' => true,
@@ -73,7 +73,7 @@ class NavigationLinkTest extends TestCase
         NavigationLink::query()->create([
             'parent_id' => $parent->id,
             'label' => 'Kids',
-            'url' => '/ministry/kids',
+            'url' => '/resources/kids',
             'location' => 'header',
             'sort_order' => 1,
             'is_published' => true,
@@ -82,7 +82,7 @@ class NavigationLinkTest extends TestCase
         NavigationLink::query()->create([
             'parent_id' => $parent->id,
             'label' => 'Future Students',
-            'url' => '/ministry/students',
+            'url' => '/resources/students',
             'location' => 'header',
             'sort_order' => 2,
             'publish_at' => now()->addDay(),
@@ -96,7 +96,7 @@ class NavigationLinkTest extends TestCase
             ->assertSee('data-subnav-toggle', false)
             ->assertSee('aria-controls="primary-navigation-submenu-0"', false)
             ->assertSee('data-subnav-panel', false)
-            ->assertSee('Ministries')
+            ->assertSee('Resources')
             ->assertSee('Kids')
             ->assertDontSee('Future Students');
     }
@@ -180,8 +180,8 @@ class NavigationLinkTest extends TestCase
         ]);
 
         $parent = NavigationLink::query()->create([
-            'label' => 'Ministries',
-            'url' => '/ministries',
+            'label' => 'Resources',
+            'url' => '/resources',
             'location' => 'header',
             'sort_order' => 1,
             'is_published' => true,
@@ -207,7 +207,7 @@ class NavigationLinkTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('Ministries')
+            ->assertSee('Resources')
             ->assertSee('Kids Page Link')
             ->assertDontSee('Future Students Page Link');
     }
@@ -360,8 +360,8 @@ class NavigationLinkTest extends TestCase
     public function test_copying_parent_navigation_link_copies_child_links(): void
     {
         $parent = NavigationLink::query()->create([
-            'label' => 'Ministries',
-            'url' => '/ministry',
+            'label' => 'Resources',
+            'url' => '/resources',
             'location' => 'header',
             'sort_order' => 2,
             'is_published' => true,
@@ -370,7 +370,7 @@ class NavigationLinkTest extends TestCase
         NavigationLink::query()->create([
             'parent_id' => $parent->id,
             'label' => 'Kids',
-            'url' => '/ministry/kids',
+            'url' => '/resources/kids',
             'location' => 'header',
             'sort_order' => 1,
             'is_published' => true,
@@ -379,7 +379,7 @@ class NavigationLinkTest extends TestCase
         NavigationLink::query()->create([
             'parent_id' => $parent->id,
             'label' => 'Students',
-            'url' => '/ministry/students',
+            'url' => '/resources/students',
             'location' => 'header',
             'sort_order' => 2,
             'is_published' => true,
@@ -395,8 +395,8 @@ class NavigationLinkTest extends TestCase
             ->whereKeyNot($parent->id)
             ->firstOrFail();
 
-        $this->assertStringStartsWith('Ministries (copy @ ', $copy->label);
+        $this->assertStringStartsWith('Resources (copy @ ', $copy->label);
         $this->assertSame(['Kids', 'Students'], $copy->children()->orderBy('sort_order')->pluck('label')->all());
-        $this->assertSame(['/ministry/kids', '/ministry/students'], $copy->children()->orderBy('sort_order')->pluck('url')->all());
+        $this->assertSame(['/resources/kids', '/resources/students'], $copy->children()->orderBy('sort_order')->pluck('url')->all());
     }
 }

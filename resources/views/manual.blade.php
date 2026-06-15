@@ -658,7 +658,6 @@
                 <li><a href="#content-blocks">Content Blocks</a></li>
                 <li><a href="#media-library">Media Library</a></li>
                 <li><a href="#file-library">File Library</a></li>
-                <li><a href="#ministries">Ministries</a></li>
                 <li><a href="#pages">Pages</a></li>
                 <li><a href="#navigation">Navigation Links</a></li>
                 <li><a href="#settings">Site Settings</a></li>
@@ -681,12 +680,12 @@
                 </div>
                 <div class="manual-card">
                     <strong>Content Editors</strong>
-                    <p>Usually manage selected pages, ministries, media, or other assigned content areas.</p>
+                    <p>Usually manage selected pages, media, or other assigned content areas.</p>
                 </div>
             </div>
             <ul>
                 <li>Use <strong>Users</strong> to grant or limit access.</li>
-                <li>Some accounts may be limited to specific pages or ministries.</li>
+                <li>Some accounts may be limited to specific pages.</li>
                 <li>When in doubt, ask a site admin before changing sitewide settings or navigation.</li>
             </ul>
         </section>
@@ -757,7 +756,7 @@
 
         <section class="manual-section" id="content-blocks">
             <h2>Content Blocks</h2>
-            <p>Content blocks are reusable sections used on the homepage, pages, and ministries. The available block types may vary by area, but the core behavior is the same.</p>
+            <p>Content blocks are reusable sections used on the homepage and pages. The available block types may vary by area, but the core behavior is the same.</p>
 
             <table class="manual-table">
                 <thead>
@@ -790,7 +789,7 @@
                     </tr>
                     <tr>
                         <td>Cards</td>
-                        <td>Groups of links to pages, ministries, forms, or next steps.</td>
+                        <td>Groups of links to pages, forms, files, or next steps.</td>
                         <td>Cards center by row. One, two, four, or five cards should balance visually.</td>
                     </tr>
                     <tr>
@@ -818,10 +817,10 @@
 
         <section class="manual-section" id="media-library">
             <h2>Media Library</h2>
-            <p>The Media Library is the shared library area for reusable images used across pages, ministries, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
+            <p>The Media Library is the shared library area for reusable images used across pages, content blocks, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
             <h3>Common Tasks</h3>
             <ul>
-                <li>Upload one image at a time for pages, ministries, and banners.</li>
+                <li>Upload one image at a time for pages, content blocks, and banners.</li>
                 <li>Use image search and sorting to find files by path, filename, size, dimensions, usage, creator, or tracked dates.</li>
                 <li>Use Edit image to update details or upload a replacement when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
@@ -830,7 +829,7 @@
             <h3>Image Details</h3>
             <ul>
                 <li>Upload image starts with the image field, then shows title, slug, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
-                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, banners, and ministries can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
+                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, and banners can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
@@ -883,26 +882,8 @@
                 <li>Use expiration dates for temporary flyers, posters, forms, and event handouts.</li>
                 <li>Use categories so files are easy to find later.</li>
                 <li>Use Replace file to upload a new version while keeping older versions available.</li>
-                <li>Copy the View or Download link when the file should be linked from a page, ministry, or email.</li>
+                <li>Copy the View or Download link when the file should be linked from a page, file listing, or email.</li>
             </ul>
-        </section>
-
-        <section class="manual-section" id="ministries">
-            <h2>Ministries</h2>
-            <p>Ministries control the ministry listing page and individual ministry detail pages.</p>
-            <ul>
-                <li><strong>Title and path:</strong> Public name and URL.</li>
-                <li><strong>Summary:</strong> Short listing text.</li>
-                <li><strong>Description or content blocks:</strong> Main detail page content.</li>
-                <li><strong>Image:</strong> Listing/detail image.</li>
-                <li><strong>One Church URL:</strong> Optional ministry-specific form or external link.</li>
-                <li><strong>Sort order:</strong> Controls display order in ministry lists.</li>
-                <li><strong>Published:</strong> Must be enabled for public display.</li>
-            </ul>
-            <div class="manual-note">
-                <strong>Content tip</strong>
-                <p>Write ministry pages for visitors first: who it is for, when it happens, where to go, and how to take a next step.</p>
-            </div>
         </section>
 
         <section class="manual-section" id="pages">
@@ -923,7 +904,7 @@
             <ul>
                 <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
                 <li>Do not change a public path casually. Old links may stop working.</li>
-                <li>Avoid paths already used by system routes such as ministry, admin, or manual.</li>
+                <li>Avoid paths already used by system routes such as admin or manual.</li>
                 <li>Use the generate icon to regenerate the path from the title when needed.</li>
             </ul>
             <h3>Parent Pages and Child Pages</h3>
@@ -1058,7 +1039,7 @@
             <h3>Where To Find Them</h3>
             <ul>
                 <li>Open <strong>Workflow Notification Rules</strong> in the admin sidebar.</li>
-                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
+                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Navigation Links, Homepage Content, or Homepage Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
 
@@ -1100,7 +1081,7 @@
             <h3>Manual Notify</h3>
             <ol>
                 <li>Create or edit a workflow rule with the <strong>Manual</strong> trigger.</li>
-                <li>Open a matching content item, such as a page, ministry, or media item.</li>
+                <li>Open a matching content item, such as a page, file, or media item.</li>
                 <li>Click the bell-shaped <strong>Notify</strong> action.</li>
                 <li>Choose the workflow message or messages to send.</li>
                 <li>Send the notification.</li>
@@ -1126,7 +1107,7 @@
             <h3>Recommended Uses</h3>
             <ul>
                 <li>Notify communications when public pages need review.</li>
-                <li>Notify ministry leaders when their page changes.</li>
+                <li>Notify ministry leaders when their page or file listing changes.</li>
                 <li>Notify admins when users, site settings, navigation, or homepage content changes.</li>
                 <li>Use manual notifications for review requests and automatic notifications for accountability or routine handoffs.</li>
             </ul>
@@ -1143,8 +1124,8 @@
             <ul>
                 <li>Create user accounts only for people who need CMS access.</li>
                 <li>Grant the least access that lets someone do their job.</li>
-                <li>Use area permissions for broad access, such as all pages or all ministries.</li>
-                <li>Use record-level permissions for specific ministries or pages when appropriate.</li>
+                <li>Use area permissions for broad access, such as all pages, media, files, or settings.</li>
+                <li>Use record-level permissions for specific pages when appropriate.</li>
                 <li>Users can also be selected as recipients in Workflow Notification Rules.</li>
                 <li>Remove or reduce access when someone no longer needs it.</li>
             </ul>

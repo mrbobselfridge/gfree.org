@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use Illuminate\Contracts\View\View;
@@ -30,12 +29,6 @@ class HomeController extends Controller
 
         $navigationLinks = NavigationLink::topLevelHeaderLinks();
 
-        $ministries = Ministry::query()
-            ->where('is_published', true)
-            ->orderBy('sort_order')
-            ->limit(3)
-            ->get();
-
         $hero = $this->hero($defaults['hero'], $heroBanners->first());
 
         return view('home', [
@@ -46,7 +39,7 @@ class HomeController extends Controller
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
             'hero' => $hero,
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
-            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $now),
+            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $now),
             'socialLinks' => $this->socialLinks($settings),
         ]);
     }
@@ -92,16 +85,6 @@ class HomeController extends Controller
         ];
     }
 
-    private function ministrySteps($ministries)
-    {
-        return $ministries->values()->map(fn (Ministry $ministry, int $index) => [
-            'number' => str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
-            'title' => $ministry->name,
-            'summary' => $ministry->short_summary ?: $ministry->description,
-            'url' => $ministry->one_church_url ?: url('/ministry/'.$ministry->slug),
-        ]);
-    }
-
     private function feature(array $defaults, ?SiteSetting $settings, ?HomepageContent $content): array
     {
         $featureUrl = $content?->feature_url ?: $defaults['url'];
@@ -119,12 +102,12 @@ class HomeController extends Controller
         ];
     }
 
-    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries, $now): array
+    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $now): array
     {
         $blocks = $content?->content_blocks;
 
         if (blank($blocks)) {
-            $blocks = $this->defaultHomepageBlocks($defaults, $settings, $ministries);
+            $blocks = $this->defaultHomepageBlocks($defaults, $settings);
         }
 
         return collect($blocks)
@@ -212,9 +195,9 @@ class HomeController extends Controller
             ->all();
     }
 
-    private function defaultHomepageBlocks(array $defaults, ?SiteSetting $settings, $ministries): array
+    private function defaultHomepageBlocks(array $defaults, ?SiteSetting $settings): array
     {
-        $nextSteps = $ministries->isNotEmpty() ? $this->ministrySteps($ministries)->all() : ($defaults['next_steps'] ?? []);
+        $nextSteps = $defaults['next_steps'] ?? [];
         $feature = $this->feature($defaults['feature'], $settings, null);
 
         return [

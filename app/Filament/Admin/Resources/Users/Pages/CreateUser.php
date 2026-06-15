@@ -29,7 +29,6 @@ class CreateUser extends CreateRecord
         $data['admin_permissions'] = [
             'tools' => $this->selectedTools($data),
             'records' => [
-                'ministries' => array_values($data['admin_permissions']['records']['ministries'] ?? []),
                 'pages' => array_values($data['admin_permissions']['records']['pages'] ?? []),
             ],
         ];

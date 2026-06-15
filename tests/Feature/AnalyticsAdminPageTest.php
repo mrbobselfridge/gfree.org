@@ -18,8 +18,8 @@ class AnalyticsAdminPageTest extends TestCase
             'role' => User::ROLE_ADMIN,
         ]);
 
-        $this->trackView('/ministries', 'Ministries', 'google.com', 'Desktop', 'Chrome', 'macOS', 'visitor-1', 'session-1', now()->subDays(2));
-        $this->trackView('/ministries', 'Ministries', 'google.com', 'Mobile', 'Safari', 'iOS', 'visitor-2', 'session-2', now()->subDay());
+        $this->trackView('/resources', 'Resources', 'google.com', 'Desktop', 'Chrome', 'macOS', 'visitor-1', 'session-1', now()->subDays(2));
+        $this->trackView('/resources', 'Resources', 'google.com', 'Mobile', 'Safari', 'iOS', 'visitor-2', 'session-2', now()->subDay());
         $this->trackView('/give', 'Giving', null, 'Desktop', 'Firefox', 'Windows', 'visitor-1', 'session-1', now()->subHours(2), 'Greensburg');
 
         $this->actingAs($admin)
@@ -35,8 +35,8 @@ class AnalyticsAdminPageTest extends TestCase
             ->assertSee('Regions')
             ->assertSee('Cities')
             ->assertSee('Recent Page Views')
-            ->assertSee('Ministries')
-            ->assertSee('/ministries')
+            ->assertSee('Resources')
+            ->assertSee('/resources')
             ->assertSee('google.com')
             ->assertSee('Desktop')
             ->assertSee('Chrome')

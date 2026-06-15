@@ -17,7 +17,6 @@ class PageSlugs
         'js',
         'livewire',
         'manual',
-        'ministry',
         'storage',
         'up',
     ];

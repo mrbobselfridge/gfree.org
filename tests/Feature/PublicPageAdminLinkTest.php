@@ -8,7 +8,6 @@ use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Models\HomepageBanner;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\User;
@@ -24,7 +23,6 @@ class PublicPageAdminLinkTest extends TestCase
     {
         $this->assertSame(url('/visit'), (new Page(['slug' => 'visit']))->publicUrl());
         $this->assertSame(url('/learn/baptism/basics'), (new Page(['slug' => 'learn/baptism/basics']))->publicUrl());
-        $this->assertSame(route('ministries.show', ['slug' => 'students']), (new Ministry(['slug' => 'students']))->publicUrl());
         $this->assertSame(route('home'), (new HomepageBanner)->publicUrl());
         $this->assertSame(url('/new-here'), (new NavigationLink(['url' => '/new-here']))->publicUrl());
         $this->assertSame('https://example.com/live', (new NavigationLink(['url' => 'https://example.com/live']))->publicUrl());

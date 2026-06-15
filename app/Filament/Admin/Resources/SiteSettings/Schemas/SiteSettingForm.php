@@ -21,7 +21,6 @@ class SiteSettingForm
         'site-settings-ai-settings',
         'site-settings-social-and-video-urls',
         'site-settings-google-tracking',
-        'site-settings-ministries-settings',
     ];
 
     public static function configure(Schema $schema): Schema
@@ -133,21 +132,6 @@ class SiteSettingForm
                                 'regex' => 'Enter a valid Google Analytics measurement ID, such as G-XXXXXXXXXX.',
                             ])
                             ->maxLength(255),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                self::section('Ministries Settings', 'site-settings-ministries-settings')
-                    ->description('Can also be managed in the Ministries area.')
-                    ->schema([
-                        TextInput::make('ministry_small_label')
-                            ->label('Ministry small label')
-                            ->maxLength(255),
-                        TextInput::make('ministry_title')
-                            ->label('Ministry title')
-                            ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('ministry_subtitle'))
-                            ->label('Ministry subtitle'),
-                        ...ImageUpload::make('ministry_image_path', 'site-settings/ministry', 'Ministry image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

@@ -4,11 +4,9 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
-use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
-use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Support\AdminAccess;
@@ -76,7 +74,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     {
         return collect([
             ...$this->missingContentSetupRows(),
-            ...$this->unpublishedRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
             ...$this->unpublishedRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
             ...$this->unpublishedRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
         ])
@@ -149,7 +146,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     private function missingHeaderImageItems(): Collection
     {
         $items = collect();
-        $settings = SiteSetting::query()->first();
 
         if ($this->canAccessTool(AdminAccess::HOMEPAGE_BANNERS) && ! $this->homepageHasHeaderImage()) {
             $items->push($this->missingItem('Homepage', HomepageBannerResource::getUrl()));
@@ -161,21 +157,7 @@ class NeedsAttentionWidget extends CmsDashboardWidget
                 ->each(fn (HomepageBanner $banner) => $items->push($this->missingItem('Banner: '.$banner->title, $this->editUrl(HomepageBannerResource::class, $banner))));
         }
 
-        $this->landingImageChecks($settings)->each(function (array $check) use ($items): void {
-            if ($this->canAccessTool($check['tool']) && blank(data_get($check['settings'], $check['field']))) {
-                $items->push($this->missingItem($check['label'], $check['url']));
-            }
-        });
-
-        if ($this->canAccessTool(AdminAccess::MINISTRIES)) {
-            $this->queryFor(Ministry::class)
-                ->where('is_published', true)
-                ->where(fn ($query) => $query->whereNull('hero_image_path')->orWhere('hero_image_path', ''))
-                ->latest()
-                ->limit(6)
-                ->get()
-                ->each(fn (Ministry $ministry) => $items->push($this->missingItem('Ministry: '.$ministry->name, $this->editUrl(MinistryResource::class, $ministry))));
-        }
+        $settings = SiteSetting::query()->first();
 
         if ($this->canAccessTool(AdminAccess::PAGES) && blank($settings?->default_page_header_image_path)) {
             $this->queryFor(Page::class)
@@ -197,7 +179,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     private function missingSmallLabelItems(): Collection
     {
         $items = collect();
-        $settings = SiteSetting::query()->first();
         $homepageContent = HomepageContent::query()->first();
 
         if ($this->canAccessTool(AdminAccess::HOMEPAGE_CONTENT) && blank($homepageContent?->intro_eyebrow)) {
@@ -208,22 +189,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->publishedHomepageBanners()
                 ->filter(fn (HomepageBanner $banner): bool => blank($banner->eyebrow))
                 ->each(fn (HomepageBanner $banner) => $items->push($this->missingItem('Banner: '.$banner->title, $this->editUrl(HomepageBannerResource::class, $banner))));
-        }
-
-        $this->landingLabelChecks($settings)->each(function (array $check) use ($items): void {
-            if ($this->canAccessTool($check['tool']) && blank(data_get($check['settings'], $check['field']))) {
-                $items->push($this->missingItem($check['label'], $check['url']));
-            }
-        });
-
-        if ($this->canAccessTool(AdminAccess::MINISTRIES)) {
-            $this->queryFor(Ministry::class)
-                ->where('is_published', true)
-                ->where(fn ($query) => $query->whereNull('category')->orWhere('category', ''))
-                ->latest()
-                ->limit(6)
-                ->get()
-                ->each(fn (Ministry $ministry) => $items->push($this->missingItem('Ministry: '.$ministry->name, $this->editUrl(MinistryResource::class, $ministry))));
         }
 
         if ($this->canAccessTool(AdminAccess::PAGES)) {
@@ -246,7 +211,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     private function missingIntroItems(): Collection
     {
         $items = collect();
-        $settings = SiteSetting::query()->first();
         $homepageContent = HomepageContent::query()->first();
 
         if ($this->canAccessTool(AdminAccess::HOMEPAGE_CONTENT) && $this->blankContent($homepageContent?->intro_body)) {
@@ -257,22 +221,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->publishedHomepageBanners()
                 ->filter(fn (HomepageBanner $banner): bool => $this->blankContent($banner->subtitle))
                 ->each(fn (HomepageBanner $banner) => $items->push($this->missingItem('Banner: '.$banner->title, $this->editUrl(HomepageBannerResource::class, $banner))));
-        }
-
-        $this->landingIntroChecks($settings)->each(function (array $check) use ($items): void {
-            if ($this->canAccessTool($check['tool']) && $this->blankContent(data_get($check['settings'], $check['field']))) {
-                $items->push($this->missingItem($check['label'], $check['url']));
-            }
-        });
-
-        if ($this->canAccessTool(AdminAccess::MINISTRIES)) {
-            $this->queryFor(Ministry::class)
-                ->where('is_published', true)
-                ->where(fn ($query) => $query->whereNull('short_summary')->orWhere('short_summary', ''))
-                ->latest()
-                ->limit(6)
-                ->get()
-                ->each(fn (Ministry $ministry) => $items->push($this->missingItem('Ministry: '.$ministry->name, $this->editUrl(MinistryResource::class, $ministry))));
         }
 
         if ($this->canAccessTool(AdminAccess::PAGES)) {
@@ -308,44 +256,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     {
         return $this->publishedHomepageBanners()
             ->contains(fn (HomepageBanner $banner): bool => filled($banner->image_path));
-    }
-
-    /**
-     * @return Collection<int, array{label: string, tool: string, field: string, settings: ?SiteSetting, url: ?string}>
-     */
-    private function landingImageChecks(?SiteSetting $settings): Collection
-    {
-        return collect([
-            $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_image_path', $settings, MinistryResource::getUrl()),
-        ]);
-    }
-
-    /**
-     * @return Collection<int, array{label: string, tool: string, field: string, settings: ?SiteSetting, url: ?string}>
-     */
-    private function landingLabelChecks(?SiteSetting $settings): Collection
-    {
-        return collect([
-            $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_small_label', $settings, MinistryResource::getUrl()),
-        ]);
-    }
-
-    /**
-     * @return Collection<int, array{label: string, tool: string, field: string, settings: ?SiteSetting, url: ?string}>
-     */
-    private function landingIntroChecks(?SiteSetting $settings): Collection
-    {
-        return collect([
-            $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_subtitle', $settings, MinistryResource::getUrl()),
-        ]);
-    }
-
-    /**
-     * @return array{label: string, tool: string, field: string, settings: ?SiteSetting, url: ?string}
-     */
-    private function landingCheck(string $label, string $tool, string $field, ?SiteSetting $settings, ?string $url): array
-    {
-        return compact('label', 'tool', 'field', 'settings', 'url');
     }
 
     /**

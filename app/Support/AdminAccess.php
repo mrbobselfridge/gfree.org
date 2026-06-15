@@ -9,7 +9,6 @@ use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
-use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
@@ -18,7 +17,6 @@ use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationR
 use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
-use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -37,8 +35,6 @@ class AdminAccess
     public const HOMEPAGE_CONTENT = 'homepage_content';
 
     public const HOMEPAGE_BANNERS = 'homepage_banners';
-
-    public const MINISTRIES = 'ministries';
 
     public const PAGES = 'pages';
 
@@ -73,12 +69,6 @@ class AdminAccess
                 'group' => 'Content',
                 'model' => HomepageBanner::class,
                 'resource' => HomepageBannerResource::class,
-            ],
-            self::MINISTRIES => [
-                'label' => 'Ministries',
-                'group' => 'Content',
-                'model' => Ministry::class,
-                'resource' => MinistryResource::class,
             ],
             self::PAGES => [
                 'label' => 'Pages',
@@ -158,11 +148,6 @@ class AdminAccess
     public static function recordLimitedTools(): array
     {
         return [
-            self::MINISTRIES => [
-                'label' => 'Individual Ministry Entries',
-                'model' => Ministry::class,
-                'title' => 'name',
-            ],
             self::PAGES => [
                 'label' => 'Individual Page Entries',
                 'model' => Page::class,

@@ -10,7 +10,6 @@ return [
         'navigation' => [
             ['label' => 'New Here', 'url' => '/new-here'],
             ['label' => 'Sundays', 'url' => '/sundays'],
-            ['label' => 'Ministries', 'url' => '/ministry'],
             ['label' => 'Messages', 'url' => '/messages'],
         ],
 
@@ -48,7 +47,7 @@ return [
                 'number' => '02',
                 'title' => 'Find Community',
                 'summary' => 'Groups, kids, students, and ways to belong beyond Sunday.',
-                'url' => '/ministry',
+                'url' => '/new-here',
             ],
             [
                 'number' => '03',
@@ -71,7 +70,7 @@ return [
         'feature' => [
             'eyebrow' => 'Featured',
             'title' => 'One Church handles the moving parts.',
-            'body' => 'Forms, event registrations, giving, and ministry signups can stay in One Church while the website stays focused on welcome, clarity, and direction.',
+            'body' => 'Forms, event registrations, giving, and team signups can stay in One Church while the website stays focused on welcome, clarity, and direction.',
             'label' => 'Open One Church',
             'url' => '#',
         ],
