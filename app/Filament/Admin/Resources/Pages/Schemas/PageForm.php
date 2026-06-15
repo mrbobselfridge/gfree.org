@@ -142,21 +142,6 @@ class PageForm
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
 
-                        Select::make('parent_page_id')
-                            ->label('Parent Page - optional')
-                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
-
                         ToggleButtons::make('show_site_chrome')
                             ->label('Show navigation and footer')
                             ->boolean()
@@ -183,13 +168,17 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(1),
 
-                        Placeholder::make('direct_child_pages')
-                            ->label('Parent to the following pages and files')
-                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
+                        Select::make('parent_page_id')
+                            ->label('Parent Page - optional')
+                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
+                                'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -219,6 +208,17 @@ class PageForm
                                 ->hintColor('gray')
                                 ->columnSpan(1),
                         ),
+
+                        Placeholder::make('direct_child_pages')
+                            ->label('Parent to the following pages and files')
+                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
 
                         DateTimePicker::make('publish_at')
                             ->label('Publish at')
