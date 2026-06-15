@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Support\StandardTableActions;
 use App\Models\Page;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -24,6 +25,16 @@ class PagesTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->url(fn (Page $record): ?string => ((int) ($record->child_pages_count ?? 0)) > 0
+                        ? self::pageHierarchyFilterUrl($record->getKey())
+                        : null)
+                    ->icon(fn (Page $record): ?Heroicon => ((int) ($record->child_pages_count ?? 0)) > 0
+                        ? Heroicon::OutlinedFunnel
+                        : null)
+                    ->iconColor('warning')
+                    ->extraAttributes(fn (Page $record): array => ((int) ($record->child_pages_count ?? 0)) > 0
+                        ? self::actionableHierarchyAttributes()
+                        : [])
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('is_redirect')
@@ -49,15 +60,15 @@ class PagesTable
                 TextColumn::make('parentPage.title')
                     ->label('Parent Page')
                     ->url(fn (Page $record): ?string => filled($record->parent_page_id)
-                        ? PageResource::getUrl('index', [
-                            'filters' => [
-                                'parent_page_id' => [
-                                    'value' => $record->parent_page_id,
-                                ],
-                            ],
-                            'sort' => 'parentPage.title:asc',
-                        ])
+                        ? self::pageHierarchyFilterUrl((int) $record->parent_page_id)
                         : null)
+                    ->icon(fn (Page $record): ?Heroicon => filled($record->parent_page_id)
+                        ? Heroicon::OutlinedFunnel
+                        : null)
+                    ->iconColor('warning')
+                    ->extraAttributes(fn (Page $record): array => filled($record->parent_page_id)
+                        ? self::actionableHierarchyAttributes()
+                        : [])
                     ->sortable(query: fn (Builder $query, string $direction): Builder => self::applyParentPageSort($query, $direction))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -135,6 +146,7 @@ class PagesTable
                     ->searchable()
                     ->preload(),
             ])
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withCount('childPages'))
             ->defaultSort('title')
             ->persistFiltersInSession()
             ->persistSortInSession()
@@ -182,5 +194,24 @@ class PagesTable
             ->orderBy($parentTitleQuery, $direction === 'desc' ? 'desc' : 'asc')
             ->orderBy('pages.sort_order')
             ->orderBy('pages.title');
+    }
+
+    private static function pageHierarchyFilterUrl(int|string $pageId): string
+    {
+        return PageResource::getUrl('index', [
+            'filters' => [
+                'parent_page_id' => [
+                    'value' => $pageId,
+                ],
+            ],
+            'sort' => 'parentPage.title:asc',
+        ]);
+    }
+
+    private static function actionableHierarchyAttributes(): array
+    {
+        return [
+            'class' => 'underline underline-offset-4 decoration-warning-500/70 hover:decoration-warning-500',
+        ];
     }
 }

@@ -12,6 +12,7 @@ use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\User;
 use Filament\Schemas\Components\Section;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
@@ -327,13 +328,20 @@ class PageParentPageTest extends TestCase
             'is_published' => true,
         ]);
 
+        Page::query()->create([
+            'parent_page_id' => $child->getKey(),
+            'title' => 'Volunteer Form',
+            'slug' => 'resources/forms/volunteer',
+            'is_published' => true,
+        ]);
+
         $topLevel = Page::query()->create([
             'title' => 'About',
             'slug' => 'about',
             'is_published' => true,
         ]);
 
-        $expectedUrl = PageResource::getUrl('index', [
+        $expectedParentUrl = PageResource::getUrl('index', [
             'filters' => [
                 'parent_page_id' => [
                     'value' => $parent->getKey(),
@@ -342,11 +350,36 @@ class PageParentPageTest extends TestCase
             'sort' => 'parentPage.title:asc',
         ]);
 
+        $expectedTitleUrl = PageResource::getUrl('index', [
+            'filters' => [
+                'parent_page_id' => [
+                    'value' => $child->getKey(),
+                ],
+            ],
+            'sort' => 'parentPage.title:asc',
+        ]);
+
+        $actionableAttributes = [
+            'class' => 'underline underline-offset-4 decoration-warning-500/70 hover:decoration-warning-500',
+        ];
+
         Livewire::actingAs(User::factory()->create())
             ->test(ListPages::class)
             ->assertTableColumnExists('parentPage.title', fn ($column): bool => $column->isGloballySearchable())
-            ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === $expectedUrl, $child)
-            ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === null, $topLevel);
+            ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === $expectedParentUrl
+                && $column->getIcon($column->getState()) === Heroicon::OutlinedFunnel
+                && $column->getIconColor($column->getState()) === 'warning'
+                && $column->getExtraAttributes() === $actionableAttributes, $child)
+            ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === null
+                && $column->getIcon($column->getState()) === null
+                && $column->getExtraAttributes() === [], $topLevel)
+            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === $expectedTitleUrl
+                && $column->getIcon($column->getState()) === Heroicon::OutlinedFunnel
+                && $column->getIconColor($column->getState()) === 'warning'
+                && $column->getExtraAttributes() === $actionableAttributes, $child)
+            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === null
+                && $column->getIcon($column->getState()) === null
+                && $column->getExtraAttributes() === [], $topLevel);
     }
 
     public function test_page_can_belong_to_another_page(): void

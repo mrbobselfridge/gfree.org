@@ -25,13 +25,15 @@ class StandardTableActions
         return [
             IconOnlyAction::make(
                 EditAction::make()
-                    ->label('Edit'),
+                    ->label('Edit')
+                    ->color('success'),
                 Heroicon::OutlinedPencilSquare,
             ),
 
             IconOnlyAction::make(
                 Action::make('copy')
                     ->label('Copy')
+                    ->color('success')
                     ->authorize(fn (Model $record): bool => self::canCopy($record))
                     ->action(function (Model $record): void {
                         $copy = $record->replicate();
@@ -66,9 +68,12 @@ class StandardTableActions
                 Heroicon::OutlinedSquare2Stack,
             ),
 
+            PublicPageActions::tableAction(),
+
             IconOnlyAction::make(
                 DeleteAction::make()
                     ->label('Delete')
+                    ->color('danger')
                     ->modalHeading('Delete item?')
                     ->modalDescription(fn (Model $record): string => 'Are you sure you want to delete: '.self::recordLabel($record).'?')
                     ->modalSubmitActionLabel('Yes')
@@ -79,8 +84,6 @@ class StandardTableActions
                     )),
                 Heroicon::OutlinedTrash,
             ),
-
-            PublicPageActions::tableAction(),
         ];
     }
 

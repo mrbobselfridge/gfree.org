@@ -15,6 +15,7 @@ class PublicPageActions
         return IconOnlyAction::make(
             Action::make('viewPublicPage')
                 ->label('View')
+                ->color('gray')
                 ->url(fn (Model $record): ?string => PublicPageUrls::forRecord($record), true)
                 ->hidden(fn (Model $record): bool => blank(PublicPageUrls::forRecord($record))),
             Heroicon::OutlinedArrowTopRightOnSquare,

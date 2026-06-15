@@ -48,7 +48,11 @@ class PublicPageAdminLinkTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(ListPages::class)
-            ->assertTableActionsExistInOrder(['edit', 'copy', 'delete', 'viewPublicPage'])
+            ->assertTableActionsExistInOrder(['edit', 'copy', 'viewPublicPage', 'delete'])
+            ->assertTableActionHasColor('edit', 'success', $page)
+            ->assertTableActionHasColor('copy', 'success', $page)
+            ->assertTableActionHasColor('viewPublicPage', 'gray', $page)
+            ->assertTableActionHasColor('delete', 'danger', $page)
             ->assertTableActionHasUrl('viewPublicPage', $page->publicUrl(), $page)
             ->assertTableActionShouldOpenUrlInNewTab('viewPublicPage', $page);
     }
