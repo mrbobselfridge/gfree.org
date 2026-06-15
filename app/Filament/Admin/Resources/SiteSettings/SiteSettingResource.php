@@ -24,7 +24,7 @@ class SiteSettingResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Site Tools';
 
-    protected static ?int $navigationSort = 100;
+    protected static ?int $navigationSort = -10;
 
     protected static ?string $modelLabel = 'site settings';
 

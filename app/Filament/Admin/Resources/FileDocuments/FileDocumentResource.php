@@ -13,6 +13,7 @@ use App\Filament\Admin\Resources\FileDocuments\Schemas\FileDocumentInfolist;
 use App\Filament\Admin\Resources\FileDocuments\Tables\FileDocumentsTable;
 use App\Models\FileDocument;
 use BackedEnum;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -37,6 +38,18 @@ class FileDocumentResource extends Resource
     protected static ?string $pluralModelLabel = 'File Library';
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return collect(parent::getNavigationItems())
+            ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
+                'class' => 'twyxtco-sidebar-indent-35',
+            ], merge: true))
+            ->all();
+    }
 
     public static function form(Schema $schema): Schema
     {

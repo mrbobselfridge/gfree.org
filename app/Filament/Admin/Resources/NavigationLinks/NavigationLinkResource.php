@@ -41,7 +41,7 @@ class NavigationLinkResource extends Resource
     {
         return collect(parent::getNavigationItems())
             ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
-                'class' => 'twyxtco-sidebar-indent-40',
+                'class' => 'twyxtco-sidebar-indent-35',
             ], merge: true))
             ->all();
     }
