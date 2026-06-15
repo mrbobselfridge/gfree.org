@@ -2,7 +2,10 @@
 
 namespace App\Filament\Admin\Resources\Pages\Tables;
 
+use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Filament\Admin\Resources\Support\StandardTableActions;
+use App\Models\Page;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
@@ -45,17 +48,27 @@ class PagesTable
                     ->sortable(),
                 TextColumn::make('parentPage.title')
                     ->label('Parent Page')
+                    ->url(fn (Page $record): ?string => filled($record->parent_page_id)
+                        ? PageResource::getUrl('index', [
+                            'filters' => [
+                                'parent_page_id' => [
+                                    'value' => $record->parent_page_id,
+                                ],
+                            ],
+                        ])
+                        : null)
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('sort_order')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('redirect_url')
                     ->label('Redirects To')
                     ->placeholder('Not a redirect')
                     ->limit(44)
                     ->searchable()
-                    ->toggleable(),
-                TextColumn::make('sort_order')
-                    ->numeric()
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('hero_image_path')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -109,6 +122,11 @@ class PagesTable
                         'redirect' => $query->where('is_redirect', true),
                         default => $query,
                     }),
+                SelectFilter::make('parent_page_id')
+                    ->label('Parent Page')
+                    ->options(fn (): array => PageForm::parentPageOptions())
+                    ->searchable()
+                    ->preload(),
             ])
             ->defaultSort('title')
             ->persistSortInSession()

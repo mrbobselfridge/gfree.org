@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Resources\Pages\Pages\ListPages;
@@ -241,6 +242,91 @@ class PageParentPageTest extends TestCase
             ->searchTable('page')
             ->assertCanSeeTableRecords([$livePage, $draftPage])
             ->assertCanNotSeeTableRecords([$redirectPage]);
+    }
+
+    public function test_pages_table_parent_page_filter_shows_direct_children(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'is_published' => true,
+        ]);
+
+        $child = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Forms',
+            'slug' => 'resources/forms',
+            'is_published' => true,
+        ]);
+
+        $grandchild = Page::query()->create([
+            'parent_page_id' => $child->getKey(),
+            'title' => 'Volunteer Form',
+            'slug' => 'resources/forms/volunteer',
+            'is_published' => true,
+        ]);
+
+        $otherParent = Page::query()->create([
+            'title' => 'New Here',
+            'slug' => 'new-here',
+            'is_published' => true,
+        ]);
+
+        $otherChild = Page::query()->create([
+            'parent_page_id' => $otherParent->getKey(),
+            'title' => 'Plan a Visit',
+            'slug' => 'new-here/plan-a-visit',
+            'is_published' => true,
+        ]);
+
+        $topLevel = Page::query()->create([
+            'title' => 'About',
+            'slug' => 'about',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->assertTableFilterExists('parent_page_id')
+            ->filterTable('parent_page_id', $parent)
+            ->assertCanSeeTableRecords([$child])
+            ->assertCanNotSeeTableRecords([$parent, $grandchild, $otherParent, $otherChild, $topLevel]);
+    }
+
+    public function test_pages_table_parent_page_column_links_to_parent_filter(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'is_published' => true,
+        ]);
+
+        $child = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Forms',
+            'slug' => 'resources/forms',
+            'is_published' => true,
+        ]);
+
+        $topLevel = Page::query()->create([
+            'title' => 'About',
+            'slug' => 'about',
+            'is_published' => true,
+        ]);
+
+        $expectedUrl = PageResource::getUrl('index', [
+            'filters' => [
+                'parent_page_id' => [
+                    'value' => $parent->getKey(),
+                ],
+            ],
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->assertTableColumnExists('parentPage.title', fn ($column): bool => $column->isGloballySearchable())
+            ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === $expectedUrl, $child)
+            ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === null, $topLevel);
     }
 
     public function test_page_can_belong_to_another_page(): void
