@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'actor_name',
     'admin_url',
     'public_url',
+    'manual_message',
     'pre_snapshot_path',
     'pre_snapshot_captured_at',
     'post_snapshot_path',

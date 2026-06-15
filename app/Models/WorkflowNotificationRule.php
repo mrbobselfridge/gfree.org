@@ -74,17 +74,23 @@ class WorkflowNotificationRule extends Model
             );
         }
 
-        $emails = $emails->merge(
-            Str::of((string) $this->extra_emails)
-                ->replace(["\r\n", "\n", ';'], ',')
-                ->explode(',')
-                ->map(fn (string $email): string => trim($email))
-                ->filter(fn (string $email): bool => filter_var($email, FILTER_VALIDATE_EMAIL) !== false),
-        );
+        $emails = $emails->merge(self::parseEmailList($this->extra_emails));
 
         return $emails
             ->filter()
             ->map(fn (mixed $email): string => strtolower((string) $email))
+            ->unique()
+            ->values();
+    }
+
+    public static function parseEmailList(?string $emails): Collection
+    {
+        return Str::of((string) $emails)
+            ->replace(["\r\n", "\n", ';'], ',')
+            ->explode(',')
+            ->map(fn (string $email): string => trim($email))
+            ->filter(fn (string $email): bool => filter_var($email, FILTER_VALIDATE_EMAIL) !== false)
+            ->map(fn (string $email): string => strtolower($email))
             ->unique()
             ->values();
     }

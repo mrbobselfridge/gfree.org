@@ -6,6 +6,7 @@ use App\Models\WorkflowNotificationRule;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
@@ -36,9 +37,24 @@ class WorkflowNotificationActions
                         ->options($options)
                         ->required()
                         ->columns(1),
+                    Textarea::make('manual_recipient_emails')
+                        ->label('Additional recipient emails')
+                        ->helperText('Separate addresses with commas, semicolons, or new lines.')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Textarea::make('manual_message')
+                        ->label('Message')
+                        ->helperText('Optional note shown near the top of this manual notification email.')
+                        ->rows(4)
+                        ->columnSpanFull(),
                 ])
                 ->action(function (array $data) use ($record, $service): void {
-                    $count = $service->manualForRecord($record, $data['rule_ids'] ?? []);
+                    $count = $service->manualForRecord(
+                        record: $record,
+                        ruleIds: $data['rule_ids'] ?? [],
+                        manualRecipientEmails: $data['manual_recipient_emails'] ?? null,
+                        manualMessage: $data['manual_message'] ?? null,
+                    );
 
                     Notification::make()
                         ->title($count === 1 ? 'Workflow notification sent' : "{$count} workflow notifications sent")
@@ -87,6 +103,16 @@ class WorkflowNotificationActions
                         ->options($options)
                         ->required()
                         ->columns(1),
+                    Textarea::make('manual_recipient_emails')
+                        ->label('Additional recipient emails')
+                        ->helperText('Separate addresses with commas, semicolons, or new lines.')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Textarea::make('manual_message')
+                        ->label('Message')
+                        ->helperText('Optional note shown near the top of this manual notification email.')
+                        ->rows(4)
+                        ->columnSpanFull(),
                 ])
                 ->action(function (array $data) use ($area, $recordKey, $recordLabel, $adminUrl, $publicUrl, $service): void {
                     $count = $service->manual(
@@ -96,6 +122,8 @@ class WorkflowNotificationActions
                         recordLabel: $recordLabel,
                         adminUrl: $adminUrl,
                         publicUrl: $publicUrl,
+                        manualRecipientEmails: $data['manual_recipient_emails'] ?? null,
+                        manualMessage: $data['manual_message'] ?? null,
                     );
 
                     Notification::make()

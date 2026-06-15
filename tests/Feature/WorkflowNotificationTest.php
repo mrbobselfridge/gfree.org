@@ -133,7 +133,10 @@ class WorkflowNotificationTest extends TestCase
 
     public function test_manual_rule_shows_notify_team_action_on_matching_edit_screen(): void
     {
-        WorkflowNotificationRule::query()->create([
+        Mail::fake();
+        $this->mockVisualSnapshots(['page-visual-snapshots/action-manual-current.png']);
+
+        $rule = WorkflowNotificationRule::query()->create([
             'name' => 'Review page',
             'content_area' => AdminAccess::PAGES,
             'triggers' => [WorkflowNotificationRule::TRIGGER_MANUAL],
@@ -153,7 +156,21 @@ class WorkflowNotificationTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditPage::class, ['record' => $page->getKey()])
             ->assertActionExists('notifyTeam')
-            ->assertActionHasLabel('notifyTeam', 'Notify');
+            ->assertActionHasLabel('notifyTeam', 'Notify')
+            ->callAction('notifyTeam', [
+                'rule_ids' => [$rule->getKey()],
+                'manual_recipient_emails' => "reviewer@example.com\nannouncements@example.com",
+                'manual_message' => 'Please review this before publishing.',
+            ])
+            ->assertHasNoActionErrors();
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame(['announcements@example.com', 'reviewer@example.com'], $event->recipient_emails);
+        $this->assertSame('Please review this before publishing.', $event->manual_message);
+
+        Mail::assertSent(WorkflowNotificationMail::class, fn (WorkflowNotificationMail $mail): bool => $mail->hasTo('announcements@example.com')
+            && $mail->hasTo('reviewer@example.com'));
     }
 
     public function test_create_record_hook_queues_matching_workflow_notification(): void
@@ -466,10 +483,10 @@ class WorkflowNotificationTest extends TestCase
         });
     }
 
-    public function test_manual_notification_uses_visual_baseline_as_pre_and_current_snapshot_as_post(): void
+    public function test_manual_notification_uses_current_snapshot_only_and_popup_recipients_and_message(): void
     {
         Mail::fake();
-        $this->mockVisualSnapshots(['page-visual-snapshots/manual-post.png']);
+        $this->mockVisualSnapshots(['page-visual-snapshots/manual-current.png']);
 
         $recipient = User::factory()->create([
             'email' => 'page-review@example.com',
@@ -501,22 +518,57 @@ class WorkflowNotificationTest extends TestCase
             'snapshot_captured_at' => now()->subHour(),
         ]);
 
-        $sentCount = app(WorkflowNotificationService::class)->manualForRecord($page, [$rule->getKey()]);
+        $sentCount = app(WorkflowNotificationService::class)->manualForRecord(
+            record: $page,
+            ruleIds: [$rule->getKey()],
+            manualRecipientEmails: "reviewer@example.com; invalid\nPAGE-REVIEW@example.com",
+            manualMessage: "Can you look at this before Sunday?\nThanks.",
+        );
 
         $event = WorkflowNotificationEvent::query()->firstOrFail();
 
         $this->assertSame(1, $sentCount);
         $this->assertSame(WorkflowNotificationEvent::STATUS_SENT, $event->status);
-        $this->assertSame('page-visual-snapshots/manual-pre.png', $event->pre_snapshot_path);
-        $this->assertSame('page-visual-snapshots/manual-post.png', $event->post_snapshot_path);
+        $this->assertNull($event->pre_snapshot_path);
+        $this->assertSame('page-visual-snapshots/manual-current.png', $event->post_snapshot_path);
+        $this->assertSame(['page-review@example.com', 'reviewer@example.com'], $event->recipient_emails);
+        $this->assertSame("Can you look at this before Sunday?\nThanks.", $event->manual_message);
         $this->assertSame(
-            'page-visual-snapshots/manual-post.png',
+            'page-visual-snapshots/manual-current.png',
             WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->firstOrFail()->snapshot_path,
         );
 
-        Mail::assertSent(WorkflowNotificationMail::class, fn (WorkflowNotificationMail $mail): bool => $mail->hasTo('page-review@example.com')
-            && $mail->event->pre_snapshot_path === 'page-visual-snapshots/manual-pre.png'
-            && $mail->event->post_snapshot_path === 'page-visual-snapshots/manual-post.png');
+        $sentMail = null;
+
+        Mail::assertSent(WorkflowNotificationMail::class, function (WorkflowNotificationMail $mail) use (&$sentMail): bool {
+            $sentMail = $mail;
+
+            return $mail->hasTo('page-review@example.com')
+                && $mail->hasTo('reviewer@example.com');
+        });
+
+        $this->assertInstanceOf(WorkflowNotificationMail::class, $sentMail);
+        $this->assertNull($sentMail->event->pre_snapshot_path);
+        $this->assertSame('page-visual-snapshots/manual-current.png', $sentMail->event->post_snapshot_path);
+
+        $html = $sentMail->render();
+
+        $this->assertStringContainsString('Please review the page.', $html);
+        $this->assertStringContainsString('Can you look at this before Sunday?', $html);
+        $this->assertStringContainsString('View', $html);
+        $this->assertStringContainsString('Open in admin', $html);
+        $this->assertStringContainsString('<strong>Full URL:</strong>', $html);
+        $this->assertStringContainsString($page->publicUrl(), $html);
+        $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/manual-current.png', $html);
+        $this->assertStringContainsString('alt="Current page screenshot"', $html);
+        $this->assertStringNotContainsString('Content area:', $html);
+        $this->assertStringNotContainsString('Action:', $html);
+        $this->assertStringNotContainsString('Item:', $html);
+        $this->assertStringNotContainsString('Changed by:', $html);
+        $this->assertStringNotContainsString('Visual comparison', $html);
+        $this->assertStringNotContainsString('Before Changes', $html);
+        $this->assertStringNotContainsString('After Changes', $html);
+        $this->assertStringNotContainsString('page-visual-snapshots/manual-pre.png', $html);
     }
 
     public function test_repeated_updates_keep_the_original_pre_visual_snapshot(): void

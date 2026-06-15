@@ -111,8 +111,13 @@ class WorkflowNotificationService
             });
     }
 
-    public function manualForRecord(Model $record, array $ruleIds, ?User $actor = null): int
-    {
+    public function manualForRecord(
+        Model $record,
+        array $ruleIds,
+        ?User $actor = null,
+        ?string $manualRecipientEmails = null,
+        ?string $manualMessage = null,
+    ): int {
         $area = WorkflowNotificationAreas::areaForModel($record);
 
         if (! $area) {
@@ -129,6 +134,8 @@ class WorkflowNotificationService
             publicUrl: $record instanceof HasPublicUrl ? $record->publicUrl() : null,
             recordType: $record::class,
             recordId: (int) $record->getKey(),
+            manualRecipientEmails: $manualRecipientEmails,
+            manualMessage: $manualMessage,
         );
     }
 
@@ -142,6 +149,8 @@ class WorkflowNotificationService
         ?string $publicUrl = null,
         ?string $recordType = null,
         ?int $recordId = null,
+        ?string $manualRecipientEmails = null,
+        ?string $manualMessage = null,
     ): int {
         $rules = WorkflowNotificationRule::query()
             ->enabled()
@@ -151,9 +160,15 @@ class WorkflowNotificationService
             ->filter(fn (WorkflowNotificationRule $rule): bool => $rule->hasTrigger(WorkflowNotificationRule::TRIGGER_MANUAL));
 
         $sent = 0;
+        $manualRecipients = WorkflowNotificationRule::parseEmailList($manualRecipientEmails);
+        $manualMessage = trim((string) $manualMessage);
 
         foreach ($rules as $rule) {
-            $recipients = $rule->recipientEmails();
+            $recipients = $rule->recipientEmails()
+                ->merge($manualRecipients)
+                ->filter()
+                ->unique()
+                ->values();
 
             if ($recipients->isEmpty()) {
                 continue;
@@ -181,12 +196,10 @@ class WorkflowNotificationService
                 'actor_name' => $actor?->name,
                 'admin_url' => $adminUrl,
                 'public_url' => $publicUrl,
+                'manual_message' => $manualMessage !== '' ? $manualMessage : null,
                 'scheduled_at' => now(),
                 'recipient_emails' => $recipients->all(),
             ]);
-
-            $this->fillPreSnapshot($event, $recordType, $recordId);
-            $event->save();
 
             $this->send($event);
             $sent++;
@@ -292,7 +305,6 @@ class WorkflowNotificationService
     {
         return in_array($event->trigger, [
             WorkflowNotificationRule::TRIGGER_UPDATED,
-            WorkflowNotificationRule::TRIGGER_MANUAL,
         ], true);
     }
 
@@ -300,7 +312,6 @@ class WorkflowNotificationService
     {
         return in_array($trigger, [
             WorkflowNotificationRule::TRIGGER_UPDATED,
-            WorkflowNotificationRule::TRIGGER_MANUAL,
             WorkflowNotificationRule::TRIGGER_DELETED,
         ], true);
     }
