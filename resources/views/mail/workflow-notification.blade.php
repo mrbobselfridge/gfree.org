@@ -3,7 +3,8 @@
     $areaLabel = \App\Support\WorkflowNotificationAreas::options()[$event->content_area] ?? str($event->content_area)->headline();
     $triggerLabel = \App\Support\WorkflowNotificationAreas::triggerOptions()[$event->trigger] ?? str($event->trigger)->headline();
     $snapshotService = app(\App\Support\PageVisualSnapshot::class);
-    $preSnapshotUrl = $event->pre_snapshot_path ? $snapshotService->imageUrl($event->pre_snapshot_path) : null;
+    $isCreateTrigger = $event->trigger === \App\Models\WorkflowNotificationRule::TRIGGER_CREATED;
+    $preSnapshotUrl = (! $isCreateTrigger && $event->pre_snapshot_path) ? $snapshotService->imageUrl($event->pre_snapshot_path) : null;
     $postSnapshotUrl = $event->post_snapshot_path ? $snapshotService->imageUrl($event->post_snapshot_path) : null;
     $hasBothSnapshots = $preSnapshotUrl && $postSnapshotUrl;
 @endphp
@@ -38,7 +39,7 @@
 @if ($preSnapshotUrl || $postSnapshotUrl)
     <hr>
 
-    <p><strong>Visual comparison</strong></p>
+    <p><strong>{{ $hasBothSnapshots ? 'Visual comparison' : 'Visual snapshot' }}</strong></p>
 
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width: 100%; max-width: 100%; border-collapse: collapse; table-layout: fixed;">
         <tr>
@@ -52,10 +53,12 @@
             @endif
 
             @if ($postSnapshotUrl)
-                <td width="{{ $hasBothSnapshots ? '50%' : '100%' }}" valign="top" style="width: {{ $hasBothSnapshots ? '50%' : '100%' }}; max-width: {{ $hasBothSnapshots ? '50%' : '100%' }}; padding: 0 0 12px 8px; vertical-align: top;">
-                    <p style="margin: 0 0 8px; font-weight: 700;">POST</p>
+                <td width="{{ $hasBothSnapshots ? '50%' : '100%' }}" valign="top" style="width: {{ $hasBothSnapshots ? '50%' : '100%' }}; max-width: {{ $hasBothSnapshots ? '50%' : '100%' }}; padding: {{ $hasBothSnapshots ? '0 0 12px 8px' : '0 0 12px 0' }}; vertical-align: top;">
+                    @if ($hasBothSnapshots)
+                        <p style="margin: 0 0 8px; font-weight: 700;">POST</p>
+                    @endif
                     <a href="{{ $postSnapshotUrl }}">
-                        <img src="{{ $postSnapshotUrl }}" alt="POST page screenshot" width="100%" style="display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid #d1d5db;">
+                        <img src="{{ $postSnapshotUrl }}" alt="{{ $hasBothSnapshots ? 'POST page screenshot' : 'Page screenshot' }}" width="100%" style="display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid #d1d5db;">
                     </a>
                 </td>
             @endif

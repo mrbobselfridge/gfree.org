@@ -421,6 +421,45 @@ class WorkflowNotificationTest extends TestCase
         $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/post.png', $html);
     }
 
+    public function test_create_workflow_notification_email_shows_only_post_visual_snapshot(): void
+    {
+        $this->mockVisualSnapshots();
+
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Page created',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_CREATED],
+            'extra_emails' => 'page-review@example.com',
+            'subject' => 'Page created',
+            'message' => 'Please review the new page.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $event = WorkflowNotificationEvent::query()->create([
+            'workflow_notification_rule_id' => $rule->getKey(),
+            'content_area' => AdminAccess::PAGES,
+            'trigger' => WorkflowNotificationRule::TRIGGER_CREATED,
+            'status' => WorkflowNotificationEvent::STATUS_PENDING,
+            'record_key' => Page::class.':1',
+            'pre_snapshot_path' => 'page-visual-snapshots/pre.png',
+            'post_snapshot_path' => 'page-visual-snapshots/post.png',
+            'scheduled_at' => now(),
+            'recipient_emails' => ['page-review@example.com'],
+        ]);
+
+        $html = view('mail.workflow-notification', ['event' => $event])->render();
+
+        $this->assertStringContainsString('Visual snapshot', $html);
+        $this->assertStringNotContainsString('Visual comparison', $html);
+        $this->assertStringNotContainsString('PRE', $html);
+        $this->assertStringNotContainsString('POST', $html);
+        $this->assertStringContainsString('td width="100%" valign="top" style="width: 100%; max-width: 100%; padding: 0 0 12px 0;', $html);
+        $this->assertStringContainsString('alt="Page screenshot"', $html);
+        $this->assertStringNotContainsString('https://example.test/snapshots/page-visual-snapshots/pre.png', $html);
+        $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/post.png', $html);
+    }
+
     /**
      * @param  array<int, string>  $capturePaths
      */
