@@ -46,7 +46,7 @@ class FileDocumentResource extends Resource
     {
         return collect(parent::getNavigationItems())
             ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
-                'class' => 'twyxtco-sidebar-indent-35',
+                'class' => 'twyxtco-sidebar-tight-above',
             ], merge: true))
             ->all();
     }

@@ -25,6 +25,7 @@ class AdminNavigationHelpTest extends TestCase
             ->assertOk()
             ->assertSee('twyxtco-sidebar-help', false)
             ->assertSee('twyxtco-sidebar-indent-35', false)
+            ->assertSee('twyxtco-sidebar-tight-above', false)
             ->assertSee('Your starting point for admin tools and quick account access.', false)
             ->assertDontSee('Manage ministry listing cards and individual ministry detail pages.', false)
             ->assertSee('Create and edit website pages, nested page paths, and simple redirect URLs.', false)
@@ -33,7 +34,8 @@ class AdminNavigationHelpTest extends TestCase
             ->assertSee('Manage admin and editor accounts and their allowed admin areas.', false)
             ->assertSee('/manual#workflow-notifications', false);
 
-        $this->assertGreaterThanOrEqual(4, substr_count($response->getContent(), 'twyxtco-sidebar-indent-35'));
+        $this->assertGreaterThanOrEqual(3, substr_count($response->getContent(), 'twyxtco-sidebar-indent-35'));
+        $this->assertGreaterThanOrEqual(2, substr_count($response->getContent(), 'twyxtco-sidebar-tight-above'));
         $this->assertSame(1, HomepageBannerResource::getNavigationSort());
         $this->assertGreaterThan(PageResource::getNavigationSort(), NavigationLinkResource::getNavigationSort());
         $this->assertGreaterThan(MediaLibrary::getNavigationSort(), FileDocumentResource::getNavigationSort());
