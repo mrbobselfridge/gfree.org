@@ -157,17 +157,6 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
-                        Placeholder::make('direct_child_pages')
-                            ->label('Parent to the following pages and files')
-                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
-
                         ToggleButtons::make('show_site_chrome')
                             ->label('Show navigation and footer')
                             ->boolean()
@@ -194,7 +183,18 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(1),
 
-                        ...ImageUpload::make(
+                        Placeholder::make('direct_child_pages')
+                            ->label('Parent to the following pages and files')
+                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+
+                        ImageUpload::make(
                             'hero_image_path',
                             'pages/hero-images',
                             'Header Image',
