@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\HomeController;
-use App\Models\Announcement;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
@@ -20,7 +19,6 @@ class PageVisualSnapshotPreviewController extends Controller
     {
         return match ($type) {
             'page' => $this->page(Page::query()->findOrFail($record)),
-            'announcement' => $this->announcement(Announcement::query()->findOrFail($record)),
             'ministry' => $this->ministry(Ministry::query()->findOrFail($record)),
             'homepage' => $this->homepage(HomepageContent::query()->firstOrCreate([])),
             default => abort(404),
@@ -35,21 +33,8 @@ class PageVisualSnapshotPreviewController extends Controller
             ...$this->sharedViewData($settings),
             'settings' => $settings,
             'page' => $page,
-            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, ContentBlocks::featuredAnnouncementUpdates(), $page),
+            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, page: $page),
             'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path),
-        ]);
-    }
-
-    private function announcement(Announcement $announcement): View
-    {
-        $settings = SiteSetting::query()->first();
-
-        return view('announcements.show', [
-            ...$this->sharedViewData($settings),
-            'settings' => $settings,
-            'announcement' => $announcement,
-            'contentBlocks' => ContentBlocks::prepare($announcement->content_blocks, $settings),
-            'imageUrl' => ContentBlocks::imageUrl($announcement->image_path) ?: $this->listingImageUrl('announcements', $settings),
         ]);
     }
 

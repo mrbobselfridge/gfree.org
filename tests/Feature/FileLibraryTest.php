@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
 use App\Filament\Admin\Resources\FileCategories\Pages\CreateFileCategory;
 use App\Filament\Admin\Resources\FileCategories\Pages\EditFileCategory;
 use App\Filament\Admin\Resources\FileCategories\Pages\ListFileCategories;
-use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
-use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\FileDocuments\RelationManagers\VersionsRelationManager;
 use App\Models\FileCategory;
 use App\Models\FileDocument;
@@ -455,7 +455,6 @@ class FileLibraryTest extends TestCase
             'church_name' => 'TwyxtCo Church',
         ], [
             'openai_api_key' => 'test-key',
-            'openai_bulletin_model' => 'gpt-4o-mini',
         ]);
 
         FileCategory::query()->updateOrCreate([
@@ -508,7 +507,6 @@ class FileLibraryTest extends TestCase
             'church_name' => 'TwyxtCo Church',
         ], [
             'openai_api_key' => 'test-key',
-            'openai_bulletin_model' => 'gpt-4o-mini',
         ]);
 
         FileCategory::query()->updateOrCreate([

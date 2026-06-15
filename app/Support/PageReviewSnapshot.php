@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Announcement;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
@@ -20,7 +19,6 @@ class PageReviewSnapshot
     {
         return match (true) {
             $record instanceof Page => $this->page($record),
-            $record instanceof Announcement => $this->announcement($record),
             $record instanceof Ministry => $this->ministry($record),
             $record instanceof HomepageContent => $this->homepage($record),
             default => [],
@@ -60,29 +58,6 @@ class PageReviewSnapshot
             'expires_at',
             'show_site_chrome',
             'show_page_header',
-            'is_published',
-        ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function announcement(Announcement $announcement): array
-    {
-        return $this->snapshot('Individual Announcement', $announcement->title, $announcement->publicUrl(), $announcement, [
-            'title',
-            'slug',
-            'summary',
-            'content_blocks',
-            'image_path',
-            'background',
-            'cta_label',
-            'cta_url',
-            'publish_at',
-            'expires_at',
-            'featured_at',
-            'feature_expires_at',
-            'is_featured',
             'is_published',
         ]);
     }

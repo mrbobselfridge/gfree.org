@@ -656,8 +656,6 @@
                 <li><a href="#homepage">Homepage Content</a></li>
                 <li><a href="#banners">Homepage Banners</a></li>
                 <li><a href="#content-blocks">Content Blocks</a></li>
-                <li><a href="#announcements">Announcements</a></li>
-                <li><a href="#bulletins">Bulletins</a></li>
                 <li><a href="#media-library">Media Library</a></li>
                 <li><a href="#file-library">File Library</a></li>
                 <li><a href="#ministries">Ministries</a></li>
@@ -683,7 +681,7 @@
                 </div>
                 <div class="manual-card">
                     <strong>Content Editors</strong>
-                    <p>Usually manage selected pages, ministries, announcements, bulletins, or media.</p>
+                    <p>Usually manage selected pages, ministries, media, or other assigned content areas.</p>
                 </div>
             </div>
             <ul>
@@ -738,7 +736,6 @@
             <h3>What To Watch</h3>
             <ul>
                 <li>The homepage also uses <strong>Homepage Banners</strong> for the top hero/banner area.</li>
-                <li>The Announcements block can be moved or hidden from Homepage Content.</li>
                 <li>If Homepage Content is empty, the site can fall back to starter/default content.</li>
             </ul>
         </section>
@@ -760,7 +757,7 @@
 
         <section class="manual-section" id="content-blocks">
             <h2>Content Blocks</h2>
-            <p>Content blocks are reusable sections used on the homepage, pages, ministries, and announcements. The available block types may vary by area, but the core behavior is the same.</p>
+            <p>Content blocks are reusable sections used on the homepage, pages, and ministries. The available block types may vary by area, but the core behavior is the same.</p>
 
             <table class="manual-table">
                 <thead>
@@ -806,11 +803,6 @@
                         <td>Trusted third-party embed code such as calendar or forms.</td>
                         <td>Only paste embed code from trusted providers.</td>
                     </tr>
-                    <tr>
-                        <td>Announcements</td>
-                        <td>Featured church updates shown in a content section.</td>
-                        <td>Shows up to 10 active featured announcements, ordered by urgency and publish timing.</td>
-                    </tr>
                 </tbody>
             </table>
 
@@ -824,61 +816,12 @@
             </ul>
         </section>
 
-        <section class="manual-section" id="announcements">
-            <h2>Announcements</h2>
-            <p>Announcements are current updates, events, reminders, and opportunities. They can appear on the Announcements landing page, detail pages, and Announcements content blocks.</p>
-            <h3>Key Fields</h3>
-            <ul>
-                <li><strong>Title:</strong> Public headline.</li>
-                <li><strong>Summary:</strong> Short preview text shown on listings and cards.</li>
-                <li><strong>Image:</strong> Optional listing/detail image.</li>
-                <li><strong>Published:</strong> Must be enabled for the public site.</li>
-                <li><strong>Publish at:</strong> Optional date/time when the announcement becomes visible.</li>
-                <li><strong>Expires at:</strong> Optional date/time when the announcement stops showing publicly.</li>
-                <li><strong>Featured:</strong> Marks the announcement for featured feeds and visual labels.</li>
-                <li><strong>Featured at:</strong> Optional date/time when it begins appearing in featured sections.</li>
-                <li><strong>Feature expires at:</strong> Optional date/time when it leaves featured sections.</li>
-                <li><strong>CTA label and URL:</strong> Optional action link on detail pages.</li>
-            </ul>
-            <h3>Public Ordering</h3>
-            <p>Announcement listings and content-block feeds are ordered by:</p>
-            <ol>
-                <li>Feature expires at, soonest first.</li>
-                <li>Featured at, newest first.</li>
-                <li>Expires at, soonest first.</li>
-                <li>Publish at, newest first.</li>
-                <li>Featured announcements before non-featured announcements.</li>
-                <li>Title A-Z.</li>
-            </ol>
-            <div class="manual-note">
-                <strong>Planning tip</strong>
-                <p>If something should be highlighted for a limited period, fill in both Featured at and Feature expires at. If it should disappear completely after an event, also fill in Expires at.</p>
-            </div>
-        </section>
-
-        <section class="manual-section" id="bulletins">
-            <h2>Bulletins</h2>
-            <p>Bulletins manage weekly bulletin PDFs and their public bulletin pages.</p>
-            <ol>
-                <li>Create or edit a bulletin.</li>
-                <li>Upload the PDF.</li>
-                <li>Use the PDF extraction action when available to create readable web content from the bulletin.</li>
-                <li>Review extracted content for dates, event names, contact information, and links.</li>
-                <li>Save and open the public bulletin page.</li>
-            </ol>
-            <ul>
-                <li>Keep bulletin dates accurate.</li>
-                <li>Do not rely only on a PDF if the content should be searchable or readable on phones.</li>
-                <li>Check that important links, such as connection cards or forms, work after extraction.</li>
-            </ul>
-        </section>
-
         <section class="manual-section" id="media-library">
             <h2>Media Library</h2>
-            <p>The Media Library is the shared library area for reusable images used across pages, announcements, ministries, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
+            <p>The Media Library is the shared library area for reusable images used across pages, ministries, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
             <h3>Common Tasks</h3>
             <ul>
-                <li>Upload one image at a time for pages, announcements, ministries, and banners.</li>
+                <li>Upload one image at a time for pages, ministries, and banners.</li>
                 <li>Use image search and sorting to find files by path, filename, size, dimensions, usage, creator, or tracked dates.</li>
                 <li>Use Edit image to update details or upload a replacement when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
@@ -887,7 +830,7 @@
             <h3>Image Details</h3>
             <ul>
                 <li>Upload image starts with the image field, then shows title, slug, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
-                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, banners, announcements, and ministries can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
+                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, banners, and ministries can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
@@ -940,7 +883,7 @@
                 <li>Use expiration dates for temporary flyers, posters, forms, and event handouts.</li>
                 <li>Use categories so files are easy to find later.</li>
                 <li>Use Replace file to upload a new version while keeping older versions available.</li>
-                <li>Copy the View or Download link when the file should be linked from a page, announcement, ministry, or email.</li>
+                <li>Copy the View or Download link when the file should be linked from a page, ministry, or email.</li>
             </ul>
         </section>
 
@@ -980,7 +923,7 @@
             <ul>
                 <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
                 <li>Do not change a public path casually. Old links may stop working.</li>
-                <li>Avoid paths already used by system routes such as announcements, bulletins, ministry, admin, or manual.</li>
+                <li>Avoid paths already used by system routes such as ministry, admin, or manual.</li>
                 <li>Use the generate icon to regenerate the path from the title when needed.</li>
             </ul>
             <h3>Parent Pages and Child Pages</h3>
@@ -1032,7 +975,7 @@
                 <li>Social media links.</li>
                 <li>One Church URL fallback.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
-                <li>OpenAI API key and default AI model settings used by rewrite, bulletin extraction, page review, and file extraction tools when enabled.</li>
+                <li>OpenAI API key and default AI model settings used by rewrite, page review, and file extraction tools when enabled.</li>
                 <li>Google Tag Manager and Google Analytics tracking IDs.</li>
             </ul>
             <div class="manual-note">
@@ -1069,12 +1012,12 @@
                 <tbody>
                     <tr>
                         <td>Database Backup</td>
-                        <td>CMS content, users, settings, bulletins metadata, file records, analytics, and other database content.</td>
+                        <td>CMS content, users, settings, file records, analytics, and other database content.</td>
                         <td>Every 4 hours.</td>
                     </tr>
                     <tr>
                         <td>Full Site Backup</td>
-                        <td>Database content, Media Library images, bulletin PDFs, and private File Library documents.</td>
+                        <td>Database content, Media Library images, and private File Library documents.</td>
                         <td>Nightly.</td>
                     </tr>
                     <tr>
@@ -1095,7 +1038,7 @@
 
             <div class="manual-note">
                 <strong>Restore caution</strong>
-                <p>Downloading a backup is safe for trusted admins, but restoring a backup should be handled by a technical admin or developer. A restore can overwrite current content, media, files, and bulletin PDFs.</p>
+                <p>Downloading a backup is safe for trusted admins, but restoring a backup should be handled by a technical admin or developer. A restore can overwrite current content, media, and files.</p>
             </div>
 
             <h3>What To Watch</h3>
@@ -1109,12 +1052,12 @@
 
         <section class="manual-section" id="workflow-notifications">
             <h2>Workflow Notifications and Email</h2>
-            <p>Workflow Notifications let the CMS email people when important content is created, updated, deleted, or manually sent for review. Use them for handoffs such as asking another team to review a bulletin, update matching announcements, check media, or approve public content.</p>
+            <p>Workflow Notifications let the CMS email people when important content is created, updated, deleted, or manually sent for review. Use them for handoffs such as asking another team to check media, review pages, or approve public content.</p>
 
             <h3>Where To Find Them</h3>
             <ul>
                 <li>Open <strong>Workflow Notification Rules</strong> in the admin sidebar.</li>
-                <li>Create a rule for one content area, such as Bulletins, Announcements, Pages, Media Library, File Library, Site Settings, Users, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
+                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
 
@@ -1156,7 +1099,7 @@
             <h3>Manual Notify</h3>
             <ol>
                 <li>Create or edit a workflow rule with the <strong>Manual</strong> trigger.</li>
-                <li>Open a matching content item, such as a bulletin or announcement.</li>
+                <li>Open a matching content item, such as a page, ministry, or media item.</li>
                 <li>Click the bell-shaped <strong>Notify</strong> action.</li>
                 <li>Choose the workflow message or messages to send.</li>
                 <li>Send the notification.</li>
@@ -1181,8 +1124,8 @@
 
             <h3>Recommended Uses</h3>
             <ul>
-                <li>Notify communications when a bulletin is ready to turn into announcements.</li>
-                <li>Notify ministry leaders when their page or announcement changes.</li>
+                <li>Notify communications when public pages need review.</li>
+                <li>Notify ministry leaders when their page changes.</li>
                 <li>Notify admins when users, site settings, navigation, or homepage content changes.</li>
                 <li>Use manual notifications for review requests and automatic notifications for accountability or routine handoffs.</li>
             </ul>
@@ -1199,7 +1142,7 @@
             <ul>
                 <li>Create user accounts only for people who need CMS access.</li>
                 <li>Grant the least access that lets someone do their job.</li>
-                <li>Use area permissions for broad access, such as all announcements or all pages.</li>
+                <li>Use area permissions for broad access, such as all pages or all ministries.</li>
                 <li>Use record-level permissions for specific ministries or pages when appropriate.</li>
                 <li>Users can also be selected as recipients in Workflow Notification Rules.</li>
                 <li>Remove or reduce access when someone no longer needs it.</li>
@@ -1255,7 +1198,7 @@
 
             <h3>A link opens the wrong place.</h3>
             <ul>
-                <li>Internal site paths should usually begin with <code>/</code>, such as <code>/announcements</code>.</li>
+                <li>Internal site paths should usually begin with <code>/</code>, such as <code>/new-here</code>.</li>
                 <li>External links should include the full <code>https://</code> address.</li>
                 <li>After saving, click the public link to test it.</li>
             </ul>

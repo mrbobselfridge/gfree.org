@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Storage;
     'email',
     'office_hours',
     'openai_api_key',
-    'openai_bulletin_model',
     'ai_content_prompt',
-    'ai_bulletin_extraction_prompt',
     'livestream_url',
     'giving_url',
     'one_church_url',
@@ -27,18 +25,10 @@ use Illuminate\Support\Facades\Storage;
     'youtube_url',
     'google_tag_manager_id',
     'google_analytics_measurement_id',
-    'announcements_small_label',
-    'announcements_title',
-    'announcements_subtitle',
-    'announcements_image_path',
     'ministry_small_label',
     'ministry_title',
     'ministry_subtitle',
     'ministry_image_path',
-    'bulletins_small_label',
-    'bulletins_title',
-    'bulletins_subtitle',
-    'bulletins_image_path',
 ])]
 class SiteSetting extends Model
 {

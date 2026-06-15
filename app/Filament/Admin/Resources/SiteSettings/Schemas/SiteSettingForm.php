@@ -5,12 +5,9 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Rules\HttpOrRelativeUrl;
-use App\Support\AiBulletinExtractionPrompt;
 use App\Support\AiContentPrompt;
-use App\Support\OpenAiSiteSettings;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -24,9 +21,7 @@ class SiteSettingForm
         'site-settings-ai-settings',
         'site-settings-social-and-video-urls',
         'site-settings-google-tracking',
-        'site-settings-announcements-settings',
         'site-settings-ministries-settings',
-        'site-settings-bulletins-settings',
     ];
 
     public static function configure(Schema $schema): Schema
@@ -75,26 +70,10 @@ class SiteSettingForm
                             ->revealable()
                             ->autocomplete('new-password')
                             ->maxLength(1000)
-                            ->helperText('Used for AI rewrite tools and bulletin PDF extraction.'),
-                        Select::make('openai_bulletin_model')
-                            ->label('OpenAI bulletin model')
-                            ->options(OpenAiSiteSettings::modelOptions())
-                            ->default(OpenAiSiteSettings::DEFAULT_MODEL)
-                            ->required()
-                            ->native(false),
+                            ->helperText('Used for AI rewrite tools.'),
                         Textarea::make('ai_content_prompt')
                             ->label('AI Content Prompt')
                             ->default(AiContentPrompt::DEFAULT)
-                            ->rows(6),
-                        Textarea::make('ai_bulletin_extraction_prompt')
-                            ->label('AI Bulletin Extraction Prompt')
-                            ->default(AiBulletinExtractionPrompt::DEFAULT)
-                            ->afterStateHydrated(function (Textarea $component, ?string $state): void {
-                                if (blank($state)) {
-                                    $component->state(AiBulletinExtractionPrompt::DEFAULT);
-                                }
-                            })
-                            ->helperText('Default extraction instructions for bulletin PDFs. Individual bulletins may still customize their own instructions.')
                             ->rows(6),
                     ])
                     ->columns(2)
@@ -149,21 +128,6 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Announcements Settings', 'site-settings-announcements-settings')
-                    ->description('Can also be managed in the Announcements area.')
-                    ->schema([
-                        TextInput::make('announcements_small_label')
-                            ->label('Announcements small label')
-                            ->maxLength(255),
-                        TextInput::make('announcements_title')
-                            ->label('Announcements title')
-                            ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('announcements_subtitle'))
-                            ->label('Announcements subtitle'),
-                        ...ImageUpload::make('announcements_image_path', 'site-settings/announcements', 'Announcements Image'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
                 self::section('Ministries Settings', 'site-settings-ministries-settings')
                     ->description('Can also be managed in the Ministries area.')
                     ->schema([
@@ -176,21 +140,6 @@ class SiteSettingForm
                         RichEditorDefaults::configure(RichEditor::make('ministry_subtitle'))
                             ->label('Ministry subtitle'),
                         ...ImageUpload::make('ministry_image_path', 'site-settings/ministry', 'Ministry image'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                self::section('Bulletins Settings', 'site-settings-bulletins-settings')
-                    ->description('Can also be managed in the Bulletins area.')
-                    ->schema([
-                        TextInput::make('bulletins_small_label')
-                            ->label('Bulletins small label')
-                            ->maxLength(255),
-                        TextInput::make('bulletins_title')
-                            ->label('Bulletins title')
-                            ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('bulletins_subtitle'))
-                            ->label('Bulletins subtitle'),
-                        ...ImageUpload::make('bulletins_image_path', 'site-settings/bulletins', 'Bulletins Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Filament\Admin\Resources\Pages\PageResource;
-use App\Models\Announcement;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
@@ -74,14 +73,6 @@ class MediaUsage
                 ],
             ],
             [
-                'model' => Announcement::class,
-                'record_label' => 'Announcement',
-                'title' => 'title',
-                'fields' => [
-                    'image_path' => 'Announcement image',
-                ],
-            ],
-            [
                 'model' => Ministry::class,
                 'record_label' => 'Ministry',
                 'title' => 'name',
@@ -112,9 +103,7 @@ class MediaUsage
                 'record_label' => 'Site Settings',
                 'title' => 'church_name',
                 'fields' => [
-                    'announcements_image_path' => 'Announcements landing image',
                     'ministry_image_path' => 'Ministries landing image',
-                    'bulletins_image_path' => 'Bulletins landing image',
                 ],
             ],
         ];
@@ -135,12 +124,6 @@ class MediaUsage
             [
                 'model' => Page::class,
                 'record_label' => 'Page',
-                'title' => 'title',
-                'field' => 'content_blocks',
-            ],
-            [
-                'model' => Announcement::class,
-                'record_label' => 'Announcement',
                 'title' => 'title',
                 'field' => 'content_blocks',
             ],
@@ -404,8 +387,6 @@ class MediaUsage
     {
         return match ($recordLabel) {
             'Ministry' => 'Mn',
-            'Announcement' => 'An',
-            'Leader' => 'Ld',
             'Site Settings' => 'Ss',
             'Homepage Banner' => 'Hb',
             'Homepage Content' => 'Hc',

@@ -12,41 +12,25 @@ class ListingHeroSettingsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_announcements_listing_uses_configured_hero_settings(): void
+    public function test_removed_listing_paths_are_available_for_regular_pages(): void
     {
-        SiteSetting::query()->create([
-            'church_name' => 'TwyxtCo Church',
-            'announcements_small_label' => 'Latest',
-            'announcements_title' => 'Church updates',
-            'announcements_subtitle' => '<p>Important things to <strong>know</strong> this week.</p>',
-            'announcements_image_path' => 'site-settings/announcements/updates.jpg',
-        ]);
-
-        $this->get('/announcements')
-            ->assertOk()
-            ->assertSee('Latest')
-            ->assertSee('Church updates')
-            ->assertSee('<strong>know</strong>', false)
-            ->assertDontSee('&lt;strong&gt;know&lt;/strong&gt;', false)
-            ->assertSee('/storage/site-settings/announcements/updates.jpg')
-            ->assertSee('page-hero--image');
-    }
-
-    public function test_leadership_path_is_available_for_regular_pages_after_leaders_removal(): void
-    {
+        $this->get('/announcements')->assertNotFound();
+        $this->get('/bulletins')->assertNotFound();
         $this->get('/leadership')->assertNotFound();
 
-        Page::query()->create([
-            'title' => 'Leadership',
-            'slug' => 'leadership',
-            'intro' => 'A regular CMS page can now own this path.',
-            'is_published' => true,
-        ]);
+        foreach (['announcements', 'bulletins', 'leadership'] as $slug) {
+            Page::query()->create([
+                'title' => str($slug)->headline()->toString(),
+                'slug' => $slug,
+                'intro' => 'A regular CMS page can now own this path.',
+                'is_published' => true,
+            ]);
 
-        $this->get('/leadership')
-            ->assertOk()
-            ->assertSee('Leadership')
-            ->assertSee('A regular CMS page can now own this path.');
+            $this->get("/{$slug}")
+                ->assertOk()
+                ->assertSee(str($slug)->headline()->toString())
+                ->assertSee('A regular CMS page can now own this path.');
+        }
     }
 
     public function test_ministry_listing_uses_configured_hero_settings_and_lists_ministries(): void

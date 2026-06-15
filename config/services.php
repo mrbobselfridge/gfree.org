@@ -41,7 +41,6 @@ return [
 
     'openai' => [
         'api_key' => null,
-        'bulletin_model' => 'gpt-5-nano',
         'content_model' => env('OPENAI_CONTENT_MODEL', 'gpt-5-nano'),
     ],
 

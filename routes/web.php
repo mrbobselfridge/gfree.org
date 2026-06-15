@@ -4,8 +4,6 @@ use App\Http\Controllers\Admin\BackupDownloadController;
 use App\Http\Controllers\Admin\MediaImageDownloadController;
 use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
-use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\BulletinController;
 use App\Http\Controllers\FileDocumentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MinistryController;
@@ -15,14 +13,6 @@ use App\Support\PageSlugs;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
-
-Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
-Route::get('/announcements/{slug}', [AnnouncementController::class, 'show'])->name('announcements.show');
-
-Route::get('/bulletins', [BulletinController::class, 'index'])->name('bulletins.index');
-Route::get('/bulletins/{date}', [BulletinController::class, 'show'])
-    ->where('date', '\d{4}-\d{2}-\d{2}')
-    ->name('bulletins.show');
 
 Route::get('/files/{fileName}', [FileDocumentController::class, 'show'])
     ->where('fileName', '[A-Za-z0-9\\-]+')

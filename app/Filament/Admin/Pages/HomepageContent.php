@@ -57,16 +57,6 @@ class HomepageContent extends Page
             $this->record->refresh();
         }
 
-        if (! $this->hasAnnouncementsBar($this->record->content_blocks)) {
-            $this->record->update([
-                'content_blocks' => [
-                    ...$this->record->content_blocks,
-                    $this->defaultAnnouncementsBarBlock(),
-                ],
-            ]);
-            $this->record->refresh();
-        }
-
         $this->form->fill($this->record->attributesToArray());
     }
 
@@ -93,7 +83,7 @@ class HomepageContent extends Page
     {
         $data = $this->form->getState();
         $data['content_blocks'] = CodeBlockAccess::protectBlocks(
-            $this->normalizeContentBlocks($data['content_blocks'] ?? []),
+            $this->removeLegacyAnnouncementBlocks($data['content_blocks'] ?? []),
             $this->record->content_blocks,
         );
 
@@ -105,6 +95,14 @@ class HomepageContent extends Page
                 WorkflowNotificationRule::TRIGGER_UPDATED,
             );
         }
+    }
+
+    private function removeLegacyAnnouncementBlocks(array $blocks): array
+    {
+        return collect($blocks)
+            ->reject(fn (array $block): bool => ($block['type'] ?? null) === 'announcements_bar')
+            ->values()
+            ->all();
     }
 
     protected function getHeaderActions(): array
@@ -265,50 +263,7 @@ class HomepageContent extends Page
                         'image_position' => 'right',
                     ],
                 ],
-                $this->defaultAnnouncementsBarBlock(),
             ],
         ];
-    }
-
-    private function defaultAnnouncementsBarBlock(): array
-    {
-        return [
-            'type' => 'announcements_bar',
-            'data' => [
-                'is_visible' => true,
-                'heading' => 'Latest at TwyxtCo',
-                'link_label' => 'View all',
-                'link_url' => '/announcements',
-                'background' => 'white',
-            ],
-        ];
-    }
-
-    private function hasAnnouncementsBar(?array $blocks): bool
-    {
-        return collect($blocks)
-            ->contains(fn (array $block): bool => ($block['type'] ?? null) === 'announcements_bar');
-    }
-
-    private function normalizeContentBlocks(array $blocks): array
-    {
-        $hasAnnouncementsBar = false;
-
-        return collect($blocks)
-            ->filter(function (array $block) use (&$hasAnnouncementsBar): bool {
-                if (($block['type'] ?? null) !== 'announcements_bar') {
-                    return true;
-                }
-
-                if ($hasAnnouncementsBar) {
-                    return false;
-                }
-
-                $hasAnnouncementsBar = true;
-
-                return true;
-            })
-            ->values()
-            ->all();
     }
 }

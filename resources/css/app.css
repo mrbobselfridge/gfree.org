@@ -1146,7 +1146,6 @@
     line-height: 1.6;
 }
 
-.announcement-index,
 .ministry-index {
     padding: 88px max(16px, calc((100vw - 1180px) / 2));
     background: white;
@@ -1209,14 +1208,12 @@
     background: transparent;
 }
 
-.announcement-grid,
 .ministry-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
 }
 
-.announcement-card,
 .ministry-card {
     min-height: 100%;
     color: var(--site-ink);
@@ -1225,8 +1222,6 @@
     transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
-.announcement-card:hover,
-.announcement-card:focus-within,
 .ministry-card:hover,
 .ministry-card:focus-within {
     border-color: color-mix(in srgb, var(--site-accent) 58%, var(--site-line));
@@ -1247,7 +1242,6 @@
     outline-offset: 4px;
 }
 
-.announcement-card img,
 .ministry-card img {
     display: block;
     width: 100%;
@@ -1262,7 +1256,6 @@
     padding: 28px;
 }
 
-.announcement-card p,
 .ministry-card p {
     margin: 0 0 18px;
     color: var(--site-accent-text);
@@ -1271,7 +1264,6 @@
     text-transform: uppercase;
 }
 
-.announcement-card h2,
 .ministry-card h2 {
     margin: 0;
     font-size: 1.7rem;
@@ -1305,16 +1297,8 @@
     font-weight: 900;
 }
 
-.announcement-detail {
-    margin: 0;
-}
-
 .ministry-detail {
     margin: 0;
-}
-
-.announcement-detail p {
-    margin: 0 0 1.5em;
 }
 
 .site-service-strip {
@@ -1643,7 +1627,6 @@
     .site-service-strip,
     .site-card-row,
     .site-updates__grid,
-    .announcement-grid,
     .ministry-grid,
     .sermon-grid,
     .page-image-text,

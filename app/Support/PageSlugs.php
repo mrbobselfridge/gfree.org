@@ -6,10 +6,8 @@ class PageSlugs
 {
     public const RESERVED_PREFIXES = [
         'admin',
-        'announcements',
         'api',
         'build',
-        'bulletins',
         'concept-screens',
         'concepts',
         'css',

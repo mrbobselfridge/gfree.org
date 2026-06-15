@@ -166,13 +166,11 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         }
 
         if (blank($settings->openai_api_key)) {
-            $rows[] = $this->row('AI Settings', 'OpenAI API key', 'AI rewrite and bulletin extraction need an API key in Site Settings.', $url, 'Missing', 'danger');
+            $rows[] = $this->row('AI Settings', 'OpenAI API key', 'AI rewrite tools need an API key in Site Settings.', $url, 'Missing', 'danger');
         }
 
         $missingLandingImages = collect([
-            'announcements' => $settings->announcements_image_path,
             'ministries' => $settings->ministry_image_path,
-            'bulletins' => $settings->bulletins_image_path,
         ])
             ->filter(fn (?string $value): bool => blank($value))
             ->keys()

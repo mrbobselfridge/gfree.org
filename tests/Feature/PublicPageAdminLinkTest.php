@@ -3,13 +3,10 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\HomepageContent;
-use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Resources\Pages\Pages\ListPages;
-use App\Models\Announcement;
-use App\Models\Bulletin;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
@@ -27,11 +24,9 @@ class PublicPageAdminLinkTest extends TestCase
     {
         $this->assertSame(url('/visit'), (new Page(['slug' => 'visit']))->publicUrl());
         $this->assertSame(url('/learn/baptism/basics'), (new Page(['slug' => 'learn/baptism/basics']))->publicUrl());
-        $this->assertSame(route('announcements.show', ['slug' => 'church-picnic']), (new Announcement(['slug' => 'church-picnic']))->publicUrl());
-        $this->assertSame(route('bulletins.show', ['date' => '2026-06-07']), (new Bulletin(['bulletin_date' => '2026-06-07']))->publicUrl());
         $this->assertSame(route('ministries.show', ['slug' => 'students']), (new Ministry(['slug' => 'students']))->publicUrl());
         $this->assertSame(route('home'), (new HomepageBanner)->publicUrl());
-        $this->assertSame(url('/announcements'), (new NavigationLink(['url' => '/announcements']))->publicUrl());
+        $this->assertSame(url('/new-here'), (new NavigationLink(['url' => '/new-here']))->publicUrl());
         $this->assertSame('https://example.com/live', (new NavigationLink(['url' => 'https://example.com/live']))->publicUrl());
         $this->assertNull((new NavigationLink(['url' => '#']))->publicUrl());
     }
@@ -93,30 +88,6 @@ class PublicPageAdminLinkTest extends TestCase
         $this->assertSame('pages/card-images/plan-a-visit.jpg', $page->card_image_path);
 
         $component->assertRedirect(PageResource::getUrl('edit', ['record' => $page]));
-    }
-
-    public function test_page_slug_rejects_reserved_public_areas(): void
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test(CreatePage::class)
-            ->set('data.title', 'Announcement Landing')
-            ->set('data.slug', 'announcements/custom-landing')
-            ->set('data.is_published', true)
-            ->set('data.show_site_chrome', true)
-            ->set('data.show_page_header', true)
-            ->call('create')
-            ->assertHasFormErrors(['slug']);
-    }
-
-    public function test_landing_page_settings_show_view_public_page_action(): void
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test(ListAnnouncements::class)
-            ->assertSee('View')
-            ->assertDontSee('View Public Page')
-            ->assertDontSee('View public page')
-            ->assertFormComponentActionHasUrl('listing-settings-actions', 'viewPublicListingPage', route('announcements.index'), formName: 'listingSettingsForm')
-            ->assertFormComponentActionShouldOpenUrlInNewTab('listing-settings-actions', 'viewPublicListingPage', formName: 'listingSettingsForm');
     }
 
     public function test_homepage_content_shows_view_public_page_action(): void

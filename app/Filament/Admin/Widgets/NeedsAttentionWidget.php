@@ -3,13 +3,9 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
-use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
-use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
-use App\Models\Announcement;
-use App\Models\Bulletin;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
@@ -80,12 +76,9 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     {
         return collect([
             ...$this->missingContentSetupRows(),
-            ...$this->unpublishedRows(AdminAccess::ANNOUNCEMENTS, Announcement::class, AnnouncementResource::class, 'Announcement', 'title'),
-            ...$this->unpublishedRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bulletin', 'title'),
             ...$this->unpublishedRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
             ...$this->unpublishedRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
             ...$this->unpublishedRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
-            ...$this->bulletinsMissingExtraction(),
         ])
             ->sortByDesc('sortDate')
             ->take(8)
@@ -173,20 +166,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
                 $items->push($this->missingItem($check['label'], $check['url']));
             }
         });
-
-        if ($this->canAccessTool(AdminAccess::BULLETINS) && blank($settings?->bulletins_image_path) && $this->queryFor(Bulletin::class)->where('is_published', true)->exists()) {
-            $items->push($this->missingItem('Bulletin Individual Pages', BulletinResource::getUrl()));
-        }
-
-        if ($this->canAccessTool(AdminAccess::ANNOUNCEMENTS)) {
-            $this->queryFor(Announcement::class)
-                ->where('is_published', true)
-                ->where(fn ($query) => $query->whereNull('image_path')->orWhere('image_path', ''))
-                ->latest()
-                ->limit(6)
-                ->get()
-                ->each(fn (Announcement $announcement) => $items->push($this->missingItem('Announcement: '.$announcement->title, $this->editUrl(AnnouncementResource::class, $announcement))));
-        }
 
         if ($this->canAccessTool(AdminAccess::MINISTRIES)) {
             $this->queryFor(Ministry::class)
@@ -286,26 +265,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             }
         });
 
-        if ($this->canAccessTool(AdminAccess::ANNOUNCEMENTS)) {
-            $this->queryFor(Announcement::class)
-                ->where('is_published', true)
-                ->where(fn ($query) => $query->whereNull('summary')->orWhere('summary', ''))
-                ->latest()
-                ->limit(6)
-                ->get()
-                ->each(fn (Announcement $announcement) => $items->push($this->missingItem('Announcement: '.$announcement->title, $this->editUrl(AnnouncementResource::class, $announcement))));
-        }
-
-        if ($this->canAccessTool(AdminAccess::BULLETINS)) {
-            $this->queryFor(Bulletin::class)
-                ->where('is_published', true)
-                ->where(fn ($query) => $query->whereNull('extracted_html')->orWhere('extracted_html', ''))
-                ->latest()
-                ->limit(6)
-                ->get()
-                ->each(fn (Bulletin $bulletin) => $items->push($this->missingItem('Bulletin: '.$bulletin->title, $this->editUrl(BulletinResource::class, $bulletin))));
-        }
-
         if ($this->canAccessTool(AdminAccess::MINISTRIES)) {
             $this->queryFor(Ministry::class)
                 ->where('is_published', true)
@@ -357,8 +316,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     private function landingImageChecks(?SiteSetting $settings): Collection
     {
         return collect([
-            $this->landingCheck('Announcements Landing Page', AdminAccess::ANNOUNCEMENTS, 'announcements_image_path', $settings, AnnouncementResource::getUrl()),
-            $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_image_path', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_image_path', $settings, MinistryResource::getUrl()),
         ]);
     }
@@ -369,8 +326,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     private function landingLabelChecks(?SiteSetting $settings): Collection
     {
         return collect([
-            $this->landingCheck('Announcements Landing Page', AdminAccess::ANNOUNCEMENTS, 'announcements_small_label', $settings, AnnouncementResource::getUrl()),
-            $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_small_label', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_small_label', $settings, MinistryResource::getUrl()),
         ]);
     }
@@ -381,8 +336,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
     private function landingIntroChecks(?SiteSetting $settings): Collection
     {
         return collect([
-            $this->landingCheck('Announcements Landing Page', AdminAccess::ANNOUNCEMENTS, 'announcements_subtitle', $settings, AnnouncementResource::getUrl()),
-            $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_subtitle', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_subtitle', $settings, MinistryResource::getUrl()),
         ]);
     }
@@ -450,35 +403,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
                     url: $this->editUrl($resourceClass, $record),
                     status: 'Draft',
                     statusColor: 'warning',
-                ),
-            ])
-            ->all();
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function bulletinsMissingExtraction(): array
-    {
-        if (! $this->canAccessTool(AdminAccess::BULLETINS)) {
-            return [];
-        }
-
-        return $this->queryFor(Bulletin::class)
-            ->whereNotNull('pdf_path')
-            ->where(fn ($query) => $query->whereNull('extracted_html')->orWhere('extracted_html', ''))
-            ->latest()
-            ->limit(4)
-            ->get()
-            ->map(fn (Bulletin $bulletin): array => [
-                'sortDate' => $bulletin->updated_at ?? $bulletin->created_at,
-                'display' => $this->row(
-                    type: 'Bulletin',
-                    title: $bulletin->title,
-                    meta: 'PDF uploaded but no extracted HTML has been saved.',
-                    url: $this->editUrl(BulletinResource::class, $bulletin),
-                    status: 'Extract',
-                    statusColor: 'danger',
                 ),
             ])
             ->all();

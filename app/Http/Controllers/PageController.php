@@ -8,8 +8,8 @@ use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PageController extends Controller
 {
@@ -59,7 +59,7 @@ class PageController extends Controller
         return [
             'settings' => $settings,
             'page' => $page,
-            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, ContentBlocks::featuredAnnouncementUpdates(), $page),
+            'contentBlocks' => ContentBlocks::prepare($page->content_blocks, $settings, page: $page),
             'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'socialLinks' => $this->socialLinks($settings),

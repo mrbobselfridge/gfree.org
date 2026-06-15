@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Resources\Announcements\Pages\CreateAnnouncement;
 use App\Filament\Admin\Resources\Ministries\Pages\CreateMinistry;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
@@ -23,17 +22,6 @@ class ContentBlockStarterTest extends TestCase
             ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
             ->assertSee('YouTube Feed')
             ->assertSee('Child Info Cards');
-    }
-
-    public function test_create_announcements_start_with_a_text_content_block(): void
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test(CreateAnnouncement::class)
-            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
-            ->assertSee('Small label')
-            ->assertSee('Content width')
-            ->assertDontSee('YouTube Feed')
-            ->assertDontSee('Child Cards');
     }
 
     public function test_create_ministries_start_with_a_text_content_block(): void

@@ -2,11 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
+use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Jobs\SendWorkflowNotificationJob;
 use App\Mail\WorkflowNotificationMail;
-use App\Models\Bulletin;
 use App\Models\Page;
 use App\Models\User;
 use App\Models\WorkflowNotificationEvent;
@@ -50,23 +49,23 @@ class WorkflowNotificationTest extends TestCase
         ]);
 
         $rule = WorkflowNotificationRule::query()->create([
-            'name' => 'Bulletin ready',
-            'content_area' => AdminAccess::BULLETINS,
+            'name' => 'Page ready',
+            'content_area' => AdminAccess::PAGES,
             'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
             'selected_user_ids' => [$recipient->getKey()],
-            'subject' => 'Bulletin ready',
+            'subject' => 'Page ready',
             'message' => 'Please update the connection card.',
             'delay_minutes' => 15,
             'is_enabled' => true,
         ]);
 
-        $bulletin = Bulletin::query()->create([
-            'title' => 'June 7 Bulletin',
-            'bulletin_date' => '2026-06-07',
+        $page = Page::query()->create([
+            'title' => 'June 7 Page',
+            'slug' => 'june-7-page',
             'is_published' => true,
         ]);
 
-        app(WorkflowNotificationService::class)->automaticForRecord($bulletin, WorkflowNotificationRule::TRIGGER_UPDATED);
+        app(WorkflowNotificationService::class)->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
 
         $event = WorkflowNotificationEvent::query()->firstOrFail();
 
@@ -77,7 +76,7 @@ class WorkflowNotificationTest extends TestCase
 
         Carbon::setTestNow('2026-06-05 09:10:00');
 
-        app(WorkflowNotificationService::class)->automaticForRecord($bulletin, WorkflowNotificationRule::TRIGGER_UPDATED);
+        app(WorkflowNotificationService::class)->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
 
         $this->assertSame(1, WorkflowNotificationEvent::query()->count());
         $this->assertSame('2026-06-05 09:25:00', $event->refresh()->scheduled_at->format('Y-m-d H:i:s'));
@@ -97,32 +96,32 @@ class WorkflowNotificationTest extends TestCase
         ]);
 
         WorkflowNotificationRule::query()->create([
-            'name' => 'Review bulletin',
-            'content_area' => AdminAccess::BULLETINS,
+            'name' => 'Review page',
+            'content_area' => AdminAccess::PAGES,
             'triggers' => [
                 WorkflowNotificationRule::TRIGGER_UPDATED,
                 WorkflowNotificationRule::TRIGGER_MANUAL,
             ],
             'selected_user_ids' => [$recipient->getKey()],
-            'subject' => 'Review bulletin',
-            'message' => 'Please create matching announcements.',
+            'subject' => 'Review page',
+            'message' => 'Please review the page update.',
             'delay_minutes' => 30,
             'is_enabled' => true,
         ]);
 
-        $bulletin = Bulletin::query()->create([
-            'title' => 'June 7 Bulletin',
-            'bulletin_date' => '2026-06-07',
+        $page = Page::query()->create([
+            'title' => 'June 7 Page',
+            'slug' => 'june-7-page',
             'is_published' => true,
         ]);
 
         $service = app(WorkflowNotificationService::class);
 
-        $service->automaticForRecord($bulletin, WorkflowNotificationRule::TRIGGER_UPDATED);
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
 
         $pending = WorkflowNotificationEvent::query()->firstOrFail();
 
-        $sentCount = $service->manualForRecord($bulletin, [$pending->workflow_notification_rule_id]);
+        $sentCount = $service->manualForRecord($page, [$pending->workflow_notification_rule_id]);
 
         $this->assertSame(1, $sentCount);
         $this->assertSame(WorkflowNotificationEvent::STATUS_CANCELLED, $pending->refresh()->status);
@@ -134,24 +133,24 @@ class WorkflowNotificationTest extends TestCase
     public function test_manual_rule_shows_notify_team_action_on_matching_edit_screen(): void
     {
         WorkflowNotificationRule::query()->create([
-            'name' => 'Review bulletin',
-            'content_area' => AdminAccess::BULLETINS,
+            'name' => 'Review page',
+            'content_area' => AdminAccess::PAGES,
             'triggers' => [WorkflowNotificationRule::TRIGGER_MANUAL],
             'extra_emails' => 'announcements@example.com',
-            'subject' => 'Review bulletin',
-            'message' => 'Please create matching announcements.',
+            'subject' => 'Review page',
+            'message' => 'Please review this page.',
             'delay_minutes' => 15,
             'is_enabled' => true,
         ]);
 
-        $bulletin = Bulletin::query()->create([
-            'title' => 'June 7 Bulletin',
-            'bulletin_date' => '2026-06-07',
+        $page = Page::query()->create([
+            'title' => 'June 7 Page',
+            'slug' => 'june-7-page',
             'is_published' => true,
         ]);
 
         Livewire::actingAs(User::factory()->create())
-            ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
+            ->test(EditPage::class, ['record' => $page->getKey()])
             ->assertActionExists('notifyTeam')
             ->assertActionHasLabel('notifyTeam', 'Notify');
     }

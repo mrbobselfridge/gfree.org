@@ -980,16 +980,6 @@ class AdminPanelProvider extends PanelProvider
                     : new HtmlString(''),
             )
             ->renderHook(
-                TablesRenderHook::TOOLBAR_START,
-                fn (): HtmlString => request()->is('admin/announcements')
-                    ? new HtmlString(<<<'HTML'
-                        <h2 class="twyxtco-announcements-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
-                            Individual Announcements
-                        </h2>
-                    HTML)
-                    : new HtmlString(''),
-            )
-            ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 function (): HtmlString {
                     $descriptions = Js::from(AdminNavigationHelp::descriptions());

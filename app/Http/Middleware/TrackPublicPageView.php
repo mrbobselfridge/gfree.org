@@ -3,8 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\AnalyticsPageView;
-use App\Models\Announcement;
-use App\Models\Bulletin;
 use App\Models\Ministry;
 use App\Models\Page;
 use App\Support\UserAgentDetails;
@@ -134,9 +132,7 @@ class TrackPublicPageView
 
         foreach ([
             'page' => fn (Page $page): string => $page->title,
-            'announcement' => fn (Announcement $announcement): string => $announcement->title,
             'ministry' => fn (Ministry $ministry): string => $ministry->name,
-            'bulletin' => fn (Bulletin $bulletin): string => $bulletin->title,
         ] as $key => $resolver) {
             $value = $data[$key] ?? null;
 

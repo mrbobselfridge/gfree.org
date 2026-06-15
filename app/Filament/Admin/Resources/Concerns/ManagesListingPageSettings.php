@@ -181,8 +181,6 @@ trait ManagesListingPageSettings
     protected function getListingSettingsPublicUrl(): ?string
     {
         return match ($this->getListingSettingsPrefix()) {
-            'announcements' => route('announcements.index'),
-            'bulletins' => route('bulletins.index'),
             'ministry' => route('ministries.index'),
             default => null,
         };

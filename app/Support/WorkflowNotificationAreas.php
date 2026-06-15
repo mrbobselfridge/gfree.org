@@ -4,16 +4,12 @@ namespace App\Support;
 
 use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
 use App\Filament\Admin\Pages\MediaLibrary;
-use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
-use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\Users\UserResource;
-use App\Models\Announcement;
-use App\Models\Bulletin;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
@@ -33,8 +29,6 @@ class WorkflowNotificationAreas
             AdminAccess::HOMEPAGE_CONTENT => 'Homepage Content',
             AdminAccess::HOMEPAGE_BANNERS => 'Homepage Banners',
             AdminAccess::PAGES => 'Pages',
-            AdminAccess::ANNOUNCEMENTS => 'Announcements',
-            AdminAccess::BULLETINS => 'Bulletins',
             AdminAccess::MINISTRIES => 'Ministries',
             AdminAccess::NAVIGATION_LINKS => 'Navigation Links',
             AdminAccess::MEDIA_LIBRARY => 'Media Library',
@@ -72,8 +66,6 @@ class WorkflowNotificationAreas
             HomepageContent::class => AdminAccess::HOMEPAGE_CONTENT,
             HomepageBanner::class => AdminAccess::HOMEPAGE_BANNERS,
             Page::class => AdminAccess::PAGES,
-            Announcement::class => AdminAccess::ANNOUNCEMENTS,
-            Bulletin::class => AdminAccess::BULLETINS,
             Ministry::class => AdminAccess::MINISTRIES,
             NavigationLink::class => AdminAccess::NAVIGATION_LINKS,
             FileDocument::class => AdminAccess::FILE_LIBRARY,
@@ -100,8 +92,6 @@ class WorkflowNotificationAreas
             HomepageContent::class => HomepageContentPage::getUrl(),
             HomepageBanner::class => HomepageBannerResource::getUrl('edit', ['record' => $record]),
             Page::class => PageResource::getUrl('edit', ['record' => $record]),
-            Announcement::class => AnnouncementResource::getUrl('edit', ['record' => $record]),
-            Bulletin::class => BulletinResource::getUrl('edit', ['record' => $record]),
             Ministry::class => MinistryResource::getUrl('edit', ['record' => $record]),
             NavigationLink::class => NavigationLinkResource::getUrl('edit', ['record' => $record]),
             SiteSetting::class => SiteSettingResource::getUrl('edit', ['record' => $record]),

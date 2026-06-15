@@ -6,8 +6,6 @@ use App\Filament\Admin\Pages\Analytics;
 use App\Filament\Admin\Pages\Backups;
 use App\Filament\Admin\Pages\HomepageContent;
 use App\Filament\Admin\Pages\MediaLibrary;
-use App\Filament\Admin\Resources\Announcements\AnnouncementResource;
-use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
@@ -17,8 +15,6 @@ use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
-use App\Models\Announcement;
-use App\Models\Bulletin;
 use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
@@ -41,10 +37,6 @@ class AdminAccess
     public const HOMEPAGE_CONTENT = 'homepage_content';
 
     public const HOMEPAGE_BANNERS = 'homepage_banners';
-
-    public const ANNOUNCEMENTS = 'announcements';
-
-    public const BULLETINS = 'bulletins';
 
     public const MINISTRIES = 'ministries';
 
@@ -81,18 +73,6 @@ class AdminAccess
                 'group' => 'Content',
                 'model' => HomepageBanner::class,
                 'resource' => HomepageBannerResource::class,
-            ],
-            self::ANNOUNCEMENTS => [
-                'label' => 'Announcements',
-                'group' => 'Content',
-                'model' => Announcement::class,
-                'resource' => AnnouncementResource::class,
-            ],
-            self::BULLETINS => [
-                'label' => 'Bulletins',
-                'group' => 'Content',
-                'model' => Bulletin::class,
-                'resource' => BulletinResource::class,
             ],
             self::MINISTRIES => [
                 'label' => 'Ministries',

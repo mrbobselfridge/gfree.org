@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\CmsDashboard;
 use App\Models\AnalyticsPageView;
-use App\Models\Announcement;
-use App\Models\Bulletin;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
@@ -51,20 +49,6 @@ class AdminDashboardWidgetsTest extends TestCase
             'url' => '/',
             'location' => 'header',
             'is_published' => true,
-        ]);
-
-        Announcement::query()->create([
-            'title' => 'Draft announcement',
-            'slug' => 'draft-announcement',
-            'is_published' => false,
-            'publish_at' => now()->addDays(3),
-            'expires_at' => now()->addDays(12),
-        ]);
-
-        Bulletin::query()->create([
-            'title' => 'Sunday bulletin',
-            'pdf_path' => 'bulletins/pdfs/sunday.pdf',
-            'is_published' => false,
         ]);
 
         Ministry::query()->create([
@@ -117,27 +101,18 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('data-twyxtco-dashboard-widget-collapse', false)
             ->assertSee('Move')
             ->assertSee('Collapse')
-            ->assertSee('Announcement')
-            ->assertSee('Bulletin')
             ->assertSee('Ministry')
             ->assertSee('Page')
             ->assertSee('Site Settings')
             ->assertSee('Media Library')
-            ->assertSee('Draft announcement')
-            ->assertSee('Sunday bulletin')
             ->assertSee('Draft ministry')
             ->assertSee('Missing Header Images')
             ->assertSee('Missing Small Labels')
             ->assertSee('Missing Intros')
-            ->assertSee('Announcements Landing Page')
-            ->assertSee('Bulletins Landing Page')
             ->assertSee('Ministry Landing Page')
-            ->assertSee('4 high priority items')
-            ->assertSee('4 medium priority items')
+            ->assertSee('3 high priority items')
+            ->assertSee('2 medium priority items')
             ->assertSee('Recent Updates')
-            ->assertSee('Announcements')
-            ->assertSee('Publishes')
-            ->assertSee('Expires')
             ->assertSee('New Media')
             ->assertSee('target="_blank"', false)
             ->assertDontSeeText('Uploaded image')
@@ -196,9 +171,9 @@ class AdminDashboardWidgetsTest extends TestCase
 
     public function test_dashboard_widgets_respect_editor_admin_permissions(): void
     {
-        Announcement::query()->create([
-            'title' => 'Allowed announcement',
-            'slug' => 'allowed-announcement',
+        Page::query()->create([
+            'title' => 'Allowed page',
+            'slug' => 'allowed-page',
             'is_published' => false,
         ]);
 
@@ -211,7 +186,7 @@ class AdminDashboardWidgetsTest extends TestCase
         $editor = User::factory()->create([
             'role' => User::ROLE_EDITOR,
             'admin_permissions' => [
-                'tools' => [AdminAccess::ANNOUNCEMENTS],
+                'tools' => [AdminAccess::PAGES],
                 'records' => [],
             ],
         ]);
@@ -219,7 +194,7 @@ class AdminDashboardWidgetsTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin')
             ->assertOk()
-            ->assertSee('Allowed announcement')
+            ->assertSee('Allowed page')
             ->assertDontSee('Hidden ministry');
     }
 }

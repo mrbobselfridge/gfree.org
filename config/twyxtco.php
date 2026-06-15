@@ -75,26 +75,5 @@ return [
             'label' => 'Open One Church',
             'url' => '#',
         ],
-
-        'updates' => [
-            [
-                'type' => 'Announcement',
-                'title' => 'Family ministry night',
-                'summary' => 'Registration open now',
-                'url' => '#',
-            ],
-            [
-                'type' => 'Message',
-                'title' => 'Grace for the week ahead',
-                'summary' => 'Watch the latest sermon',
-                'url' => '#',
-            ],
-            [
-                'type' => 'Ministry',
-                'title' => 'Students summer schedule',
-                'summary' => 'See upcoming gatherings',
-                'url' => '#',
-            ],
-        ],
     ],
 ];

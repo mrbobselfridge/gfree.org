@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
-use App\Support\AiBulletinExtractionPrompt;
 use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -28,29 +27,22 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Site logo')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
-            ->assertSee('OpenAI bulletin model')
-            ->assertSee('GPT-5 Nano')
             ->assertSee('AI Content Prompt')
-            ->assertSee('AI Bulletin Extraction Prompt')
             ->assertSee('Social and Video URLs')
             ->assertSee('Google Tracking')
             ->assertSee('Google Tag Manager container ID')
             ->assertSee('Google Analytics measurement ID')
-            ->assertSee('Announcements Settings')
-            ->assertSee('Can also be managed in the Announcements area.')
             ->assertSee('Ministries Settings')
             ->assertSee('Can also be managed in the Ministries area.')
             ->assertDontSee('Sermons Settings')
             ->assertDontSee('Leaders Settings')
+            ->assertDontSee('Announcements Settings')
+            ->assertDontSee('Bulletins Settings')
             ->assertDontSee('Can also be managed in the Sermons area.')
             ->assertDontSee('Can also be managed in the Leaders area.')
+            ->assertDontSee('Can also be managed in the Announcements area.')
+            ->assertDontSee('Can also be managed in the Bulletins area.')
             ->assertDontSee('Sermons YouTube feed URL')
-            ->assertSee('Bulletins Settings')
-            ->assertSee('Can also be managed in the Bulletins area.')
-            ->assertSee('Bulletins small label')
-            ->assertSee('Bulletins title')
-            ->assertSee('Bulletins subtitle')
-            ->assertSee('Bulletins Image')
             ->assertSee('Collapse all')
             ->assertSee('Expand all')
             ->assertSee('Save');
@@ -73,12 +65,11 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->shouldPersistCollapsed(),
             )
             ->assertSchemaComponentExists(
-                'site-settings-bulletins-settings',
+                'site-settings-ministries-settings',
                 checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
                     && $component->isCollapsed()
                     && $component->shouldPersistCollapsed(),
-            )
-            ->assertSet('data.ai_bulletin_extraction_prompt', AiBulletinExtractionPrompt::DEFAULT);
+            );
     }
 
     public function test_site_settings_ai_content_prompt_can_be_saved(): void
@@ -99,24 +90,6 @@ class SiteSettingsAdminTest extends TestCase
         ]);
     }
 
-    public function test_site_settings_ai_bulletin_extraction_prompt_can_be_saved(): void
-    {
-        $settings = SiteSetting::query()->create([
-            'church_name' => 'TwyxtCo Church',
-        ]);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
-            ->set('data.ai_bulletin_extraction_prompt', 'Extract only announcements and calendar items.')
-            ->call('save')
-            ->assertHasNoFormErrors();
-
-        $this->assertDatabaseHas(SiteSetting::class, [
-            'id' => $settings->getKey(),
-            'ai_bulletin_extraction_prompt' => 'Extract only announcements and calendar items.',
-        ]);
-    }
-
     public function test_site_settings_openai_fields_can_be_saved(): void
     {
         $settings = SiteSetting::query()->create([
@@ -126,14 +99,12 @@ class SiteSettingsAdminTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
             ->set('data.openai_api_key', 'test-openai-key')
-            ->set('data.openai_bulletin_model', 'gpt-5-mini')
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
             'openai_api_key' => 'test-openai-key',
-            'openai_bulletin_model' => 'gpt-5-mini',
         ]);
     }
 

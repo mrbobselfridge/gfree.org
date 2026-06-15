@@ -24,7 +24,6 @@ class OpenAiContentRewriteTest extends TestCase
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
-            'openai_bulletin_model' => 'gpt-5-mini',
         ]);
 
         config([

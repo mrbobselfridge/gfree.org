@@ -4,7 +4,7 @@ return [
     'profiles' => [
         'database' => [
             'label' => 'Database Backup',
-            'description' => 'Fast backup of CMS content, users, settings, bulletins metadata, analytics, and file records.',
+            'description' => 'Fast backup of CMS content, users, settings, analytics, and file records.',
             'type' => 'Database only',
             'config' => 'backup_database',
             'only' => 'db',
@@ -17,13 +17,13 @@ return [
             'included' => [
                 'Database content',
                 'Users and admin permissions',
-                'Bulletin and File Library metadata',
+                'File Library metadata',
             ],
         ],
 
         'full' => [
             'label' => 'Full Site Backup',
-            'description' => 'Complete restore bundle for the database, public media, bulletin PDFs, and private File Library documents.',
+            'description' => 'Complete restore bundle for the database, public media, and private File Library documents.',
             'type' => 'Database and files',
             'config' => 'backup_full',
             'only' => null,
@@ -36,7 +36,6 @@ return [
             'included' => [
                 'Database content',
                 'Media Library images',
-                'Bulletin PDFs',
                 'File Library documents',
             ],
         ],
@@ -56,7 +55,6 @@ return [
             'included' => [
                 'Database content',
                 'Media Library images',
-                'Bulletin PDFs',
                 'File Library documents',
             ],
         ],

@@ -29,17 +29,8 @@ class OpenAiSiteSettings
         return filled($apiKey) ? $apiKey : config('services.openai.api_key');
     }
 
-    public static function bulletinModel(): string
-    {
-        $model = SiteSetting::query()->value('openai_bulletin_model');
-
-        return filled($model)
-            ? $model
-            : config('services.openai.bulletin_model', self::DEFAULT_MODEL);
-    }
-
     public static function contentModel(): string
     {
-        return config('services.openai.content_model') ?: self::bulletinModel();
+        return config('services.openai.content_model') ?: self::DEFAULT_MODEL;
     }
 }

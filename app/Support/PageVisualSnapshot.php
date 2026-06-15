@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Announcement;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\Page;
@@ -99,7 +98,6 @@ class PageVisualSnapshot
     {
         return match (true) {
             $record instanceof Page => ['type' => 'page', 'record' => $record->getKey()],
-            $record instanceof Announcement => ['type' => 'announcement', 'record' => $record->getKey()],
             $record instanceof Ministry => ['type' => 'ministry', 'record' => $record->getKey()],
             $record instanceof HomepageContent => ['type' => 'homepage'],
             default => null,

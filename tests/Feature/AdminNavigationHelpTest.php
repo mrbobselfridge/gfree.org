@@ -22,7 +22,6 @@ class AdminNavigationHelpTest extends TestCase
             ->assertSee('Run and review database, full-site, and archive backups for recovery planning.', false)
             ->assertSee('Send automatic or manual email updates when selected content areas are created, changed, or deleted.', false)
             ->assertSee('Manage admin and editor accounts and their allowed admin areas.', false)
-            ->assertSee('/manual#bulletins', false)
             ->assertSee('/manual#workflow-notifications', false);
     }
 }

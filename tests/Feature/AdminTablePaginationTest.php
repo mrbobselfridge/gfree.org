@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
+use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -16,7 +16,7 @@ class AdminTablePaginationTest extends TestCase
     {
         $component = Livewire::actingAs(User::factory()->create([
             'role' => User::ROLE_ADMIN,
-        ]))->test(ListAnnouncements::class);
+        ]))->test(ListPages::class);
 
         $this->assertSame(50, $component->instance()->getTable()->getDefaultPaginationPageOption());
     }

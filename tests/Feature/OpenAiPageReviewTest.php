@@ -2,11 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Resources\Bulletins\Pages\EditBulletin;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Support\AiPageReviewActions;
-use App\Models\Bulletin;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -33,7 +31,6 @@ class OpenAiPageReviewTest extends TestCase
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
-            'openai_bulletin_model' => 'gpt-5-mini',
             'ai_content_prompt' => 'Review for first-time visitors.',
         ]);
 
@@ -89,7 +86,6 @@ class OpenAiPageReviewTest extends TestCase
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
-            'openai_bulletin_model' => 'gpt-5-mini',
         ]);
 
         config([
@@ -138,7 +134,6 @@ class OpenAiPageReviewTest extends TestCase
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
             'openai_api_key' => 'test-key',
-            'openai_bulletin_model' => 'gpt-5-mini',
             'ai_content_prompt' => 'Review the whole page.',
         ]);
 
@@ -193,7 +188,7 @@ class OpenAiPageReviewTest extends TestCase
         });
     }
 
-    public function test_page_review_action_is_available_on_pages_but_not_bulletins(): void
+    public function test_page_review_action_is_available_on_pages(): void
     {
         $page = Page::query()->create([
             'title' => 'Visit',
@@ -201,21 +196,9 @@ class OpenAiPageReviewTest extends TestCase
             'is_published' => false,
         ]);
 
-        $bulletin = Bulletin::query()->create([
-            'title' => 'Sunday Bulletin',
-            'bulletin_date' => '2026-06-14',
-            'is_published' => true,
-        ]);
-
         Livewire::actingAs(User::factory()->create())
             ->test(EditPage::class, ['record' => $page->getKey()])
             ->assertActionExists('aiPageReview');
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(EditBulletin::class, ['record' => $bulletin->getKey()])
-            ->assertActionDoesNotExist('aiPageReview')
-            ->assertActionExists('extractPdf')
-            ->assertActionExists('reviewAnnouncements');
     }
 
     public function test_page_review_modal_icon_actions_render_valid_livewire_calls(): void

@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Announcement;
 use App\Models\FileDocument;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -12,8 +11,6 @@ use Illuminate\Support\Str;
 
 class ContentBlocks
 {
-    public const FEATURED_ANNOUNCEMENT_LIMIT = 10;
-
     public const RELATED_CONTENT_TYPE_BOTH = 'both';
 
     public const RELATED_CONTENT_TYPE_PAGES = 'pages';
@@ -32,10 +29,10 @@ class ContentBlocks
 
     public const DEFAULT_PAGE_CARD_IMAGE_PATH = 'images/page-card-default.svg';
 
-    public static function prepare(?array $blocks, ?SiteSetting $settings = null, ?Collection $updates = null, ?Page $page = null): array
+    public static function prepare(?array $blocks, ?SiteSetting $settings = null, ?Page $page = null): array
     {
         return collect($blocks ?? [])
-            ->map(function (array $block) use ($settings, $updates, $page): array {
+            ->map(function (array $block) use ($settings, $page): array {
                 $type = $block['type'] ?? null;
                 $data = $block['data'] ?? [];
 
@@ -45,15 +42,6 @@ class ContentBlocks
 
                 if ($type === 'info_strip') {
                     $data['items'] = self::infoStripItems($data['items'] ?? [], $settings);
-                }
-
-                if ($type === 'announcements_bar') {
-                    $data['updates'] = $updates ?? self::featuredAnnouncementUpdates();
-                    $data['is_visible'] = $data['is_visible'] ?? true;
-                    $data['heading'] = $data['heading'] ?? 'Latest at TwyxtCo';
-                    $data['link_label'] = $data['link_label'] ?? 'View all';
-                    $data['link_url'] = $data['link_url'] ?? '/announcements';
-                    $data['background'] = $data['background'] ?? 'white';
                 }
 
                 if ($type === 'related_content') {
@@ -72,8 +60,6 @@ class ContentBlocks
             ->filter(fn (array $block): bool => filled($block['type']))
             ->filter(fn (array $block): bool => self::hasRenderableContent($block))
             ->filter(fn (array $block): bool => $block['type'] !== 'info_strip' || filled($block['data']['items'] ?? []))
-            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || (bool) ($block['data']['is_visible'] ?? true))
-            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || filled($block['data']['updates'] ?? []))
             ->filter(fn (array $block): bool => $block['type'] !== 'related_content' || (bool) ($block['data']['is_visible'] ?? true))
             ->filter(fn (array $block): bool => $block['type'] !== 'related_content' || filled($block['data']['items'] ?? []))
             ->filter(fn (array $block): bool => $block['type'] !== 'youtube_feed' || filled($block['data']['videos'] ?? []) || filled($block['data']['channel_url'] ?? null))
@@ -142,29 +128,6 @@ class ContentBlocks
         return Str::slug($data['listing_slug'] ?? null)
             ?: Str::slug($data['heading'] ?? null)
             ?: 'child-cards';
-    }
-
-    public static function featuredAnnouncementUpdates(): Collection
-    {
-        $now = now();
-
-        return Announcement::query()
-            ->where('is_published', true)
-            ->where('is_featured', true)
-            ->where(fn ($query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
-            ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
-            ->where(fn ($query) => $query->whereNull('featured_at')->orWhere('featured_at', '<=', $now))
-            ->where(fn ($query) => $query->whereNull('feature_expires_at')->orWhere('feature_expires_at', '>=', $now))
-            ->publicListingOrder()
-            ->limit(self::FEATURED_ANNOUNCEMENT_LIMIT)
-            ->get()
-            ->map(fn (Announcement $announcement) => [
-                'type' => $announcement->is_featured ? 'Featured' : 'Announcement',
-                'title' => $announcement->title,
-                'summary' => $announcement->summary,
-                'image_url' => self::imageUrl($announcement->image_path),
-                'url' => url('/announcements/'.$announcement->slug),
-            ]);
     }
 
     private static function prepareRelatedContentBlock(?Page $page, array $data, bool $allItems = false): array
@@ -456,7 +419,8 @@ class ContentBlocks
             'link_cards' => filled($data['cards'] ?? []),
             'embed' => self::hasText($data['heading'] ?? null) || filled($data['embed_code'] ?? null),
             'code' => filled($data['code'] ?? null),
-            'info_strip', 'announcements_bar', 'related_content', 'youtube_feed' => true,
+            'info_strip', 'related_content', 'youtube_feed' => true,
+            'announcements_bar' => false,
             default => true,
         };
     }

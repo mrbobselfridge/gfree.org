@@ -2,13 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Announcement;
 use App\Models\FileCategory;
 use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
-use App\Support\AiBulletinExtractionPrompt;
 use App\Support\FileCategoryExtractionInstructions;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -32,7 +30,6 @@ class DatabaseSeeder extends Seeder
             'livestream_url' => '/live',
             'giving_url' => '/give',
             'one_church_url' => 'https://twyxtco.onechurchsoftware.com',
-            'ai_bulletin_extraction_prompt' => AiBulletinExtractionPrompt::DEFAULT,
         ]);
 
         collect([
@@ -108,33 +105,5 @@ class DatabaseSeeder extends Seeder
             'is_published' => true,
         ]));
 
-        collect([
-            [
-                'title' => 'Family ministry night',
-                'slug' => 'family-ministry-night',
-                'summary' => 'Registration open now',
-                'is_featured' => true,
-            ],
-            [
-                'title' => 'Grace for the week ahead',
-                'slug' => 'grace-for-the-week-ahead',
-                'summary' => 'Watch the latest sermon',
-                'is_featured' => false,
-            ],
-            [
-                'title' => 'Students summer schedule',
-                'slug' => 'students-summer-schedule',
-                'summary' => 'See upcoming gatherings',
-                'is_featured' => false,
-            ],
-        ])->each(fn (array $announcement) => Announcement::updateOrCreate([
-            'slug' => $announcement['slug'],
-        ], [
-            'title' => $announcement['title'],
-            'summary' => $announcement['summary'],
-            'publish_at' => now(),
-            'is_featured' => $announcement['is_featured'],
-            'is_published' => true,
-        ]));
     }
 }

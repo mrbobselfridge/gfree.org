@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Resources\Announcements\Pages\CreateAnnouncement;
-use App\Filament\Admin\Resources\Announcements\Pages\EditAnnouncement;
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
 use App\Filament\Admin\Resources\Ministries\Pages\EditMinistry;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
-use App\Models\Announcement;
 use App\Models\FileDocument;
 use App\Models\Ministry;
 use App\Models\Page;
@@ -43,27 +40,6 @@ class SlugAutoUpdateTest extends TestCase
             ->assertFormComponentActionHasLabel('slug', 'rebuildSlug', 'Generate path')
             ->callFormComponentAction('slug', 'rebuildSlug')
             ->assertSet('data.slug', 'changed-page-title');
-    }
-
-    public function test_announcement_slug_does_not_auto_update_on_edit(): void
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test(CreateAnnouncement::class)
-            ->set('data.title', 'Important Update')
-            ->assertSet('data.slug', 'important-update');
-
-        $announcement = Announcement::query()->create([
-            'title' => 'Original Announcement',
-            'slug' => 'stable-announcement-url',
-            'is_published' => true,
-        ]);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(EditAnnouncement::class, ['record' => $announcement->getKey()])
-            ->set('data.title', 'Changed Announcement Title')
-            ->assertSet('data.slug', 'stable-announcement-url')
-            ->callFormComponentAction('slug', 'rebuildSlug')
-            ->assertSet('data.slug', 'changed-announcement-title');
     }
 
     public function test_ministry_slug_does_not_auto_update_on_edit(): void

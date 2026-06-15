@@ -2,14 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Bulletin;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Support\PageVisualSnapshot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use RuntimeException;
 use Tests\TestCase;
 
 class PageVisualSnapshotTest extends TestCase
@@ -97,23 +95,5 @@ class PageVisualSnapshotTest extends TestCase
         );
 
         $this->get($url)->assertNotFound();
-    }
-
-    public function test_bulletins_are_not_supported_for_visual_snapshots(): void
-    {
-        $bulletin = Bulletin::query()->create([
-            'title' => 'Sunday Bulletin',
-            'bulletin_date' => '2026-06-14',
-            'is_published' => true,
-        ]);
-
-        $snapshot = app(PageVisualSnapshot::class);
-
-        $this->assertFalse($snapshot->supports($bulletin));
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('not available for visual page snapshots');
-
-        $snapshot->previewUrl($bulletin);
     }
 }

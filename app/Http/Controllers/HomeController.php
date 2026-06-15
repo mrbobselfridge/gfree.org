@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Announcement;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
-use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -38,17 +36,6 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        $announcements = Announcement::query()
-            ->where('is_published', true)
-            ->where('is_featured', true)
-            ->where(fn ($query) => $query->whereNull('publish_at')->orWhere('publish_at', '<=', $now))
-            ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
-            ->where(fn ($query) => $query->whereNull('featured_at')->orWhere('featured_at', '<=', $now))
-            ->where(fn ($query) => $query->whereNull('feature_expires_at')->orWhere('feature_expires_at', '>=', $now))
-            ->publicListingOrder()
-            ->limit(ContentBlocks::FEATURED_ANNOUNCEMENT_LIMIT)
-            ->get();
-        $updates = $announcements->isNotEmpty() ? $this->announcementUpdates($announcements) : collect($defaults['updates']);
         $hero = $this->hero($defaults['hero'], $heroBanners->first());
 
         return view('home', [
@@ -59,7 +46,7 @@ class HomeController extends Controller
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
             'hero' => $hero,
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
-            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $updates, $now),
+            'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $ministries, $now),
             'socialLinks' => $this->socialLinks($settings),
         ]);
     }
@@ -115,17 +102,6 @@ class HomeController extends Controller
         ]);
     }
 
-    private function announcementUpdates($announcements)
-    {
-        return $announcements->map(fn (Announcement $announcement) => [
-            'type' => $announcement->is_featured ? 'Featured' : 'Announcement',
-            'title' => $announcement->title,
-            'summary' => $announcement->summary,
-            'image_url' => $this->imageUrl($announcement->image_path),
-            'url' => url('/announcements/'.$announcement->slug),
-        ]);
-    }
-
     private function feature(array $defaults, ?SiteSetting $settings, ?HomepageContent $content): array
     {
         $featureUrl = $content?->feature_url ?: $defaults['url'];
@@ -143,7 +119,7 @@ class HomeController extends Controller
         ];
     }
 
-    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries, $updates, $now): array
+    private function contentBlocks(?HomepageContent $content, array $defaults, ?SiteSetting $settings, $ministries, $now): array
     {
         $blocks = $content?->content_blocks;
 
@@ -151,15 +127,9 @@ class HomeController extends Controller
             $blocks = $this->defaultHomepageBlocks($defaults, $settings, $ministries);
         }
 
-        if (! $this->hasBlock($blocks, 'announcements_bar')) {
-            $blocks[] = $this->defaultAnnouncementsBarBlock();
-        }
-
-        $blocks = $this->normalizeHomepageBlocks($blocks);
-
         return collect($blocks)
             ->filter(fn (array $block): bool => $this->isHomepageBlockVisible($block, $now))
-            ->map(function (array $block) use ($settings, $updates): array {
+            ->map(function (array $block) use ($settings): array {
                 $type = $block['type'] ?? null;
                 $data = $block['data'] ?? [];
 
@@ -171,15 +141,6 @@ class HomeController extends Controller
                     $data['items'] = $this->infoStripItems($data['items'] ?? [], $settings);
                 }
 
-                if ($type === 'announcements_bar') {
-                    $data['updates'] = $updates;
-                    $data['is_visible'] = $data['is_visible'] ?? true;
-                    $data['heading'] = $data['heading'] ?? 'Latest at TwyxtCo';
-                    $data['link_label'] = $data['link_label'] ?? 'View all';
-                    $data['link_url'] = $data['link_url'] ?? '/announcements';
-                    $data['background'] = $data['background'] ?? 'white';
-                }
-
                 return [
                     'type' => $type,
                     'data' => $data,
@@ -187,8 +148,7 @@ class HomeController extends Controller
             })
             ->filter(fn (array $block): bool => filled($block['type']))
             ->filter(fn (array $block): bool => $block['type'] !== 'info_strip' || filled($block['data']['items'] ?? []))
-            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || (bool) ($block['data']['is_visible'] ?? true))
-            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar' || filled($block['data']['updates'] ?? []))
+            ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar')
             ->values()
             ->all();
     }
@@ -308,50 +268,7 @@ class HomeController extends Controller
                     'image_position' => 'right',
                 ],
             ],
-            $this->defaultAnnouncementsBarBlock(),
         ];
-    }
-
-    private function defaultAnnouncementsBarBlock(): array
-    {
-        return [
-            'type' => 'announcements_bar',
-            'data' => [
-                'is_visible' => true,
-                'heading' => 'Latest at TwyxtCo',
-                'link_label' => 'View all',
-                'link_url' => '/announcements',
-                'background' => 'white',
-            ],
-        ];
-    }
-
-    private function hasBlock(array $blocks, string $type): bool
-    {
-        return collect($blocks)
-            ->contains(fn (array $block): bool => ($block['type'] ?? null) === $type);
-    }
-
-    private function normalizeHomepageBlocks(array $blocks): array
-    {
-        $hasAnnouncementsBar = false;
-
-        return collect($blocks)
-            ->filter(function (array $block) use (&$hasAnnouncementsBar): bool {
-                if (($block['type'] ?? null) !== 'announcements_bar') {
-                    return true;
-                }
-
-                if ($hasAnnouncementsBar) {
-                    return false;
-                }
-
-                $hasAnnouncementsBar = true;
-
-                return true;
-            })
-            ->values()
-            ->all();
     }
 
     private function defaultInfoStripItems(array $serviceDetails): array

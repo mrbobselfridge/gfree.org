@@ -380,34 +380,6 @@ class ContentBlockBuilder
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
-                Block::make('announcements_bar')
-                    ->label(fn (?array $state): string => self::blockLabel('Announcements Listing', $state))
-                    ->schema([
-                        ToggleButtons::make('is_visible')
-                            ->label('Show announcements')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->columnSpanFull(),
-                        Select::make('background')
-                            ->options(self::backgroundOptions())
-                            ->default('white')
-                            ->required(),
-                        TextInput::make('heading')
-                            ->live(onBlur: true)
-                            ->default('Latest at TwyxtCo')
-                            ->maxLength(255),
-                        TextInput::make('link_label')
-                            ->default('View all')
-                            ->maxLength(80),
-                        TextInput::make('link_url')
-                            ->default('/announcements')
-                            ->maxLength(255),
-                        ...self::scheduleFields($withScheduleFields),
-                    ])
-                    ->columns(2)
-                    ->maxItems(1),
                 ...self::pageOnlyBlocks($withPageBlocks, $withScheduleFields),
             ])
             ->addActionLabel('Add content block')
