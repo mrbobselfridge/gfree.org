@@ -136,6 +136,7 @@ class PagesTable
                     ->preload(),
             ])
             ->defaultSort('title')
+            ->persistFiltersInSession()
             ->persistSortInSession()
             ->persistColumnsInSession()
             ->recordAction(null)

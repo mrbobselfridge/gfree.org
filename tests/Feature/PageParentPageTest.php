@@ -204,6 +204,7 @@ class PageParentPageTest extends TestCase
                 $table = $component->instance()->getTable();
 
                 $this->assertSame('title', $table->getDefaultSortColumn());
+                $this->assertTrue($table->persistsFiltersInSession());
                 $this->assertTrue($table->persistsSortInSession());
                 $this->assertTrue($table->persistsColumnsInSession());
             });
