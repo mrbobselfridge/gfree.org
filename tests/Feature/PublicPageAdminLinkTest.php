@@ -50,6 +50,35 @@ class PublicPageAdminLinkTest extends TestCase
             ->assertTableActionShouldOpenUrlInNewTab('viewPublicPage', $page);
     }
 
+    public function test_pages_can_be_copied_when_table_loads_child_page_counts(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->id,
+            'title' => 'Forms',
+            'slug' => 'resources/forms',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->callTableAction('copy', $parent)
+            ->assertHasNoErrors();
+
+        $copy = Page::query()
+            ->whereKeyNot($parent->id)
+            ->where('title', 'like', 'Resources (copy @ %')
+            ->firstOrFail();
+
+        $this->assertStringStartsWith('resources-copy-', $copy->slug);
+        $this->assertDatabaseCount(Page::class, 3);
+    }
+
     public function test_edit_pages_show_view_public_page_header_action(): void
     {
         $page = Page::query()->create([

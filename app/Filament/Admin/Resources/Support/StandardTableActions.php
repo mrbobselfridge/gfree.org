@@ -30,15 +30,16 @@ class StandardTableActions
                 Heroicon::OutlinedPencilSquare,
             ),
 
-            IconOnlyAction::make(
-                Action::make('copy')
-                    ->label('Copy')
-                    ->color('success')
-                    ->authorize(fn (Model $record): bool => self::canCopy($record))
-                    ->action(function (Model $record): void {
-                        $copy = $record->replicate();
-                        $labelField = self::labelField($record);
-                        $timestamp = now();
+	            IconOnlyAction::make(
+	                Action::make('copy')
+	                    ->label('Copy')
+	                    ->color('success')
+	                    ->authorize(fn (Model $record): bool => self::canCopy($record))
+	                    ->action(function (Model $record): void {
+	                        $copy = $record->replicate();
+	                        self::removeNonColumnAttributes($copy);
+	                        $labelField = self::labelField($record);
+	                        $timestamp = now();
 
                         if ($labelField) {
                             $copy->{$labelField} = self::copyLabel($record, $labelField, $timestamp->format('Y-m-d H:i:s'));
@@ -165,6 +166,16 @@ class StandardTableActions
         $column = collect($columns)->firstWhere('name', $field);
 
         return is_numeric($column['length'] ?? null) ? (int) $column['length'] : null;
+    }
+
+    private static function removeNonColumnAttributes(Model $record): void
+    {
+        $columns = collect($record->getConnection()->getSchemaBuilder()->getColumns($record->getTable()))
+            ->pluck('name')
+            ->flip()
+            ->all();
+
+        $record->setRawAttributes(array_intersect_key($record->getAttributes(), $columns));
     }
 
     private static function uniqueSlug(Model $record, ?string $source): string
