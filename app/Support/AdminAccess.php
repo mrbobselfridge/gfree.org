@@ -82,13 +82,13 @@ class AdminAccess
             ],
             self::SITE_SETTINGS => [
                 'label' => 'Site Settings',
-                'group' => 'Sitewide',
+                'group' => 'Site Tools',
                 'model' => SiteSetting::class,
                 'resource' => SiteSettingResource::class,
             ],
             self::ANALYTICS => [
                 'label' => 'Analytics',
-                'group' => 'Sitewide',
+                'group' => 'Site Tools',
                 'page' => Analytics::class,
             ],
             self::MEDIA_LIBRARY => [
@@ -106,25 +106,25 @@ class AdminAccess
             ],
             self::NAVIGATION_LINKS => [
                 'label' => 'Navigation Links',
-                'group' => 'Sitewide',
+                'group' => 'Content',
                 'model' => NavigationLink::class,
                 'resource' => NavigationLinkResource::class,
             ],
             self::USERS => [
                 'label' => 'Users',
-                'group' => 'Sitewide',
+                'group' => 'Site Tools',
                 'model' => User::class,
                 'resource' => UserResource::class,
             ],
             self::WORKFLOW_NOTIFICATIONS => [
                 'label' => 'Workflow Notifications',
-                'group' => 'Sitewide',
+                'group' => 'Site Tools',
                 'model' => WorkflowNotificationRule::class,
                 'resource' => WorkflowNotificationRuleResource::class,
             ],
             self::BACKUPS => [
                 'label' => 'Backups',
-                'group' => 'Sitewide',
+                'group' => 'Site Tools',
                 'page' => Backups::class,
             ],
         ];

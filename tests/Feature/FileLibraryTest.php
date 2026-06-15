@@ -49,7 +49,7 @@ class FileLibraryTest extends TestCase
             ->assertSee('File Library');
 
         $this->assertArrayHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Content'));
-        $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Site Tools'));
         $this->assertTrue(FileDocumentResource::shouldRegisterNavigation());
     }
 

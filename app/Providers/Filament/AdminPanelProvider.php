@@ -41,15 +41,14 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->navigationGroups([
-                'Homepage',
                 'Content',
-                'Sitewide',
+                'Site Tools',
             ])
             ->navigationItems([
                 NavigationItem::make('User Manual')
-                    ->group('Sitewide')
+                    ->group('Site Tools')
                     ->icon(Heroicon::OutlinedBookOpen)
-                    ->sort(400)
+                    ->sort(0)
                     ->url(fn (): string => route('manual'), true),
             ])
             ->renderHook(

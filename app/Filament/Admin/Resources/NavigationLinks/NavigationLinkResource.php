@@ -23,9 +23,9 @@ class NavigationLinkResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Sitewide';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?int $navigationSort = 200;
+    protected static ?int $navigationSort = 90;
 
     protected static ?string $modelLabel = 'navigation link';
 

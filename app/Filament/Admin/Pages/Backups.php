@@ -18,7 +18,7 @@ class Backups extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Sitewide';
+    protected static string|\UnitEnum|null $navigationGroup = 'Site Tools';
 
     protected static ?int $navigationSort = 80;
 

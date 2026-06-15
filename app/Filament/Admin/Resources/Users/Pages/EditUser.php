@@ -19,9 +19,8 @@ class EditUser extends EditRecord
         $tools = $data['admin_permissions']['tools'] ?? [];
 
         $data['admin_permissions']['tool_groups'] = [
-            'homepage' => array_values(array_intersect($tools, array_keys(AdminAccess::toolOptionsForGroup('Homepage')))),
             'content' => array_values(array_intersect($tools, array_keys(AdminAccess::toolOptionsForGroup('Content')))),
-            'sitewide' => array_values(array_intersect($tools, array_keys(AdminAccess::toolOptionsForGroup('Sitewide')))),
+            'sitewide' => array_values(array_intersect($tools, array_keys(AdminAccess::toolOptionsForGroup('Site Tools')))),
             'additional' => array_values(array_intersect($tools, array_keys(AdminAccess::additionalToolOptions()))),
         ];
 

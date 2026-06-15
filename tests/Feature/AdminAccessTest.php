@@ -16,7 +16,7 @@ class AdminAccessTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_can_open_user_management_in_sitewide_tools(): void
+    public function test_admin_can_open_user_management_in_site_tools(): void
     {
         $this->actingAs(User::factory()->create([
             'role' => User::ROLE_ADMIN,
@@ -26,7 +26,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('User Details')
             ->assertSee('twyxtco-user-permission-list', false)
             ->assertSee('Content')
-            ->assertSee('Sitewide')
+            ->assertSee('Site Tools')
             ->assertSee('Homepage Content')
             ->assertSee('Homepage Banners')
             ->assertSee('Pages')
@@ -52,14 +52,14 @@ class AdminAccessTest extends TestCase
         );
         $contentTools = array_keys(AdminAccess::toolOptionsForGroup('Content'));
 
-        $this->assertSame(
-            [AdminAccess::MEDIA_LIBRARY, AdminAccess::FILE_LIBRARY],
-            array_slice($contentTools, -2),
-        );
-        $this->assertArrayNotHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
-        $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Sitewide'));
-        $this->assertArrayHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::toolOptionsForGroup('Sitewide'));
-        $this->assertArrayHasKey(AdminAccess::BACKUPS, AdminAccess::toolOptionsForGroup('Sitewide'));
+        $this->assertContains(AdminAccess::MEDIA_LIBRARY, $contentTools);
+        $this->assertContains(AdminAccess::FILE_LIBRARY, $contentTools);
+        $this->assertContains(AdminAccess::NAVIGATION_LINKS, $contentTools);
+        $this->assertArrayNotHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Site Tools'));
+        $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Site Tools'));
+        $this->assertArrayNotHasKey(AdminAccess::NAVIGATION_LINKS, AdminAccess::toolOptionsForGroup('Site Tools'));
+        $this->assertArrayHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::toolOptionsForGroup('Site Tools'));
+        $this->assertArrayHasKey(AdminAccess::BACKUPS, AdminAccess::toolOptionsForGroup('Site Tools'));
         $this->assertArrayNotHasKey(AdminAccess::WORKFLOW_NOTIFICATIONS, AdminAccess::additionalToolOptions());
 
         Livewire::actingAs(User::factory()->create([

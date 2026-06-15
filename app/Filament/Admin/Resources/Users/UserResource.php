@@ -44,7 +44,7 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Sitewide';
+    protected static string|\UnitEnum|null $navigationGroup = 'Site Tools';
 
     protected static ?int $navigationSort = 300;
 
@@ -111,13 +111,13 @@ class UserResource extends Resource
                             ->columns(2),
                     ])
                     ->columnSpanFull(),
-                self::section('Sitewide', 'users-sitewide-tools')
-                    ->description('Choose which sitewide tools this editor can use.')
+                self::section('Site Tools', 'users-sitewide-tools')
+                    ->description('Choose which site tools this editor can use.')
                     ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
                     ->schema([
                         CheckboxList::make('admin_permissions.tool_groups.sitewide')
                             ->label('')
-                            ->options(AdminAccess::toolOptionsForGroup('Sitewide'))
+                            ->options(AdminAccess::toolOptionsForGroup('Site Tools'))
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
