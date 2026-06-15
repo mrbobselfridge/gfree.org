@@ -55,9 +55,10 @@ class PagesTable
                                     'value' => $record->parent_page_id,
                                 ],
                             ],
+                            'sort' => 'parentPage.title:asc',
                         ])
                         : null)
-                    ->sortable()
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => self::applyParentPageSort($query, $direction))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('sort_order')
@@ -165,5 +166,20 @@ class PagesTable
         }
 
         return $query->whereRaw('0 = 1');
+    }
+
+    private static function applyParentPageSort(Builder $query, string $direction): Builder
+    {
+        $parentTitleQuery = Page::query()
+            ->select('parent_pages.title')
+            ->from('pages as parent_pages')
+            ->whereColumn('parent_pages.id', 'pages.parent_page_id')
+            ->limit(1);
+
+        return $query
+            ->orderByRaw('CASE WHEN pages.parent_page_id IS NULL THEN 0 ELSE 1 END')
+            ->orderBy($parentTitleQuery, $direction === 'desc' ? 'desc' : 'asc')
+            ->orderBy('pages.sort_order')
+            ->orderBy('pages.title');
     }
 }

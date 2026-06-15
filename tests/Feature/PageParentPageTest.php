@@ -252,15 +252,32 @@ class PageParentPageTest extends TestCase
             'is_published' => true,
         ]);
 
-        $child = Page::query()->create([
+        $thirdChild = Page::query()->create([
             'parent_page_id' => $parent->getKey(),
             'title' => 'Forms',
             'slug' => 'resources/forms',
+            'sort_order' => 20,
+            'is_published' => true,
+        ]);
+
+        $firstChild = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Alpha Forms',
+            'slug' => 'resources/alpha-forms',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+
+        $secondChild = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Beta Forms',
+            'slug' => 'resources/beta-forms',
+            'sort_order' => 10,
             'is_published' => true,
         ]);
 
         $grandchild = Page::query()->create([
-            'parent_page_id' => $child->getKey(),
+            'parent_page_id' => $thirdChild->getKey(),
             'title' => 'Volunteer Form',
             'slug' => 'resources/forms/volunteer',
             'is_published' => true,
@@ -289,7 +306,8 @@ class PageParentPageTest extends TestCase
             ->test(ListPages::class)
             ->assertTableFilterExists('parent_page_id')
             ->filterTable('parent_page_id', $parent)
-            ->assertCanSeeTableRecords([$parent, $child])
+            ->sortTable('parentPage.title', 'asc')
+            ->assertCanSeeTableRecords([$parent, $firstChild, $secondChild, $thirdChild], inOrder: true)
             ->assertCanNotSeeTableRecords([$grandchild, $otherParent, $otherChild, $topLevel]);
     }
 
@@ -320,6 +338,7 @@ class PageParentPageTest extends TestCase
                     'value' => $parent->getKey(),
                 ],
             ],
+            'sort' => 'parentPage.title:asc',
         ]);
 
         Livewire::actingAs(User::factory()->create())
