@@ -447,9 +447,10 @@ class AdminPanelProvider extends PanelProvider
                             gap: 0.75rem;
                         }
 
-                        .fi-sidebar-open .fi-sidebar-item.twyxtco-sidebar-indent-30 > .fi-sidebar-item-btn {
-                            margin-inline-start: 30px;
-                            width: calc(100% - 30px);
+                        .fi-sidebar-open .fi-sidebar-item.twyxtco-sidebar-indent-40 > .fi-sidebar-item-btn {
+                            margin-inline-start: 40px;
+                            width: calc(100% - 40px);
+                            margin-top: -15px;
                         }
 
                         .twyxtco-sidebar-help {

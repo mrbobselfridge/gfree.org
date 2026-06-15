@@ -41,7 +41,7 @@ class HomepageBannerResource extends Resource
     {
         return collect(parent::getNavigationItems())
             ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
-                'class' => 'twyxtco-sidebar-indent-30',
+                'class' => 'twyxtco-sidebar-indent-40',
             ], merge: true))
             ->all();
     }
