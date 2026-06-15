@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Jobs\SendWorkflowNotificationJob;
 use App\Mail\WorkflowNotificationMail;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Models\WorkflowNotificationEvent;
 use App\Models\WorkflowNotificationRule;
@@ -262,8 +263,8 @@ class WorkflowNotificationTest extends TestCase
 
             return $mail->hasTo('page-review@example.com')
                 && str_contains($html, 'Visual comparison')
-                && str_contains($html, 'PRE')
-                && str_contains($html, 'POST')
+                && str_contains($html, 'Before Changes')
+                && str_contains($html, 'After Changes')
                 && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/baseline.png')
                 && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/post-update.png')
                 && substr_count($html, 'width="50%"') === 2
@@ -409,8 +410,8 @@ class WorkflowNotificationTest extends TestCase
         $html = view('mail.workflow-notification', ['event' => $event])->render();
 
         $this->assertStringContainsString('Visual comparison', $html);
-        $this->assertStringContainsString('PRE', $html);
-        $this->assertStringContainsString('POST', $html);
+        $this->assertStringContainsString('Before Changes', $html);
+        $this->assertStringContainsString('After Changes', $html);
         $this->assertStringContainsString('table-layout: fixed', $html);
         $this->assertSame(2, substr_count($html, 'width="50%"'));
         $this->assertSame(2, substr_count($html, 'style="width: 50%; max-width: 50%;'));
@@ -451,12 +452,142 @@ class WorkflowNotificationTest extends TestCase
 
         $this->assertStringContainsString('Visual snapshot', $html);
         $this->assertStringNotContainsString('Visual comparison', $html);
-        $this->assertStringNotContainsString('PRE', $html);
-        $this->assertStringNotContainsString('POST', $html);
+        $this->assertStringContainsString('Saved Created Page', $html);
+        $this->assertStringNotContainsString('Before Changes', $html);
+        $this->assertStringNotContainsString('After Changes', $html);
         $this->assertStringContainsString('td width="100%" valign="top" style="width: 100%; max-width: 100%; padding: 0 0 12px 0;', $html);
-        $this->assertStringContainsString('alt="Page screenshot"', $html);
+        $this->assertStringContainsString('alt="Saved Created Page page screenshot"', $html);
         $this->assertStringNotContainsString('https://example.test/snapshots/page-visual-snapshots/pre.png', $html);
         $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/post.png', $html);
+    }
+
+    public function test_workflow_notification_subject_and_message_render_template_items(): void
+    {
+        Carbon::setTestNow('2026-06-15 14:35:00');
+        $this->mockVisualSnapshots();
+
+        SiteSetting::query()->create([
+            'church_name' => 'gFree Church',
+        ]);
+
+        $actor = User::factory()->create([
+            'name' => 'Editor Person',
+            'email' => 'editor@example.com',
+        ]);
+
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Page updated',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'extra_emails' => 'page-review@example.com',
+            'subject' => '{church_name}: {page_title} {action_status} by {updater_name}',
+            'message' => 'Site {site_name} saw {page_title} get {action_status} on {current_date} at {current_time}. Contact {updater_email}. Full: {current_datetime}.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $event = WorkflowNotificationEvent::query()->create([
+            'workflow_notification_rule_id' => $rule->getKey(),
+            'content_area' => AdminAccess::PAGES,
+            'trigger' => WorkflowNotificationRule::TRIGGER_UPDATED,
+            'status' => WorkflowNotificationEvent::STATUS_PENDING,
+            'record_key' => Page::class.':1',
+            'record_label' => 'About Us',
+            'actor_id' => $actor->getKey(),
+            'actor_name' => $actor->name,
+            'scheduled_at' => now(),
+            'recipient_emails' => ['page-review@example.com'],
+        ]);
+
+        $mail = new WorkflowNotificationMail($event);
+        $html = $mail->render();
+
+        $this->assertSame('gFree Church: About Us Updated by Editor Person', $mail->envelope()->subject);
+        $this->assertStringContainsString('Site gFree Church saw About Us get Updated on Jun 15, 2026 at 2:35 PM.', $html);
+        $this->assertStringContainsString('Contact editor@example.com. Full: Jun 15, 2026 2:35 PM.', $html);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_delete_workflow_notification_email_shows_most_recent_page_screenshot(): void
+    {
+        $this->mockVisualSnapshots();
+
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Page deleted',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_DELETED],
+            'extra_emails' => 'page-review@example.com',
+            'subject' => 'Page deleted',
+            'message' => 'Please note this page was deleted.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $event = WorkflowNotificationEvent::query()->create([
+            'workflow_notification_rule_id' => $rule->getKey(),
+            'content_area' => AdminAccess::PAGES,
+            'trigger' => WorkflowNotificationRule::TRIGGER_DELETED,
+            'status' => WorkflowNotificationEvent::STATUS_PENDING,
+            'record_key' => Page::class.':1',
+            'pre_snapshot_path' => 'page-visual-snapshots/deleted-most-recent.png',
+            'post_snapshot_path' => 'page-visual-snapshots/should-not-show.png',
+            'scheduled_at' => now(),
+            'recipient_emails' => ['page-review@example.com'],
+        ]);
+
+        $html = view('mail.workflow-notification', ['event' => $event])->render();
+
+        $this->assertStringContainsString('Visual snapshot', $html);
+        $this->assertStringNotContainsString('Visual comparison', $html);
+        $this->assertStringContainsString('Most Recent Page Screenshot', $html);
+        $this->assertStringContainsString('https://example.test/snapshots/page-visual-snapshots/deleted-most-recent.png', $html);
+        $this->assertStringNotContainsString('https://example.test/snapshots/page-visual-snapshots/should-not-show.png', $html);
+    }
+
+    public function test_deleted_page_notification_uses_existing_visual_baseline(): void
+    {
+        Queue::fake();
+        $this->mockVisualSnapshots();
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        WorkflowNotificationRule::query()->create([
+            'name' => 'Page deleted',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_DELETED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'Page deleted',
+            'message' => 'Please note this page was deleted.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Deleted Page',
+            'slug' => 'deleted-page',
+            'is_published' => true,
+        ]);
+
+        WorkflowVisualSnapshot::query()->create([
+            'snapshotable_type' => Page::class,
+            'snapshotable_id' => $page->getKey(),
+            'snapshot_path' => 'page-visual-snapshots/delete-baseline.png',
+            'snapshot_captured_at' => now()->subHour(),
+        ]);
+
+        $page->delete();
+
+        app(WorkflowNotificationService::class)->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_DELETED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame('page-visual-snapshots/delete-baseline.png', $event->pre_snapshot_path);
+        $this->assertNull($event->post_snapshot_path);
+
+        Queue::assertPushed(SendWorkflowNotificationJob::class);
     }
 
     /**

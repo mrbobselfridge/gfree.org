@@ -8,6 +8,7 @@ use App\Mail\WorkflowNotificationMail;
 use App\Models\User;
 use App\Models\WorkflowNotificationEvent;
 use App\Models\WorkflowNotificationRule;
+use App\Models\WorkflowVisualSnapshot;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -29,6 +30,10 @@ class WorkflowNotificationService
             $this->visualSnapshots->seedBaseline($record);
         }
 
+        $deleteSnapshot = $trigger === WorkflowNotificationRule::TRIGGER_DELETED
+            ? $this->visualSnapshots->baselineFor($record)
+            : null;
+
         $this->automatic(
             area: $area,
             trigger: $trigger,
@@ -39,6 +44,7 @@ class WorkflowNotificationService
             publicUrl: $record instanceof HasPublicUrl ? $record->publicUrl() : null,
             recordType: $record::class,
             recordId: (int) $record->getKey(),
+            preSnapshot: $deleteSnapshot,
         );
     }
 
@@ -52,9 +58,10 @@ class WorkflowNotificationService
         ?string $publicUrl = null,
         ?string $recordType = null,
         ?int $recordId = null,
+        ?WorkflowVisualSnapshot $preSnapshot = null,
     ): void {
         $this->rulesFor($area, $trigger)
-            ->each(function (WorkflowNotificationRule $rule) use ($area, $trigger, $recordKey, $recordLabel, $actor, $adminUrl, $publicUrl, $recordType, $recordId): void {
+            ->each(function (WorkflowNotificationRule $rule) use ($area, $trigger, $recordKey, $recordLabel, $actor, $adminUrl, $publicUrl, $recordType, $recordId, $preSnapshot): void {
                 $recipients = $rule->recipientEmails();
 
                 if ($recipients->isEmpty()) {
@@ -77,7 +84,9 @@ class WorkflowNotificationService
                 ]);
 
                 if ($isNewEvent) {
-                    $this->fillPreSnapshot($event, $recordType, $recordId);
+                    $preSnapshot
+                        ? $this->fillPreSnapshotFromBaseline($event, $preSnapshot)
+                        : $this->fillPreSnapshot($event, $recordType, $recordId);
                 }
 
                 $event->fill([
@@ -272,6 +281,14 @@ class WorkflowNotificationService
             return;
         }
 
+        $event->fill([
+            'pre_snapshot_path' => $baseline->snapshot_path,
+            'pre_snapshot_captured_at' => $baseline->snapshot_captured_at,
+        ]);
+    }
+
+    private function fillPreSnapshotFromBaseline(WorkflowNotificationEvent $event, WorkflowVisualSnapshot $baseline): void
+    {
         $event->fill([
             'pre_snapshot_path' => $baseline->snapshot_path,
             'pre_snapshot_captured_at' => $baseline->snapshot_captured_at,

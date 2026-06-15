@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\WorkflowNotificationEvent;
+use App\Support\WorkflowNotificationTemplate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -18,7 +19,7 @@ class WorkflowNotificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->event->rule->subject,
+            subject: WorkflowNotificationTemplate::render($this->event->rule->subject, $this->event),
         );
     }
 
