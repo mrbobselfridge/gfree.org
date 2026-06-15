@@ -192,12 +192,30 @@ class ContentBlocks
                 ->values();
         }
 
+        return self::sortRelatedContentItems($items);
+    }
+
+    private static function sortRelatedContentItems(Collection $items): Collection
+    {
         return $items
+            ->map(function (array $item): array {
+                $item['sort_random'] = ($item['kind'] ?? null) === 'page'
+                    ? random_int(0, PHP_INT_MAX)
+                    : PHP_INT_MAX;
+
+                return $item;
+            })
             ->sortBy([
                 ['sort_group', 'asc'],
                 ['sort_order', 'asc'],
+                ['sort_random', 'asc'],
                 ['title', 'asc'],
             ])
+            ->map(function (array $item): array {
+                unset($item['sort_random']);
+
+                return $item;
+            })
             ->values();
     }
 

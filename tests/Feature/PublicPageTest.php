@@ -765,6 +765,62 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Draft Resource');
     }
 
+    public function test_child_cards_block_orders_child_pages_before_randomizing_matching_order_groups(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'content_blocks' => [
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'heading' => 'Child Cards',
+                        'content_type' => 'pages',
+                        'item_limit' => 10,
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Alpha Later',
+            'slug' => 'resources/alpha-later',
+            'sort_order' => 20,
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Zed Top Group',
+            'slug' => 'resources/zed-top-group',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Beta Top Group',
+            'slug' => 'resources/beta-top-group',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+
+        $content = $this->get('/resources')
+            ->assertOk()
+            ->assertSee('Child Cards')
+            ->assertSee('Alpha Later')
+            ->assertSee('Zed Top Group')
+            ->assertSee('Beta Top Group')
+            ->getContent();
+
+        $laterPosition = strpos($content, 'Alpha Later');
+
+        $this->assertLessThan($laterPosition, strpos($content, 'Zed Top Group'));
+        $this->assertLessThan($laterPosition, strpos($content, 'Beta Top Group'));
+    }
+
     public function test_related_content_block_with_empty_heading_keeps_child_cards_slug_without_displaying_default_label(): void
     {
         $parent = Page::query()->create([
