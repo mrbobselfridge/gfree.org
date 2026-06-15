@@ -206,6 +206,7 @@ class WorkflowNotificationTest extends TestCase
     {
         Queue::fake();
         Mail::fake();
+        Carbon::setTestNow('2026-06-15 15:44:00');
         $this->mockVisualSnapshots(['page-visual-snapshots/post-update.png']);
 
         $recipient = User::factory()->create([
@@ -217,7 +218,7 @@ class WorkflowNotificationTest extends TestCase
             'content_area' => AdminAccess::PAGES,
             'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
             'selected_user_ids' => [$recipient->getKey()],
-            'subject' => 'Page updated',
+            'subject' => 'UPD PAGE: "{page_title}" updated at {current_datetime}!',
             'message' => 'Please review the page update.',
             'delay_minutes' => 0,
             'is_enabled' => true,
@@ -262,6 +263,7 @@ class WorkflowNotificationTest extends TestCase
             $html = $mail->render();
 
             return $mail->hasTo('page-review@example.com')
+                && $mail->envelope()->subject === 'UPD PAGE: "Workflow Page" updated at Jun 15, 2026 3:44 PM!'
                 && str_contains($html, 'Visual comparison')
                 && str_contains($html, 'Before Changes')
                 && str_contains($html, 'After Changes')
@@ -269,6 +271,119 @@ class WorkflowNotificationTest extends TestCase
                 && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/post-update.png')
                 && substr_count($html, 'width="50%"') === 2
                 && substr_count($html, 'max-width: 50%') === 2;
+        });
+
+        Carbon::setTestNow();
+    }
+
+    public function test_created_notification_send_captures_post_snapshot_and_renders_template_subject(): void
+    {
+        Queue::fake();
+        Mail::fake();
+        Carbon::setTestNow('2026-06-15 15:44:00');
+        $this->mockVisualSnapshots([
+            'page-visual-snapshots/create-baseline.png',
+            'page-visual-snapshots/create-post.png',
+        ]);
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        WorkflowNotificationRule::query()->create([
+            'name' => 'Page created',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_CREATED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'PAGE: "{page_title}" created at {current_datetime}!',
+            'message' => 'Created {page_title}.',
+            'delay_minutes' => 0,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Announcements2',
+            'slug' => 'announcements2',
+            'is_published' => true,
+            'show_site_chrome' => true,
+            'show_page_header' => true,
+        ]);
+
+        $service = app(WorkflowNotificationService::class);
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_CREATED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+        $service->send($event->refresh());
+
+        $this->assertSame('page-visual-snapshots/create-post.png', $event->refresh()->post_snapshot_path);
+
+        Mail::assertSent(WorkflowNotificationMail::class, function (WorkflowNotificationMail $mail): bool {
+            $html = $mail->render();
+
+            return $mail->hasTo('page-review@example.com')
+                && $mail->envelope()->subject === 'PAGE: "Announcements2" created at Jun 15, 2026 3:44 PM!'
+                && str_contains($html, 'Saved Created Page')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/create-post.png')
+                && ! str_contains($html, 'Visual comparison');
+        });
+
+        Carbon::setTestNow();
+    }
+
+    public function test_update_notification_without_existing_baseline_still_renders_comparison(): void
+    {
+        Queue::fake();
+        Mail::fake();
+        $this->mockVisualSnapshots([
+            'page-visual-snapshots/generated-pre.png',
+            'page-visual-snapshots/generated-post.png',
+        ]);
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        WorkflowNotificationRule::query()->create([
+            'name' => 'Page updated',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'Page updated',
+            'message' => 'Please review the page update.',
+            'delay_minutes' => 0,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Workflow Page',
+            'slug' => 'workflow-page',
+            'is_published' => true,
+            'show_site_chrome' => true,
+            'show_page_header' => true,
+        ]);
+
+        $service = app(WorkflowNotificationService::class);
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+        $this->assertSame('page-visual-snapshots/generated-pre.png', $event->pre_snapshot_path);
+
+        $service->send($event->refresh());
+
+        $event->refresh();
+
+        $this->assertSame('page-visual-snapshots/generated-pre.png', $event->pre_snapshot_path);
+        $this->assertSame('page-visual-snapshots/generated-post.png', $event->post_snapshot_path);
+
+        Mail::assertSent(WorkflowNotificationMail::class, function (WorkflowNotificationMail $mail): bool {
+            $html = $mail->render();
+
+            return str_contains($html, 'Visual comparison')
+                && str_contains($html, 'Before Changes')
+                && str_contains($html, 'After Changes')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/generated-pre.png')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/generated-post.png')
+                && substr_count($html, 'width="50%"') === 2;
         });
     }
 
@@ -588,6 +703,44 @@ class WorkflowNotificationTest extends TestCase
         $this->assertNull($event->post_snapshot_path);
 
         Queue::assertPushed(SendWorkflowNotificationJob::class);
+    }
+
+    public function test_delete_snapshot_preparation_captures_most_recent_page_screenshot_before_delete(): void
+    {
+        Queue::fake();
+        $this->mockVisualSnapshots(['page-visual-snapshots/delete-current.png']);
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        WorkflowNotificationRule::query()->create([
+            'name' => 'Page deleted',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_DELETED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'Page deleted',
+            'message' => 'Please note this page was deleted.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'Deleted Page',
+            'slug' => 'deleted-page',
+            'is_published' => true,
+        ]);
+
+        $service = app(WorkflowNotificationService::class);
+
+        $service->prepareDeletedRecordSnapshot($page);
+        $page->delete();
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_DELETED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame('page-visual-snapshots/delete-current.png', $event->pre_snapshot_path);
+        $this->assertNull($event->post_snapshot_path);
     }
 
     /**

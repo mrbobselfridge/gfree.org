@@ -205,6 +205,8 @@ class WorkflowNotificationService
             return false;
         }
 
+        $event->loadMissing(['actor', 'rule']);
+
         $rule = $event->rule;
         $recipients = collect($event->recipient_emails ?: $rule?->recipientEmails()?->all() ?: [])
             ->filter()
@@ -220,7 +222,21 @@ class WorkflowNotificationService
             return false;
         }
 
+        if ($this->shouldRenderComparison($event) && blank($event->pre_snapshot_path)) {
+            $this->fillPreSnapshot($event, $event->record_type, $event->record_id);
+            $event->save();
+        }
+
         $postSnapshot = $this->capturePostSnapshot($event);
+
+        if ($postSnapshot && $this->shouldRenderComparison($event) && blank($event->pre_snapshot_path)) {
+            $event->forceFill([
+                'pre_snapshot_path' => $postSnapshot->path,
+                'pre_snapshot_captured_at' => $event->post_snapshot_captured_at ?? now(),
+            ])->save();
+        }
+
+        $event->refresh()->loadMissing(['actor', 'rule']);
 
         Mail::to($recipients->all())->send(new WorkflowNotificationMail($event));
 
@@ -249,6 +265,17 @@ class WorkflowNotificationService
             ->all();
     }
 
+    public function prepareDeletedRecordSnapshot(Model $record): void
+    {
+        $area = WorkflowNotificationAreas::areaForModel($record);
+
+        if (! $area || $this->rulesFor($area, WorkflowNotificationRule::TRIGGER_DELETED)->isEmpty()) {
+            return;
+        }
+
+        $this->visualSnapshots->captureBaseline($record);
+    }
+
     public function rulesFor(string $area, string $trigger): Collection
     {
         return WorkflowNotificationRule::query()
@@ -257,6 +284,14 @@ class WorkflowNotificationService
             ->get()
             ->filter(fn (WorkflowNotificationRule $rule): bool => $rule->hasTrigger($trigger))
             ->values();
+    }
+
+    private function shouldRenderComparison(WorkflowNotificationEvent $event): bool
+    {
+        return in_array($event->trigger, [
+            WorkflowNotificationRule::TRIGGER_UPDATED,
+            WorkflowNotificationRule::TRIGGER_MANUAL,
+        ], true);
     }
 
     private function hasAnyRuleForArea(string $area): bool

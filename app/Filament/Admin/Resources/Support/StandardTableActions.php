@@ -79,6 +79,7 @@ class StandardTableActions
                     ->modalDescription(fn (Model $record): string => 'Are you sure you want to delete: '.self::recordLabel($record).'?')
                     ->modalSubmitActionLabel('Yes')
                     ->modalCancelActionLabel('No')
+                    ->before(fn (Model $record): mixed => app(WorkflowNotificationService::class)->prepareDeletedRecordSnapshot($record))
                     ->after(fn (Model $record): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
                         $record,
                         WorkflowNotificationRule::TRIGGER_DELETED,

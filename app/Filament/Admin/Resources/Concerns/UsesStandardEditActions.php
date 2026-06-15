@@ -74,6 +74,7 @@ trait UsesStandardEditActions
         return IconOnlyAction::make(
             DeleteAction::make('deleteFromForm')
                 ->label('Delete')
+                ->before(fn (): mixed => app(WorkflowNotificationService::class)->prepareDeletedRecordSnapshot($this->getRecord()))
                 ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
                     $this->getRecord(),
                     WorkflowNotificationRule::TRIGGER_DELETED,
@@ -108,6 +109,7 @@ trait UsesStandardEditActions
     {
         return IconOnlyAction::make(
             DeleteAction::make()
+                ->before(fn (): mixed => app(WorkflowNotificationService::class)->prepareDeletedRecordSnapshot($this->getRecord()))
                 ->after(fn (): mixed => app(WorkflowNotificationService::class)->automaticForRecord(
                     $this->getRecord(),
                     WorkflowNotificationRule::TRIGGER_DELETED,
