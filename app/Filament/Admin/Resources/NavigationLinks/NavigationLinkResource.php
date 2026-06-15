@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\NavigationLinks\Schemas\NavigationLinkForm;
 use App\Filament\Admin\Resources\NavigationLinks\Tables\NavigationLinksTable;
 use App\Models\NavigationLink;
 use BackedEnum;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -25,13 +26,25 @@ class NavigationLinkResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?int $navigationSort = 90;
+    protected static ?int $navigationSort = 36;
 
     protected static ?string $navigationLabel = 'Navigation';
 
     protected static ?string $modelLabel = 'navigation link';
 
     protected static ?string $recordTitleAttribute = 'label';
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return collect(parent::getNavigationItems())
+            ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
+                'class' => 'twyxtco-sidebar-indent-40',
+            ], merge: true))
+            ->all();
+    }
 
     public static function form(Schema $schema): Schema
     {

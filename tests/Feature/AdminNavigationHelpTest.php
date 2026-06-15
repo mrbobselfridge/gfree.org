@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
+use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
+use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -12,11 +15,13 @@ class AdminNavigationHelpTest extends TestCase
 
     public function test_admin_sidebar_navigation_outputs_help_icons_and_descriptions(): void
     {
-        $this->actingAs(User::factory()->create())
-            ->get('/admin')
+        $response = $this->actingAs(User::factory()->create())
+            ->get('/admin');
+
+        $response
             ->assertOk()
             ->assertSee('twyxtco-sidebar-help', false)
-            ->assertSee('twyxtco-sidebar-indent-30', false)
+            ->assertSee('twyxtco-sidebar-indent-40', false)
             ->assertSee('Your starting point for admin tools and quick account access.', false)
             ->assertDontSee('Manage ministry listing cards and individual ministry detail pages.', false)
             ->assertSee('Create and edit website pages, nested page paths, and simple redirect URLs.', false)
@@ -24,5 +29,9 @@ class AdminNavigationHelpTest extends TestCase
             ->assertSee('Send automatic or manual email updates when selected content areas are created, changed, or deleted.', false)
             ->assertSee('Manage admin and editor accounts and their allowed admin areas.', false)
             ->assertSee('/manual#workflow-notifications', false);
+
+        $this->assertGreaterThanOrEqual(3, substr_count($response->getContent(), 'twyxtco-sidebar-indent-40'));
+        $this->assertSame(1, HomepageBannerResource::getNavigationSort());
+        $this->assertGreaterThan(PageResource::getNavigationSort(), NavigationLinkResource::getNavigationSort());
     }
 }
