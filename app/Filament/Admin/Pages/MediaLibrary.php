@@ -33,6 +33,8 @@ class MediaLibrary extends Page
 
     private const IMAGE_DIRECTORY = 'media-library';
 
+    private const IMAGE_BATCH_SIZE = 24;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
@@ -51,9 +53,22 @@ class MediaLibrary extends Page
 
     public string $sort = 'recent';
 
+    public int $imageLimit = self::IMAGE_BATCH_SIZE;
+
     public function updatedSearch(): void
     {
         $this->search = trim($this->search);
+        $this->resetImageLimit();
+    }
+
+    public function updatedSort(): void
+    {
+        $this->resetImageLimit();
+    }
+
+    public function loadMoreImages(): void
+    {
+        $this->imageLimit += self::IMAGE_BATCH_SIZE;
     }
 
     public function canAccessImages(): bool
@@ -66,34 +81,36 @@ class MediaLibrary extends Page
      */
     public function getImages(): Collection
     {
-        $images = MediaLibrarySupport::images();
-
-        if (filled($this->search)) {
-            $search = str($this->search)->lower()->toString();
-
-            $images = $images->filter(fn (array $image): bool => str($this->searchHaystack($image))
-                ->lower()
-                ->contains($search));
-        }
-
-        return $this->sortImages($images)->values();
+        return $this->getImageResults()['items'];
     }
 
     public function getTotalImageCount(): int
     {
-        return MediaLibrarySupport::images()->count();
+        return $this->getImageResults()['total'];
+    }
+
+    public function getFilteredImageCount(): int
+    {
+        return $this->getImageResults()['filtered_total'];
+    }
+
+    public function hasMoreImages(): bool
+    {
+        return $this->getImageResults()['has_more'];
+    }
+
+    public function getImageResults(): array
+    {
+        return MediaLibrarySupport::pagedImages(
+            search: $this->search,
+            sort: $this->sort,
+            limit: $this->imageLimit,
+        );
     }
 
     public function getSortOptions(): array
     {
-        return [
-            'recent' => 'Most recent',
-            'content_type' => 'Content Type',
-            'file_name' => 'File Name',
-            'size' => 'Size',
-            'path' => 'File Path + Name',
-            'dimensions' => 'Dimensions',
-        ];
+        return MediaLibrarySupport::sortOptions();
     }
 
     public function editImageMetadataClickHandler(string $path): ?string
@@ -135,6 +152,7 @@ class MediaLibrary extends Page
                     fallbackTitle: $this->titleFromUploadedFilename($data['image_original_name'] ?? null, $path),
                     fallbackSlug: $this->slugFromUploadedFilename($data['image_original_name'] ?? null, $path),
                 );
+                $this->resetImageLimit();
                 $this->notifyMediaLibraryWorkflow(
                     trigger: WorkflowNotificationRule::TRIGGER_CREATED,
                     path: $path,
@@ -222,6 +240,8 @@ class MediaLibrary extends Page
 
                     Storage::disk('public')->delete($path);
                     MediaImageMetadata::query()->where('path', $path)->delete();
+                    MediaLibrarySupport::clearImageIndexCache();
+                    $this->resetImageLimit();
 
                     app(WorkflowNotificationService::class)->automatic(
                         area: AdminAccess::MEDIA_LIBRARY,
@@ -403,6 +423,7 @@ class MediaLibrary extends Page
             )
         );
         $metadata->save();
+        MediaLibrarySupport::clearImageIndexCache();
     }
 
     /**
@@ -486,6 +507,8 @@ class MediaLibrary extends Page
         $replacementMetadata->save();
 
         Storage::disk('public')->delete($oldPath);
+        MediaLibrarySupport::clearImageIndexCache();
+        $this->resetImageLimit();
 
         $this->notifyMediaLibraryWorkflow(
             trigger: WorkflowNotificationRule::TRIGGER_UPDATED,
@@ -618,67 +641,8 @@ class MediaLibrary extends Page
         return "Warning: this image is currently used in {$usedIn}. Deleting it will leave those places without this file.";
     }
 
-    private function searchHaystack(array $image): string
+    private function resetImageLimit(): void
     {
-        return collect([
-            $image['name'] ?? null,
-            $image['title'] ?? null,
-            $image['slug'] ?? null,
-            ...($image['tags'] ?? []),
-            $image['created_at_for_humans'] ?? null,
-            $image['updated_at_for_humans'] ?? null,
-            $image['created_by_name'] ?? null,
-            $image['created_by_email'] ?? null,
-            $image['path'] ?? null,
-            $image['directory'] ?? null,
-            $image['usage_summary'] ?? null,
-            ...collect($image['usage'] ?? [])
-                ->flatMap(fn (array $usage): array => [
-                    $usage['label'] ?? null,
-                    $usage['short_label'] ?? null,
-                    $usage['detail'] ?? null,
-                ])
-                ->all(),
-        ])
-            ->filter()
-            ->implode(' ');
-    }
-
-    /**
-     * @param  Collection<int, array<string, mixed>>  $images
-     * @return Collection<int, array<string, mixed>>
-     */
-    private function sortImages(Collection $images): Collection
-    {
-        return match ($this->sort) {
-            'content_type' => $images->sortBy(fn (array $image): string => $this->contentTypeSortValue($image), SORT_NATURAL | SORT_FLAG_CASE),
-            'file_name' => $images->sortBy(fn (array $image): string => (string) ($image['name'] ?? ''), SORT_NATURAL | SORT_FLAG_CASE),
-            'size' => $images->sortByDesc(fn (array $image): int => (int) ($image['size'] ?? 0)),
-            'path' => $images->sortBy(fn (array $image): string => (string) ($image['path'] ?? ''), SORT_NATURAL | SORT_FLAG_CASE),
-            'dimensions' => $images->sortByDesc(fn (array $image): int => $this->dimensionSortValue($image)),
-            default => $images->sortByDesc(fn (array $image): int => (int) ($image['modified'] ?? 0)),
-        };
-    }
-
-    private function contentTypeSortValue(array $image): string
-    {
-        $usage = collect($image['usage'] ?? [])->first();
-
-        if (! $usage) {
-            return 'zz-unused';
-        }
-
-        return (string) ($usage['short_label'] ?? $usage['label'] ?? '');
-    }
-
-    private function dimensionSortValue(array $image): int
-    {
-        $dimensions = $image['dimensions'] ?? null;
-
-        if (! is_array($dimensions) || count($dimensions) < 2) {
-            return 0;
-        }
-
-        return (int) $dimensions[0] * (int) $dimensions[1];
+        $this->imageLimit = self::IMAGE_BATCH_SIZE;
     }
 }

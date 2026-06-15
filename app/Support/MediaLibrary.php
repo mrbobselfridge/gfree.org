@@ -4,16 +4,95 @@ namespace App\Support;
 
 use App\Models\MediaImageMetadata;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
 class MediaLibrary
 {
+    private const IMAGE_INDEX_CACHE_KEY = 'media-library.image-index.v1';
+
+    private const IMAGE_INDEX_CACHE_SECONDS = 60;
+
     /**
      * @return Collection<int, array<string, mixed>>
      */
     public static function images(): Collection
+    {
+        if (app()->environment('testing')) {
+            return self::buildImageIndex();
+        }
+
+        return Cache::remember(
+            self::IMAGE_INDEX_CACHE_KEY,
+            now()->addSeconds(self::IMAGE_INDEX_CACHE_SECONDS),
+            fn (): Collection => self::buildImageIndex(),
+        );
+    }
+
+    /**
+     * @return array{
+     *     items: Collection<int, array<string, mixed>>,
+     *     total: int,
+     *     filtered_total: int,
+     *     has_more: bool,
+     * }
+     */
+    public static function pagedImages(?string $search = null, string $sort = 'recent', int $limit = 24, int $offset = 0): array
+    {
+        $images = self::images();
+        $total = $images->count();
+
+        if (filled($search)) {
+            $needle = str($search)->lower()->toString();
+            $images = $images->filter(fn (array $image): bool => str(self::searchHaystack($image))
+                ->lower()
+                ->contains($needle));
+        }
+
+        $images = self::sortImages($images, $sort)->values();
+        $filteredTotal = $images->count();
+        $limit = max(1, $limit);
+        $offset = max(0, $offset);
+
+        return [
+            'items' => $images->slice($offset, $limit)->values(),
+            'total' => $total,
+            'filtered_total' => $filteredTotal,
+            'has_more' => ($offset + $limit) < $filteredTotal,
+        ];
+    }
+
+    public static function image(string $path): ?array
+    {
+        return self::images()->firstWhere('path', $path);
+    }
+
+    public static function clearImageIndexCache(): void
+    {
+        Cache::forget(self::IMAGE_INDEX_CACHE_KEY);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function sortOptions(): array
+    {
+        return [
+            'recent' => 'Most recent',
+            'content_type' => 'Content Type',
+            'file_name' => 'File Name',
+            'size' => 'Size',
+            'path' => 'File Path + Name',
+            'dimensions' => 'Dimensions',
+        ];
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    private static function buildImageIndex(): Collection
     {
         $disk = Storage::disk('public');
         $metadata = MediaImageMetadata::query()
@@ -152,6 +231,70 @@ class MediaLibrary
         $remaining = count($usage) - 1;
 
         return $remaining > 0 ? "{$summary} + {$remaining} more" : $summary;
+    }
+
+    private static function searchHaystack(array $image): string
+    {
+        return collect([
+            $image['name'] ?? null,
+            $image['title'] ?? null,
+            $image['slug'] ?? null,
+            ...($image['tags'] ?? []),
+            $image['created_at_for_humans'] ?? null,
+            $image['updated_at_for_humans'] ?? null,
+            $image['created_by_name'] ?? null,
+            $image['created_by_email'] ?? null,
+            $image['path'] ?? null,
+            $image['directory'] ?? null,
+            $image['usage_summary'] ?? null,
+            ...collect($image['usage'] ?? [])
+                ->flatMap(fn (array $usage): array => [
+                    $usage['label'] ?? null,
+                    $usage['short_label'] ?? null,
+                    $usage['detail'] ?? null,
+                ])
+                ->all(),
+        ])
+            ->filter()
+            ->implode(' ');
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $images
+     * @return Collection<int, array<string, mixed>>
+     */
+    private static function sortImages(Collection $images, string $sort): Collection
+    {
+        return match ($sort) {
+            'content_type' => $images->sortBy(fn (array $image): string => self::contentTypeSortValue($image), SORT_NATURAL | SORT_FLAG_CASE),
+            'file_name' => $images->sortBy(fn (array $image): string => (string) ($image['name'] ?? ''), SORT_NATURAL | SORT_FLAG_CASE),
+            'size' => $images->sortByDesc(fn (array $image): int => (int) ($image['size'] ?? 0)),
+            'path' => $images->sortBy(fn (array $image): string => (string) ($image['path'] ?? ''), SORT_NATURAL | SORT_FLAG_CASE),
+            'dimensions' => $images->sortByDesc(fn (array $image): int => self::dimensionSortValue($image)),
+            default => $images->sortByDesc(fn (array $image): int => (int) ($image['modified'] ?? 0)),
+        };
+    }
+
+    private static function contentTypeSortValue(array $image): string
+    {
+        $usage = collect($image['usage'] ?? [])->first();
+
+        if (! $usage) {
+            return 'zz-unused';
+        }
+
+        return (string) ($usage['short_label'] ?? $usage['label'] ?? '');
+    }
+
+    private static function dimensionSortValue(array $image): int
+    {
+        $dimensions = $image['dimensions'] ?? null;
+
+        if (! is_array($dimensions) || count($dimensions) < 2) {
+            return 0;
+        }
+
+        return (int) $dimensions[0] * (int) $dimensions[1];
     }
 
     private static function isImage(string $path): bool

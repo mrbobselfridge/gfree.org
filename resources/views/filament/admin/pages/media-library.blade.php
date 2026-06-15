@@ -1,7 +1,15 @@
 <x-filament-panels::page>
     @php
-        $images = $this->canAccessImages() ? $this->getImages() : collect();
-        $totalImages = $this->canAccessImages() ? $this->getTotalImageCount() : 0;
+        $imageResults = $this->canAccessImages() ? $this->getImageResults() : [
+            'items' => collect(),
+            'total' => 0,
+            'filtered_total' => 0,
+            'has_more' => false,
+        ];
+        $images = $imageResults['items'];
+        $totalImages = $imageResults['total'];
+        $filteredImages = $imageResults['filtered_total'];
+        $hasMoreImages = $imageResults['has_more'];
         $sortOptions = $this->getSortOptions();
         $addAction = $this->canAccessImages() ? 'uploadImages' : null;
     @endphp
@@ -110,6 +118,29 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 1rem;
+        }
+
+        .twyxtco-media-load-more {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .twyxtco-media-load-more button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            background: rgb(217 119 6);
+            padding: 0.5rem 0.875rem;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .twyxtco-media-load-more button:hover,
+        .twyxtco-media-load-more button:focus {
+            background: rgb(180 83 9);
         }
 
         .twyxtco-media-card {
@@ -333,7 +364,11 @@
                     <div>
                         <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('image', $totalImages) }} shown.
+                            @if (filled($this->search))
+                                {{ $images->count() }} of {{ $filteredImages }} matching {{ \Illuminate\Support\Str::plural('image', $filteredImages) }} shown ({{ $totalImages }} total).
+                            @else
+                                {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('image', $totalImages) }} shown.
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -508,6 +543,19 @@
                         </article>
                     @endforeach
                 </div>
+
+                @if ($hasMoreImages)
+                    <div class="twyxtco-media-load-more">
+                        <button
+                            type="button"
+                            wire:click="loadMoreImages"
+                            wire:loading.attr="disabled"
+                            wire:target="loadMoreImages"
+                        >
+                            Load more
+                        </button>
+                    </div>
+                @endif
             @endif
         @endif
     </div>

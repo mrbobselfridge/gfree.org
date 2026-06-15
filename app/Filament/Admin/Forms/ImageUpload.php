@@ -9,6 +9,8 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -103,12 +105,31 @@ class ImageUpload
                     ->stickyModalHeader()
                     ->stickyModalFooter()
                     ->schema([
+                        TextInput::make('existing_image_search')
+                            ->label('Search')
+                            ->placeholder('Search path, filename, title, tag, or content area')
+                            ->live(debounce: 300)
+                            ->dehydrated(false)
+                            ->afterStateUpdated(fn (Set $set): mixed => $set('existing_image_limit', ImageGalleryPicker::DEFAULT_LIMIT)),
+                        Select::make('existing_image_sort')
+                            ->label('Sort by')
+                            ->options(MediaLibrarySupport::sortOptions())
+                            ->default('recent')
+                            ->live()
+                            ->dehydrated(false)
+                            ->afterStateUpdated(fn (Set $set): mixed => $set('existing_image_limit', ImageGalleryPicker::DEFAULT_LIMIT)),
+                        Hidden::make('existing_image_limit')
+                            ->default(ImageGalleryPicker::DEFAULT_LIMIT)
+                            ->dehydrated(false),
                         ImageGalleryPicker::make('existing_image_path')
                             ->label('Images')
                             ->required(),
                     ])
                     ->fillForm(fn (FileUpload $component): array => [
                         'existing_image_path' => $component->getState(),
+                        'existing_image_search' => null,
+                        'existing_image_sort' => 'recent',
+                        'existing_image_limit' => ImageGalleryPicker::DEFAULT_LIMIT,
                     ])
                     ->action(function (array $data, FileUpload $component): void {
                         $component->state($data['existing_image_path'] ?? null);
@@ -259,6 +280,7 @@ class ImageUpload
             'tags' => MediaImageMetadata::mergeAutoTags($data['tags'] ?? [], $title),
         ]);
         $metadata->save();
+        MediaLibrarySupport::clearImageIndexCache();
     }
 
     private static function metadataFormData(?string $path): array

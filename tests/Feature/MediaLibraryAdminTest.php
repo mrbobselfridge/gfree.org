@@ -768,6 +768,105 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame('a-folder/alpha.jpg', $component->instance()->getImages()->first()['path']);
     }
 
+    public function test_media_library_loads_images_in_batches(): void
+    {
+        Storage::fake('public');
+
+        foreach (range(1, 30) as $number) {
+            UploadedFile::fake()
+                ->image(sprintf('image-%02d.jpg', $number), 400, 300)
+                ->storeAs('bulk', sprintf('image-%02d.jpg', $number), 'public');
+        }
+
+        $component = Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->set('sort', 'file_name');
+
+        $this->assertCount(24, $component->instance()->getImages());
+        $this->assertSame(30, $component->instance()->getTotalImageCount());
+        $this->assertSame(30, $component->instance()->getFilteredImageCount());
+        $this->assertTrue($component->instance()->hasMoreImages());
+
+        $component
+            ->assertSee('24 of 30 images shown')
+            ->assertSee('Load more')
+            ->call('loadMoreImages')
+            ->assertHasNoErrors();
+
+        $this->assertCount(30, $component->instance()->getImages());
+        $this->assertFalse($component->instance()->hasMoreImages());
+
+        $component->set('search', 'image-29');
+
+        $this->assertSame(24, $component->instance()->imageLimit);
+        $this->assertCount(1, $component->instance()->getImages());
+        $this->assertSame('bulk/image-29.jpg', $component->instance()->getImages()->first()['path']);
+        $this->assertSame(1, $component->instance()->getFilteredImageCount());
+    }
+
+    public function test_media_library_paged_image_query_slices_filtered_results(): void
+    {
+        Storage::fake('public');
+
+        foreach (range(1, 5) as $number) {
+            UploadedFile::fake()
+                ->image(sprintf('resource-%02d.jpg', $number), 400, 300)
+                ->storeAs('resources', sprintf('resource-%02d.jpg', $number), 'public');
+        }
+
+        MediaImageMetadata::query()->create([
+            'path' => 'resources/resource-05.jpg',
+            'title' => 'Youth Resource Graphic',
+            'slug' => 'youth/resource-graphic',
+            'tags' => ['Students'],
+        ]);
+
+        $results = MediaLibrary::pagedImages(
+            search: 'students',
+            sort: 'file_name',
+            limit: 1,
+        );
+
+        $this->assertSame(5, $results['total']);
+        $this->assertSame(1, $results['filtered_total']);
+        $this->assertFalse($results['has_more']);
+        $this->assertSame('resources/resource-05.jpg', $results['items']->first()['path']);
+
+        $results = MediaLibrary::pagedImages(
+            sort: 'file_name',
+            limit: 2,
+            offset: 2,
+        );
+
+        $this->assertSame(5, $results['total']);
+        $this->assertSame(5, $results['filtered_total']);
+        $this->assertTrue($results['has_more']);
+        $this->assertSame(['resources/resource-03.jpg', 'resources/resource-04.jpg'], $results['items']->pluck('path')->all());
+    }
+
+    public function test_existing_image_picker_action_mounts_with_paged_defaults(): void
+    {
+        Storage::fake('public');
+
+        foreach (range(1, 30) as $number) {
+            UploadedFile::fake()
+                ->image(sprintf('picker-%02d.jpg', $number), 400, 300)
+                ->storeAs('picker', sprintf('picker-%02d.jpg', $number), 'public');
+        }
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->assertFormComponentActionExists('hero_image_path', 'chooseExistingImage')
+            ->mountFormComponentAction('hero_image_path', 'chooseExistingImage')
+            ->assertFormComponentActionMounted('hero_image_path', 'chooseExistingImage');
+
+        $results = MediaLibrary::pagedImages(limit: 24);
+
+        $this->assertCount(24, $results['items']);
+        $this->assertSame(30, $results['total']);
+        $this->assertTrue($results['has_more']);
+    }
+
     private function assertNewMediaLibraryImagePath(string $path, string $name): void
     {
         $this->assertMatchesRegularExpression(
