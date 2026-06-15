@@ -82,6 +82,11 @@ class MediaImageMetadata extends Model
             'student',
             'unchained',
         ],
+        'bible' => [
+            'bible',
+            'scripture',
+            'the word',
+        ],
         'missions' => [
             'missions',
             'costa rica',
