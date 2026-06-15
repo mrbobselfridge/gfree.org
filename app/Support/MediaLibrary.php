@@ -11,7 +11,11 @@ use Illuminate\Support\Str;
 
 class MediaLibrary
 {
-    private const IMAGE_INDEX_CACHE_KEY = 'media-library.image-index.v1';
+    private const IMAGE_INDEX_CACHE_KEY = 'media-library.image-index.v2';
+
+    private const LEGACY_IMAGE_INDEX_CACHE_KEYS = [
+        'media-library.image-index.v1',
+    ];
 
     private const IMAGE_INDEX_CACHE_SECONDS = 60;
 
@@ -24,11 +28,25 @@ class MediaLibrary
             return self::buildImageIndex();
         }
 
-        return Cache::remember(
+        $cachedImages = Cache::get(self::IMAGE_INDEX_CACHE_KEY);
+
+        if (is_array($cachedImages)) {
+            return collect($cachedImages);
+        }
+
+        if ($cachedImages !== null) {
+            Cache::forget(self::IMAGE_INDEX_CACHE_KEY);
+        }
+
+        $images = self::buildImageIndex();
+
+        Cache::put(
             self::IMAGE_INDEX_CACHE_KEY,
+            self::cacheableImages($images),
             now()->addSeconds(self::IMAGE_INDEX_CACHE_SECONDS),
-            fn (): Collection => self::buildImageIndex(),
         );
+
+        return $images;
     }
 
     /**
@@ -72,6 +90,10 @@ class MediaLibrary
     public static function clearImageIndexCache(): void
     {
         Cache::forget(self::IMAGE_INDEX_CACHE_KEY);
+
+        foreach (self::LEGACY_IMAGE_INDEX_CACHE_KEYS as $cacheKey) {
+            Cache::forget($cacheKey);
+        }
     }
 
     /**
@@ -147,6 +169,31 @@ class MediaLibrary
 
                 return $image;
             });
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $images
+     * @return array<int, array<string, mixed>>
+     */
+    private static function cacheableImages(Collection $images): array
+    {
+        return $images
+            ->map(function (array $image): array {
+                $image['created_at'] = self::cacheableDate($image['created_at'] ?? null);
+                $image['updated_at'] = self::cacheableDate($image['updated_at'] ?? null);
+
+                return $image;
+            })
+            ->all();
+    }
+
+    private static function cacheableDate(mixed $date): ?string
+    {
+        if ($date instanceof \DateTimeInterface) {
+            return $date->format(DATE_ATOM);
+        }
+
+        return is_string($date) && $date !== '' ? $date : null;
     }
 
     /**
