@@ -38,7 +38,7 @@ class HomepageContent extends Page
 
     protected static ?int $navigationSort = 0;
 
-    protected static ?string $navigationLabel = 'Homepage Content';
+    protected static ?string $navigationLabel = 'Homepage';
 
     protected static ?string $title = 'Homepage Content';
 

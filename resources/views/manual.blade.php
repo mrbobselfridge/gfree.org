@@ -653,17 +653,17 @@
                 <li><a href="#roles">Roles and Permissions</a></li>
                 <li><a href="#daily-workflow">Daily Workflow</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
-                <li><a href="#homepage">Homepage Content</a></li>
-                <li><a href="#banners">Homepage Banners</a></li>
+                <li><a href="#homepage">Homepage</a></li>
+                <li><a href="#banners">Banners</a></li>
                 <li><a href="#content-blocks">Content Blocks</a></li>
                 <li><a href="#media-library">Media Library</a></li>
                 <li><a href="#file-library">File Library</a></li>
                 <li><a href="#pages">Pages</a></li>
-                <li><a href="#navigation">Navigation Links</a></li>
+                <li><a href="#navigation">Navigation</a></li>
                 <li><a href="#settings">Site Settings</a></li>
                 <li><a href="#analytics">Analytics</a></li>
                 <li><a href="#backups">Backups</a></li>
-                <li><a href="#workflow-notifications">Workflow Notifications and Email</a></li>
+                <li><a href="#workflow-notifications">Notifications and Email</a></li>
                 <li><a href="#users">Users</a></li>
                 <li><a href="#publishing">Publishing Checklist</a></li>
                 <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -723,25 +723,25 @@
         </section>
 
         <section class="manual-section" id="homepage">
-            <h2>Homepage Content</h2>
-            <p>Homepage Content controls the flexible sections below the top banner. These sections can be reordered and built from content blocks.</p>
+            <h2>Homepage</h2>
+            <p>Homepage controls the flexible sections below the top banner. These sections can be reordered and built from content blocks.</p>
             <h3>Common Tasks</h3>
             <ol>
-                <li>Open <strong>Homepage Content</strong>.</li>
+                <li>Open <strong>Homepage</strong>.</li>
                 <li>Add, copy, delete, collapse, or reorder content blocks.</li>
                 <li>Update text, links, images, backgrounds, and block-specific settings.</li>
                 <li>Save and review the homepage.</li>
             </ol>
             <h3>What To Watch</h3>
             <ul>
-                <li>The homepage also uses <strong>Homepage Banners</strong> for the top hero/banner area.</li>
-                <li>If Homepage Content is empty, the site can fall back to starter/default content.</li>
+                <li>The homepage also uses <strong>Banners</strong> for the top hero/banner area.</li>
+                <li>If Homepage is empty, the site can fall back to starter/default content.</li>
             </ul>
         </section>
 
         <section class="manual-section" id="banners">
-            <h2>Homepage Banners</h2>
-            <p>Homepage Banners manage the large rotating hero images and messages at the top of the homepage.</p>
+            <h2>Banners</h2>
+            <p>Banners manage the large rotating hero images and messages at the top of the homepage.</p>
             <ul>
                 <li>Use strong landscape images that still work when cropped on mobile.</li>
                 <li>Use start and end dates when a banner is seasonal.</li>
@@ -926,8 +926,8 @@
         </section>
 
         <section class="manual-section" id="navigation">
-            <h2>Navigation Links</h2>
-            <p>Navigation Links control the public header navigation and dropdown structure.</p>
+            <h2>Navigation</h2>
+            <p>Navigation controls the public header navigation and dropdown structure.</p>
             <ul>
                 <li><strong>Label:</strong> Text visitors see in the header.</li>
                 <li><strong>URL:</strong> Internal path, file link, or full external URL.</li>
@@ -1033,13 +1033,13 @@
         </section>
 
         <section class="manual-section" id="workflow-notifications">
-            <h2>Workflow Notifications and Email</h2>
-            <p>Workflow Notifications let the CMS email people when important content is created, updated, deleted, or manually sent for review. Use them for handoffs such as asking another team to check media, review pages, or approve public content.</p>
+            <h2>Notifications and Email</h2>
+            <p>Notifications let the CMS email people when important content is created, updated, deleted, or manually sent for review. Use them for handoffs such as asking another team to check media, review pages, or approve public content.</p>
 
             <h3>Where To Find Them</h3>
             <ul>
-                <li>Open <strong>Workflow Notification Rules</strong> in the admin sidebar.</li>
-                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Navigation Links, Homepage Content, or Homepage Banners.</li>
+                <li>Open <strong>Notifications</strong> in the admin sidebar.</li>
+                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Navigation, Homepage, or Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
 

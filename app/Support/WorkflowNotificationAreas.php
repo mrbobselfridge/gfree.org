@@ -24,10 +24,10 @@ class WorkflowNotificationAreas
     public static function options(): array
     {
         return [
-            AdminAccess::HOMEPAGE_CONTENT => 'Homepage Content',
-            AdminAccess::HOMEPAGE_BANNERS => 'Homepage Banners',
+            AdminAccess::HOMEPAGE_CONTENT => 'Homepage',
+            AdminAccess::HOMEPAGE_BANNERS => 'Banners',
             AdminAccess::PAGES => 'Pages',
-            AdminAccess::NAVIGATION_LINKS => 'Navigation Links',
+            AdminAccess::NAVIGATION_LINKS => 'Navigation',
             AdminAccess::MEDIA_LIBRARY => 'Media Library',
             AdminAccess::FILE_LIBRARY => 'File Library',
             AdminAccess::SITE_SETTINGS => 'Site Settings',

@@ -27,6 +27,8 @@ class WorkflowNotificationRuleResource extends Resource
 
     protected static ?int $navigationSort = 250;
 
+    protected static ?string $navigationLabel = 'Notifications';
+
     protected static ?string $modelLabel = 'workflow notification';
 
     protected static ?string $recordTitleAttribute = 'name';

@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\HomepageBanners\Schemas\HomepageBannerForm;
 use App\Filament\Admin\Resources\HomepageBanners\Tables\HomepageBannersTable;
 use App\Models\HomepageBanner;
 use BackedEnum;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -27,9 +28,23 @@ class HomepageBannerResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $navigationLabel = 'Banners';
+
     protected static ?string $modelLabel = 'homepage banner';
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return collect(parent::getNavigationItems())
+            ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
+                'class' => 'twyxtco-sidebar-indent-30',
+            ], merge: true))
+            ->all();
+    }
 
     public static function form(Schema $schema): Schema
     {

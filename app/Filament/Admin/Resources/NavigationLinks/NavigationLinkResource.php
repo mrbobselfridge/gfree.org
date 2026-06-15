@@ -27,6 +27,8 @@ class NavigationLinkResource extends Resource
 
     protected static ?int $navigationSort = 90;
 
+    protected static ?string $navigationLabel = 'Navigation';
+
     protected static ?string $modelLabel = 'navigation link';
 
     protected static ?string $recordTitleAttribute = 'label';

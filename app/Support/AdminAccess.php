@@ -60,12 +60,12 @@ class AdminAccess
     {
         return [
             self::HOMEPAGE_CONTENT => [
-                'label' => 'Homepage Content',
+                'label' => 'Homepage',
                 'group' => 'Content',
                 'page' => HomepageContent::class,
             ],
             self::HOMEPAGE_BANNERS => [
-                'label' => 'Homepage Banners',
+                'label' => 'Banners',
                 'group' => 'Content',
                 'model' => HomepageBanner::class,
                 'resource' => HomepageBannerResource::class,
@@ -105,7 +105,7 @@ class AdminAccess
                 'resources' => [FileDocumentResource::class, FileCategoryResource::class],
             ],
             self::NAVIGATION_LINKS => [
-                'label' => 'Navigation Links',
+                'label' => 'Navigation',
                 'group' => 'Content',
                 'model' => NavigationLink::class,
                 'resource' => NavigationLinkResource::class,
@@ -117,7 +117,7 @@ class AdminAccess
                 'resource' => UserResource::class,
             ],
             self::WORKFLOW_NOTIFICATIONS => [
-                'label' => 'Workflow Notifications',
+                'label' => 'Notifications',
                 'group' => 'Site Tools',
                 'model' => WorkflowNotificationRule::class,
                 'resource' => WorkflowNotificationRuleResource::class,

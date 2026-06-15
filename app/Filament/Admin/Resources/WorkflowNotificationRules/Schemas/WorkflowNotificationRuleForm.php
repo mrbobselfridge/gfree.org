@@ -90,15 +90,15 @@ class WorkflowNotificationRuleForm
                     ->columns(2)
                     ->columnSpanFull(),
                 Section::make('Email')
+                    ->description('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title},
+      {action_status}, {updater_name}, and {updater_email}.')
                     ->schema([
                         TextInput::make('subject')
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, and {updater_email}.')
                             ->columnSpanFull(),
                         Textarea::make('message')
                             ->required()
-                            ->helperText('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, and {updater_email}.')
                             ->rows(6)
                             ->columnSpanFull(),
                     ])
