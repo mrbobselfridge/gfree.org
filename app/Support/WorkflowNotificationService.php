@@ -83,7 +83,7 @@ class WorkflowNotificationService
                     'record_key' => $recordKey,
                 ]);
 
-                if ($isNewEvent) {
+                if ($isNewEvent || ($this->shouldUsePreSnapshot($trigger) && blank($event->pre_snapshot_path))) {
                     $preSnapshot
                         ? $this->fillPreSnapshotFromBaseline($event, $preSnapshot)
                         : $this->fillPreSnapshot($event, $recordType, $recordId);
@@ -99,6 +99,8 @@ class WorkflowNotificationService
                     'actor_name' => $actor?->name,
                     'admin_url' => $adminUrl,
                     'public_url' => $publicUrl,
+                    'post_snapshot_path' => null,
+                    'post_snapshot_captured_at' => null,
                     'scheduled_at' => $scheduledAt,
                     'sent_at' => null,
                     'cancelled_at' => null,
@@ -291,6 +293,15 @@ class WorkflowNotificationService
         return in_array($event->trigger, [
             WorkflowNotificationRule::TRIGGER_UPDATED,
             WorkflowNotificationRule::TRIGGER_MANUAL,
+        ], true);
+    }
+
+    private function shouldUsePreSnapshot(string $trigger): bool
+    {
+        return in_array($trigger, [
+            WorkflowNotificationRule::TRIGGER_UPDATED,
+            WorkflowNotificationRule::TRIGGER_MANUAL,
+            WorkflowNotificationRule::TRIGGER_DELETED,
         ], true);
     }
 

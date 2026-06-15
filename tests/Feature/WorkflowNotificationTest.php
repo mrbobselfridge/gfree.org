@@ -387,6 +387,85 @@ class WorkflowNotificationTest extends TestCase
         });
     }
 
+    public function test_reused_pending_update_event_clears_stale_post_snapshot_and_sends_comparison(): void
+    {
+        Queue::fake();
+        Mail::fake();
+        $this->mockVisualSnapshots([
+            'page-visual-snapshots/current-pre.png',
+            'page-visual-snapshots/current-post.png',
+        ]);
+
+        $recipient = User::factory()->create([
+            'email' => 'page-review@example.com',
+        ]);
+
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Page updated',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'selected_user_ids' => [$recipient->getKey()],
+            'subject' => 'UPD PAGE: "{page_title}" updated at {current_datetime}!',
+            'message' => 'Please review the page update.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        $page = Page::query()->create([
+            'title' => 'ZZZZZ A PARENT Header Title Text',
+            'slug' => 'parent',
+            'is_published' => true,
+            'show_site_chrome' => true,
+            'show_page_header' => true,
+        ]);
+
+        WorkflowNotificationEvent::query()->create([
+            'workflow_notification_rule_id' => $rule->getKey(),
+            'content_area' => AdminAccess::PAGES,
+            'trigger' => WorkflowNotificationRule::TRIGGER_UPDATED,
+            'status' => WorkflowNotificationEvent::STATUS_PENDING,
+            'record_type' => Page::class,
+            'record_id' => $page->getKey(),
+            'record_key' => Page::class.':'.$page->getKey(),
+            'record_label' => $page->title,
+            'post_snapshot_path' => 'page-visual-snapshots/stale-after.png',
+            'post_snapshot_captured_at' => now()->subDay(),
+            'scheduled_at' => now()->addMinutes(15),
+            'recipient_emails' => ['page-review@example.com'],
+        ]);
+
+        $service = app(WorkflowNotificationService::class);
+        $service->automaticForRecord($page, WorkflowNotificationRule::TRIGGER_UPDATED);
+
+        $event = WorkflowNotificationEvent::query()->firstOrFail();
+
+        $this->assertSame('page-visual-snapshots/current-pre.png', $event->pre_snapshot_path);
+        $this->assertNull($event->post_snapshot_path);
+
+        $event->scheduled_at = now();
+        $event->save();
+
+        $service->send($event->refresh());
+
+        $event->refresh();
+
+        $this->assertSame('page-visual-snapshots/current-pre.png', $event->pre_snapshot_path);
+        $this->assertSame('page-visual-snapshots/current-post.png', $event->post_snapshot_path);
+
+        Mail::assertSent(WorkflowNotificationMail::class, function (WorkflowNotificationMail $mail): bool {
+            $html = $mail->render();
+
+            return $mail->hasTo('page-review@example.com')
+                && str_contains($html, 'Visual comparison')
+                && str_contains($html, 'Before Changes')
+                && str_contains($html, 'After Changes')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/current-pre.png')
+                && str_contains($html, 'https://example.test/snapshots/page-visual-snapshots/current-post.png')
+                && ! str_contains($html, 'page-visual-snapshots/stale-after.png')
+                && substr_count($html, 'width="50%"') === 2;
+        });
+    }
+
     public function test_manual_notification_uses_visual_baseline_as_pre_and_current_snapshot_as_post(): void
     {
         Mail::fake();
