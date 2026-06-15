@@ -981,16 +981,6 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 TablesRenderHook::TOOLBAR_START,
-                fn (): HtmlString => request()->is('admin/staff-members')
-                    ? new HtmlString(<<<'HTML'
-                        <h2 class="twyxtco-leadership-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">
-                            Individual Leaders
-                        </h2>
-                    HTML)
-                    : new HtmlString(''),
-            )
-            ->renderHook(
-                TablesRenderHook::TOOLBAR_START,
                 fn (): HtmlString => request()->is('admin/announcements')
                     ? new HtmlString(<<<'HTML'
                         <h2 class="twyxtco-announcements-table-toolbar-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">

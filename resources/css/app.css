@@ -334,7 +334,6 @@
 }
 
 .page-hero--ministry-detail .ministry-hero-contact,
-.page-hero--leader-detail .leadership-hero-contact,
 .page-hero--page-message .page-hero-message {
     margin-top: 0;
     justify-self: end;
@@ -1148,7 +1147,6 @@
 }
 
 .announcement-index,
-.leadership-index,
 .ministry-index {
     padding: 88px max(16px, calc((100vw - 1180px) / 2));
     background: white;
@@ -1212,7 +1210,6 @@
 }
 
 .announcement-grid,
-.leadership-grid,
 .ministry-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1220,7 +1217,6 @@
 }
 
 .announcement-card,
-.leadership-card,
 .ministry-card {
     min-height: 100%;
     color: var(--site-ink);
@@ -1231,8 +1227,6 @@
 
 .announcement-card:hover,
 .announcement-card:focus-within,
-.leadership-card:hover,
-.leadership-card:focus-within,
 .ministry-card:hover,
 .ministry-card:focus-within {
     border-color: color-mix(in srgb, var(--site-accent) 58%, var(--site-line));
@@ -1254,16 +1248,11 @@
 }
 
 .announcement-card img,
-.leadership-card img,
 .ministry-card img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
-}
-
-.leadership-card img {
-    aspect-ratio: 1;
 }
 
 .listing-card__content {
@@ -1274,7 +1263,6 @@
 }
 
 .announcement-card p,
-.leadership-card p,
 .ministry-card p {
     margin: 0 0 18px;
     color: var(--site-accent-text);
@@ -1284,15 +1272,10 @@
 }
 
 .announcement-card h2,
-.leadership-card h2,
 .ministry-card h2 {
     margin: 0;
     font-size: 1.7rem;
     line-height: 1.08;
-}
-
-.leadership-card h2 {
-    margin-bottom: 24px;
 }
 
 .listing-card__summary {
@@ -1326,7 +1309,6 @@
     margin: 0;
 }
 
-.leadership-detail,
 .ministry-detail {
     margin: 0;
 }
@@ -1662,7 +1644,6 @@
     .site-card-row,
     .site-updates__grid,
     .announcement-grid,
-    .leadership-grid,
     .ministry-grid,
     .sermon-grid,
     .page-image-text,
@@ -1676,14 +1657,12 @@
     }
 
     .page-hero--ministry-detail .page-hero__content,
-    .page-hero--leader-detail .page-hero__content,
     .page-hero--page-message .page-hero__content {
         grid-template-columns: 1fr;
         gap: 0;
     }
 
     .page-hero--ministry-detail .ministry-hero-contact,
-    .page-hero--leader-detail .leadership-hero-contact,
     .page-hero--page-message .page-hero-message {
         justify-self: start;
         margin-top: 28px;

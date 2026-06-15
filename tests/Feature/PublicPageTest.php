@@ -232,7 +232,7 @@ class PublicPageTest extends TestCase
         $this->get('/kids')
             ->assertOk()
             ->assertSee('page-hero--page-message', false)
-            ->assertSee('ministry-hero-contact leadership-hero-contact page-hero-message', false)
+            ->assertSee('ministry-hero-contact page-hero-message', false)
             ->assertSee('First-time family check-in is available at the Kids desk.')
             ->assertSee('Our team is ready to help.');
 

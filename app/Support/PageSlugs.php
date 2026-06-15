@@ -17,7 +17,6 @@ class PageSlugs
         'fonts',
         'images',
         'js',
-        'leadership',
         'livewire',
         'manual',
         'ministry',

@@ -9,12 +9,10 @@ use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
 use App\Filament\Admin\Resources\Ministries\Pages\EditMinistry;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
-use App\Filament\Admin\Resources\StaffMembers\Pages\EditStaffMember;
 use App\Models\Announcement;
 use App\Models\FileDocument;
 use App\Models\Ministry;
 use App\Models\Page;
-use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -82,22 +80,6 @@ class SlugAutoUpdateTest extends TestCase
             ->assertSet('data.slug', 'stable-ministry-url')
             ->callFormComponentAction('slug', 'rebuildSlug')
             ->assertSet('data.slug', 'changed-ministry-name');
-    }
-
-    public function test_leadership_slug_does_not_auto_update_on_edit(): void
-    {
-        $leader = StaffMember::query()->create([
-            'name' => 'Original Leader',
-            'slug' => 'stable-leader-url',
-            'is_published' => true,
-        ]);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test(EditStaffMember::class, ['record' => $leader->getKey()])
-            ->set('data.name', 'Changed Leader Name')
-            ->assertSet('data.slug', 'stable-leader-url')
-            ->callFormComponentAction('slug', 'rebuildSlug')
-            ->assertSet('data.slug', 'changed-leader-name');
     }
 
     public function test_file_library_slug_can_be_rebuilt_from_category_and_title(): void

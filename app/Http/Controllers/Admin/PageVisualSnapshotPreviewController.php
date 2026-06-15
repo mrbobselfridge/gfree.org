@@ -10,7 +10,6 @@ use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
-use App\Models\StaffMember;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -23,7 +22,6 @@ class PageVisualSnapshotPreviewController extends Controller
             'page' => $this->page(Page::query()->findOrFail($record)),
             'announcement' => $this->announcement(Announcement::query()->findOrFail($record)),
             'ministry' => $this->ministry(Ministry::query()->findOrFail($record)),
-            'leader' => $this->leader(StaffMember::query()->findOrFail($record)),
             'homepage' => $this->homepage(HomepageContent::query()->firstOrCreate([])),
             default => abort(404),
         };
@@ -69,19 +67,6 @@ class PageVisualSnapshotPreviewController extends Controller
                 ['label' => 'When', 'value' => $ministry->meeting_time],
                 ['label' => 'Where', 'value' => $ministry->location],
             ])->filter(fn (array $item): bool => filled($item['value'])),
-        ]);
-    }
-
-    private function leader(StaffMember $leader): View
-    {
-        $settings = SiteSetting::query()->first();
-
-        return view('leadership.show', [
-            ...$this->sharedViewData($settings),
-            'settings' => $settings,
-            'leader' => $leader,
-            'contentBlocks' => ContentBlocks::prepare($leader->content_blocks, $settings),
-            'photoUrl' => ContentBlocks::imageUrl($leader->photo_path) ?: $this->listingImageUrl('leadership', $settings),
         ]);
     }
 

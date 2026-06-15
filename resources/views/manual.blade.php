@@ -662,7 +662,6 @@
                 <li><a href="#file-library">File Library</a></li>
                 <li><a href="#ministries">Ministries</a></li>
                 <li><a href="#pages">Pages</a></li>
-                <li><a href="#leaders">Leaders</a></li>
                 <li><a href="#navigation">Navigation Links</a></li>
                 <li><a href="#settings">Site Settings</a></li>
                 <li><a href="#analytics">Analytics</a></li>
@@ -684,12 +683,12 @@
                 </div>
                 <div class="manual-card">
                     <strong>Content Editors</strong>
-                    <p>Usually manage selected pages, ministries, announcements, bulletins, leaders, or media.</p>
+                    <p>Usually manage selected pages, ministries, announcements, bulletins, or media.</p>
                 </div>
             </div>
             <ul>
                 <li>Use <strong>Users</strong> to grant or limit access.</li>
-                <li>Some accounts may be limited to specific pages, ministries, or leader profiles.</li>
+                <li>Some accounts may be limited to specific pages or ministries.</li>
                 <li>When in doubt, ask a site admin before changing sitewide settings or navigation.</li>
             </ul>
         </section>
@@ -761,7 +760,7 @@
 
         <section class="manual-section" id="content-blocks">
             <h2>Content Blocks</h2>
-            <p>Content blocks are reusable sections used on the homepage, pages, ministries, leaders, and announcements. The available block types may vary by area, but the core behavior is the same.</p>
+            <p>Content blocks are reusable sections used on the homepage, pages, ministries, and announcements. The available block types may vary by area, but the core behavior is the same.</p>
 
             <table class="manual-table">
                 <thead>
@@ -876,10 +875,10 @@
 
         <section class="manual-section" id="media-library">
             <h2>Media Library</h2>
-            <p>The Media Library is the shared library area for reusable images used across pages, announcements, ministries, leaders, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
+            <p>The Media Library is the shared library area for reusable images used across pages, announcements, ministries, and banners. Downloadable documents are managed separately in <strong>File Library</strong>.</p>
             <h3>Common Tasks</h3>
             <ul>
-                <li>Upload one image at a time for pages, announcements, ministries, leaders, and banners.</li>
+                <li>Upload one image at a time for pages, announcements, ministries, and banners.</li>
                 <li>Use image search and sorting to find files by path, filename, size, dimensions, usage, creator, or tracked dates.</li>
                 <li>Use Edit image to update details or upload a replacement when the same file is used in multiple tracked places.</li>
                 <li>Review image usage before deleting media.</li>
@@ -888,7 +887,7 @@
             <h3>Image Details</h3>
             <ul>
                 <li>Upload image starts with the image field, then shows title, slug, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
-                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, banners, announcements, ministries, and leaders can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
+                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, banners, announcements, and ministries can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
@@ -901,7 +900,7 @@
                 <li>Use clear, bright photos.</li>
                 <li>Avoid images with heavy text baked into the image.</li>
                 <li>Use landscape photos for banners and wide image sections.</li>
-                <li>Use portrait or square photos for leaders when the layout expects a profile image.</li>
+                <li>Use portrait or square photos only when the layout expects a profile image.</li>
             </ul>
         </section>
 
@@ -981,7 +980,7 @@
             <ul>
                 <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
                 <li>Do not change a public path casually. Old links may stop working.</li>
-                <li>Avoid paths already used by system routes such as announcements, bulletins, leadership, ministry, admin, or manual.</li>
+                <li>Avoid paths already used by system routes such as announcements, bulletins, ministry, admin, or manual.</li>
                 <li>Use the generate icon to regenerate the path from the title when needed.</li>
             </ul>
             <h3>Parent Pages and Child Pages</h3>
@@ -1000,23 +999,6 @@
                 <li>Use <strong>Temporary</strong> for most redirects unless the old URL has permanently moved.</li>
                 <li>A redirect page must be marked live before visitors can use it.</li>
             </ul>
-        </section>
-
-        <section class="manual-section" id="leaders">
-            <h2>Leaders</h2>
-            <p>Leaders manage staff or leadership profiles shown on the leadership page and individual profile pages.</p>
-            <ul>
-                <li>Use consistent names, roles, and image style.</li>
-                <li>Use the leadership image for the individual profile banner and the card image for the square image on the leadership listing page.</li>
-                <li>Use phone number and availability fields when those details should appear on the individual profile page.</li>
-                <li>Keep bios short and warm.</li>
-                <li>Use content blocks for richer profile pages when needed.</li>
-                <li>Publish only profiles that should be visible publicly.</li>
-            </ul>
-            <div class="manual-note">
-                <strong>Photo tip</strong>
-                <p>Use clear headshots with similar framing so the leadership page feels consistent.</p>
-            </div>
         </section>
 
         <section class="manual-section" id="navigation">
@@ -1132,7 +1114,7 @@
             <h3>Where To Find Them</h3>
             <ul>
                 <li>Open <strong>Workflow Notification Rules</strong> in the admin sidebar.</li>
-                <li>Create a rule for one content area, such as Bulletins, Announcements, Pages, Media Library, File Library, Site Settings, Users, Leaders, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
+                <li>Create a rule for one content area, such as Bulletins, Announcements, Pages, Media Library, File Library, Site Settings, Users, Ministries, Navigation Links, Homepage Content, or Homepage Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
 
@@ -1200,7 +1182,7 @@
             <h3>Recommended Uses</h3>
             <ul>
                 <li>Notify communications when a bulletin is ready to turn into announcements.</li>
-                <li>Notify ministry leaders when their page, leader profile, or announcement changes.</li>
+                <li>Notify ministry leaders when their page or announcement changes.</li>
                 <li>Notify admins when users, site settings, navigation, or homepage content changes.</li>
                 <li>Use manual notifications for review requests and automatic notifications for accountability or routine handoffs.</li>
             </ul>
@@ -1218,7 +1200,7 @@
                 <li>Create user accounts only for people who need CMS access.</li>
                 <li>Grant the least access that lets someone do their job.</li>
                 <li>Use area permissions for broad access, such as all announcements or all pages.</li>
-                <li>Use record-level permissions for specific ministries, pages, or leaders when appropriate.</li>
+                <li>Use record-level permissions for specific ministries or pages when appropriate.</li>
                 <li>Users can also be selected as recipients in Workflow Notification Rules.</li>
                 <li>Remove or reduce access when someone no longer needs it.</li>
             </ul>

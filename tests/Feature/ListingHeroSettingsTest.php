@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Ministry;
+use App\Models\Page;
 use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -31,24 +32,21 @@ class ListingHeroSettingsTest extends TestCase
             ->assertSee('page-hero--image');
     }
 
-    public function test_leadership_listing_uses_configured_hero_settings(): void
+    public function test_leadership_path_is_available_for_regular_pages_after_leaders_removal(): void
     {
-        SiteSetting::query()->create([
-            'church_name' => 'TwyxtCo Church',
-            'leadership_small_label' => 'Our team',
-            'leadership_title' => 'Leaders who serve',
-            'leadership_subtitle' => '<p>Meet the people helping <strong>TwyxtCo</strong> follow Jesus.</p>',
-            'leadership_image_path' => 'site-settings/leadership/team.jpg',
+        $this->get('/leadership')->assertNotFound();
+
+        Page::query()->create([
+            'title' => 'Leadership',
+            'slug' => 'leadership',
+            'intro' => 'A regular CMS page can now own this path.',
+            'is_published' => true,
         ]);
 
         $this->get('/leadership')
             ->assertOk()
-            ->assertSee('Our team')
-            ->assertSee('Leaders who serve')
-            ->assertSee('<strong>TwyxtCo</strong>', false)
-            ->assertDontSee('&lt;strong&gt;TwyxtCo&lt;/strong&gt;', false)
-            ->assertSee('/storage/site-settings/leadership/team.jpg')
-            ->assertSee('page-hero--image');
+            ->assertSee('Leadership')
+            ->assertSee('A regular CMS page can now own this path.');
     }
 
     public function test_ministry_listing_uses_configured_hero_settings_and_lists_ministries(): void

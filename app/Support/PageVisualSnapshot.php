@@ -6,7 +6,6 @@ use App\Models\Announcement;
 use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\Page;
-use App\Models\StaffMember;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
@@ -102,7 +101,6 @@ class PageVisualSnapshot
             $record instanceof Page => ['type' => 'page', 'record' => $record->getKey()],
             $record instanceof Announcement => ['type' => 'announcement', 'record' => $record->getKey()],
             $record instanceof Ministry => ['type' => 'ministry', 'record' => $record->getKey()],
-            $record instanceof StaffMember => ['type' => 'leader', 'record' => $record->getKey()],
             $record instanceof HomepageContent => ['type' => 'homepage'],
             default => null,
         };

@@ -8,7 +8,6 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BulletinController;
 use App\Http\Controllers\FileDocumentController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LeadershipController;
 use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\PageController;
 use App\Models\SiteSetting;
@@ -51,9 +50,6 @@ Route::get('/admin/page-visual-snapshots/preview/{type}/{record?}', PageVisualSn
 Route::get('/admin/page-visual-snapshots/image', PageVisualSnapshotImageController::class)
     ->middleware('signed')
     ->name('admin.page-visual-snapshots.image');
-
-Route::get('/leadership', [LeadershipController::class, 'index'])->name('leadership.index');
-Route::get('/leadership/{slug}', [LeadershipController::class, 'show'])->name('leadership.show');
 
 Route::get('/ministry', [MinistryController::class, 'index'])->name('ministries.index');
 Route::get('/ministry/{slug}', [MinistryController::class, 'show'])->name('ministries.show');

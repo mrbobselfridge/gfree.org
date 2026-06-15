@@ -172,7 +172,6 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         $missingLandingImages = collect([
             'announcements' => $settings->announcements_image_path,
             'ministries' => $settings->ministry_image_path,
-            'leaders' => $settings->leadership_image_path,
             'bulletins' => $settings->bulletins_image_path,
         ])
             ->filter(fn (?string $value): bool => blank($value))

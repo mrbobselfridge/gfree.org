@@ -8,7 +8,6 @@ use App\Filament\Admin\Resources\Bulletins\BulletinResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
-use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\HomepageBanner;
@@ -16,7 +15,6 @@ use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\SiteSetting;
-use App\Models\StaffMember;
 use App\Support\AdminAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -86,7 +84,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             ...$this->unpublishedRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bulletin', 'title'),
             ...$this->unpublishedRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
             ...$this->unpublishedRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
-            ...$this->unpublishedRows(AdminAccess::LEADERS, StaffMember::class, StaffMemberResource::class, 'Leader', 'name'),
             ...$this->unpublishedRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
             ...$this->bulletinsMissingExtraction(),
         ])
@@ -363,7 +360,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->landingCheck('Announcements Landing Page', AdminAccess::ANNOUNCEMENTS, 'announcements_image_path', $settings, AnnouncementResource::getUrl()),
             $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_image_path', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_image_path', $settings, MinistryResource::getUrl()),
-            $this->landingCheck('Leaders Landing Page', AdminAccess::LEADERS, 'leadership_image_path', $settings, StaffMemberResource::getUrl()),
         ]);
     }
 
@@ -376,7 +372,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->landingCheck('Announcements Landing Page', AdminAccess::ANNOUNCEMENTS, 'announcements_small_label', $settings, AnnouncementResource::getUrl()),
             $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_small_label', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_small_label', $settings, MinistryResource::getUrl()),
-            $this->landingCheck('Leaders Landing Page', AdminAccess::LEADERS, 'leadership_small_label', $settings, StaffMemberResource::getUrl()),
         ]);
     }
 
@@ -389,7 +384,6 @@ class NeedsAttentionWidget extends CmsDashboardWidget
             $this->landingCheck('Announcements Landing Page', AdminAccess::ANNOUNCEMENTS, 'announcements_subtitle', $settings, AnnouncementResource::getUrl()),
             $this->landingCheck('Bulletins Landing Page', AdminAccess::BULLETINS, 'bulletins_subtitle', $settings, BulletinResource::getUrl()),
             $this->landingCheck('Ministry Landing Page', AdminAccess::MINISTRIES, 'ministry_subtitle', $settings, MinistryResource::getUrl()),
-            $this->landingCheck('Leaders Landing Page', AdminAccess::LEADERS, 'leadership_subtitle', $settings, StaffMemberResource::getUrl()),
         ]);
     }
 

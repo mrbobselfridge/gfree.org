@@ -7,7 +7,6 @@ use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\Ministry;
 use App\Models\Page;
-use App\Models\StaffMember;
 use App\Support\UserAgentDetails;
 use Closure;
 use Illuminate\Http\Request;
@@ -137,7 +136,6 @@ class TrackPublicPageView
             'page' => fn (Page $page): string => $page->title,
             'announcement' => fn (Announcement $announcement): string => $announcement->title,
             'ministry' => fn (Ministry $ministry): string => $ministry->name,
-            'leader' => fn (StaffMember $leader): string => $leader->name,
             'bulletin' => fn (Bulletin $bulletin): string => $bulletin->title,
         ] as $key => $resolver) {
             $value = $data[$key] ?? null;

@@ -31,7 +31,6 @@ class CreateUser extends CreateRecord
             'records' => [
                 'ministries' => array_values($data['admin_permissions']['records']['ministries'] ?? []),
                 'pages' => array_values($data['admin_permissions']['records']['pages'] ?? []),
-                'leaders' => array_values($data['admin_permissions']['records']['leaders'] ?? []),
             ],
         ];
 

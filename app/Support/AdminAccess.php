@@ -15,7 +15,6 @@ use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
-use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\Announcement;
@@ -27,7 +26,6 @@ use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
-use App\Models\StaffMember;
 use App\Models\User;
 use App\Models\WorkflowNotificationRule;
 use Filament\Pages\Page as FilamentPage;
@@ -51,8 +49,6 @@ class AdminAccess
     public const MINISTRIES = 'ministries';
 
     public const PAGES = 'pages';
-
-    public const LEADERS = 'leaders';
 
     public const CODE_BLOCKS = 'code_blocks';
 
@@ -109,12 +105,6 @@ class AdminAccess
                 'group' => 'Content',
                 'model' => Page::class,
                 'resource' => PageResource::class,
-            ],
-            self::LEADERS => [
-                'label' => 'Leaders',
-                'group' => 'Content',
-                'model' => StaffMember::class,
-                'resource' => StaffMemberResource::class,
             ],
             self::CODE_BLOCKS => [
                 'label' => 'Code Blocks',
@@ -197,11 +187,6 @@ class AdminAccess
                 'label' => 'Individual Page Entries',
                 'model' => Page::class,
                 'title' => 'title',
-            ],
-            self::LEADERS => [
-                'label' => 'Individual Leader Entries',
-                'model' => StaffMember::class,
-                'title' => 'name',
             ],
         ];
     }

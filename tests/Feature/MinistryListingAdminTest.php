@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Filament\Admin\Resources\Announcements\Pages\ListAnnouncements;
 use App\Filament\Admin\Resources\Bulletins\Pages\ListBulletins;
 use App\Filament\Admin\Resources\Ministries\Pages\ListMinistries;
-use App\Filament\Admin\Resources\StaffMembers\Pages\ListStaffMembers;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -55,41 +54,6 @@ class MinistryListingAdminTest extends TestCase
             'ministry_small_label' => 'Ephesians 4:11-14',
             'ministry_title' => 'Ministries',
             'ministry_subtitle' => '<p>Equipping the saints for ministry.</p>',
-        ]);
-    }
-
-    public function test_leadership_listing_settings_appear_above_leadership_table(): void
-    {
-        $this->actingAs(User::factory()->create())
-            ->get('/admin/staff-members')
-            ->assertOk()
-            ->assertSee('Leadership Landing Page Content')
-            ->assertSee('twyxtco-leadership-table-toolbar-heading', false)
-            ->assertSee('Individual Leaders')
-            ->assertSee('Leadership small label')
-            ->assertSee('Leadership title')
-            ->assertSee('Leadership subtitle')
-            ->assertSee('Leadership image')
-            ->assertSee('Save Landing Page Settings');
-    }
-
-    public function test_leadership_listing_settings_can_be_saved_from_list_page(): void
-    {
-        $user = User::factory()->create();
-
-        Livewire::actingAs($user)
-            ->test(ListStaffMembers::class)
-            ->set('listingSettingsData.leadership_small_label', 'Our team')
-            ->set('listingSettingsData.leadership_title', 'Leaders who serve')
-            ->set('listingSettingsData.leadership_subtitle', '<p>Meet the team.</p>')
-            ->call('saveListingSettings')
-            ->assertHasNoErrors();
-
-        $this->assertDatabaseHas(SiteSetting::class, [
-            'church_name' => 'TwyxtCo Church',
-            'leadership_small_label' => 'Our team',
-            'leadership_title' => 'Leaders who serve',
-            'leadership_subtitle' => '<p>Meet the team.</p>',
         ]);
     }
 

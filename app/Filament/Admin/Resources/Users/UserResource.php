@@ -39,7 +39,6 @@ class UserResource extends Resource
         'users-additional-tools',
         'users-individual-ministry-entries',
         'users-individual-page-entries',
-        'users-individual-leader-entries',
     ];
 
     protected static ?string $model = User::class;
@@ -107,7 +106,7 @@ class UserResource extends Resource
                         CheckboxList::make('admin_permissions.tool_groups.content')
                             ->label('')
                             ->options(AdminAccess::toolOptionsForGroup('Content'))
-                            ->helperText('Selecting Ministries, Pages, or Leaders here grants access to all current and future entries in that area.')
+                            ->helperText('Selecting Ministries or Pages here grants access to all current and future entries in that area.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),
@@ -155,18 +154,6 @@ class UserResource extends Resource
                             ->label('')
                             ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::PAGES))
                             ->helperText('Leave blank if the user has full Pages access above.')
-                            ->extraAlpineAttributes(self::permissionListAttributes())
-                            ->bulkToggleable()
-                            ->columns(2),
-                    ])
-                    ->columnSpanFull(),
-                self::section('Individual Leader Entries', 'users-individual-leader-entries')
-                    ->visible(fn (Get $get): bool => $get('role') === User::ROLE_EDITOR)
-                    ->schema([
-                        CheckboxList::make('admin_permissions.records.leaders')
-                            ->label('')
-                            ->options(fn (): array => AdminAccess::recordOptions(AdminAccess::LEADERS))
-                            ->helperText('Leave blank if the user has full Leaders access above.')
                             ->extraAlpineAttributes(self::permissionListAttributes())
                             ->bulkToggleable()
                             ->columns(2),

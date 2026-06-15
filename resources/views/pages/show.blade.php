@@ -53,7 +53,7 @@
                     </div>
 
                     @if ($hasPageMessage)
-                        <div class="ministry-hero-contact leadership-hero-contact page-hero-message" aria-label="Page message">
+                        <div class="ministry-hero-contact page-hero-message" aria-label="Page message">
                             <div class="page-hero-message__body">
                                 @php($pageMessage = trim((string) $page->message))
 

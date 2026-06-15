@@ -6,7 +6,6 @@ use App\Filament\Admin\Resources\Announcements\Pages\CreateAnnouncement;
 use App\Filament\Admin\Resources\Ministries\Pages\CreateMinistry;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
-use App\Filament\Admin\Resources\StaffMembers\Pages\CreateStaffMember;
 use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,15 +40,6 @@ class ContentBlockStarterTest extends TestCase
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreateMinistry::class)
-            ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
-            ->assertDontSee('YouTube Feed')
-            ->assertDontSee('Child Cards');
-    }
-
-    public function test_create_leaders_start_with_a_text_content_block(): void
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test(CreateStaffMember::class)
             ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
             ->assertDontSee('YouTube Feed')
             ->assertDontSee('Child Cards');

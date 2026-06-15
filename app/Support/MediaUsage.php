@@ -10,7 +10,6 @@ use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\SiteSetting;
-use App\Models\StaffMember;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -101,15 +100,6 @@ class MediaUsage
                 ],
             ],
             [
-                'model' => StaffMember::class,
-                'record_label' => 'Leader',
-                'title' => 'name',
-                'fields' => [
-                    'photo_path' => 'Leadership image',
-                    'card_image_path' => 'Leadership card image',
-                ],
-            ],
-            [
                 'model' => FileDocument::class,
                 'record_label' => 'File',
                 'title' => 'title',
@@ -123,7 +113,6 @@ class MediaUsage
                 'title' => 'church_name',
                 'fields' => [
                     'announcements_image_path' => 'Announcements landing image',
-                    'leadership_image_path' => 'Leadership landing image',
                     'ministry_image_path' => 'Ministries landing image',
                     'bulletins_image_path' => 'Bulletins landing image',
                 ],
@@ -158,12 +147,6 @@ class MediaUsage
             [
                 'model' => Ministry::class,
                 'record_label' => 'Ministry',
-                'title' => 'name',
-                'field' => 'content_blocks',
-            ],
-            [
-                'model' => StaffMember::class,
-                'record_label' => 'Leader',
                 'title' => 'name',
                 'field' => 'content_blocks',
             ],

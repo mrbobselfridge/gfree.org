@@ -9,7 +9,6 @@ use App\Filament\Admin\Resources\Ministries\MinistryResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
-use App\Filament\Admin\Resources\StaffMembers\StaffMemberResource;
 use App\Models\Announcement;
 use App\Models\Bulletin;
 use App\Models\HomepageBanner;
@@ -17,7 +16,6 @@ use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
-use App\Models\StaffMember;
 use App\Support\AdminAccess;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,7 +45,6 @@ class RecentUpdatesWidget extends CmsDashboardWidget
             ...$this->recentRows(AdminAccess::BULLETINS, Bulletin::class, BulletinResource::class, 'Bulletin', 'title'),
             ...$this->recentRows(AdminAccess::MINISTRIES, Ministry::class, MinistryResource::class, 'Ministry', 'name'),
             ...$this->recentRows(AdminAccess::PAGES, Page::class, PageResource::class, 'Page', 'title'),
-            ...$this->recentRows(AdminAccess::LEADERS, StaffMember::class, StaffMemberResource::class, 'Leader', 'name'),
             ...$this->recentRows(AdminAccess::HOMEPAGE_BANNERS, HomepageBanner::class, HomepageBannerResource::class, 'Homepage Banner', 'title'),
             ...$this->recentRows(AdminAccess::NAVIGATION_LINKS, NavigationLink::class, NavigationLinkResource::class, 'Navigation Link', 'label'),
             ...$this->recentRows(AdminAccess::SITE_SETTINGS, SiteSetting::class, SiteSettingResource::class, 'Site Settings', 'church_name'),

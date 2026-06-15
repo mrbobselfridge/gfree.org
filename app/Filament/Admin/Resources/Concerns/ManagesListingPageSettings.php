@@ -183,7 +183,6 @@ trait ManagesListingPageSettings
         return match ($this->getListingSettingsPrefix()) {
             'announcements' => route('announcements.index'),
             'bulletins' => route('bulletins.index'),
-            'leadership' => route('leadership.index'),
             'ministry' => route('ministries.index'),
             default => null,
         };

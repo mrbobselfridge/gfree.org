@@ -34,7 +34,6 @@ class AdminAccessTest extends TestCase
             ->assertSee('Bulletins')
             ->assertSee('Ministries')
             ->assertSee('Pages')
-            ->assertSee('Leaders')
             ->assertDontSee('Sermons')
             ->assertSee('Site Settings')
             ->assertSee('Analytics')
@@ -45,7 +44,6 @@ class AdminAccessTest extends TestCase
             ->assertSee('Users')
             ->assertSee('Individual Ministry Entries')
             ->assertSee('Individual Page Entries')
-            ->assertSee('Individual Leader Entries')
             ->assertSee('Collapse all')
             ->assertSee('Expand all');
 
@@ -90,10 +88,6 @@ class AdminAccessTest extends TestCase
             )
             ->assertSchemaComponentExists(
                 'users-individual-page-entries',
-                checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
-            )
-            ->assertSchemaComponentExists(
-                'users-individual-leader-entries',
                 checkComponentUsing: fn (Section $component): bool => $this->isCollapsedUserPermissionSection($component),
             );
     }

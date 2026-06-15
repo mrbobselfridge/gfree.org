@@ -26,7 +26,6 @@ class SiteSettingForm
         'site-settings-google-tracking',
         'site-settings-announcements-settings',
         'site-settings-ministries-settings',
-        'site-settings-leaders-settings',
         'site-settings-bulletins-settings',
     ];
 
@@ -177,21 +176,6 @@ class SiteSettingForm
                         RichEditorDefaults::configure(RichEditor::make('ministry_subtitle'))
                             ->label('Ministry subtitle'),
                         ...ImageUpload::make('ministry_image_path', 'site-settings/ministry', 'Ministry image'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                self::section('Leaders Settings', 'site-settings-leaders-settings')
-                    ->description('Can also be managed in the Leaders area.')
-                    ->schema([
-                        TextInput::make('leadership_small_label')
-                            ->label('Leadership small label')
-                            ->maxLength(255),
-                        TextInput::make('leadership_title')
-                            ->label('Leadership title')
-                            ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('leadership_subtitle'))
-                            ->label('Leadership subtitle'),
-                        ...ImageUpload::make('leadership_image_path', 'site-settings/leadership', 'Leadership Image'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

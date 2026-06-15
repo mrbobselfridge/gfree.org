@@ -14,7 +14,6 @@ use App\Models\HomepageBanner;
 use App\Models\Ministry;
 use App\Models\NavigationLink;
 use App\Models\Page;
-use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -31,7 +30,6 @@ class PublicPageAdminLinkTest extends TestCase
         $this->assertSame(route('announcements.show', ['slug' => 'church-picnic']), (new Announcement(['slug' => 'church-picnic']))->publicUrl());
         $this->assertSame(route('bulletins.show', ['date' => '2026-06-07']), (new Bulletin(['bulletin_date' => '2026-06-07']))->publicUrl());
         $this->assertSame(route('ministries.show', ['slug' => 'students']), (new Ministry(['slug' => 'students']))->publicUrl());
-        $this->assertSame(route('leadership.show', ['slug' => 'jane-doe']), (new StaffMember(['slug' => 'jane-doe']))->publicUrl());
         $this->assertSame(route('home'), (new HomepageBanner)->publicUrl());
         $this->assertSame(url('/announcements'), (new NavigationLink(['url' => '/announcements']))->publicUrl());
         $this->assertSame('https://example.com/live', (new NavigationLink(['url' => 'https://example.com/live']))->publicUrl());

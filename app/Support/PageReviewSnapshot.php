@@ -8,7 +8,6 @@ use App\Models\HomepageContent;
 use App\Models\Ministry;
 use App\Models\Page;
 use App\Models\SiteSetting;
-use App\Models\StaffMember;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
@@ -23,7 +22,6 @@ class PageReviewSnapshot
             $record instanceof Page => $this->page($record),
             $record instanceof Announcement => $this->announcement($record),
             $record instanceof Ministry => $this->ministry($record),
-            $record instanceof StaffMember => $this->leader($record),
             $record instanceof HomepageContent => $this->homepage($record),
             default => [],
         };
@@ -108,25 +106,6 @@ class PageReviewSnapshot
             'leader_email',
             'leader_phone',
             'one_church_url',
-            'is_published',
-        ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function leader(StaffMember $leader): array
-    {
-        return $this->snapshot('Individual Leader', $leader->name, $leader->publicUrl(), $leader, [
-            'name',
-            'slug',
-            'role',
-            'content_blocks',
-            'photo_path',
-            'card_image_path',
-            'email',
-            'phone_number',
-            'availability',
             'is_published',
         ]);
     }
