@@ -137,6 +137,17 @@ class FileDocumentForm
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
                             )
                             ->hintColor('gray'),
+                        TextInput::make('sort_order')
+                            ->label('Order')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Lower numbers appear earlier when a parent page Child Info Cards block sorts by Order.'
+                            )
+                            ->hintColor('gray'),
                         ...ImageUpload::make(
                             'card_image_path',
                             'file-documents/card-images',

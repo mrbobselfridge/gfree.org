@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
     'file_name',
     'category',
     'parent_page_id',
+    'sort_order',
     'card_image_path',
     'is_published',
     'visibility',
@@ -166,6 +167,7 @@ class FileDocument extends Model implements HasPublicUrl
     {
         return [
             'is_published' => 'boolean',
+            'sort_order' => 'integer',
             'tags' => 'array',
             'publish_at' => 'datetime',
             'expires_at' => 'datetime',

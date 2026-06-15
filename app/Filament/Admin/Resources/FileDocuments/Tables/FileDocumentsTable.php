@@ -55,6 +55,10 @@ class FileDocumentsTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable()
+                    ->toggleable(),
                 IconColumn::make('is_published')
                     ->label('Live')
                     ->boolean()

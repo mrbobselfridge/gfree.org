@@ -498,10 +498,29 @@ class ContentBlockBuilder
                         ->options([
                             ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
                             ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
-                            ContentBlocks::RELATED_CONTENT_MODE_NEWEST => 'Newest live',
                         ])
                         ->inline()
                         ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
+                        ->afterStateHydrated(function (Set $set, Get $get, ?string $state): void {
+                            if ($state !== ContentBlocks::RELATED_CONTENT_MODE_NEWEST) {
+                                return;
+                            }
+
+                            $set('display_mode', ContentBlocks::RELATED_CONTENT_MODE_ALL);
+
+                            if (blank($get('sort_preset'))) {
+                                $set('sort_preset', ContentBlocks::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM);
+                            }
+                        })
+                        ->dehydrateStateUsing(fn (?string $state): string => $state === ContentBlocks::RELATED_CONTENT_MODE_NEWEST
+                            ? ContentBlocks::RELATED_CONTENT_MODE_ALL
+                            : ($state ?: ContentBlocks::RELATED_CONTENT_MODE_FEATURED))
+                        ->required(),
+                    Select::make('sort_preset')
+                        ->label('Sort cards by')
+                        ->options(fn (): array => ContentBlocks::relatedContentSortOptions())
+                        ->default(ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM)
+                        ->native(false)
                         ->required(),
                     Select::make('file_categories')
                         ->label('File categories')

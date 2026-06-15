@@ -23,6 +23,22 @@ class ContentBlocks
 
     public const RELATED_CONTENT_MODE_NEWEST = 'newest_live';
 
+    public const RELATED_CONTENT_SORT_ORDER_RANDOM = 'order_random';
+
+    public const RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM = 'featured_published_order_random';
+
+    public const RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM = 'published_order_random';
+
+    public const RELATED_CONTENT_SORT_TITLE_ASC = 'title_asc';
+
+    public const RELATED_CONTENT_SORT_TITLE_DESC = 'title_desc';
+
+    public const RELATED_CONTENT_SORT_UPDATED_DESC = 'updated_desc';
+
+    public const RELATED_CONTENT_SORT_CREATED_DESC = 'created_desc';
+
+    public const RELATED_CONTENT_SORT_CREATED_ASC = 'created_asc';
+
     public const RELATED_CONTENT_DEFAULT_LIMIT = 6;
 
     public const YOUTUBE_FEED_DEFAULT_LIMIT = 12;
@@ -130,6 +146,23 @@ class ContentBlocks
             ?: 'child-cards';
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public static function relatedContentSortOptions(): array
+    {
+        return [
+            self::RELATED_CONTENT_SORT_ORDER_RANDOM => 'Order ASC, random',
+            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => 'Featured DESC, Published DESC, order ASC, random',
+            self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM => 'Published DESC, order ASC, random',
+            self::RELATED_CONTENT_SORT_TITLE_ASC => "Title A-Z (A's first)",
+            self::RELATED_CONTENT_SORT_TITLE_DESC => "Title Z-A (Z's First)",
+            self::RELATED_CONTENT_SORT_UPDATED_DESC => 'Updated DESC (last updated first)',
+            self::RELATED_CONTENT_SORT_CREATED_DESC => 'Created DESC (newest first)',
+            self::RELATED_CONTENT_SORT_CREATED_ASC => 'Created ASC (oldest first)',
+        ];
+    }
+
     private static function prepareRelatedContentBlock(?Page $page, array $data, bool $allItems = false): array
     {
         $data = self::relatedContentDefaults($data);
@@ -157,6 +190,9 @@ class ContentBlocks
         $data['display_mode'] = in_array($data['display_mode'] ?? null, self::relatedContentModeOptions(), true)
             ? $data['display_mode']
             : self::RELATED_CONTENT_MODE_FEATURED;
+        $data['sort_preset'] = array_key_exists($data['sort_preset'] ?? null, self::relatedContentSortOptions())
+            ? $data['sort_preset']
+            : self::defaultRelatedContentSortPreset($data);
         $data['item_limit'] = self::relatedContentLimit($data);
         $data['link_label'] = $data['link_label'] ?? 'View more';
         $data['file_categories'] = self::normalizeStringList($data['file_categories'] ?? []);
@@ -180,43 +216,105 @@ class ContentBlocks
             $items = $items->merge(self::relatedFileItems($page, $data));
         }
 
-        if ($data['display_mode'] === self::RELATED_CONTENT_MODE_NEWEST) {
-            return $items
-                ->sort(function (array $first, array $second): int {
-                    $dateComparison = strcmp($second['sort_date'] ?? '', $first['sort_date'] ?? '');
-
-                    return $dateComparison !== 0
-                        ? $dateComparison
-                        : strcasecmp($first['title'], $second['title']);
-                })
-                ->values();
-        }
-
-        return self::sortRelatedContentItems($items);
+        return self::sortRelatedContentItems($items, $data['sort_preset']);
     }
 
-    private static function sortRelatedContentItems(Collection $items): Collection
+    private static function sortRelatedContentItems(Collection $items, string $sortPreset): Collection
     {
         return $items
-            ->map(function (array $item): array {
-                $item['sort_random'] = ($item['kind'] ?? null) === 'page'
+            ->map(function (array $item) use ($sortPreset): array {
+                $item['sort_random'] = self::relatedContentSortUsesRandom($sortPreset)
                     ? random_int(0, PHP_INT_MAX)
-                    : PHP_INT_MAX;
+                    : 0;
 
                 return $item;
             })
-            ->sortBy([
-                ['sort_group', 'asc'],
-                ['sort_order', 'asc'],
-                ['sort_random', 'asc'],
-                ['title', 'asc'],
-            ])
+            ->sort(fn (array $first, array $second): int => self::compareRelatedContentItems($first, $second, $sortPreset))
             ->map(function (array $item): array {
                 unset($item['sort_random']);
 
                 return $item;
             })
             ->values();
+    }
+
+    private static function compareRelatedContentItems(array $first, array $second, string $sortPreset): int
+    {
+        return match ($sortPreset) {
+            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => self::compareDateDesc($first, $second, 'featured_at')
+                ?: self::compareDateDesc($first, $second, 'publish_at')
+                ?: self::compareIntAsc($first, $second, 'sort_order')
+                ?: self::compareRandom($first, $second),
+            self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM => self::compareDateDesc($first, $second, 'publish_at')
+                ?: self::compareIntAsc($first, $second, 'sort_order')
+                ?: self::compareRandom($first, $second),
+            self::RELATED_CONTENT_SORT_TITLE_ASC => self::compareTitleAsc($first, $second),
+            self::RELATED_CONTENT_SORT_TITLE_DESC => self::compareTitleDesc($first, $second),
+            self::RELATED_CONTENT_SORT_UPDATED_DESC => self::compareDateDesc($first, $second, 'updated_at')
+                ?: self::compareTitleAsc($first, $second),
+            self::RELATED_CONTENT_SORT_CREATED_DESC => self::compareDateDesc($first, $second, 'created_at')
+                ?: self::compareTitleAsc($first, $second),
+            self::RELATED_CONTENT_SORT_CREATED_ASC => self::compareDateAsc($first, $second, 'created_at')
+                ?: self::compareTitleAsc($first, $second),
+            default => self::compareIntAsc($first, $second, 'sort_order')
+                ?: self::compareRandom($first, $second),
+        };
+    }
+
+    private static function compareDateDesc(array $first, array $second, string $field): int
+    {
+        return self::compareNullableDates($first[$field] ?? null, $second[$field] ?? null, descending: true);
+    }
+
+    private static function compareDateAsc(array $first, array $second, string $field): int
+    {
+        return self::compareNullableDates($first[$field] ?? null, $second[$field] ?? null, descending: false);
+    }
+
+    private static function compareNullableDates(?string $first, ?string $second, bool $descending): int
+    {
+        if ($first === $second) {
+            return 0;
+        }
+
+        if ($first === null || $first === '') {
+            return 1;
+        }
+
+        if ($second === null || $second === '') {
+            return -1;
+        }
+
+        return $descending ? strcmp($second, $first) : strcmp($first, $second);
+    }
+
+    private static function compareIntAsc(array $first, array $second, string $field): int
+    {
+        return ((int) ($first[$field] ?? 0)) <=> ((int) ($second[$field] ?? 0));
+    }
+
+    private static function compareRandom(array $first, array $second): int
+    {
+        return ((int) ($first['sort_random'] ?? 0)) <=> ((int) ($second['sort_random'] ?? 0));
+    }
+
+    private static function compareTitleAsc(array $first, array $second): int
+    {
+        return strcasecmp((string) ($first['title'] ?? ''), (string) ($second['title'] ?? ''));
+    }
+
+    private static function compareTitleDesc(array $first, array $second): int
+    {
+        return strcasecmp((string) ($second['title'] ?? ''), (string) ($first['title'] ?? ''));
+    }
+
+    private static function relatedContentSortUsesRandom(?string $sortPreset): bool
+    {
+        return in_array($sortPreset, [
+            self::RELATED_CONTENT_SORT_ORDER_RANDOM,
+            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM,
+            self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM,
+        ], true);
     }
 
     private static function relatedPageItems(Page $page, array $data): Collection
@@ -239,6 +337,10 @@ class ContentBlocks
                 'url' => $child->publicUrl(),
                 'sort_group' => 0,
                 'sort_order' => $child->sort_order ?? 0,
+                'featured_at' => self::sortableDate($child->featured_at),
+                'publish_at' => self::sortableDate($child->publish_at),
+                'updated_at' => self::sortableDate($child->updated_at),
+                'created_at' => self::sortableDate($child->created_at),
                 'sort_date' => ($child->featured_at ?? $child->publish_at ?? $child->updated_at)?->toDateTimeString(),
             ]);
     }
@@ -272,9 +374,18 @@ class ContentBlocks
                 'image_url' => $document->cardImageUrl(),
                 'url' => $document->publicUrl(),
                 'sort_group' => 1,
-                'sort_order' => 0,
+                'sort_order' => $document->sort_order ?? 0,
+                'featured_at' => null,
+                'publish_at' => self::sortableDate($document->publish_at),
+                'updated_at' => self::sortableDate($document->updated_at),
+                'created_at' => self::sortableDate($document->created_at),
                 'sort_date' => ($document->publish_at ?? $document->updated_at)?->toDateTimeString(),
             ]);
+    }
+
+    private static function sortableDate(mixed $date): ?string
+    {
+        return $date?->toDateTimeString();
     }
 
     private static function relatedListingUrl(?Page $page, array $data): ?string
@@ -350,6 +461,13 @@ class ContentBlocks
             self::RELATED_CONTENT_MODE_ALL,
             self::RELATED_CONTENT_MODE_NEWEST,
         ];
+    }
+
+    private static function defaultRelatedContentSortPreset(array $data): string
+    {
+        return ($data['display_mode'] ?? null) === self::RELATED_CONTENT_MODE_NEWEST
+            ? self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM
+            : self::RELATED_CONTENT_SORT_ORDER_RANDOM;
     }
 
     private static function normalizeStringList(mixed $value): array

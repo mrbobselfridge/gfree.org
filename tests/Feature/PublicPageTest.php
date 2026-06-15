@@ -721,8 +721,8 @@ class PublicPageTest extends TestCase
             'is_published' => false,
         ]);
 
-        $this->createLiveFileDocument($parent, 'Connection Card', 'connection-card', 'Form', 'Fill this out.');
-        $this->createLiveFileDocument($parent, 'Annual Waiver', 'annual-waiver', 'Form', 'Bring this waiver.', cardImagePath: 'file-documents/card-images/annual-waiver.jpg');
+        $this->createLiveFileDocument($parent, 'Connection Card', 'connection-card', 'Form', 'Fill this out.', sortOrder: 50);
+        $this->createLiveFileDocument($parent, 'Annual Waiver', 'annual-waiver', 'Form', 'Bring this waiver.', cardImagePath: 'file-documents/card-images/annual-waiver.jpg', sortOrder: 40);
         $this->createLiveFileDocument($parent, 'Weekly Bulletin', 'weekly-bulletin', 'Bulletin', 'Filtered by category.');
         $this->createLiveFileDocument($parent, 'Internal Policy', 'internal-policy', 'Form', 'Private file.', visibility: FileDocument::VISIBILITY_PRIVATE);
 
@@ -819,6 +819,265 @@ class PublicPageTest extends TestCase
 
         $this->assertLessThan($laterPosition, strpos($content, 'Zed Top Group'));
         $this->assertLessThan($laterPosition, strpos($content, 'Beta Top Group'));
+    }
+
+    public function test_child_cards_block_sorts_mixed_pages_and_files_by_order(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'content_type' => 'both',
+            'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM,
+            'item_limit' => 10,
+        ]);
+
+        $this->createLiveFileDocument($parent, 'File First', 'file-first', 'Form', 'First file.', sortOrder: 5);
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Page Second',
+            'slug' => 'resources/page-second',
+            'sort_order' => 10,
+            'is_published' => true,
+        ]);
+        $this->createLiveFileDocument($parent, 'File Third', 'file-third', 'Form', 'Third file.', sortOrder: 15);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'File First',
+                'Page Second',
+                'File Third',
+            ]);
+    }
+
+    public function test_child_cards_block_sorts_by_featured_and_published_dates(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM,
+            'item_limit' => 10,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Published Newer No Featured',
+            'slug' => 'resources/published-newer-no-featured',
+            'sort_order' => 1,
+            'publish_at' => '2026-06-05 09:00:00',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Featured Older',
+            'slug' => 'resources/featured-older',
+            'sort_order' => 20,
+            'featured_at' => '2026-06-02 09:00:00',
+            'publish_at' => '2026-06-04 09:00:00',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Featured Newer',
+            'slug' => 'resources/featured-newer',
+            'sort_order' => 30,
+            'featured_at' => '2026-06-03 09:00:00',
+            'publish_at' => '2026-06-01 09:00:00',
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Featured Newer',
+                'Featured Older',
+                'Published Newer No Featured',
+            ]);
+
+        $parent->update([
+            'content_blocks' => [
+                $this->relatedContentBlock([
+                    'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+                    'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM,
+                    'item_limit' => 10,
+                ]),
+            ],
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Published Newer No Featured',
+                'Featured Older',
+                'Featured Newer',
+            ]);
+    }
+
+    public function test_child_cards_block_sorts_by_title_options(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+            'item_limit' => 10,
+        ]);
+
+        foreach (['Bravo Title', 'Alpha Title', 'Charlie Title'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.str($title)->slug(),
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Alpha Title',
+                'Bravo Title',
+                'Charlie Title',
+            ]);
+
+        $parent->update([
+            'content_blocks' => [
+                $this->relatedContentBlock([
+                    'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+                    'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_DESC,
+                    'item_limit' => 10,
+                ]),
+            ],
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Charlie Title',
+                'Bravo Title',
+                'Alpha Title',
+            ]);
+    }
+
+    public function test_child_cards_block_sorts_by_updated_and_created_options(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_UPDATED_DESC,
+            'item_limit' => 10,
+        ]);
+
+        $oldCreatedNewUpdated = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Old Created New Updated',
+            'slug' => 'resources/old-created-new-updated',
+            'is_published' => true,
+        ]);
+
+        $middleCreatedMiddleUpdated = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Middle Created Middle Updated',
+            'slug' => 'resources/middle-created-middle-updated',
+            'is_published' => true,
+        ]);
+
+        $newCreatedOldUpdated = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'New Created Old Updated',
+            'slug' => 'resources/new-created-old-updated',
+            'is_published' => true,
+        ]);
+
+        Page::withoutTimestamps(function () use ($oldCreatedNewUpdated, $middleCreatedMiddleUpdated, $newCreatedOldUpdated): void {
+            $oldCreatedNewUpdated->forceFill([
+                'created_at' => '2026-06-01 09:00:00',
+                'updated_at' => '2026-06-05 09:00:00',
+            ])->save();
+
+            $middleCreatedMiddleUpdated->forceFill([
+                'created_at' => '2026-06-02 09:00:00',
+                'updated_at' => '2026-06-04 09:00:00',
+            ])->save();
+
+            $newCreatedOldUpdated->forceFill([
+                'created_at' => '2026-06-03 09:00:00',
+                'updated_at' => '2026-06-03 09:00:00',
+            ])->save();
+        });
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Old Created New Updated',
+                'Middle Created Middle Updated',
+                'New Created Old Updated',
+            ]);
+
+        $parent->update([
+            'content_blocks' => [
+                $this->relatedContentBlock([
+                    'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+                    'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_CREATED_DESC,
+                    'item_limit' => 10,
+                ]),
+            ],
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'New Created Old Updated',
+                'Middle Created Middle Updated',
+                'Old Created New Updated',
+            ]);
+
+        $parent->update([
+            'content_blocks' => [
+                $this->relatedContentBlock([
+                    'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+                    'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_CREATED_ASC,
+                    'item_limit' => 10,
+                ]),
+            ],
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Old Created New Updated',
+                'Middle Created Middle Updated',
+                'New Created Old Updated',
+            ]);
+    }
+
+    public function test_legacy_newest_child_cards_mode_maps_to_published_sorting(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_NEWEST,
+            'sort_preset' => null,
+            'item_limit' => 10,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Older Published',
+            'slug' => 'resources/older-published',
+            'publish_at' => '2026-06-01 09:00:00',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Newer Published',
+            'slug' => 'resources/newer-published',
+            'publish_at' => '2026-06-02 09:00:00',
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Newer Published',
+                'Older Published',
+            ]);
     }
 
     public function test_related_content_block_with_empty_heading_keeps_child_cards_slug_without_displaying_default_label(): void
@@ -1149,6 +1408,32 @@ class PublicPageTest extends TestCase
         }
     }
 
+    private function createRelatedContentParent(array $data = []): Page
+    {
+        return Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'content_blocks' => [
+                $this->relatedContentBlock($data),
+            ],
+            'is_published' => true,
+        ]);
+    }
+
+    private function relatedContentBlock(array $data = []): array
+    {
+        return [
+            'type' => 'related_content',
+            'data' => array_merge([
+                'heading' => 'Child Cards',
+                'content_type' => ContentBlocks::RELATED_CONTENT_TYPE_PAGES,
+                'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_FEATURED,
+                'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM,
+                'item_limit' => ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT,
+            ], $data),
+        ];
+    }
+
     private function youtubeFeed(): string
     {
         return <<<'XML'
@@ -1183,10 +1468,12 @@ class PublicPageTest extends TestCase
         string $description,
         string $visibility = FileDocument::VISIBILITY_PUBLIC,
         ?string $cardImagePath = null,
+        int $sortOrder = 0,
     ): FileDocument {
         $document = FileDocument::query()->create([
             'parent_page_id' => $parent->getKey(),
             'card_image_path' => $cardImagePath,
+            'sort_order' => $sortOrder,
             'title' => $title,
             'file_name' => $fileName,
             'category' => $category,

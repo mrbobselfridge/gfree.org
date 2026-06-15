@@ -37,8 +37,9 @@ class SiteSettingForm
                 self::section('Organizational Information', 'site-settings-organizational-information')
                     ->schema([
                         TextInput::make('church_name')
+                            ->label('Org Name')
                             ->required()
-                            ->default('TwyxtCo Church')
+                            ->default('TwyxtCo')
                             ->maxLength(255),
                         TextInput::make('phone')
                             ->maxLength(255)

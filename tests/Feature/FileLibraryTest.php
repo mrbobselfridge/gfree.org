@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\FileCategories\Pages\ListFileCategories;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
+use App\Filament\Admin\Resources\FileDocuments\Pages\ListFileDocuments;
 use App\Filament\Admin\Resources\FileDocuments\RelationManagers\VersionsRelationManager;
 use App\Models\FileCategory;
 use App\Models\FileDocument;
@@ -136,6 +137,12 @@ class FileLibraryTest extends TestCase
             ->assertSee('Categories')
             ->assertSee('/admin/file-documents/create', false);
 
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(ListFileDocuments::class)
+            ->assertTableColumnExists('sort_order', fn ($column): bool => $column->isSortable());
+
         $this->actingAs(User::factory()->create([
             'role' => User::ROLE_ADMIN,
         ]))
@@ -200,6 +207,7 @@ class FileLibraryTest extends TestCase
             ->assertFormFieldExists('category')
             ->assertFormFieldExists('parent_page_id')
             ->assertFormFieldExists('card_image_path')
+            ->assertFormFieldExists('sort_order')
             ->assertFormFieldExists('is_published')
             ->assertFormFieldExists('publish_at')
             ->assertFormFieldExists('expires_at')
@@ -212,6 +220,7 @@ class FileLibraryTest extends TestCase
             ->set('data.file_name', 'connection-card')
             ->set('data.category', 'Form')
             ->set('data.parent_page_id', $parent->getKey())
+            ->set('data.sort_order', 15)
             ->set('data.card_image_path', ['file-documents/card-images/connection-card.jpg'])
             ->set('data.is_published', true)
             ->set('data.visibility', FileDocument::VISIBILITY_PUBLIC)
@@ -228,6 +237,7 @@ class FileLibraryTest extends TestCase
         $this->assertSame('Connection Card', $document->title);
         $this->assertSame('Form', $document->category);
         $this->assertTrue($document->parentPage->is($parent));
+        $this->assertSame(15, $document->sort_order);
         $this->assertSame('file-documents/card-images/connection-card.jpg', $document->card_image_path);
         $this->assertStringContainsString('/storage/file-documents/card-images/connection-card.jpg', $document->cardImageUrl());
         $this->assertTrue($parent->fileDocuments()->first()->is($document));
