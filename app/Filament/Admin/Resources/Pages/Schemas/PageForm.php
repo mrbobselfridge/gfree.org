@@ -259,6 +259,17 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
+                        TextInput::make('sort_order')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(1),
+
                         TextInput::make('seo_title')
                             ->label('SEO title')
                             ->maxLength(255)
@@ -280,16 +291,6 @@ class PageForm
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
-                        TextInput::make('sort_order')
-                            ->required()
-                            ->numeric()
-                            ->default(0)
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
 
                     ])
                     ->columns(4)
