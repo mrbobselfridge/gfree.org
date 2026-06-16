@@ -1151,7 +1151,55 @@ class PublicPageTest extends TestCase
             ->assertSee('File Cards')
             ->assertSee('Connection Card')
             ->assertSee(FileDocument::DEFAULT_CARD_IMAGE_PATH)
+            ->assertSee('class="concept-updates__media-link" href="http://127.0.0.1:8000/files/connection-card" aria-label="Download Connection Card"', false)
+            ->assertDontSee('aria-label="Open Connection Card"', false)
             ->assertDontSee('Related Content');
+    }
+
+    public function test_file_child_card_can_open_long_optional_content_in_modal(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'content_blocks' => [
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'heading' => 'File Cards',
+                        'content_type' => 'files',
+                        'item_limit' => 4,
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $longContent = '<h1 class="text-7xl" style="font-size: 90px">What’s Happening</h1><p>'.str_repeat('Bring this form to the welcome desk after worship. ', 8).'</p><ul><li><strong style="color: teal">Include your contact information.</strong></li><li>Choose the ministry you want to hear from.</li></ul><p><a class="button" style="color: red" href="/connect">Connection form</a></p>';
+
+        $this->createLiveFileDocument(
+            parent: $parent,
+            title: 'Connection Card',
+            fileName: 'connection-card',
+            category: 'Form',
+            description: 'Fill this out.',
+            content: $longContent,
+        );
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-modal-open', false)
+            ->assertSee('data-related-modal', false)
+            ->assertSee('class="concept-updates__modal"', false)
+            ->assertSee('More')
+            ->assertSee('Close')
+            ->assertSee('Include your contact information.')
+            ->assertSee('Choose the ministry you want to hear from.')
+            ->assertSee('<h1>What’s Happening</h1>', false)
+            ->assertSee('<a href="/connect">Connection form</a>', false)
+            ->assertDontSee('<h3>Connection Card</h3>', false)
+            ->assertDontSee('font-size: 90px', false)
+            ->assertDontSee('class="text-7xl"', false)
+            ->assertDontSee('style="color: teal"', false);
     }
 
     public function test_related_content_block_does_not_render_without_child_or_file_content(): void
@@ -1469,6 +1517,7 @@ class PublicPageTest extends TestCase
         string $visibility = FileDocument::VISIBILITY_PUBLIC,
         ?string $cardImagePath = null,
         int $sortOrder = 0,
+        ?string $content = null,
     ): FileDocument {
         $document = FileDocument::query()->create([
             'parent_page_id' => $parent->getKey(),
@@ -1478,6 +1527,7 @@ class PublicPageTest extends TestCase
             'file_name' => $fileName,
             'category' => $category,
             'description' => $description,
+            'content' => $content,
             'visibility' => $visibility,
             'is_published' => true,
         ]);

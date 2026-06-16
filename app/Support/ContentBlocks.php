@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 
 class ContentBlocks
 {
+    private const RELATED_CONTENT_SUMMARY_LIMIT = 180;
+
     public const RELATED_CONTENT_TYPE_BOTH = 'both';
 
     public const RELATED_CONTENT_TYPE_PAGES = 'pages';
@@ -366,21 +368,33 @@ class ContentBlocks
             ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>=', $now))
             ->when($categories !== [], fn ($query) => $query->whereIn('category', $categories))
             ->get()
-            ->map(fn (FileDocument $document): array => [
-                'kind' => 'file',
-                'type' => $document->category ?: 'File',
-                'title' => $document->title,
-                'summary' => $document->description ?: self::excerpt($document->content),
-                'image_url' => $document->cardImageUrl(),
-                'url' => $document->publicUrl(),
-                'sort_group' => 1,
-                'sort_order' => $document->sort_order ?? 0,
-                'featured_at' => null,
-                'publish_at' => self::sortableDate($document->publish_at),
-                'updated_at' => self::sortableDate($document->updated_at),
-                'created_at' => self::sortableDate($document->created_at),
-                'sort_date' => ($document->publish_at ?? $document->updated_at)?->toDateTimeString(),
-            ]);
+            ->map(fn (FileDocument $document): array => self::relatedFileItem($document));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function relatedFileItem(FileDocument $document): array
+    {
+        $optionalContentText = self::plainText($document->content);
+
+        return [
+            'kind' => 'file',
+            'type' => $document->category ?: 'File',
+            'title' => $document->title,
+            'summary' => $document->description ?: self::excerpt($document->content),
+            'image_url' => $document->cardImageUrl(),
+            'url' => $document->publicUrl(),
+            'optional_content_html' => filled($optionalContentText) ? self::basicHtml($document->content) : null,
+            'has_more_content' => Str::length($optionalContentText) > self::RELATED_CONTENT_SUMMARY_LIMIT,
+            'sort_group' => 1,
+            'sort_order' => $document->sort_order ?? 0,
+            'featured_at' => null,
+            'publish_at' => self::sortableDate($document->publish_at),
+            'updated_at' => self::sortableDate($document->updated_at),
+            'created_at' => self::sortableDate($document->created_at),
+            'sort_date' => ($document->publish_at ?? $document->updated_at)?->toDateTimeString(),
+        ];
     }
 
     private static function sortableDate(mixed $date): ?string
@@ -481,9 +495,51 @@ class ContentBlocks
 
     private static function excerpt(?string $value): ?string
     {
-        $text = trim(html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $text = self::plainText($value);
 
-        return $text === '' ? null : Str::limit($text, 180);
+        return $text === '' ? null : Str::limit($text, self::RELATED_CONTENT_SUMMARY_LIMIT);
+    }
+
+    private static function plainText(?string $value): string
+    {
+        return trim(html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    }
+
+    private static function basicHtml(?string $value): string
+    {
+        $html = (string) $value;
+        $html = preg_replace('/<(script|style|iframe|object|embed|form|input|button|textarea|select|option|meta|link)\b[^>]*>.*?<\/\1>/is', '', $html) ?? $html;
+        $html = preg_replace('/<(script|style|iframe|object|embed|form|input|button|textarea|select|option|meta|link)\b[^>]*\/?>/i', '', $html) ?? $html;
+        $html = strip_tags($html, '<h1><h2><h3><h4><p><div><br><ul><ol><li><strong><b><em><i><a><table><thead><tbody><tr><th><td>');
+
+        return preg_replace_callback('/<([a-z0-9]+)(\s[^>]*)?>/i', function (array $match): string {
+            $tag = strtolower($match[1]);
+
+            if ($tag !== 'a') {
+                return "<{$tag}>";
+            }
+
+            $attributes = $match[2] ?? '';
+
+            if (! preg_match('/\bhref\s*=\s*([\'"])(.*?)\1/i', $attributes, $hrefMatch)) {
+                return '<a>';
+            }
+
+            $href = trim(html_entity_decode($hrefMatch[2], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+            if (! self::isAllowedHref($href)) {
+                return '<a>';
+            }
+
+            return '<a href="'.e($href).'">';
+        }, $html) ?? '';
+    }
+
+    private static function isAllowedHref(string $href): bool
+    {
+        return str_starts_with($href, '/')
+            || str_starts_with($href, '#')
+            || preg_match('/^(https?:|mailto:|tel:)/i', $href) === 1;
     }
 
     public static function imageUrl(mixed $path): ?string

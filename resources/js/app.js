@@ -156,3 +156,28 @@ document.querySelectorAll('[data-hero-carousel]').forEach((carousel) => {
         updateHeroSlide(carousel, slides, index);
     });
 });
+
+document.querySelectorAll('[data-related-modal-open]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+        const modalId = trigger.getAttribute('aria-controls');
+        const modal = modalId ? document.getElementById(modalId) : null;
+
+        if (modal?.showModal) {
+            modal.showModal();
+        }
+    });
+});
+
+document.querySelectorAll('[data-related-modal]').forEach((modal) => {
+    modal.querySelectorAll('[data-related-modal-close]').forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+            modal.close();
+        });
+    });
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.close();
+        }
+    });
+});
