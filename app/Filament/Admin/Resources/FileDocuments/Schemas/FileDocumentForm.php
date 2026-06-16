@@ -102,17 +102,6 @@ class FileDocumentForm
 
                                 self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
                             }),
-                        ...ImageUpload::make(
-                            'card_image_path',
-                            'file-documents/card-images',
-                            'Card image',
-                            fn (ViewField $upload): ViewField => $upload
-                                ->hintIcon(
-                                    Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
-                                )
-                                ->hintColor('gray'),
-                        ),
                         TextInput::make('pending_original_name')
                             ->hidden(),
                         FileUpload::make('current_file')
@@ -137,7 +126,8 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Shows the currently active file version. Use Replace file to upload a new version.'
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                         ToggleButtons::make('visibility')
                             ->label('Public or private')
                             ->options([
@@ -313,8 +303,18 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional rich text shown with the file record. AI extraction can place reviewed content here.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'file-documents/card-images',
+                            'Card image',
+                            fn (ViewField $upload): ViewField => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
+                                )
+                                ->hintColor('gray'),
+                        ),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
