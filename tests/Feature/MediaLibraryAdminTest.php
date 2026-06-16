@@ -996,9 +996,13 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertStringContainsString('x-show="! flipped"', $view);
         $this->assertStringContainsString('left: 50%;', $view);
         $this->assertStringContainsString('top: 0.8125rem;', $view);
-        $this->assertStringContainsString('gap: 0.625rem;', $view);
-        $this->assertStringContainsString('margin-inline: 0.3125rem;', $view);
+        $this->assertStringContainsString('gap: 0.2rem;', $view);
+        $this->assertStringContainsString('.twyxtco-image-selector__actions .twyxtco-image-selector__icon-action.fi-icon-btn', $view);
+        $this->assertStringContainsString('margin: 0 !important;', $view);
+        $this->assertStringContainsString('width: 1.85rem !important;', $view);
         $this->assertStringContainsString('width: 1.85rem;', $view);
+        $this->assertStringContainsString('width: 0.75rem;', $view);
+        $this->assertStringContainsString('width: 0.75rem !important;', $view);
         $this->assertStringContainsString('height: clamp(8rem, 16vw, 10rem);', $view);
         $this->assertStringContainsString("title=\"Click to view details\"", $view);
         $this->assertStringContainsString("x-bind:class=\"{ 'is-flipped': flipped }\"", $view);
