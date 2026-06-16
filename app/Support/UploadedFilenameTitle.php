@@ -29,7 +29,7 @@ class UploadedFilenameTitle
     {
         $defaultYear ??= (int) now()->year;
         $dateMatch = self::firstDateMatch($stem, $defaultYear);
-        $title = self::formatTitleText($dateMatch ? self::removeMatch($stem, $dateMatch['offset'], $dateMatch['length']) : $stem);
+        $title = self::textFromStemWithoutDate($stem, $defaultYear);
 
         if (! $dateMatch) {
             return filled($title) ? $title : null;
@@ -43,6 +43,14 @@ class UploadedFilenameTitle
         $defaultYear ??= (int) now()->year;
 
         return self::firstDateMatch($stem, $defaultYear)['date'] ?? null;
+    }
+
+    public static function textFromStemWithoutDate(string $stem, ?int $defaultYear = null): ?string
+    {
+        $defaultYear ??= (int) now()->year;
+        $dateMatch = self::firstDateMatch($stem, $defaultYear);
+
+        return self::formatTitleText($dateMatch ? self::removeMatch($stem, $dateMatch['offset'], $dateMatch['length']) : $stem);
     }
 
     /**

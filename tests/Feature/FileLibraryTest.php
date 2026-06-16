@@ -202,6 +202,7 @@ class FileLibraryTest extends TestCase
 
     public function test_create_file_document_uploads_file_and_serves_public_stable_link(): void
     {
+        Carbon::setTestNow('2026-06-16 12:00:00');
         Storage::fake(FileLibrary::DISK);
 
         $admin = User::factory()->create([
@@ -243,7 +244,7 @@ class FileLibraryTest extends TestCase
             ->call('create')
             ->assertHasNoErrors();
 
-        $document = FileDocument::query()->where('file_name', 'connection-card')->firstOrFail();
+        $document = FileDocument::query()->where('file_name', 'connection-card-20260616')->firstOrFail();
 
         $component->assertRedirect(FileDocumentResource::getUrl('edit', ['record' => $document]));
 
@@ -259,12 +260,12 @@ class FileLibraryTest extends TestCase
         $this->assertTrue($document->publish_at->equalTo($publishAt));
         $this->assertSame($admin->getKey(), $document->uploaded_by_id);
         $this->assertNotNull($document->current_version_id);
-        $this->assertSame('connection-card.pdf', $document->currentVersion->original_name);
+        $this->assertSame('connection-card-20260616.pdf', $document->currentVersion->original_name);
         Storage::disk(FileLibrary::DISK)->assertExists($document->currentVersion->path);
 
-        $this->get('/files/connection-card')
+        $this->get('/files/connection-card-20260616')
             ->assertOk()
-            ->assertHeader('content-disposition', 'attachment; filename=connection-card.pdf');
+            ->assertHeader('content-disposition', 'attachment; filename=connection-card-20260616.pdf');
     }
 
     public function test_create_file_document_uses_uploaded_file_name_for_defaults_and_tags(): void
@@ -279,20 +280,21 @@ class FileLibraryTest extends TestCase
         Livewire::actingAs($admin)
             ->test(CreateFileDocument::class)
             ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin.pdf', 25, 'application/pdf'))
+            ->set('data.pending_original_name', 'sunday-bulletin.pdf')
             ->assertSet('data.title', 'Sunday Bulletin')
-            ->assertSet('data.file_name', 'sunday-bulletin')
+            ->assertSet('data.file_name', 'sunday-bulletin-20260616')
             ->assertSet('data.publish_at', '2026-06-16 00:00:00')
             ->assertSet('data.tags', ['bulletin'])
             ->set('data.visibility', FileDocument::VISIBILITY_PUBLIC)
             ->call('create')
             ->assertHasNoErrors();
 
-        $document = FileDocument::query()->where('file_name', 'sunday-bulletin')->firstOrFail();
+        $document = FileDocument::query()->where('file_name', 'sunday-bulletin-20260616')->firstOrFail();
 
         $this->assertSame('Sunday Bulletin', $document->title);
         $this->assertSame(['bulletin'], $document->tags);
         $this->assertSame('2026-06-16 00:00:00', $document->publish_at?->format('Y-m-d H:i:s'));
-        $this->assertSame('sunday-bulletin.pdf', $document->currentVersion->original_name);
+        $this->assertSame('sunday-bulletin-20260616.pdf', $document->currentVersion->original_name);
     }
 
     public function test_create_file_document_adds_pretty_uploaded_filename_date_to_title(): void
@@ -308,6 +310,7 @@ class FileLibraryTest extends TestCase
             ->test(CreateFileDocument::class)
             ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-6.15.26.pdf', 25, 'application/pdf'))
             ->assertSet('data.title', 'Sunday Bulletin June 15, 2026')
+            ->assertSet('data.file_name', 'sunday-bulletin-20260615')
             ->assertSet('data.publish_at', '2026-06-15 00:00:00')
             ->assertSet('data.tags', ['bulletin']);
 
@@ -315,13 +318,30 @@ class FileLibraryTest extends TestCase
             ->test(CreateFileDocument::class)
             ->set('data.pending_upload', UploadedFile::fake()->create('family-fire-night-06.15.pdf', 25, 'application/pdf'))
             ->assertSet('data.title', 'Family Fire Night June 15, 2026')
+            ->assertSet('data.file_name', 'family-fire-night-20260615')
             ->assertSet('data.publish_at', '2026-06-15 00:00:00');
 
         Livewire::actingAs($admin)
             ->test(CreateFileDocument::class)
             ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-26.06.14.pdf', 25, 'application/pdf'))
             ->assertSet('data.title', 'Sunday Bulletin June 14, 2026')
+            ->assertSet('data.file_name', 'sunday-bulletin-20260614')
             ->assertSet('data.publish_at', '2026-06-14 00:00:00');
+    }
+
+    public function test_uploaded_file_name_appends_date_to_an_existing_file_path(): void
+    {
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.file_name', 'custom-bulletin-path')
+            ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-6.15.26.pdf', 25, 'application/pdf'))
+            ->assertSet('data.file_name', 'custom-bulletin-path-20260615');
     }
 
     public function test_uploaded_file_name_does_not_replace_a_manually_set_publish_date(): void

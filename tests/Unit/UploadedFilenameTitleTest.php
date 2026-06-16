@@ -40,6 +40,15 @@ class UploadedFilenameTitleTest extends TestCase
         $this->assertNull(UploadedFilenameTitle::dateFromStem('sunday-bulletin'));
     }
 
+    public function test_returns_uploaded_filename_text_without_the_date(): void
+    {
+        Carbon::setTestNow('2026-06-16 12:00:00');
+
+        $this->assertSame('Sunday Bulletin', UploadedFilenameTitle::textFromStemWithoutDate('sunday-bulletin-6.15.26'));
+        $this->assertSame('Sunday Bulletin', UploadedFilenameTitle::textFromStemWithoutDate('sunday-bulletin-26.06.14'));
+        $this->assertSame('Student Page Hero', UploadedFilenameTitle::textFromStemWithoutDate('student_page-hero'));
+    }
+
     public function test_keeps_existing_title_behavior_when_no_date_is_found(): void
     {
         $this->assertSame('Student Page Hero', UploadedFilenameTitle::fromStem('student_page-hero'));

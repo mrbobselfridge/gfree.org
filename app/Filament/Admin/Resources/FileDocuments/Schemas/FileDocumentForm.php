@@ -10,6 +10,7 @@ use App\Models\FileDocument;
 use App\Support\FileLibrary;
 use App\Support\MediaTagOptions;
 use App\Support\UploadedFilenameTitle;
+use Carbon\CarbonInterface;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -87,6 +88,11 @@ class FileDocumentForm
 
                                 $title = self::titleFromUploadedFilename($get('pending_original_name'), $state);
                                 $fileName = self::fileNameFromUploadedFilename($get('pending_original_name'), $state);
+                                $datedFileName = self::datedFileNameForUpload(
+                                    $get('file_name'),
+                                    $fileName,
+                                    self::filePathDateSuffixFromUploadedFilename($get('pending_original_name'), $state),
+                                );
 
                                 if (blank($get('publish_at'))) {
                                     $set('publish_at', self::publishDateFromUploadedFilename($get('pending_original_name'), $state));
@@ -96,8 +102,8 @@ class FileDocumentForm
                                     $set('title', $title);
                                 }
 
-                                if (filled($fileName) && self::shouldUseUploadedFilenameValue($get('file_name'), null)) {
-                                    $set('file_name', FileDocument::makeUniqueFileName($fileName, $record));
+                                if (filled($datedFileName)) {
+                                    $set('file_name', FileDocument::makeUniqueFileName($datedFileName, $record));
                                 }
 
                                 self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
@@ -354,16 +360,36 @@ class FileDocumentForm
 
     private static function publishDateFromUploadedFilename(mixed $originalName, mixed $path): string
     {
+        return self::dateFromUploadedFilename($originalName, $path)->format('Y-m-d H:i:s');
+    }
+
+    private static function filePathDateSuffixFromUploadedFilename(mixed $originalName, mixed $path): string
+    {
+        return self::dateFromUploadedFilename($originalName, $path)->format('Ymd');
+    }
+
+    private static function dateFromUploadedFilename(mixed $originalName, mixed $path): CarbonInterface
+    {
         $date = UploadedFilenameTitle::dateFromStem(self::uploadedFilenameStem($originalName, $path));
 
-        return ($date ? $date->startOfDay() : now()->startOfDay())->format('Y-m-d H:i:s');
+        return $date ? $date->startOfDay() : now()->startOfDay();
     }
 
     private static function fileNameFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
-        $fileName = Str::slug(self::uploadedFilenameStem($originalName, $path));
+        $stem = self::uploadedFilenameStem($originalName, $path);
+        $fileName = Str::slug(UploadedFilenameTitle::textFromStemWithoutDate($stem) ?? $stem);
 
         return filled($fileName) ? $fileName : null;
+    }
+
+    private static function datedFileNameForUpload(mixed $currentFileName, ?string $uploadedFileName, string $dateSuffix): string
+    {
+        $base = filled($currentFileName) ? (string) $currentFileName : $uploadedFileName;
+        $base = Str::slug((string) $base);
+        $base = preg_replace('/-\d{8}$/', '', $base) ?: '';
+
+        return filled($base) ? "{$base}-{$dateSuffix}" : $dateSuffix;
     }
 
     private static function uploadedFilenameStem(mixed $originalName, mixed $path): string
