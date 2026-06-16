@@ -316,6 +316,12 @@ class FileLibraryTest extends TestCase
             ->set('data.pending_upload', UploadedFile::fake()->create('family-fire-night-06.15.pdf', 25, 'application/pdf'))
             ->assertSet('data.title', 'Family Fire Night June 15, 2026')
             ->assertSet('data.publish_at', '2026-06-15 00:00:00');
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-26.06.14.pdf', 25, 'application/pdf'))
+            ->assertSet('data.title', 'Sunday Bulletin June 14, 2026')
+            ->assertSet('data.publish_at', '2026-06-14 00:00:00');
     }
 
     public function test_uploaded_file_name_does_not_replace_a_manually_set_publish_date(): void

@@ -91,6 +91,7 @@ class UploadedFilenameTitle
 
         return [
             '/(?<!\d)(?<year>\d{4})'.$separator.'(?<month>\d{1,2})'.$separator.'(?<day>\d{1,2})(?!\d)/i',
+            '/(?<!\d)(?<short_year>1[3-9]|[2-9]\d)\.(?<month>\d{1,2})\.(?<day>\d{1,2})(?!\d)/i',
             '/(?<!\d)(?<first>\d{1,2})'.$separator.'(?<second>\d{1,2})'.$separator.'(?<year>\d{2}|\d{4})(?!\d)/i',
             '/(?<!\d)(?<first>\d{1,2})'.$separator.'(?<second>\d{1,2})(?![\d._\/-])/i',
             '/(?<![a-z])(?<month_name>'.$monthNames.')'.$separator.'(?<day>\d{1,2})(?:'.$separator.'(?<year>\d{2}|\d{4}))?(?!\d)/i',
@@ -103,7 +104,7 @@ class UploadedFilenameTitle
      */
     private static function dateFromMatch(array $match, int $defaultYear): ?CarbonImmutable
     {
-        $year = self::normalizeYear(self::matchValue($match, 'year'), $defaultYear);
+        $year = self::normalizeYear(self::matchValue($match, 'year') ?? self::matchValue($match, 'short_year'), $defaultYear);
         $monthName = self::matchValue($match, 'month_name');
 
         if ($monthName !== null) {
