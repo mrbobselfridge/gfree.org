@@ -129,6 +129,24 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->columnSpanFull(),
+                        TextInput::make('title')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->maxLength(255)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Admin and public title for this file. New files use this with Category to build the first path.'
+                            )
+                            ->hintColor('gray')
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                self::mergeAutoTagsIntoForm($set, $get, $state);
+
+                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
+                                    return;
+                                }
+
+                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
+                            }),
                         ToggleButtons::make('visibility')
                             ->label('Public or private')
                             ->options([
@@ -151,24 +169,6 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->required(),
-                        TextInput::make('title')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->maxLength(255)
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Admin and public title for this file. New files use this with Category to build the first path.'
-                            )
-                            ->hintColor('gray')
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
-                                self::mergeAutoTagsIntoForm($set, $get, $state);
-
-                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
-                                    return;
-                                }
-
-                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
-                            }),
                         Select::make('tags')
                             ->label('Tags')
                             ->placeholder('Add tag')
