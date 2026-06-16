@@ -598,7 +598,22 @@ class FileLibraryTest extends TestCase
         Livewire::actingAs($admin)
             ->test(EditFileDocument::class, ['record' => $document->getKey()])
             ->assertActionExists('extractFileContent')
-            ->callAction('extractFileContent')
+            ->mountAction('extractFileContent')
+            ->assertActionMounted('extractFileContent')
+            ->assertSet('mountedActions.0.data.extraction_prompt', fn (mixed $prompt): bool => str_contains((string) $prompt, 'File title: Sunday Bulletin')
+                && str_contains((string) $prompt, 'Extract bulletin details.'));
+
+        Http::assertNothingSent();
+
+        Livewire::actingAs($admin)
+            ->test(EditFileDocument::class, ['record' => $document->getKey()])
+            ->mountAction('extractFileContent')
+            ->callMountedAction()
+            ->assertActionMounted('reviewExtractedFileContent')
+            ->assertSet('mountedActions.0.data.extraction_prompt', fn (mixed $prompt): bool => str_contains((string) $prompt, 'File title: Sunday Bulletin')
+                && str_contains((string) $prompt, 'Extract bulletin details.'))
+            ->assertSet('mountedActions.0.data.extracted_content', fn (mixed $content): bool => str_contains(json_encode($content) ?: '', 'Extracted Bulletin'))
+            ->callMountedAction()
             ->assertHasNoActionErrors();
 
         $this->assertSame(

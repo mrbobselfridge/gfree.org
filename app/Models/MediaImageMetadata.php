@@ -45,15 +45,19 @@ class MediaImageMetadata extends Model
             'pexels',
             'facebook',
         ],
-        'logo' => [
+        'logo or icon' => [
             'logo',
             'icon',
             'square',
+            'favicon',
         ],
         'person' => [
             'person',
             'people',
             'man',
+            'men',
+            'woman',
+            'women',
             'men',
             'mom',
             'mother',
@@ -87,11 +91,6 @@ class MediaImageMetadata extends Model
             'bible',
             'scripture',
             'the word',
-        ],
-        'icon' => [
-            'icon',
-            'logo',
-            'favicon',
         ],
         'missions' => [
             'missions',

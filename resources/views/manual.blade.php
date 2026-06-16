@@ -872,8 +872,9 @@
             <ul>
                 <li>Open an existing file record with a saved current file.</li>
                 <li>Choose <strong>Extract File Content</strong>.</li>
-                <li>The tool saves the current file record, sends the saved file and category extraction instructions to OpenAI, then shows the exact prompt used.</li>
-                <li>Review and edit the extracted HTML in the modal before choosing <strong>Use extracted content</strong>.</li>
+                <li>The tool saves the current file record and shows the exact prompt that will be sent with the saved file.</li>
+                <li>Choose <strong>Continue</strong> to send the saved file and prompt to OpenAI.</li>
+                <li>Review and edit the extracted HTML when it returns, then choose <strong>Use extracted content</strong>.</li>
                 <li>Accepted extracted content is placed into Optional content. Review it before using it publicly.</li>
             </ul>
             <h3>Document Guidelines</h3>
