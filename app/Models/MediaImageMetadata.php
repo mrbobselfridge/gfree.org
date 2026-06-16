@@ -68,7 +68,7 @@ class MediaImageMetadata extends Model
             'kids',
             'hands',
         ],
-        'kids & children' => [
+        'children & youth' => [
             'kid',
             'kids',
             'child',
@@ -79,6 +79,7 @@ class MediaImageMetadata extends Model
         ],
         'youth' => [
             'youth',
+            'graduate',
             'student',
             'unchained',
         ],
@@ -86,6 +87,11 @@ class MediaImageMetadata extends Model
             'bible',
             'scripture',
             'the word',
+        ],
+        'icon' => [
+            'icon',
+            'logo',
+            'favicon',
         ],
         'missions' => [
             'missions',
@@ -109,7 +115,7 @@ class MediaImageMetadata extends Model
             'spirit and truth',
             'night of worship',
         ],
-        'holiday and seasonal' => [
+        'holiday & seasonal' => [
             'easter',
             'christmas',
             'advent',
@@ -127,7 +133,7 @@ class MediaImageMetadata extends Model
             'summer',
             'spring',
         ],
-        'giving and offering' => [
+        'giving & offering' => [
             'giving',
             'give',
             'offering',
@@ -156,6 +162,8 @@ class MediaImageMetadata extends Model
             'camp',
             'vbs',
             'baptism',
+            'biker',
+            'show',
             'dedication',
             'graduation',
             'membership',

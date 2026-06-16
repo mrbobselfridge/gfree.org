@@ -31,8 +31,7 @@ class FileDocumentsTable
             ->columns([
                 ImageColumn::make('card_image_path')
                     ->label('Card image')
-                    ->disk('public')
-                    ->defaultImageUrl(fn (): string => asset(FileDocument::DEFAULT_CARD_IMAGE_PATH))
+                    ->state(fn (FileDocument $record): string => $record->cardImageUrl())
                     ->toggleable(),
                 TextColumn::make('title')
                     ->searchable()

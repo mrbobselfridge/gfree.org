@@ -2,10 +2,13 @@
 
 namespace App\Filament\Admin\Resources\FileCategories\Schemas;
 
+use App\Filament\Admin\Forms\ImageUpload;
 use App\Support\FileCategoryExtractionInstructions;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class FileCategoryForm
 {
@@ -21,6 +24,17 @@ class FileCategoryForm
                     ->required()
                     ->numeric()
                     ->default(0),
+                ...ImageUpload::make(
+                    'default_card_image_path',
+                    'file-categories/default-card-images',
+                    'Default Card Image',
+                    fn (ViewField $upload): ViewField => $upload
+                        ->hintIcon(
+                            Heroicon::OutlinedInformationCircle,
+                            'Optional fallback image used by files in this category when the file does not have its own card image.'
+                        )
+                        ->hintColor('gray'),
+                ),
                 Textarea::make('extraction_instructions')
                     ->label('Extraction Instructions')
                     ->helperText('Used by Extract File Content AI for files in this category.')

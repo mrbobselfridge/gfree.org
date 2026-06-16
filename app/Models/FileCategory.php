@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable([
     'name',
     'sort_order',
+    'default_card_image_path',
     'extraction_instructions',
 ])]
 class FileCategory extends Model

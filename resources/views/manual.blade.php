@@ -864,6 +864,7 @@
             <ul>
                 <li>Use the tag-shaped <strong>Categories</strong> icon on the File Library page to manage file categories.</li>
                 <li>File Categories are intentionally not shown as a separate main navigation item.</li>
+                <li>Each category can have an optional <strong>Default Card Image</strong>. Files with their own card image use the file image first; files without one use the category image before the standard file fallback.</li>
                 <li>Each category has <strong>Extraction Instructions</strong> used by the file extraction AI action for files in that category.</li>
                 <li>Keep instructions direct. Example: what to preserve, what to ignore, and what output style is useful for that document type.</li>
             </ul>

@@ -156,7 +156,7 @@ class FileDocumentForm
                             fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this file appears in cards or listing areas. If empty, the default file image is used.'
+                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
                                 )
                                 ->hintColor('gray'),
                         ),

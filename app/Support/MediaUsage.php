@@ -2,7 +2,9 @@
 
 namespace App\Support;
 
+use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
@@ -78,6 +80,14 @@ class MediaUsage
                 'fields' => [
                     'hero_image_path' => 'Header image',
                     'card_image_path' => 'Card image',
+                ],
+            ],
+            [
+                'model' => FileCategory::class,
+                'record_label' => 'File Category',
+                'title' => 'name',
+                'fields' => [
+                    'default_card_image_path' => 'Default file card image',
                 ],
             ],
             [
@@ -363,6 +373,7 @@ class MediaUsage
     {
         return match (true) {
             $record instanceof Page => PageResource::getUrl('edit', ['record' => $record]),
+            $record instanceof FileCategory => FileCategoryResource::getUrl('edit', ['record' => $record]),
             default => null,
         };
     }
@@ -373,6 +384,7 @@ class MediaUsage
             'Site Settings' => 'Ss',
             'Homepage Banner' => 'Hb',
             'Homepage Content' => 'Hc',
+            'File Category' => 'Fc',
             'Page' => 'Pg',
             default => $recordLabel,
         };

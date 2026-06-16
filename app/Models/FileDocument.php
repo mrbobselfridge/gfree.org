@@ -104,6 +104,10 @@ class FileDocument extends Model implements HasPublicUrl
             return Storage::disk('public')->url($this->card_image_path);
         }
 
+        if (filled($this->fileCategory?->default_card_image_path)) {
+            return Storage::disk('public')->url($this->fileCategory->default_card_image_path);
+        }
+
         return asset(self::DEFAULT_CARD_IMAGE_PATH);
     }
 
@@ -142,6 +146,11 @@ class FileDocument extends Model implements HasPublicUrl
     public function parentPage(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'parent_page_id');
+    }
+
+    public function fileCategory(): BelongsTo
+    {
+        return $this->belongsTo(FileCategory::class, 'category', 'name');
     }
 
     public function uploadedBy(): BelongsTo

@@ -86,9 +86,11 @@ class FileLibraryTest extends TestCase
 
         Livewire::actingAs($admin)
             ->test(CreateFileCategory::class)
+            ->assertFormFieldExists('default_card_image_path')
             ->assertFormFieldExists('extraction_instructions')
             ->set('data.name', 'Volunteer Packet')
             ->set('data.sort_order', 15)
+            ->set('data.default_card_image_path', ['file-categories/default-card-images/volunteer-packet.jpg'])
             ->set('data.extraction_instructions', 'Only extract volunteer signup steps.')
             ->call('create')
             ->assertHasNoErrors();
@@ -96,6 +98,7 @@ class FileLibraryTest extends TestCase
         $category = FileCategory::query()->where('name', 'Volunteer Packet')->firstOrFail();
 
         $this->assertSame(15, $category->sort_order);
+        $this->assertSame('file-categories/default-card-images/volunteer-packet.jpg', $category->default_card_image_path);
         $this->assertSame('Only extract volunteer signup steps.', $category->extraction_instructions);
         $this->assertArrayHasKey('Volunteer Packet', FileCategory::options());
 
@@ -393,6 +396,31 @@ class FileLibraryTest extends TestCase
         $this->assertSame(asset(FileDocument::DEFAULT_CARD_IMAGE_PATH), $document->cardImageUrl());
     }
 
+    public function test_file_document_card_image_url_uses_category_default_before_global_default(): void
+    {
+        FileCategory::query()->updateOrCreate([
+            'name' => 'Form',
+        ], [
+            'sort_order' => 10,
+            'default_card_image_path' => 'file-categories/default-card-images/forms.jpg',
+        ]);
+
+        $document = FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        $this->assertStringContainsString('/storage/file-categories/default-card-images/forms.jpg', $document->cardImageUrl());
+
+        $document->update([
+            'card_image_path' => 'file-documents/card-images/connection-card.jpg',
+        ]);
+
+        $this->assertStringContainsString('/storage/file-documents/card-images/connection-card.jpg', $document->refresh()->cardImageUrl());
+    }
+
     public function test_file_document_card_image_is_tracked_by_media_usage(): void
     {
         $document = FileDocument::query()->create([
@@ -415,6 +443,29 @@ class FileLibraryTest extends TestCase
 
         $this->assertSame(1, $updated);
         $this->assertSame('file-documents/card-images/updated-card.jpg', $document->refresh()->card_image_path);
+    }
+
+    public function test_file_category_default_card_image_is_tracked_by_media_usage(): void
+    {
+        $category = FileCategory::query()->updateOrCreate([
+            'name' => 'Form',
+        ], [
+            'sort_order' => 10,
+            'default_card_image_path' => 'file-categories/default-card-images/forms.jpg',
+        ]);
+
+        $usage = MediaUsage::forImages(['file-categories/default-card-images/forms.jpg']);
+
+        $this->assertSame("File Category: {$category->name}", $usage['file-categories/default-card-images/forms.jpg'][0]['label']);
+        $this->assertSame('Default file card image', $usage['file-categories/default-card-images/forms.jpg'][0]['detail']);
+
+        $updated = MediaUsage::replaceImagePath(
+            'file-categories/default-card-images/forms.jpg',
+            'file-categories/default-card-images/updated-forms.jpg',
+        );
+
+        $this->assertSame(1, $updated);
+        $this->assertSame('file-categories/default-card-images/updated-forms.jpg', $category->refresh()->default_card_image_path);
     }
 
     public function test_edit_file_document_refreshes_view_and_download_actions_after_save(): void
