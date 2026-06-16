@@ -882,6 +882,24 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertTrue($results['has_more']);
     }
 
+    public function test_existing_image_picker_keeps_load_more_inside_scrollable_results(): void
+    {
+        $view = file_get_contents(resource_path('views/filament/admin/forms/components/image-gallery-picker.blade.php'));
+
+        $resultsPosition = strpos($view, '<div class="twyxtco-image-picker-results">');
+        $loadMorePosition = strpos($view, '<div class="twyxtco-image-picker-load-more">');
+        $actionsPosition = strpos($view, '<div class="twyxtco-image-picker-actions">');
+
+        $this->assertIsInt($resultsPosition);
+        $this->assertIsInt($loadMorePosition);
+        $this->assertIsInt($actionsPosition);
+        $this->assertLessThan($loadMorePosition, $resultsPosition);
+        $this->assertLessThan($actionsPosition, $loadMorePosition);
+        $this->assertStringContainsString('.twyxtco-image-picker-results', $view);
+        $this->assertStringContainsString('overflow: auto;', $view);
+        $this->assertStringContainsString('max-height: min(58vh, 680px);', $view);
+    }
+
     private function assertNewMediaLibraryImagePath(string $path, string $name): void
     {
         $this->assertMatchesRegularExpression(

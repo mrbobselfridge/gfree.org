@@ -53,13 +53,24 @@
             color: rgb(156 163 175);
         }
 
+        .twyxtco-image-picker-shell {
+            display: flex;
+            max-height: min(58vh, 680px);
+            min-height: 0;
+            flex-direction: column;
+        }
+
+        .twyxtco-image-picker-results {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: auto;
+            padding-right: 0.25rem;
+        }
+
         .twyxtco-image-picker {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
             gap: 0.75rem;
-            max-height: min(72vh, 760px);
-            overflow: auto;
-            padding-right: 0.25rem;
         }
 
         .twyxtco-image-picker-option {
@@ -218,95 +229,100 @@
             },
         }"
     >
-        <div class="twyxtco-image-picker-header">
-            <p class="twyxtco-image-picker-summary">
-                {{ $images->count() }} of {{ $filteredImages }} {{ \Illuminate\Support\Str::plural('image', $filteredImages) }} shown
-                @if ($filteredImages !== $totalImages)
-                    ({{ $totalImages }} total)
-                @endif
-            </p>
-            <button
-                type="button"
-                class="twyxtco-image-picker-submit"
-                x-on:click.prevent.stop="useSelectedImage()"
-                x-bind:disabled="! selectedPath || submitting"
-            >
-                Use selected image
-            </button>
-        </div>
-
-        @if ($images->isEmpty())
-            <div class="rounded-lg border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                @if ($totalImages === 0)
-                    No uploaded images were found.
-                @else
-                    No images match your search.
-                @endif
-            </div>
-        @else
-            <div class="twyxtco-image-picker">
-            @foreach ($images as $image)
-                @php
-                    $optionId = $id.'-'.Str::slug($image['path']).'-'.$loop->index;
-                @endphp
-
-                <label
-                    for="{{ $optionId }}"
-                    class="twyxtco-image-picker-option"
-                    x-on:dblclick.prevent="selectImage(@js($image['path']), true)"
+        <div class="twyxtco-image-picker-shell">
+            <div class="twyxtco-image-picker-header">
+                <p class="twyxtco-image-picker-summary">
+                    {{ $images->count() }} of {{ $filteredImages }} {{ \Illuminate\Support\Str::plural('image', $filteredImages) }} shown
+                    @if ($filteredImages !== $totalImages)
+                        ({{ $totalImages }} total)
+                    @endif
+                </p>
+                <button
+                    type="button"
+                    class="twyxtco-image-picker-submit"
+                    x-on:click.prevent.stop="useSelectedImage()"
+                    x-bind:disabled="! selectedPath || submitting"
                 >
-                    <input
-                        id="{{ $optionId }}"
-                        type="radio"
-                        name="{{ $id }}"
-                        value="{{ $image['path'] }}"
-                        x-bind:checked="selectedPath === @js($image['path'])"
-                        x-on:change="selectImage($event.target.value)"
-                        class="twyxtco-image-picker-input"
-                    >
-
-                    <span class="twyxtco-image-picker-card">
-                        <img
-                            src="{{ $image['url'] }}"
-                            alt=""
-                            class="twyxtco-image-picker-card__image"
-                            loading="lazy"
-                        >
-
-                        <span class="twyxtco-image-picker-card__body">
-                            <span class="twyxtco-image-picker-card__title" title="{{ $image['name'] }}">
-                                {{ $image['name'] }}
-                            </span>
-                            <span class="twyxtco-image-picker-card__path" title="{{ $image['path'] }}">
-                                {{ $image['path'] }}
-                            </span>
-                            <span class="twyxtco-image-picker-card__meta">
-                                {{ collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])->filter()->implode(' | ') }}
-                            </span>
-                            <span @class([
-                                'twyxtco-image-picker-card__meta',
-                            ])>
-                                {{ $image['usage_summary'] ?? 'Unused' }}
-                            </span>
-                        </span>
-                    </span>
-                </label>
-            @endforeach
+                    Use selected image
+                </button>
             </div>
 
-            @if ($hasMoreImages)
-                <div class="twyxtco-image-picker-load-more">
-                    <button
-                        type="button"
-                        class="twyxtco-image-picker-submit"
-                        x-data
-                        x-on:click="$wire.set(@js($limitStatePath), @js($nextLimit))"
-                    >
-                        Load more
-                    </button>
-                </div>
-            @endif
+            <div class="twyxtco-image-picker-results">
+                @if ($images->isEmpty())
+                    <div class="rounded-lg border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                        @if ($totalImages === 0)
+                            No uploaded images were found.
+                        @else
+                            No images match your search.
+                        @endif
+                    </div>
+                @else
+                    <div class="twyxtco-image-picker">
+                        @foreach ($images as $image)
+                            @php
+                                $optionId = $id.'-'.Str::slug($image['path']).'-'.$loop->index;
+                            @endphp
 
+                            <label
+                                for="{{ $optionId }}"
+                                class="twyxtco-image-picker-option"
+                                x-on:dblclick.prevent="selectImage(@js($image['path']), true)"
+                            >
+                                <input
+                                    id="{{ $optionId }}"
+                                    type="radio"
+                                    name="{{ $id }}"
+                                    value="{{ $image['path'] }}"
+                                    x-bind:checked="selectedPath === @js($image['path'])"
+                                    x-on:change="selectImage($event.target.value)"
+                                    class="twyxtco-image-picker-input"
+                                >
+
+                                <span class="twyxtco-image-picker-card">
+                                    <img
+                                        src="{{ $image['url'] }}"
+                                        alt=""
+                                        class="twyxtco-image-picker-card__image"
+                                        loading="lazy"
+                                    >
+
+                                    <span class="twyxtco-image-picker-card__body">
+                                        <span class="twyxtco-image-picker-card__title" title="{{ $image['name'] }}">
+                                            {{ $image['name'] }}
+                                        </span>
+                                        <span class="twyxtco-image-picker-card__path" title="{{ $image['path'] }}">
+                                            {{ $image['path'] }}
+                                        </span>
+                                        <span class="twyxtco-image-picker-card__meta">
+                                            {{ collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])->filter()->implode(' | ') }}
+                                        </span>
+                                        <span @class([
+                                            'twyxtco-image-picker-card__meta',
+                                        ])>
+                                            {{ $image['usage_summary'] ?? 'Unused' }}
+                                        </span>
+                                    </span>
+                                </span>
+                            </label>
+                        @endforeach
+                    </div>
+
+                    @if ($hasMoreImages)
+                        <div class="twyxtco-image-picker-load-more">
+                            <button
+                                type="button"
+                                class="twyxtco-image-picker-submit"
+                                x-data
+                                x-on:click="$wire.set(@js($limitStatePath), @js($nextLimit))"
+                            >
+                                Load more
+                            </button>
+                        </div>
+                    @endif
+                @endif
+            </div>
+
+            @if ($images->isNotEmpty())
             <div class="twyxtco-image-picker-actions">
                 <button
                     type="button"
@@ -317,6 +333,7 @@
                     Use selected image
                 </button>
             </div>
-        @endif
+            @endif
+        </div>
     </div>
 </x-dynamic-component>
