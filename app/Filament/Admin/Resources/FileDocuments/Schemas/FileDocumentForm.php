@@ -263,7 +263,8 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Uploading here creates a new current version and preserves older versions below.'
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                         TextInput::make('replacement_original_name')
                             ->hidden(),
                         DateTimePicker::make('publish_at')
