@@ -14,6 +14,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\ViewField;
@@ -23,6 +24,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FileDocumentForm
 {
@@ -76,6 +78,24 @@ class FileDocumentForm
                                 'Upload the first file version. Accepted types are limited to the File Library allowed document types.'
                             )
                             ->hintColor('gray')
+                            ->afterStateUpdated(function (Set $set, Get $get, mixed $state, ?string $operation, ?FileDocument $record): void {
+                                if ($operation !== 'create' || blank($state)) {
+                                    return;
+                                }
+
+                                $title = self::titleFromUploadedFilename($get('pending_original_name'), $state);
+                                $fileName = self::fileNameFromUploadedFilename($get('pending_original_name'), $state);
+
+                                if (filled($title) && self::shouldUseUploadedFilenameValue($get('title'), null)) {
+                                    $set('title', $title);
+                                }
+
+                                if (filled($fileName) && self::shouldUseUploadedFilenameValue($get('file_name'), null)) {
+                                    $set('file_name', FileDocument::makeUniqueFileName($fileName, $record));
+                                }
+
+                                self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
+                            })
                             ->columnSpanFull(),
                         TextInput::make('pending_original_name')
                             ->hidden(),
@@ -113,6 +133,8 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                self::mergeAutoTagsIntoForm($set, $get, $state);
+
                                 if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
                                     return;
                                 }
@@ -165,6 +187,18 @@ class FileDocumentForm
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Stable URL path ending under /files/. Defaults to category-title and can be generated with the refresh icon.'
+                            )
+                            ->hintColor('gray'),
+                        TagsInput::make('tags')
+                            ->label('Tags')
+                            ->placeholder('Add tag')
+                            ->suggestions(fn (): array => FileDocument::tagOptions())
+                            ->splitKeys(['Tab', ','])
+                            ->reorderable()
+                            ->nestedRecursiveRules(['max:80'])
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
                             )
                             ->hintColor('gray'),
                         Select::make('parent_page_id')
@@ -277,5 +311,62 @@ class FileDocumentForm
         }
 
         return $current === FileDocument::makeUniqueFileNameForCategoryTitle($previousCategory, $previousTitle, $record);
+    }
+
+    private static function shouldUseUploadedFilenameValue(mixed $currentValue, mixed $existingValue): bool
+    {
+        $currentValue = filled($currentValue) ? trim((string) $currentValue) : null;
+        $existingValue = filled($existingValue) ? trim((string) $existingValue) : null;
+
+        return $currentValue === null || ($existingValue !== null && $currentValue === $existingValue);
+    }
+
+    private static function mergeAutoTagsIntoForm(Set $set, Get $get, ?string $title): void
+    {
+        $set('tags', FileDocument::mergeAutoTags($get('tags') ?? [], $title));
+    }
+
+    private static function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
+    {
+        $title = str(self::uploadedFilenameStem($originalName, $path))
+            ->replaceMatches('/[\s_.-]+/', ' ')
+            ->trim()
+            ->headline()
+            ->toString();
+
+        return filled($title) ? $title : null;
+    }
+
+    private static function fileNameFromUploadedFilename(mixed $originalName, mixed $path): ?string
+    {
+        $fileName = Str::slug(self::uploadedFilenameStem($originalName, $path));
+
+        return filled($fileName) ? $fileName : null;
+    }
+
+    private static function uploadedFilenameStem(mixed $originalName, mixed $path): string
+    {
+        $source = is_array($originalName) ? collect($originalName)->first() : $originalName;
+
+        if (blank($source)) {
+            $source = self::originalNameFromUploadState($path);
+        }
+
+        $source = filled($source) ? (string) $source : 'file';
+
+        return pathinfo($source, PATHINFO_FILENAME);
+    }
+
+    private static function originalNameFromUploadState(mixed $state): ?string
+    {
+        if (is_array($state)) {
+            $state = collect($state)->first();
+        }
+
+        if ($state instanceof TemporaryUploadedFile) {
+            return $state->getClientOriginalName();
+        }
+
+        return is_string($state) && filled($state) ? basename($state) : null;
     }
 }

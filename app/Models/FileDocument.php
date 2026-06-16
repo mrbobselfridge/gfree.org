@@ -53,6 +53,33 @@ class FileDocument extends Model implements HasPublicUrl
             ->all();
     }
 
+    public static function tagOptions(): array
+    {
+        return static::query()
+            ->pluck('tags')
+            ->flatMap(fn (?array $tags): array => self::normalizeTags($tags ?? []))
+            ->unique(fn (string $tag): string => Str::lower($tag))
+            ->sort(fn (string $a, string $b): int => strcasecmp($a, $b))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function normalizeTags(mixed $value): array
+    {
+        return MediaImageMetadata::normalizeTags($value);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function mergeAutoTags(mixed $tags, ?string $title): array
+    {
+        return MediaImageMetadata::mergeAutoTags($tags, $title);
+    }
+
     public static function makeUniqueFileName(?string $source, ?self $ignore = null): string
     {
         $base = Str::slug(pathinfo((string) $source, PATHINFO_FILENAME) ?: (string) $source);
@@ -161,6 +188,11 @@ class FileDocument extends Model implements HasPublicUrl
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by_id');
+    }
+
+    public function setTagsAttribute(mixed $value): void
+    {
+        $this->attributes['tags'] = json_encode(self::normalizeTags($value));
     }
 
     protected static function booted(): void

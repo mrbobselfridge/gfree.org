@@ -853,7 +853,8 @@
             <ul>
                 <li><strong>Category:</strong> Groups the file and controls category-specific AI extraction instructions.</li>
                 <li><strong>Title:</strong> Admin/public title for the file.</li>
-                <li><strong>Path:</strong> Stable file URL under <code>/files/</code>. New paths default to <code>category-title</code>, such as <code>bulletin-sunday-worship-guide</code>.</li>
+                <li><strong>Path:</strong> Stable file URL under <code>/files/</code>. New uploads can fill this from the uploaded filename, and the refresh icon can regenerate a <code>category-title</code> path such as <code>bulletin-sunday-worship-guide</code>.</li>
+                <li><strong>Tags:</strong> Optional labels for organizing files. Uploading a new file or editing the title can add matching tags automatically.</li>
                 <li><strong>Make File Live:</strong> Turns the public file URL on or off.</li>
                 <li><strong>Public or private:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
                 <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Files are children only.</li>

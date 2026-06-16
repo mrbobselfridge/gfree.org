@@ -217,11 +217,12 @@ class FileLibraryTest extends TestCase
             ->assertSchemaComponentExists('created_at')
             ->assertSchemaComponentExists('updated_at')
             ->assertFormFieldDoesNotExist('description')
-            ->assertFormFieldDoesNotExist('tags')
+            ->assertFormFieldExists('tags')
             ->assertSee('Path')
             ->set('data.title', 'Connection Card')
             ->set('data.file_name', 'connection-card')
             ->set('data.category', 'Form')
+            ->set('data.tags', ['Manual'])
             ->set('data.parent_page_id', $parent->getKey())
             ->set('data.sort_order', 15)
             ->set('data.card_image_path', ['file-documents/card-images/connection-card.jpg'])
@@ -239,6 +240,7 @@ class FileLibraryTest extends TestCase
 
         $this->assertSame('Connection Card', $document->title);
         $this->assertSame('Form', $document->category);
+        $this->assertSame(['Manual', 'bulletin'], $document->tags);
         $this->assertTrue($document->parentPage->is($parent));
         $this->assertSame(15, $document->sort_order);
         $this->assertSame('file-documents/card-images/connection-card.jpg', $document->card_image_path);
@@ -254,6 +256,31 @@ class FileLibraryTest extends TestCase
         $this->get('/files/connection-card')
             ->assertOk()
             ->assertHeader('content-disposition', 'attachment; filename=connection-card.pdf');
+    }
+
+    public function test_create_file_document_uses_uploaded_file_name_for_defaults_and_tags(): void
+    {
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin.pdf', 25, 'application/pdf'))
+            ->assertSet('data.title', 'Sunday Bulletin')
+            ->assertSet('data.file_name', 'sunday-bulletin')
+            ->assertSet('data.tags', ['bulletin'])
+            ->set('data.visibility', FileDocument::VISIBILITY_PUBLIC)
+            ->call('create')
+            ->assertHasNoErrors();
+
+        $document = FileDocument::query()->where('file_name', 'sunday-bulletin')->firstOrFail();
+
+        $this->assertSame('Sunday Bulletin', $document->title);
+        $this->assertSame(['bulletin'], $document->tags);
+        $this->assertSame('sunday-bulletin.pdf', $document->currentVersion->original_name);
     }
 
     public function test_private_published_files_require_a_user_account_on_the_public_route(): void
@@ -374,7 +401,7 @@ class FileLibraryTest extends TestCase
             ->assertSchemaComponentExists('created_at')
             ->assertSchemaComponentExists('updated_at')
             ->assertFormFieldDoesNotExist('description')
-            ->assertFormFieldDoesNotExist('tags')
+            ->assertFormFieldExists('tags')
             ->assertSet('data.current_file', fn (array $state): bool => in_array('file-library/documents/connection-card.pdf', $state, true));
 
         $this->actingAs($admin)
