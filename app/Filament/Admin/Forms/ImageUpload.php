@@ -2,17 +2,17 @@
 
 namespace App\Filament\Admin\Forms;
 
-use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
+use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\MediaImageMetadata;
 use App\Support\MediaLibrary as MediaLibrarySupport;
+use App\Support\MediaTagOptions;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
@@ -262,7 +262,7 @@ class ImageUpload
     }
 
     /**
-     * @return array<int, TextInput|TagsInput|Hidden>
+     * @return array<int, TextInput|Select|Hidden>
      */
     private static function modalMetadataFields(?string $visibleAfterUploadField = null): array
     {
@@ -277,13 +277,25 @@ class ImageUpload
                     self::mergeAutoTagsIntoForm($set, $get, $state);
                 }),
             Hidden::make('existing_title'),
-            TagsInput::make('tags')
+            Select::make('tags')
                 ->label('Tags')
                 ->placeholder('Add tag')
-                ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
+                ->options(fn (Select $component): array => MediaTagOptions::optionsWithSelected($component->getState() ?? []))
+                ->getOptionLabelsUsing(fn (Select $component): array => MediaTagOptions::labelsFor($component->getState() ?? []))
+                ->createOptionForm([
+                    TextInput::make('tag')
+                        ->label('Tag')
+                        ->required()
+                        ->maxLength(80),
+                ])
+                ->createOptionUsing(fn (array $data): string => MediaTagOptions::normalizeCreatedTag($data['tag'] ?? null))
+                ->createOptionModalHeading('Add tag')
+                ->multiple()
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->in(fn (Select $component): array => MediaTagOptions::validationValues($component->getState() ?? []))
                 ->visible(fn (Get $get): bool => self::shouldShowMetadataFields($visibleAfterUploadField, $get))
-                ->splitKeys(['Tab', ','])
-                ->reorderable()
                 ->nestedRecursiveRules(['max:80']),
             TextInput::make('slug')
                 ->label('Optional Slug / Path')

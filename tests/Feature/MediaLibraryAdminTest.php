@@ -6,6 +6,7 @@ use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
+use App\Models\FileDocument;
 use App\Models\MediaImageMetadata;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -154,7 +155,7 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('Hero Image');
     }
 
-    public function test_media_library_tag_options_only_include_tags_from_existing_images(): void
+    public function test_media_library_tag_options_include_existing_image_and_file_tags(): void
     {
         Storage::fake('public');
 
@@ -171,8 +172,15 @@ class MediaLibraryAdminTest extends TestCase
             'path' => 'missing/deleted.png',
             'tags' => ['Deleted'],
         ]);
+        FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'tags' => ['Form', 'Students'],
+        ]);
 
         $this->assertSame([
+            'Form' => 'Form',
             'Hero' => 'Hero',
             'Students' => 'Students',
         ], MediaLibrary::tagOptions());

@@ -39,8 +39,7 @@ class FileCategoryForm
                     ->label('Extraction Instructions')
                     ->helperText('Used by Extract File Content AI for files in this category.')
                     ->default(fn (): string => FileCategoryExtractionInstructions::DEFAULT)
-                    ->rows(3)
-                    ->columnSpanFull(),
+                    ->rows(6),
             ]);
     }
 }

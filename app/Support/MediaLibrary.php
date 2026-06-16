@@ -201,20 +201,7 @@ class MediaLibrary
      */
     public static function tagOptions(): array
     {
-        $existingPaths = self::images()->pluck('path')->all();
-
-        if ($existingPaths === []) {
-            return [];
-        }
-
-        return MediaImageMetadata::query()
-            ->whereIn('path', $existingPaths)
-            ->pluck('tags')
-            ->flatMap(fn (?array $tags): array => MediaImageMetadata::normalizeTags($tags ?? []))
-            ->unique(fn (string $tag): string => Str::of($tag)->lower()->toString())
-            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
-            ->mapWithKeys(fn (string $tag): array => [$tag => $tag])
-            ->all();
+        return MediaTagOptions::options();
     }
 
     public static function imageOptions(): array

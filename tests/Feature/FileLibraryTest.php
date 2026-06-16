@@ -13,6 +13,7 @@ use App\Filament\Admin\Resources\FileDocuments\Pages\ListFileDocuments;
 use App\Filament\Admin\Resources\FileDocuments\RelationManagers\VersionsRelationManager;
 use App\Models\FileCategory;
 use App\Models\FileDocument;
+use App\Models\MediaImageMetadata;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -281,6 +282,33 @@ class FileLibraryTest extends TestCase
         $this->assertSame('Sunday Bulletin', $document->title);
         $this->assertSame(['bulletin'], $document->tags);
         $this->assertSame('sunday-bulletin.pdf', $document->currentVersion->original_name);
+    }
+
+    public function test_file_tag_options_include_existing_file_and_media_image_tags(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('students.png', 800, 600)
+            ->storeAs('pages/content-images', 'students.png', 'public');
+
+        MediaImageMetadata::query()->create([
+            'path' => 'pages/content-images/students.png',
+            'tags' => ['Students', 'Hero'],
+        ]);
+
+        FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'tags' => ['Form', 'Students'],
+        ]);
+
+        $this->assertSame([
+            'Form' => 'Form',
+            'Hero' => 'Hero',
+            'Students' => 'Students',
+        ], FileDocument::tagOptions());
     }
 
     public function test_private_published_files_require_a_user_account_on_the_public_route(): void

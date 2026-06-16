@@ -8,13 +8,13 @@ use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
+use App\Support\MediaTagOptions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\ViewField;
@@ -189,12 +189,24 @@ class FileDocumentForm
                                 'Stable URL path ending under /files/. Defaults to category-title and can be generated with the refresh icon.'
                             )
                             ->hintColor('gray'),
-                        TagsInput::make('tags')
+                        Select::make('tags')
                             ->label('Tags')
                             ->placeholder('Add tag')
-                            ->suggestions(fn (): array => FileDocument::tagOptions())
-                            ->splitKeys(['Tab', ','])
-                            ->reorderable()
+                            ->options(fn (Select $component): array => MediaTagOptions::optionsWithSelected($component->getState() ?? []))
+                            ->getOptionLabelsUsing(fn (Select $component): array => MediaTagOptions::labelsFor($component->getState() ?? []))
+                            ->createOptionForm([
+                                TextInput::make('tag')
+                                    ->label('Tag')
+                                    ->required()
+                                    ->maxLength(80),
+                            ])
+                            ->createOptionUsing(fn (array $data): string => MediaTagOptions::normalizeCreatedTag($data['tag'] ?? null))
+                            ->createOptionModalHeading('Add tag')
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->in(fn (Select $component): array => MediaTagOptions::validationValues($component->getState() ?? []))
                             ->nestedRecursiveRules(['max:80'])
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,

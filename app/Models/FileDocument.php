@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasPublicUrl;
+use App\Support\MediaTagOptions;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,13 +56,7 @@ class FileDocument extends Model implements HasPublicUrl
 
     public static function tagOptions(): array
     {
-        return static::query()
-            ->pluck('tags')
-            ->flatMap(fn (?array $tags): array => self::normalizeTags($tags ?? []))
-            ->unique(fn (string $tag): string => Str::lower($tag))
-            ->sort(fn (string $a, string $b): int => strcasecmp($a, $b))
-            ->values()
-            ->all();
+        return MediaTagOptions::options();
     }
 
     /**

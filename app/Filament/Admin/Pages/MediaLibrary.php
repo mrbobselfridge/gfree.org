@@ -8,13 +8,14 @@ use App\Models\MediaImageMetadata;
 use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
 use App\Support\MediaLibrary as MediaLibrarySupport;
+use App\Support\MediaTagOptions;
 use App\Support\MediaUsage;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -276,7 +277,7 @@ class MediaLibrary extends Page
     }
 
     /**
-     * @return array<int, TextInput|TagsInput>
+     * @return array<int, TextInput|Select>
      */
     private function imageMetadataFields(?string $visibleAfterUploadField = null): array
     {
@@ -292,13 +293,25 @@ class MediaLibrary extends Page
                 }),
             TextInput::make('existing_title')
                 ->hidden(),
-            TagsInput::make('tags')
+            Select::make('tags')
                 ->label('Tags')
                 ->placeholder('Add tag')
-                ->suggestions(fn (): array => array_values(MediaLibrarySupport::tagOptions()))
+                ->options(fn (Select $component): array => MediaTagOptions::optionsWithSelected($component->getState() ?? []))
+                ->getOptionLabelsUsing(fn (Select $component): array => MediaTagOptions::labelsFor($component->getState() ?? []))
+                ->createOptionForm([
+                    TextInput::make('tag')
+                        ->label('Tag')
+                        ->required()
+                        ->maxLength(80),
+                ])
+                ->createOptionUsing(fn (array $data): string => MediaTagOptions::normalizeCreatedTag($data['tag'] ?? null))
+                ->createOptionModalHeading('Add tag')
+                ->multiple()
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->in(fn (Select $component): array => MediaTagOptions::validationValues($component->getState() ?? []))
                 ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
-                ->splitKeys(['Tab', ','])
-                ->reorderable()
                 ->nestedRecursiveRules(['max:80']),
             TextInput::make('slug')
                 ->label('Optional Slug / Path')
@@ -406,8 +419,7 @@ class MediaLibrary extends Page
         ?string $ignorePath = null,
         ?string $fallbackTitle = null,
         ?string $fallbackSlug = null,
-    ): void
-    {
+    ): void {
         $metadata = MediaImageMetadata::query()->firstOrNew(['path' => $path]);
 
         if (! $metadata->exists) {
@@ -436,8 +448,7 @@ class MediaLibrary extends Page
         ?string $fallbackSlug = null,
         ?string $replaceTitle = null,
         ?string $replaceSlug = null,
-    ): array
-    {
+    ): array {
         $submittedSlug = MediaImageMetadata::normalizeSlug($data['slug'] ?? null);
         $slug = ($submittedSlug === null || ($replaceSlug !== null && $submittedSlug === $replaceSlug))
             ? $this->uniqueFallbackSlug($fallbackSlug, $ignorePath)
@@ -480,8 +491,7 @@ class MediaLibrary extends Page
         array $data,
         ?string $fallbackTitle = null,
         ?string $fallbackSlug = null,
-    ): int
-    {
+    ): int {
         $existingMetadata = MediaImageMetadata::query()->firstWhere('path', $oldPath);
         $metadata = $this->normalizedImageMetadataData(
             data: $data,

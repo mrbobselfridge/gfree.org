@@ -832,7 +832,7 @@
                 <li>Image fields elsewhere in the admin use icon actions: choose an existing image, remove the selected image, add a new image, or edit the selected image. New image uploads show title, slug/path, and tags after a file is selected.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
-                <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
+                <li><strong>Tags:</strong> Optional multi-select labels shared with File Library tags. Existing tags can be selected directly from the list, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
                 <li><strong>Created, Updated, and By:</strong> Automatically tracked details shown on each image card. These fields are searchable when available.</li>
                 <li>When the last image using a tag is deleted or changed, that tag no longer appears as an option.</li>
                 <li>New uploads use a generated folder with a clean filename, such as <strong>media-library/id/image-name.jpg</strong>.</li>
@@ -854,7 +854,7 @@
                 <li><strong>Category:</strong> Groups the file and controls category-specific AI extraction instructions.</li>
                 <li><strong>Title:</strong> Admin/public title for the file.</li>
                 <li><strong>Path:</strong> Stable file URL under <code>/files/</code>. New uploads can fill this from the uploaded filename, and the refresh icon can regenerate a <code>category-title</code> path such as <code>bulletin-sunday-worship-guide</code>.</li>
-                <li><strong>Tags:</strong> Optional labels for organizing files. Uploading a new file or editing the title can add matching tags automatically.</li>
+                <li><strong>Tags:</strong> Optional labels shared with Media Library image tags. Uploading a new file or editing the title can add matching tags automatically.</li>
                 <li><strong>Make File Live:</strong> Turns the public file URL on or off.</li>
                 <li><strong>Public or private:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
                 <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Files are children only.</li>
