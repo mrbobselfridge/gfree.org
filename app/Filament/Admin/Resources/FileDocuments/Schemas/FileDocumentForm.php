@@ -101,7 +101,8 @@ class FileDocumentForm
                                 }
 
                                 self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
-                            }),
+                            })
+                            ->columnSpanFull(),
                         TextInput::make('pending_original_name')
                             ->hidden(),
                         FileUpload::make('current_file')
