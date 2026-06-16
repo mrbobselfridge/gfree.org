@@ -121,26 +121,7 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Shows the currently active file version. Use Replace file to upload a new version.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
-                        TextInput::make('title')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->maxLength(255)
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Admin and public title for this file. New files use this with Category to build the first path.'
-                            )
-                            ->hintColor('gray')
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
-                                self::mergeAutoTagsIntoForm($set, $get, $state);
-
-                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
-                                    return;
-                                }
-
-                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
-                            }),
+                            ->hintColor('gray'),
                         ToggleButtons::make('visibility')
                             ->label('Public or private')
                             ->options([
@@ -163,6 +144,48 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->required(),
+                        TextInput::make('title')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->maxLength(255)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Admin and public title for this file. New files use this with Category to build the first path.'
+                            )
+                            ->hintColor('gray')
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                self::mergeAutoTagsIntoForm($set, $get, $state);
+
+                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
+                                    return;
+                                }
+
+                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
+                            }),
+                        Select::make('tags')
+                            ->label('Tags')
+                            ->placeholder('Add tag')
+                            ->options(fn (Select $component): array => MediaTagOptions::optionsWithSelected($component->getState() ?? []))
+                            ->getOptionLabelsUsing(fn (Select $component): array => MediaTagOptions::labelsFor($component->getState() ?? []))
+                            ->createOptionForm([
+                                TextInput::make('tag')
+                                    ->label('Tag')
+                                    ->required()
+                                    ->maxLength(80),
+                            ])
+                            ->createOptionUsing(fn (array $data): string => MediaTagOptions::normalizeCreatedTag($data['tag'] ?? null))
+                            ->createOptionModalHeading('Add tag')
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->in(fn (Select $component): array => MediaTagOptions::validationValues($component->getState() ?? []))
+                            ->nestedRecursiveRules(['max:80'])
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
+                            )
+                            ->hintColor('gray'),
                         TextInput::make('file_name')
                             ->label('Path')
                             ->prefix('/files/')
@@ -189,30 +212,6 @@ class FileDocumentForm
                                 'Stable URL path ending under /files/. Defaults to category-title and can be generated with the refresh icon.'
                             )
                             ->hintColor('gray'),
-                        Select::make('tags')
-                            ->label('Tags')
-                            ->placeholder('Add tag')
-                            ->options(fn (Select $component): array => MediaTagOptions::optionsWithSelected($component->getState() ?? []))
-                            ->getOptionLabelsUsing(fn (Select $component): array => MediaTagOptions::labelsFor($component->getState() ?? []))
-                            ->createOptionForm([
-                                TextInput::make('tag')
-                                    ->label('Tag')
-                                    ->required()
-                                    ->maxLength(80),
-                            ])
-                            ->createOptionUsing(fn (array $data): string => MediaTagOptions::normalizeCreatedTag($data['tag'] ?? null))
-                            ->createOptionModalHeading('Add tag')
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->in(fn (Select $component): array => MediaTagOptions::validationValues($component->getState() ?? []))
-                            ->nestedRecursiveRules(['max:80'])
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
-                            )
-                            ->hintColor('gray'),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (): array => PageForm::parentPageOptions())
@@ -223,17 +222,6 @@ class FileDocumentForm
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
-                            )
-                            ->hintColor('gray'),
-                        TextInput::make('sort_order')
-                            ->label('Order')
-                            ->numeric()
-                            ->minValue(0)
-                            ->default(0)
-                            ->required()
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier when a parent page Child Info Cards block sorts by Order.'
                             )
                             ->hintColor('gray'),
                         ...ImageUpload::make(
@@ -247,6 +235,17 @@ class FileDocumentForm
                                 )
                                 ->hintColor('gray'),
                         ),
+                        TextInput::make('sort_order')
+                            ->label('Order')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Lower numbers appear earlier when a parent page Child Info Cards block sorts by Order.'
+                            )
+                            ->hintColor('gray'),
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
                             ->helperText('Optional. Uploading a replacement creates a new version and keeps older versions available below.')
@@ -264,11 +263,7 @@ class FileDocumentForm
                             ->columnSpanFull(),
                         TextInput::make('replacement_original_name')
                             ->hidden(),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                Section::make('Document Notes')
-                    ->schema([
+
                         RichEditorDefaults::configure(RichEditor::make('content'))
                             ->label('Optional content')
                             ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')

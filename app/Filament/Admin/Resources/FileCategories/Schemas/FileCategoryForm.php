@@ -24,6 +24,11 @@ class FileCategoryForm
                     ->required()
                     ->numeric()
                     ->default(0),
+                Textarea::make('extraction_instructions')
+                    ->label('Extraction Instructions')
+                    ->helperText('Used by Extract File Content AI for files in this category.')
+                    ->default(fn (): string => FileCategoryExtractionInstructions::DEFAULT)
+                    ->rows(6),
                 ...ImageUpload::make(
                     'default_card_image_path',
                     'file-categories/default-card-images',
@@ -35,11 +40,6 @@ class FileCategoryForm
                         )
                         ->hintColor('gray'),
                 ),
-                Textarea::make('extraction_instructions')
-                    ->label('Extraction Instructions')
-                    ->helperText('Used by Extract File Content AI for files in this category.')
-                    ->default(fn (): string => FileCategoryExtractionInstructions::DEFAULT)
-                    ->rows(6),
             ]);
     }
 }
