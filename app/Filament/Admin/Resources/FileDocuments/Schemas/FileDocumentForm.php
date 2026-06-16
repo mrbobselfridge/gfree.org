@@ -188,7 +188,7 @@ class FileDocumentForm
                                 'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
                             )
                             ->hintColor('gray'),
-                        Textarea::make('Intro Text')
+                        Textarea::make('description')
                             ->rows(1)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
