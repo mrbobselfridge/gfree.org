@@ -16,6 +16,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -152,7 +153,7 @@ class FileDocumentForm
                             'card_image_path',
                             'file-documents/card-images',
                             'Card image',
-                            fn (FileUpload $upload): FileUpload => $upload
+                            fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
                                     'Optional image used when this file appears in cards or listing areas. If empty, the default file image is used.'

@@ -13,7 +13,6 @@ use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -187,7 +186,7 @@ class PageForm
                             'hero_image_path',
                             'pages/hero-images',
                             'Header Image',
-                            fn (FileUpload $upload): FileUpload => $upload
+                            fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
                                     'Optional image used in the page header. Landscape photos usually work best.'
@@ -200,7 +199,7 @@ class PageForm
                             'card_image_path',
                             'pages/card-images',
                             'Card image',
-                            fn (FileUpload $upload): FileUpload => $upload
+                            fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
                                     'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'

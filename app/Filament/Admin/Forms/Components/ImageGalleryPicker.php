@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 
 class ImageGalleryPicker extends Field
 {
-    public const DEFAULT_LIMIT = 24;
+    public const DEFAULT_LIMIT = 100000;
 
-    public const BATCH_SIZE = 24;
+    public const BATCH_SIZE = 100000;
 
     protected string $view = 'filament.admin.forms.components.image-gallery-picker';
 

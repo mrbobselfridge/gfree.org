@@ -829,7 +829,7 @@
             <h3>Image Details</h3>
             <ul>
                 <li>Upload image starts with the image field, then shows title, slug, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
-                <li>Image fields elsewhere in the admin show title, slug/path, and tags after a new image is selected, so uploads from Pages, content blocks, and banners can be documented before the record is saved. Saved or existing images can still use the <strong>Image details</strong> action.</li>
+                <li>Image fields elsewhere in the admin use icon actions: choose an existing image, remove the selected image, add a new image, or edit the selected image. New image uploads show title, slug/path, and tags after a file is selected.</li>
                 <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
                 <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels. Existing tags come from tags already used by current images, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>

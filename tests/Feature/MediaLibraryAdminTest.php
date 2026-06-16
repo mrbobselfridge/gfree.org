@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
@@ -11,6 +12,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\MediaLibrary;
 use App\Support\MediaUsage;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -421,35 +423,68 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('By: Noel Meyers');
     }
 
-    public function test_page_image_upload_creates_clean_media_metadata_immediately(): void
+    public function test_page_image_add_action_updates_title_slug_and_tags_as_soon_as_image_uploads(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->assertFormComponentActionExists('hero_image_path', 'chooseExistingImage')
+            ->assertFormComponentActionExists('hero_image_path', 'openImage')
+            ->assertFormComponentActionExists('hero_image_path', 'detachImage')
+            ->assertFormComponentActionExists('hero_image_path', 'addImage')
+            ->assertFormComponentActionExists('hero_image_path', 'editImage')
+            ->assertFormComponentActionVisible('hero_image_path', 'addImage')
+            ->assertFormComponentActionHidden('hero_image_path', 'editImage')
+            ->assertFormComponentActionHasIcon('hero_image_path', 'chooseExistingImage', Heroicon::OutlinedPhoto)
+            ->assertFormComponentActionHasIcon('hero_image_path', 'openImage', Heroicon::OutlinedArrowTopRightOnSquare)
+            ->assertFormComponentActionHasIcon('hero_image_path', 'detachImage', Heroicon::OutlinedXMark)
+            ->assertFormComponentActionHasIcon('hero_image_path', 'addImage', Heroicon::OutlinedPlus)
+            ->mountFormComponentAction('hero_image_path', 'addImage')
+            ->assertFormFieldVisible('new_image')
+            ->assertFormFieldHidden('title')
+            ->assertFormFieldHidden('tags')
+            ->assertFormFieldHidden('slug')
+            ->setFormComponentActionData([
+                'new_image' => UploadedFile::fake()->image('student_page-hero.JPG', 800, 600),
+            ])
+            ->assertFormFieldVisible('title')
+            ->assertFormFieldVisible('tags')
+            ->assertFormFieldVisible('slug')
+            ->assertFormComponentActionDataSet([
+                'title' => 'Student Page Hero',
+                'slug' => 'student-page-hero',
+                'tags' => ['person', 'youth'],
+            ]);
+    }
+
+    public function test_page_image_add_action_creates_clean_media_metadata_immediately(): void
     {
         Storage::fake('public');
         $user = User::factory()->create();
 
-        Livewire::actingAs($user)
+        $component = Livewire::actingAs($user)
             ->test(CreatePage::class)
-            ->assertSee('Image details')
-            ->assertFormFieldHidden('hero_image_path_media_title')
-            ->assertFormFieldHidden('hero_image_path_media_tags')
-            ->assertFormFieldHidden('hero_image_path_media_slug')
             ->set('data.title', 'Student Page')
             ->set('data.slug', 'student-page')
-            ->set('data.hero_image_path', UploadedFile::fake()->image('student_page-hero.JPG', 800, 600))
-            ->assertFormFieldVisible('hero_image_path_media_title')
-            ->assertFormFieldVisible('hero_image_path_media_tags')
-            ->assertFormFieldVisible('hero_image_path_media_slug')
-            ->assertSet('data.hero_image_path_media_title', 'Student Page Hero')
-            ->assertSet('data.hero_image_path_media_slug', 'student-page-hero')
-            ->assertSet('data.hero_image_path_media_tags', ['person', 'youth'])
-            ->set('data.hero_image_path_media_title', 'Custom Student Page Hero')
-            ->set('data.hero_image_path_media_slug', 'custom/student page hero')
-            ->set('data.hero_image_path_media_tags', ['Manual'])
-            ->call('create')
-            ->assertHasNoErrors();
+            ->callFormComponentAction('hero_image_path', 'addImage', [
+                'new_image' => UploadedFile::fake()->image('student_page-hero.JPG', 800, 600),
+                'title' => 'Custom Student Page Hero',
+                'slug' => 'custom/student page hero',
+                'tags' => ['Manual'],
+            ])
+            ->assertHasNoFormComponentActionErrors();
 
         $path = Storage::disk('public')->allFiles('pages/hero-images')[0] ?? null;
 
         $this->assertNotNull($path);
+        $component
+            ->assertSet('data.hero_image_path', $path)
+            ->assertFormComponentActionHidden('hero_image_path', 'addImage')
+            ->assertFormComponentActionVisible('hero_image_path', 'editImage')
+            ->call('create')
+            ->assertHasNoErrors();
+
         $this->assertMatchesRegularExpression(
             '#^pages/hero-images/[0-9a-hjkmnp-tv-z]{26}/student-page-hero\.(jpg|jpeg|png|gif|webp|avif|svg)$#',
             $path,
@@ -460,8 +495,28 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertNotNull($metadata);
         $this->assertSame('Custom Student Page Hero', $metadata->title);
         $this->assertSame('custom/student-page-hero', $metadata->slug);
-        $this->assertSame(['Manual', 'person', 'youth'], $metadata->tags);
+        $this->assertSame(['Manual', 'youth', 'person'], $metadata->tags);
         $this->assertSame($user->id, $metadata->created_by_user_id);
+    }
+
+    public function test_page_image_selector_can_detach_selected_image(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('hero.jpg', 800, 600)
+            ->storeAs('pages/hero-images', 'hero.jpg', 'public');
+
+        $path = 'pages/hero-images/hero.jpg';
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.hero_image_path', $path)
+            ->assertFormComponentActionHasUrl('hero_image_path', 'openImage', Storage::disk('public')->url($path))
+            ->assertFormComponentActionShouldOpenUrlInNewTab('hero_image_path', 'openImage')
+            ->assertFormComponentActionEnabled('hero_image_path', 'detachImage')
+            ->callFormComponentAction('hero_image_path', 'detachImage')
+            ->assertSet('data.hero_image_path', null);
     }
 
     public function test_media_library_defaults_upload_title_from_uploaded_filename(): void
@@ -783,7 +838,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame('a-folder/alpha.jpg', $component->instance()->getImages()->first()['path']);
     }
 
-    public function test_media_library_loads_images_in_batches(): void
+    public function test_media_library_shows_all_matching_images_by_default(): void
     {
         Storage::fake('public');
 
@@ -797,23 +852,18 @@ class MediaLibraryAdminTest extends TestCase
             ->test(MediaLibraryPage::class)
             ->set('sort', 'file_name');
 
-        $this->assertCount(24, $component->instance()->getImages());
+        $this->assertCount(30, $component->instance()->getImages());
         $this->assertSame(30, $component->instance()->getTotalImageCount());
         $this->assertSame(30, $component->instance()->getFilteredImageCount());
-        $this->assertTrue($component->instance()->hasMoreImages());
+        $this->assertFalse($component->instance()->hasMoreImages());
 
         $component
-            ->assertSee('24 of 30 images shown')
-            ->assertSee('Load more')
-            ->call('loadMoreImages')
-            ->assertHasNoErrors();
-
-        $this->assertCount(30, $component->instance()->getImages());
-        $this->assertFalse($component->instance()->hasMoreImages());
+            ->assertSee('30 of 30 images shown')
+            ->assertDontSee('Load more');
 
         $component->set('search', 'image-29');
 
-        $this->assertSame(24, $component->instance()->imageLimit);
+        $this->assertSame(100000, $component->instance()->imageLimit);
         $this->assertCount(1, $component->instance()->getImages());
         $this->assertSame('bulk/image-29.jpg', $component->instance()->getImages()->first()['path']);
         $this->assertSame(1, $component->instance()->getFilteredImageCount());
@@ -859,7 +909,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame(['resources/resource-03.jpg', 'resources/resource-04.jpg'], $results['items']->pluck('path')->all());
     }
 
-    public function test_existing_image_picker_action_mounts_with_paged_defaults(): void
+    public function test_existing_image_picker_action_mounts_with_all_images_by_default(): void
     {
         Storage::fake('public');
 
@@ -875,11 +925,17 @@ class MediaLibraryAdminTest extends TestCase
             ->mountFormComponentAction('hero_image_path', 'chooseExistingImage')
             ->assertFormComponentActionMounted('hero_image_path', 'chooseExistingImage');
 
-        $results = MediaLibrary::pagedImages(limit: 24);
+        $results = MediaLibrary::pagedImages(limit: ImageGalleryPicker::DEFAULT_LIMIT);
 
-        $this->assertCount(24, $results['items']);
+        $this->assertCount(30, $results['items']);
         $this->assertSame(30, $results['total']);
-        $this->assertTrue($results['has_more']);
+        $this->assertFalse($results['has_more']);
+
+        $pagedResults = MediaLibrary::pagedImages(limit: 24);
+
+        $this->assertCount(24, $pagedResults['items']);
+        $this->assertSame(30, $pagedResults['total']);
+        $this->assertTrue($pagedResults['has_more']);
     }
 
     public function test_existing_image_picker_keeps_load_more_inside_scrollable_results(): void
@@ -898,6 +954,55 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertStringContainsString('.twyxtco-image-picker-results', $view);
         $this->assertStringContainsString('overflow: auto;', $view);
         $this->assertStringContainsString('max-height: min(58vh, 680px);', $view);
+    }
+
+    public function test_existing_image_picker_modal_uses_two_column_controls_with_full_width_images(): void
+    {
+        $source = file_get_contents(app_path('Filament/Admin/Forms/ImageUpload.php'));
+
+        $gridPosition = strpos($source, 'Grid::make([');
+        $searchPosition = strpos($source, "TextInput::make('existing_image_search')");
+        $sortPosition = strpos($source, "Select::make('existing_image_sort')");
+        $imagePickerPosition = strpos($source, "ImageGalleryPicker::make('existing_image_path')");
+
+        $this->assertIsInt($gridPosition);
+        $this->assertIsInt($searchPosition);
+        $this->assertIsInt($sortPosition);
+        $this->assertIsInt($imagePickerPosition);
+        $this->assertLessThan($searchPosition, $gridPosition);
+        $this->assertLessThan($sortPosition, $searchPosition);
+        $this->assertLessThan($imagePickerPosition, $sortPosition);
+        $this->assertStringContainsString("'lg' => 2", $source);
+        $this->assertMatchesRegularExpression(
+            "/ImageGalleryPicker::make\\('existing_image_path'\\)\\s+->label\\('Images'\\)\\s+->required\\(\\)\\s+->columnSpanFull\\(\\)/",
+            $source,
+        );
+    }
+
+    public function test_image_selector_view_uses_centered_actions_and_flip_card_details(): void
+    {
+        $view = file_get_contents(resource_path('views/filament/admin/forms/components/image-selector.blade.php'));
+
+        $actionsPosition = strpos($view, 'class="twyxtco-image-selector__actions"');
+        $frontPosition = strpos($view, 'class="twyxtco-image-selector__front"');
+        $backPosition = strpos($view, 'class="twyxtco-image-selector__back"');
+
+        $this->assertIsInt($actionsPosition);
+        $this->assertIsInt($frontPosition);
+        $this->assertIsInt($backPosition);
+        $this->assertLessThan($frontPosition, $actionsPosition);
+        $this->assertLessThan($backPosition, $frontPosition);
+        $this->assertStringContainsString("{{ \$getAction('openImage') }}", $view);
+        $this->assertStringContainsString('x-show="! flipped"', $view);
+        $this->assertStringContainsString('left: 50%;', $view);
+        $this->assertStringContainsString('top: 0.8125rem;', $view);
+        $this->assertStringContainsString('gap: 0.625rem;', $view);
+        $this->assertStringContainsString('margin-inline: 0.3125rem;', $view);
+        $this->assertStringContainsString('width: 1.85rem;', $view);
+        $this->assertStringContainsString('height: clamp(8rem, 16vw, 10rem);', $view);
+        $this->assertStringContainsString("title=\"Click to view details\"", $view);
+        $this->assertStringContainsString("x-bind:class=\"{ 'is-flipped': flipped }\"", $view);
+        $this->assertStringContainsString('transform: rotateY(180deg);', $view);
     }
 
     private function assertNewMediaLibraryImagePath(string $path, string $name): void

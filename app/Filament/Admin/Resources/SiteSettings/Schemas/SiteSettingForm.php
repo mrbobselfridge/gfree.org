@@ -6,10 +6,10 @@ use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiContentPrompt;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -55,14 +55,14 @@ class SiteSettingForm
                             'site_logo_path',
                             'site-settings/logo',
                             'Site logo',
-                            fn (FileUpload $upload): FileUpload => $upload
+                            fn (ViewField $upload): ViewField => $upload
                                 ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
                         ),
                         ...ImageUpload::make(
                             'default_page_header_image_path',
                             'site-settings/page-header-images',
                             'Default page header image',
-                            fn (FileUpload $upload): FileUpload => $upload
+                            fn (ViewField $upload): ViewField => $upload
                                 ->helperText('Used on public pages when Show page header is on but that page has no Header Image selected.'),
                         ),
                         RichEditorDefaults::configure(RichEditor::make('office_hours')),

@@ -4,10 +4,10 @@ namespace App\Filament\Admin\Resources\HomepageBanners\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -101,7 +101,7 @@ class HomepageBannerForm
                     'image_path',
                     'homepage-banners',
                     'Banner Image',
-                    fn (FileUpload $upload): FileUpload => $upload
+                    fn (ViewField $upload): ViewField => $upload
                         ->hintIcon(
                             Heroicon::OutlinedInformationCircle,
                             'Primary homepage banner image. Use a wide, high-quality image that still works when cropped on mobile.'

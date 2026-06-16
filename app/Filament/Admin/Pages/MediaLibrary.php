@@ -33,7 +33,7 @@ class MediaLibrary extends Page
 
     private const IMAGE_DIRECTORY = 'media-library';
 
-    private const IMAGE_BATCH_SIZE = 24;
+    private const IMAGE_BATCH_SIZE = 100000;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 

@@ -12,7 +12,6 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -21,6 +20,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
@@ -238,7 +238,7 @@ class ContentBlockBuilder
                                     'image_path',
                                     $imageDirectory,
                                     'Flip image',
-                                    fn (FileUpload $upload): FileUpload => $upload
+                                    fn (ViewField $upload): ViewField => $upload
                                         ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                         ->columnSpanFull(),
                                 ),
