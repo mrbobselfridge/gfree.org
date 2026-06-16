@@ -99,7 +99,7 @@ class ImageUpload
                 Action::make('chooseExistingImage')
                     ->label('Choose existing')
                     ->icon(Heroicon::OutlinedPhoto)
-                    ->modalHeading('Choose an existing image')
+                    ->modalHeading('Choose an existing image1')
                     ->modalSubmitAction(false)
                     ->modalWidth(Width::Screen)
                     ->stickyModalHeader()
