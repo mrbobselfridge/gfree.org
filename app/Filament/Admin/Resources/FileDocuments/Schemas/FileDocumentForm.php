@@ -188,13 +188,14 @@ class FileDocumentForm
                                 'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
                             )
                             ->hintColor('gray'),
-                        Textarea::make('description')
+/**                        Textarea::make('description')
                             ->rows(1)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional intro text on cards of parent page.'
                             )
                             ->hintColor('gray'),
+**/
                         TextInput::make('file_name')
                             ->label('Path')
                             ->prefix('/files/')
@@ -243,7 +244,8 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                         ...ImageUpload::make(
                             'card_image_path',
                             'file-documents/card-images',
@@ -271,16 +273,6 @@ class FileDocumentForm
                             ->hintColor('gray'),
                         TextInput::make('replacement_original_name')
                             ->hidden(),
-
-                        RichEditorDefaults::configure(RichEditor::make('content'))
-                            ->label('Optional content')
-                            ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional rich text shown with the file record. AI extraction can place reviewed content here.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
                         DateTimePicker::make('publish_at')
                             ->label('Publish date')
                             ->hintIcon(
@@ -311,6 +303,16 @@ class FileDocumentForm
                                 'Set automatically each time the file record is saved.'
                             )
                             ->hintColor('gray'),
+
+                        RichEditorDefaults::configure(RichEditor::make('content'))
+                            ->label('Optional Page / File Content')
+                            ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional rich text shown with the file record. AI extraction can place reviewed content here.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
