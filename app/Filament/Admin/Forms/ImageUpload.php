@@ -7,6 +7,7 @@ use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\MediaImageMetadata;
 use App\Support\MediaLibrary as MediaLibrarySupport;
 use App\Support\MediaTagOptions;
+use App\Support\UploadedFilenameTitle;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -475,13 +476,7 @@ class ImageUpload
 
     private static function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
-        $title = str(self::uploadedFilenameStem($originalName, $path))
-            ->replaceMatches('/[\s_.-]+/', ' ')
-            ->trim()
-            ->headline()
-            ->toString();
-
-        return filled($title) ? $title : null;
+        return UploadedFilenameTitle::fromStem(self::uploadedFilenameStem($originalName, $path));
     }
 
     private static function slugFromUploadedFilename(mixed $originalName, mixed $path): ?string
@@ -517,14 +512,11 @@ class ImageUpload
 
     private static function titleFromPath(string $path): ?string
     {
-        $title = str(pathinfo($path, PATHINFO_FILENAME))
+        $stem = str(pathinfo($path, PATHINFO_FILENAME))
             ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
-            ->replaceMatches('/[\s_.-]+/', ' ')
-            ->trim()
-            ->headline()
             ->toString();
 
-        return filled($title) ? $title : null;
+        return UploadedFilenameTitle::fromStem($stem);
     }
 
     private static function slugFromPath(string $path): ?string

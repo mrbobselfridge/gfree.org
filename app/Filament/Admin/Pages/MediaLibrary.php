@@ -10,6 +10,7 @@ use App\Support\AdminAccess;
 use App\Support\MediaLibrary as MediaLibrarySupport;
 use App\Support\MediaTagOptions;
 use App\Support\MediaUsage;
+use App\Support\UploadedFilenameTitle;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -530,14 +531,11 @@ class MediaLibrary extends Page
 
     private function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
-        $title = str($this->uploadedFilenameStem($originalName, $path))
+        $stem = str($this->uploadedFilenameStem($originalName, $path))
             ->replaceMatches('/^[0-9a-hjkmnp-tv-z]{26}[\s_.-]+/i', '')
-            ->replaceMatches('/[\s_.-]+/', ' ')
-            ->trim()
-            ->headline()
             ->toString();
 
-        return filled($title) ? $title : null;
+        return UploadedFilenameTitle::fromStem($stem);
     }
 
     private function slugFromUploadedFilename(mixed $originalName, mixed $path): ?string

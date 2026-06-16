@@ -9,6 +9,7 @@ use App\Models\FileCategory;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
 use App\Support\MediaTagOptions;
+use App\Support\UploadedFilenameTitle;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -335,13 +336,7 @@ class FileDocumentForm
 
     private static function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
-        $title = str(self::uploadedFilenameStem($originalName, $path))
-            ->replaceMatches('/[\s_.-]+/', ' ')
-            ->trim()
-            ->headline()
-            ->toString();
-
-        return filled($title) ? $title : null;
+        return UploadedFilenameTitle::fromStem(self::uploadedFilenameStem($originalName, $path));
     }
 
     private static function fileNameFromUploadedFilename(mixed $originalName, mixed $path): ?string

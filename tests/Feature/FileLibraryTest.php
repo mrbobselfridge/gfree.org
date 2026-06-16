@@ -21,6 +21,7 @@ use App\Support\AdminAccess;
 use App\Support\FileLibrary;
 use App\Support\MediaUsage;
 use App\Support\OpenAiFileDocumentExtractor;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
@@ -32,6 +33,13 @@ use Tests\TestCase;
 class FileLibraryTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
 
     public function test_admin_can_open_file_library_and_user_permission_in_content_group(): void
     {
@@ -282,6 +290,27 @@ class FileLibraryTest extends TestCase
         $this->assertSame('Sunday Bulletin', $document->title);
         $this->assertSame(['bulletin'], $document->tags);
         $this->assertSame('sunday-bulletin.pdf', $document->currentVersion->original_name);
+    }
+
+    public function test_create_file_document_adds_pretty_uploaded_filename_date_to_title(): void
+    {
+        Carbon::setTestNow('2026-06-16 12:00:00');
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-6.15.26.pdf', 25, 'application/pdf'))
+            ->assertSet('data.title', 'Sunday Bulletin June 15, 2026')
+            ->assertSet('data.tags', ['bulletin']);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.pending_upload', UploadedFile::fake()->create('family-fire-night-06.15.pdf', 25, 'application/pdf'))
+            ->assertSet('data.title', 'Family Fire Night June 15, 2026');
     }
 
     public function test_file_tag_options_include_existing_file_and_media_image_tags(): void
