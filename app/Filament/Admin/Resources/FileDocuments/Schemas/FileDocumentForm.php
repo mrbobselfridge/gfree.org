@@ -16,6 +16,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\ViewField;
@@ -187,6 +188,13 @@ class FileDocumentForm
                                 'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
                             )
                             ->hintColor('gray'),
+                        Textarea::make('Intro Text')
+                            ->rows(1)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional intro text on cards of parent page.'
+                            )
+                            ->hintColor('gray'),
                         TextInput::make('file_name')
                             ->label('Path')
                             ->prefix('/files/')
@@ -213,6 +221,17 @@ class FileDocumentForm
                                 'Stable URL path ending under /files/. Defaults to category-title and can be generated with the refresh icon.'
                             )
                             ->hintColor('gray'),
+                        TextInput::make('sort_order')
+                            ->label('Order')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Lower numbers appear earlier when a parent page Child Info Cards block sorts by Order.'
+                            )
+                            ->hintColor('gray'),
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
                             ->options(fn (): array => PageForm::parentPageOptions())
@@ -236,17 +255,6 @@ class FileDocumentForm
                                 )
                                 ->hintColor('gray'),
                         ),
-                        TextInput::make('sort_order')
-                            ->label('Order')
-                            ->numeric()
-                            ->minValue(0)
-                            ->default(0)
-                            ->required()
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier when a parent page Child Info Cards block sorts by Order.'
-                            )
-                            ->hintColor('gray'),
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
                             ->helperText('Optional. Uploading a replacement creates a new version and keeps older versions available below.')
@@ -260,8 +268,7 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Uploading here creates a new current version and preserves older versions below.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
                         TextInput::make('replacement_original_name')
                             ->hidden(),
 
