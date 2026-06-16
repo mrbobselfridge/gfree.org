@@ -248,8 +248,7 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
                         ...ImageUpload::make(
                             'card_image_path',
                             'file-documents/card-images',
