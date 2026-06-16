@@ -269,6 +269,7 @@ class FileLibraryTest extends TestCase
 
     public function test_create_file_document_uses_uploaded_file_name_for_defaults_and_tags(): void
     {
+        Carbon::setTestNow('2026-06-16 12:34:00');
         Storage::fake(FileLibrary::DISK);
 
         $admin = User::factory()->create([
@@ -280,6 +281,7 @@ class FileLibraryTest extends TestCase
             ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin.pdf', 25, 'application/pdf'))
             ->assertSet('data.title', 'Sunday Bulletin')
             ->assertSet('data.file_name', 'sunday-bulletin')
+            ->assertSet('data.publish_at', '2026-06-16 00:00:00')
             ->assertSet('data.tags', ['bulletin'])
             ->set('data.visibility', FileDocument::VISIBILITY_PUBLIC)
             ->call('create')
@@ -289,6 +291,7 @@ class FileLibraryTest extends TestCase
 
         $this->assertSame('Sunday Bulletin', $document->title);
         $this->assertSame(['bulletin'], $document->tags);
+        $this->assertSame('2026-06-16 00:00:00', $document->publish_at?->format('Y-m-d H:i:s'));
         $this->assertSame('sunday-bulletin.pdf', $document->currentVersion->original_name);
     }
 
@@ -305,12 +308,29 @@ class FileLibraryTest extends TestCase
             ->test(CreateFileDocument::class)
             ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-6.15.26.pdf', 25, 'application/pdf'))
             ->assertSet('data.title', 'Sunday Bulletin June 15, 2026')
+            ->assertSet('data.publish_at', '2026-06-15 00:00:00')
             ->assertSet('data.tags', ['bulletin']);
 
         Livewire::actingAs($admin)
             ->test(CreateFileDocument::class)
             ->set('data.pending_upload', UploadedFile::fake()->create('family-fire-night-06.15.pdf', 25, 'application/pdf'))
-            ->assertSet('data.title', 'Family Fire Night June 15, 2026');
+            ->assertSet('data.title', 'Family Fire Night June 15, 2026')
+            ->assertSet('data.publish_at', '2026-06-15 00:00:00');
+    }
+
+    public function test_uploaded_file_name_does_not_replace_a_manually_set_publish_date(): void
+    {
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.publish_at', '2026-07-04 09:30:00')
+            ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin-6.15.26.pdf', 25, 'application/pdf'))
+            ->assertSet('data.publish_at', '2026-07-04 09:30:00');
     }
 
     public function test_file_tag_options_include_existing_file_and_media_image_tags(): void

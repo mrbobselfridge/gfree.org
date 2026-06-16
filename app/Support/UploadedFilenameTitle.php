@@ -38,6 +38,13 @@ class UploadedFilenameTitle
         return trim(collect([$title, $dateMatch['date']->format('F j, Y')])->filter()->implode(' '));
     }
 
+    public static function dateFromStem(string $stem, ?int $defaultYear = null): ?CarbonImmutable
+    {
+        $defaultYear ??= (int) now()->year;
+
+        return self::firstDateMatch($stem, $defaultYear)['date'] ?? null;
+    }
+
     /**
      * @return array{date: CarbonImmutable, offset: int, length: int}|null
      */

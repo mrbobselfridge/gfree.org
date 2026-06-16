@@ -88,6 +88,10 @@ class FileDocumentForm
                                 $title = self::titleFromUploadedFilename($get('pending_original_name'), $state);
                                 $fileName = self::fileNameFromUploadedFilename($get('pending_original_name'), $state);
 
+                                if (blank($get('publish_at'))) {
+                                    $set('publish_at', self::publishDateFromUploadedFilename($get('pending_original_name'), $state));
+                                }
+
                                 if (filled($title) && self::shouldUseUploadedFilenameValue($get('title'), null)) {
                                     $set('title', $title);
                                 }
@@ -346,6 +350,13 @@ class FileDocumentForm
     private static function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
     {
         return UploadedFilenameTitle::fromStem(self::uploadedFilenameStem($originalName, $path));
+    }
+
+    private static function publishDateFromUploadedFilename(mixed $originalName, mixed $path): string
+    {
+        $date = UploadedFilenameTitle::dateFromStem(self::uploadedFilenameStem($originalName, $path));
+
+        return ($date ? $date->startOfDay() : now()->startOfDay())->format('Y-m-d H:i:s');
     }
 
     private static function fileNameFromUploadedFilename(mixed $originalName, mixed $path): ?string
