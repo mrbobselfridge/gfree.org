@@ -453,10 +453,6 @@ class AdminPanelProvider extends PanelProvider
                             margin-top: -15px;
                         }
 
-                        .fi-sidebar-open .fi-sidebar-item.twyxtco-sidebar-tight-above > .fi-sidebar-item-btn {
-                            margin-top: -15px;
-                        }
-
                         .twyxtco-sidebar-help {
                             display: inline-flex;
                             align-items: center;

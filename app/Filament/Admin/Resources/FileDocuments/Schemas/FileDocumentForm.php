@@ -101,8 +101,18 @@ class FileDocumentForm
                                 }
 
                                 self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
-                            })
-                            ->columnSpanFull(),
+                            }),
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'file-documents/card-images',
+                            'Card image',
+                            fn (ViewField $upload): ViewField => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
+                                )
+                                ->hintColor('gray'),
+                        ),
                         TextInput::make('pending_original_name')
                             ->hidden(),
                         FileUpload::make('current_file')
@@ -249,17 +259,6 @@ class FileDocumentForm
                                 'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
                             )
                             ->hintColor('gray'),
-                        ...ImageUpload::make(
-                            'card_image_path',
-                            'file-documents/card-images',
-                            'Card image',
-                            fn (ViewField $upload): ViewField => $upload
-                                ->hintIcon(
-                                    Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
-                                )
-                                ->hintColor('gray'),
-                        ),
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
                             ->helperText('Optional. Uploading a replacement creates a new version and keeps older versions available below.')
