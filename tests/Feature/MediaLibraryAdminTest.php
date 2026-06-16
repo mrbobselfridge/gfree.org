@@ -657,13 +657,13 @@ class MediaLibraryAdminTest extends TestCase
             'Church Website Banner' => ['banner'],
             'Website Graphic Background' => ['graphic'],
             'Unsplash Photo Image' => ['picture'],
-            'Square Logo Icon' => ['logo'],
+            'Square Logo Icon' => ['logo or icon'],
             'Pastor Family Volunteer Hands' => ['person'],
-            'Sunday School VBS Kids' => ['person', 'kids & children', 'event or service'],
+            'Sunday School VBS Kids' => ['person', 'children & youth', 'event or service'],
             'Unchained Night' => ['youth'],
             'Night of Worship Music' => ['worship'],
-            'Good Friday Easter Spring' => ['holiday and seasonal'],
-            'Giving Tithe Offering' => ['giving and offering'],
+            'Good Friday Easter Spring' => ['holiday & seasonal'],
+            'Giving Tithe Offering' => ['giving & offering'],
             'Prayer and Fasting' => ['prayer'],
             'Baptism Service Picnic' => ['event or service'],
         ];
@@ -1004,7 +1004,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertStringContainsString('width: 0.75rem;', $view);
         $this->assertStringContainsString('width: 0.75rem !important;', $view);
         $this->assertStringContainsString('height: clamp(8rem, 16vw, 10rem);', $view);
-        $this->assertStringContainsString("title=\"Click to view details\"", $view);
+        $this->assertStringContainsString('title="Click to view details"', $view);
         $this->assertStringContainsString("x-bind:class=\"{ 'is-flipped': flipped }\"", $view);
         $this->assertStringContainsString('transform: rotateY(180deg);', $view);
     }

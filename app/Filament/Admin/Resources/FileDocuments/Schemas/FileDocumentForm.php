@@ -62,6 +62,47 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->required(),
+                        FileUpload::make('pending_upload')
+                            ->label('File')
+                            ->acceptedFileTypes(FileLibrary::allowedMimeTypes())
+                            ->disk(FileLibrary::DISK)
+                            ->directory(FileLibrary::DIRECTORY)
+                            ->storeFileNamesIn('pending_original_name')
+                            ->required(fn (?string $operation): bool => $operation === 'create')
+                            ->downloadable()
+                            ->visible(fn (?string $operation): bool => $operation === 'create')
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Upload the first file version. Accepted types are limited to the File Library allowed document types.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                        TextInput::make('pending_original_name')
+                            ->hidden(),
+                        FileUpload::make('current_file')
+                            ->label('Current file')
+                            ->disk(FileLibrary::DISK)
+                            ->afterStateHydrated(fn (FileUpload $component, ?FileDocument $record): mixed => $component->state($record?->currentVersion?->path))
+                            ->getUploadedFileUsing(fn (?FileDocument $record): ?array => $record?->currentVersion ? [
+                                'name' => $record->currentVersion->original_name,
+                                'size' => $record->currentVersion->size,
+                                'type' => $record->currentVersion->mime_type,
+                                'url' => $record->downloadUrl(),
+                            ] : null)
+                            ->getDownloadableFileUrlUsing(fn (?FileDocument $record): ?string => $record?->downloadUrl())
+                            ->getOpenableFileUrlUsing(fn (?FileDocument $record): ?string => $record?->downloadUrl())
+                            ->downloadable()
+                            ->openable()
+                            ->maxFiles(1)
+                            ->deletable(false)
+                            ->dehydrated(false)
+                            ->visible(fn (?string $operation, ?FileDocument $record): bool => $operation === 'edit' && $record?->currentVersion !== null)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shows the currently active file version. Use Replace file to upload a new version.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                         TextInput::make('title')
                             ->required()
                             ->live(onBlur: true)
@@ -160,47 +201,6 @@ class FileDocumentForm
                                 )
                                 ->hintColor('gray'),
                         ),
-                        FileUpload::make('pending_upload')
-                            ->label('File')
-                            ->acceptedFileTypes(FileLibrary::allowedMimeTypes())
-                            ->disk(FileLibrary::DISK)
-                            ->directory(FileLibrary::DIRECTORY)
-                            ->storeFileNamesIn('pending_original_name')
-                            ->required(fn (?string $operation): bool => $operation === 'create')
-                            ->downloadable()
-                            ->visible(fn (?string $operation): bool => $operation === 'create')
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Upload the first file version. Accepted types are limited to the File Library allowed document types.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
-                        TextInput::make('pending_original_name')
-                            ->hidden(),
-                        FileUpload::make('current_file')
-                            ->label('Current file')
-                            ->disk(FileLibrary::DISK)
-                            ->afterStateHydrated(fn (FileUpload $component, ?FileDocument $record): mixed => $component->state($record?->currentVersion?->path))
-                            ->getUploadedFileUsing(fn (?FileDocument $record): ?array => $record?->currentVersion ? [
-                                'name' => $record->currentVersion->original_name,
-                                'size' => $record->currentVersion->size,
-                                'type' => $record->currentVersion->mime_type,
-                                'url' => $record->downloadUrl(),
-                            ] : null)
-                            ->getDownloadableFileUrlUsing(fn (?FileDocument $record): ?string => $record?->downloadUrl())
-                            ->getOpenableFileUrlUsing(fn (?FileDocument $record): ?string => $record?->downloadUrl())
-                            ->downloadable()
-                            ->openable()
-                            ->maxFiles(1)
-                            ->deletable(false)
-                            ->dehydrated(false)
-                            ->visible(fn (?string $operation, ?FileDocument $record): bool => $operation === 'edit' && $record?->currentVersion !== null)
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Shows the currently active file version. Use Replace file to upload a new version.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
                             ->helperText('Optional. Uploading a replacement creates a new version and keeps older versions available below.')

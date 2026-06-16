@@ -20,6 +20,11 @@ class MediaImageMetadata extends Model
      * @var array<string, array<int, string>>
      */
     private const AUTO_TAG_RULES = [
+        'bulletin' => [
+            'bulletin',
+            'connection card',
+            'conn card',
+        ],
         'banner' => [
             'banner',
             'webbanner',
