@@ -422,9 +422,8 @@ class PageForm
             return new HtmlString('<span class="text-sm text-gray-500 dark:text-gray-400">No direct subpages or files currently use this page as a parent.</span>');
         }
 
-        $items = $children
-            ->map(fn (Page $page): string => self::childPageListItem($page))
-            ->merge($files->map(fn (FileDocument $file): string => self::childFileListItem($file)))
+        $items = collect($children->map(fn (Page $page): string => self::childPageListItem($page))->all())
+            ->merge($files->map(fn (FileDocument $file): string => self::childFileListItem($file))->all())
             ->implode('');
 
         return new HtmlString('<ul style="display: grid; gap: 1.2rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.25rem;">'.$items.'</ul>');
