@@ -960,7 +960,7 @@
                 <li>Social media links.</li>
                 <li>One Church URL fallback.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
-                <li>OpenAI API key and default AI model settings used by rewrite, page review, and file extraction tools when enabled.</li>
+                <li>OpenAI API key used by rewrite, page review, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
                 <li>Google Tag Manager and Google Analytics tracking IDs.</li>
             </ul>
             <div class="manual-note">

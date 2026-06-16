@@ -77,7 +77,7 @@ class SiteSettingForm
                             ->revealable()
                             ->autocomplete('new-password')
                             ->maxLength(1000)
-                            ->helperText('Used for AI rewrite tools.'),
+                            ->helperText('Used for AI rewrite, page review, and file extraction tools. File extraction model and reasoning settings are configured in the app environment.'),
                         Textarea::make('ai_content_prompt')
                             ->label('AI Content Prompt')
                             ->default(AiContentPrompt::DEFAULT)

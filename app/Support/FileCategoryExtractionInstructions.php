@@ -12,7 +12,7 @@ class FileCategoryExtractionInstructions
     public static function starterInstructions(): array
     {
         return [
-            'Bulletin' => 'Extract the important public bulletin content for the church website. Preserve worship details, announcements, dates, event details, contact information, links, and next steps. Do not include page numbers, repeated headers, footers, or decorative filler.',
+            'Bulletin' => 'Extract the important public bulletin content for the church website from both the PDF text layer and visible page layout. Preserve announcement headings, worship details, dates, times, locations, contacts, phone numbers, emails, sign-up or connection options, boxed sections, and next steps. Bulletins may be multi-column and may include small text, tables, boxes, checkboxes, and a connection card. Do not transcribe blank form lines, empty prayer request areas, unchecked boxes by themselves, page numbers, repeated headers, footers, or decorative filler.',
             'Newsletter' => 'Extract newsletter stories, announcements, ministry updates, dates, deadlines, links, and contact details. Organize the result into clear sections with concise headings.',
             'Consent Form' => 'Extract the purpose of the consent form, who it applies to, deadlines, required guardian or participant information, signature requirements, contact details, and submission instructions. Do not invent legal language.',
             'Marketing Form' => 'Extract the public offer, event or ministry name, dates, audience, location, call to action, links, and contact details. Keep promotional language concise and clear for a website page.',

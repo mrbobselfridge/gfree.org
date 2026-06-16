@@ -42,6 +42,10 @@ return [
     'openai' => [
         'api_key' => null,
         'content_model' => env('OPENAI_CONTENT_MODEL', 'gpt-5-nano'),
+        'file_extraction_model' => env('OPENAI_FILE_EXTRACTION_MODEL', 'gpt-5.4-mini'),
+        'file_extraction_reasoning_effort' => env('OPENAI_FILE_EXTRACTION_REASONING_EFFORT', 'low'),
+        'file_extraction_text_verbosity' => env('OPENAI_FILE_EXTRACTION_TEXT_VERBOSITY', 'low'),
+        'file_extraction_max_output_tokens' => env('OPENAI_FILE_EXTRACTION_MAX_OUTPUT_TOKENS', 12000),
     ],
 
     'page_visual_snapshot' => [

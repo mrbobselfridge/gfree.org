@@ -573,6 +573,13 @@ class FileLibraryTest extends TestCase
             'openai_api_key' => 'test-key',
         ]);
 
+        config([
+            'services.openai.file_extraction_model' => 'gpt-5.4-mini',
+            'services.openai.file_extraction_reasoning_effort' => 'low',
+            'services.openai.file_extraction_text_verbosity' => 'low',
+            'services.openai.file_extraction_max_output_tokens' => 9000,
+        ]);
+
         FileCategory::query()->updateOrCreate([
             'name' => 'Bulletin',
         ], [
@@ -602,16 +609,44 @@ class FileLibraryTest extends TestCase
         $this->assertSame('<h2>Sunday Bulletin</h2><p>Welcome.</p>', $html);
 
         Http::assertSent(function (Request $request): bool {
-            $payload = json_encode($request->data()) ?: '';
+            $data = $request->data();
+            $payload = json_encode($data) ?: '';
 
             return $request->url() === 'https://api.openai.com/v1/responses'
-                && str_contains($payload, '"model"')
+                && data_get($data, 'model') === 'gpt-5.4-mini'
+                && data_get($data, 'reasoning.effort') === 'low'
+                && data_get($data, 'text.verbosity') === 'low'
+                && data_get($data, 'max_output_tokens') === 9000
                 && str_contains($payload, '"type":"input_file"')
                 && str_contains($payload, '"filename":"sunday-bulletin.pdf"')
                 && str_contains($payload, ';base64,')
                 && str_contains($payload, 'Only extract bulletin announcements.')
                 && str_contains($payload, 'File title: Sunday Bulletin');
         });
+    }
+
+    public function test_file_document_extractor_prompt_handles_visual_bulletin_layouts(): void
+    {
+        FileCategory::query()->updateOrCreate([
+            'name' => 'Bulletin',
+        ], [
+            'sort_order' => 10,
+            'extraction_instructions' => null,
+        ]);
+
+        $document = FileDocument::query()->create([
+            'title' => 'Weekly Bulletin',
+            'file_name' => 'weekly-bulletin',
+            'category' => 'Bulletin',
+        ]);
+
+        $prompt = app(OpenAiFileDocumentExtractor::class)->promptFor($document);
+
+        $this->assertStringContainsString('visible page layout', $prompt);
+        $this->assertStringContainsString('multi-column layout', $prompt);
+        $this->assertStringContainsString('boxed sections', $prompt);
+        $this->assertStringContainsString('connection card', $prompt);
+        $this->assertStringContainsString('skip blank fields', $prompt);
     }
 
     public function test_extract_file_content_action_places_accepted_html_into_optional_content(): void

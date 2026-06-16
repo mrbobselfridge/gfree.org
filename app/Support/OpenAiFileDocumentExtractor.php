@@ -37,25 +37,11 @@ class OpenAiFileDocumentExtractor
         $response = Http::withToken($apiKey)
             ->acceptJson()
             ->timeout(120)
-            ->post('https://api.openai.com/v1/responses', [
-                'model' => OpenAiSiteSettings::contentModel(),
-                'input' => [
-                    [
-                        'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'input_file',
-                                'filename' => $version->original_name ?: basename($version->path),
-                                'file_data' => "data:{$mimeType};base64,".base64_encode($disk->get($version->path)),
-                            ],
-                            [
-                                'type' => 'input_text',
-                                'text' => $this->promptFor($document),
-                            ],
-                        ],
-                    ],
-                ],
-            ]);
+            ->post('https://api.openai.com/v1/responses', $this->requestPayload(
+                document: $document,
+                filename: $version->original_name ?: basename($version->path),
+                fileData: "data:{$mimeType};base64,".base64_encode($disk->get($version->path)),
+            ));
 
         try {
             $response->throw();
@@ -88,8 +74,52 @@ File category: {$category}
 Follow these category-specific extraction instructions:
 {$instructions}
 
+Extraction behavior:
+- Read the full document, including any visible page images, multi-column layout, boxed sections, tables, captions, small text, and form labels.
+- Preserve meaningful public instructions and sign-up options, but skip blank fields, blank lines, empty checkbox rows, and decorative artwork.
+- If the same content appears in multiple places, include the clearest version once.
+
 Return only clean semantic HTML suitable for a rich text editor. Use headings, paragraphs, bullet lists, tables, and links when appropriate. Do not include Markdown fences, scripts, styles, full HTML documents, or explanatory notes outside the HTML. Do not invent facts that are not in the document.
 PROMPT;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function requestPayload(FileDocument $document, string $filename, string $fileData): array
+    {
+        $model = OpenAiSiteSettings::fileExtractionModel();
+        $payload = [
+            'model' => $model,
+            'max_output_tokens' => OpenAiSiteSettings::fileExtractionMaxOutputTokens(),
+            'input' => [
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'input_file',
+                            'filename' => $filename,
+                            'file_data' => $fileData,
+                        ],
+                        [
+                            'type' => 'input_text',
+                            'text' => $this->promptFor($document),
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        if (OpenAiSiteSettings::modelSupportsReasoningControls($model)) {
+            $payload['reasoning'] = [
+                'effort' => OpenAiSiteSettings::fileExtractionReasoningEffort(),
+            ];
+            $payload['text'] = [
+                'verbosity' => OpenAiSiteSettings::fileExtractionTextVerbosity(),
+            ];
+        }
+
+        return $payload;
     }
 
     /**
