@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Models\Page;
 use App\Models\PageQrCode;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\MediaLibrary;
 use App\Support\PageQrCodeService;
@@ -107,13 +108,16 @@ class PageQrCodeTest extends TestCase
         Storage::disk('public')->assertMissing($qrCode->svg_path);
     }
 
-    public function test_edit_page_shows_the_qr_code_panel_and_download_links(): void
+    public function test_edit_page_shows_the_qr_code_field_and_download_links(): void
     {
         Storage::fake('public');
+        SiteSetting::query()->create([
+            'church_name' => 'Grace Free! Church @ East',
+        ]);
 
         $page = Page::query()->create([
             'title' => 'Visit',
-            'slug' => 'visit',
+            'slug' => 'visit/new-here',
             'is_published' => true,
         ]);
 
@@ -121,12 +125,13 @@ class PageQrCodeTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(EditPage::class, ['record' => $page->getKey()])
-            ->assertSee('QR Code')
-            ->assertSee(url('/visit'))
+            ->assertSee(url('/visit/new-here'))
             ->assertSee('Download PNG')
             ->assertSee('Download SVG')
             ->assertSee(Storage::disk('public')->url($qrCode->png_path), false)
-            ->assertSee(Storage::disk('public')->url($qrCode->svg_path), false);
+            ->assertSee(Storage::disk('public')->url($qrCode->svg_path), false)
+            ->assertSee('download="Grace-Free-Church-East-visit-new-here.png"', false)
+            ->assertSee('download="Grace-Free-Church-East-visit-new-here.svg"', false);
     }
 
     public function test_page_qr_code_assets_do_not_appear_in_the_media_library(): void
