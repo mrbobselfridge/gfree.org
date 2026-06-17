@@ -443,6 +443,90 @@ class AdminPanelProvider extends PanelProvider
                             gap: 0.625rem;
                         }
 
+                        .fi-sidebar-open .fi-main-sidebar {
+                            background:
+                                linear-gradient(180deg, rgb(255 255 255), rgb(249 250 251) 42%, rgb(243 244 246));
+                            box-shadow: inset -1px 0 0 rgb(15 23 42 / 0.08);
+                        }
+
+                        .dark .fi-sidebar-open .fi-main-sidebar {
+                            background:
+                                linear-gradient(180deg, rgb(24 24 27), rgb(17 24 39) 48%, rgb(3 7 18));
+                            box-shadow: inset -1px 0 0 rgb(255 255 255 / 0.08);
+                        }
+
+                        .fi-sidebar-open .fi-sidebar-group {
+                            margin-inline: 0.5rem;
+                            padding: 0.5rem;
+                            border: 1px solid rgb(229 231 235 / 0.8);
+                            border-radius: 0.75rem;
+                            background: rgb(255 255 255 / 0.58);
+                            box-shadow: 0 12px 28px rgb(15 23 42 / 0.045);
+                        }
+
+                        .dark .fi-sidebar-open .fi-sidebar-group {
+                            border-color: rgb(55 65 81 / 0.72);
+                            background: rgb(15 23 42 / 0.4);
+                            box-shadow: 0 16px 34px rgb(0 0 0 / 0.22);
+                        }
+
+                        .fi-sidebar-open .fi-sidebar-group + .fi-sidebar-group {
+                            margin-top: 0.75rem;
+                        }
+
+                        .fi-sidebar-open .fi-sidebar-item-btn {
+                            border: 1px solid transparent;
+                            border-radius: 0.625rem;
+                            background: rgb(255 255 255 / 0.46);
+                            box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.76);
+                            transition:
+                                background-color 120ms ease,
+                                border-color 120ms ease,
+                                box-shadow 120ms ease,
+                                color 120ms ease;
+                        }
+
+                        .dark .fi-sidebar-open .fi-sidebar-item-btn {
+                            background: rgb(31 41 55 / 0.22);
+                            box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+                        }
+
+                        .fi-sidebar-open .fi-sidebar-item-btn:hover,
+                        .fi-sidebar-open .fi-sidebar-item-btn:focus {
+                            border-color: rgb(245 158 11 / 0.36);
+                            background: rgb(255 251 235 / 0.88);
+                            box-shadow:
+                                inset 0 1px 0 rgb(255 255 255 / 0.9),
+                                0 8px 18px rgb(146 64 14 / 0.08);
+                        }
+
+                        .dark .fi-sidebar-open .fi-sidebar-item-btn:hover,
+                        .dark .fi-sidebar-open .fi-sidebar-item-btn:focus {
+                            border-color: rgb(245 158 11 / 0.48);
+                            background: rgb(69 26 3 / 0.34);
+                            box-shadow:
+                                inset 0 1px 0 rgb(255 255 255 / 0.06),
+                                0 10px 22px rgb(0 0 0 / 0.24);
+                        }
+
+                        .fi-sidebar-open .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+                        .fi-sidebar-open .fi-sidebar-item-btn[aria-current='page'] {
+                            border-color: rgb(245 158 11 / 0.58);
+                            background: linear-gradient(135deg, rgb(255 251 235), rgb(254 243 199));
+                            box-shadow:
+                                inset 3px 0 0 rgb(245 158 11),
+                                0 12px 24px rgb(146 64 14 / 0.12);
+                        }
+
+                        .dark .fi-sidebar-open .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+                        .dark .fi-sidebar-open .fi-sidebar-item-btn[aria-current='page'] {
+                            border-color: rgb(245 158 11 / 0.62);
+                            background: linear-gradient(135deg, rgb(69 26 3 / 0.56), rgb(120 53 15 / 0.3));
+                            box-shadow:
+                                inset 3px 0 0 rgb(245 158 11),
+                                0 14px 28px rgb(0 0 0 / 0.34);
+                        }
+
                         .fi-sidebar-item-btn.twyxtco-sidebar-help-ready {
                             gap: 0.75rem;
                         }
