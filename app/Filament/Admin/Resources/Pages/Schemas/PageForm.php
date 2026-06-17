@@ -91,9 +91,6 @@ class PageForm
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
-
-
-
                     
                 Textarea::make('intro')
                     ->rows(2)
@@ -136,6 +133,7 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
                     )
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->hintColor('gray')
                     ->columnSpan(1),
 
@@ -146,6 +144,7 @@ class PageForm
                     ->viewData([
                         'sectionIds' => self::SECTION_IDS,
                     ])
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->dehydrated(false)
                     ->key('pages-section-controls')
                     ->columnSpan(1),

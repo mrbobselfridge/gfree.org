@@ -48,6 +48,15 @@ class PublicPageAdminLinkTest extends TestCase
             ->assertTableActionShouldOpenUrlInNewTab('viewPublicPage', $page);
     }
 
+    public function test_pages_list_shows_view_homepage_header_action(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->assertActionExists('create')
+            ->assertActionHasUrl('viewHomepage', route('home'))
+            ->assertActionShouldOpenUrlInNewTab('viewHomepage');
+    }
+
     public function test_pages_can_be_copied_when_table_loads_child_page_counts(): void
     {
         $parent = Page::query()->create([

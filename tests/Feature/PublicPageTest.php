@@ -667,7 +667,6 @@ class PublicPageTest extends TestCase
                         'display_mode' => 'featured',
                         'file_categories' => ['Form'],
                         'item_limit' => 4,
-                        'link_label' => 'View all resources',
                     ],
                 ],
             ],
@@ -741,28 +740,17 @@ class PublicPageTest extends TestCase
             ->assertSee('/storage/file-documents/card-images/annual-waiver.jpg')
             ->assertSee('/resources/baptism')
             ->assertSee('/files/annual-waiver')
-            ->assertSee('View all resources')
-            ->assertSee('/resources/featured-resources')
-            ->assertDontSee('Connection Card')
+            ->assertSee('data-related-load-more', false)
+            ->assertSee('data-related-load-more-item', false)
+            ->assertSee('Load more')
+            ->assertSee('Connection Card')
             ->assertDontSee('Weekly Bulletin')
             ->assertDontSee('Internal Policy')
             ->assertDontSee('Future Feature')
             ->assertDontSee('Draft Resource');
 
         $this->get('/resources/featured-resources')
-            ->assertOk()
-            ->assertSee('<h1>Featured Resources</h1>', false)
-            ->assertSee('Baptism')
-            ->assertSee('Membership')
-            ->assertSee('Classes')
-            ->assertSee('Connection Card')
-            ->assertSee('Annual Waiver')
-            ->assertSee(ContentBlocks::DEFAULT_PAGE_CARD_IMAGE_PATH)
-            ->assertSee(FileDocument::DEFAULT_CARD_IMAGE_PATH)
-            ->assertDontSee('Weekly Bulletin')
-            ->assertDontSee('Internal Policy')
-            ->assertDontSee('Future Feature')
-            ->assertDontSee('Draft Resource');
+            ->assertNotFound();
     }
 
     public function test_child_cards_block_orders_child_pages_before_randomizing_matching_order_groups(): void
@@ -1112,17 +1100,17 @@ class PublicPageTest extends TestCase
 
         $this->get('/resources')
             ->assertOk()
-            ->assertSee('/resources/child-cards')
-            ->assertSee('View more')
+            ->assertSee('data-related-load-more', false)
+            ->assertSee('data-related-load-more-item', false)
+            ->assertSee('Load more')
+            ->assertSee('First Child')
+            ->assertSee('Second Child')
+            ->assertDontSee('/resources/child-cards')
             ->assertDontSee('Child Cards')
             ->assertDontSee('Related Content');
 
         $this->get('/resources/child-cards')
-            ->assertOk()
-            ->assertSee('<h1>Child Cards</h1>', false)
-            ->assertSee('First Child')
-            ->assertSee('Second Child')
-            ->assertDontSee('Related Content');
+            ->assertNotFound();
     }
 
     public function test_child_cards_block_can_render_all_files_without_child_pages(): void
