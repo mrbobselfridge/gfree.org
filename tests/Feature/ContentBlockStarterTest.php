@@ -20,7 +20,7 @@ class ContentBlockStarterTest extends TestCase
             ->test(CreatePage::class)
             ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
             ->assertSee('YouTube Feed')
-            ->assertSee('Child Info Cards');
+            ->assertSee('Child Page Listing');
     }
 
     public function test_edit_pages_without_content_blocks_do_not_get_new_starter_blocks(): void

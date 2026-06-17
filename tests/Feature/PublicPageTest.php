@@ -925,7 +925,7 @@ class PublicPageTest extends TestCase
             Page::query()->create([
                 'parent_page_id' => $parent->getKey(),
                 'title' => $title,
-                'slug' => 'resources/'.str($title)->slug(),
+                'slug' => 'resources/'.(string) str($title)->slug(),
                 'is_published' => true,
             ]);
         }
@@ -1226,6 +1226,145 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Related Content');
 
         $this->get('/resources/child-cards')->assertNotFound();
+    }
+
+    public function test_related_content_without_layout_defaults_to_card_grid(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'item_limit' => 1,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Alpha Child',
+            'slug' => 'resources/alpha-child',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Beta Child',
+            'slug' => 'resources/beta-child',
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('concept-updates--layout-card_grid', false)
+            ->assertSee('class="concept-updates__grid"', false)
+            ->assertSee('data-related-load-more', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child');
+    }
+
+    public function test_related_content_carousel_layout_caps_total_items_and_uses_carousel_markup(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL,
+            'item_limit' => 4,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Delta Child', 'Epsilon Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('concept-updates--layout-card_carousel', false)
+            ->assertSee('data-related-carousel', false)
+            ->assertSee('data-related-carousel-previous', false)
+            ->assertSee('data-related-carousel-next', false)
+            ->assertDontSee('data-related-load-more', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child')
+            ->assertSee('Delta Child')
+            ->assertSee('Epsilon Child')
+            ->assertDontSee('Gamma Child');
+    }
+
+    public function test_related_content_carousel_hides_arrows_when_items_do_not_exceed_limit(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL,
+            'item_limit' => 3,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-carousel', false)
+            ->assertDontSee('data-related-carousel-previous', false)
+            ->assertDontSee('data-related-carousel-next', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child')
+            ->assertSee('Gamma Child');
+    }
+
+    public function test_related_content_label_list_layout_loads_more_items_and_shows_summaries(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_BULLET_LIST,
+            'item_limit' => 2,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.str($title)->slug(),
+                'hero_label' => "{$title} Label",
+                'intro' => "{$title} summary.",
+                'message' => "{$title} message.",
+                'card_image_path' => 'pages/cards/'.(string) str($title)->slug().'.jpg',
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('concept-updates--layout-bullet_list', false)
+            ->assertSee('class="concept-updates__bullet-list"', false)
+            ->assertSee('class="concept-updates__bullet-media"', false)
+            ->assertSee('class="concept-updates__bullet-title"', false)
+            ->assertSee('class="concept-updates__bullet-label"', false)
+            ->assertSee('class="concept-updates__bullet-message"', false)
+            ->assertSee('data-related-load-more', false)
+            ->assertSee('data-related-load-more-item', false)
+            ->assertSee('Load more')
+            ->assertDontSee('class="concept-updates__grid"', false)
+            ->assertDontSee('data-related-carousel', false)
+            ->assertSee('/storage/pages/cards/alpha-child.jpg', false)
+            ->assertSee('Alpha Child Label')
+            ->assertSee('Alpha Child')
+            ->assertSee('Alpha Child summary.')
+            ->assertSee('Alpha Child message.')
+            ->assertSee('/storage/pages/cards/beta-child.jpg', false)
+            ->assertSee('Beta Child Label')
+            ->assertSee('Beta Child')
+            ->assertSee('Beta Child summary.')
+            ->assertSee('Beta Child message.')
+            ->assertSee('Gamma Child')
+            ->assertSee('Gamma Child Label')
+            ->assertSee('Gamma Child message.');
     }
 
     public function test_real_page_slug_takes_priority_over_related_content_listing_slug(): void

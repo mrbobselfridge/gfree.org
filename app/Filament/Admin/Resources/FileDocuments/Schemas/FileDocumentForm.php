@@ -241,7 +241,7 @@ class FileDocumentForm
                             ->required()
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier when a parent page Child Info Cards block sorts by Order.'
+                                'Lower numbers appear earlier when a parent page Child Page Listing block sorts by Order.'
                             )
                             ->hintColor('gray'),
                         Select::make('parent_page_id')

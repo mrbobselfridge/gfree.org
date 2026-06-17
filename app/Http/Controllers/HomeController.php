@@ -6,6 +6,7 @@ use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
+use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -110,30 +111,13 @@ class HomeController extends Controller
             $blocks = $this->defaultHomepageBlocks($defaults, $settings);
         }
 
-        return collect($blocks)
+        $blocks = collect($blocks)
             ->filter(fn (array $block): bool => $this->isHomepageBlockVisible($block, $now))
-            ->map(function (array $block) use ($settings): array {
-                $type = $block['type'] ?? null;
-                $data = $block['data'] ?? [];
-
-                if ($type === 'image_text') {
-                    $data['image_url'] = $this->imageUrl($data['image_path'] ?? null);
-                }
-
-                if ($type === 'info_strip') {
-                    $data['items'] = $this->infoStripItems($data['items'] ?? [], $settings);
-                }
-
-                return [
-                    'type' => $type,
-                    'data' => $data,
-                ];
-            })
-            ->filter(fn (array $block): bool => filled($block['type']))
-            ->filter(fn (array $block): bool => $block['type'] !== 'info_strip' || filled($block['data']['items'] ?? []))
             ->filter(fn (array $block): bool => $block['type'] !== 'announcements_bar')
             ->values()
             ->all();
+
+        return ContentBlocks::prepare($blocks, $settings);
     }
 
     private function isHomepageBlockVisible(array $block, $now): bool
@@ -164,35 +148,6 @@ class HomeController extends Controller
         } catch (Throwable) {
             return null;
         }
-    }
-
-    private function infoStripItems(array $items, ?SiteSetting $settings): array
-    {
-        return collect($items)
-            ->map(function (array $item) use ($settings): array {
-                $source = $item['source'] ?? 'custom';
-                $value = $item['value'] ?? null;
-
-                if ($source === 'sunday_service_times') {
-                    $value = $settings?->sunday_service_times ?: $value;
-                }
-
-                if ($source === 'office_hours') {
-                    $value = $settings?->office_hours ?: $value;
-                }
-
-                if ($source === 'address') {
-                    $value = $settings?->address ?: $value;
-                }
-
-                return [
-                    'label' => $item['label'] ?? null,
-                    'value' => $value,
-                ];
-            })
-            ->filter(fn (array $item): bool => filled($item['label'] ?? null) && filled($item['value'] ?? null))
-            ->values()
-            ->all();
     }
 
     private function defaultHomepageBlocks(array $defaults, ?SiteSetting $settings): array

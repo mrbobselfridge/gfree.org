@@ -450,7 +450,7 @@ class AdminPanelProvider extends PanelProvider
                         .fi-sidebar-open .fi-sidebar-item.twyxtco-sidebar-indent-35 > .fi-sidebar-item-btn {
                             margin-inline-start: 35px;
                             width: calc(100% - 35px);
-                            margin-top: -15px;
+                            margin-top: -4px;
                         }
 
                         .twyxtco-sidebar-help {
@@ -1060,7 +1060,6 @@ class AdminPanelProvider extends PanelProvider
                                     icon.setAttribute('role', 'button');
                                     icon.setAttribute('tabindex', '0');
                                     icon.setAttribute('aria-label', 'About ' + label + ': ' + description + ' Open the related user manual section.');
-                                    icon.setAttribute('title', description + (manualUrl ? ' Click to open the related manual section.' : ''));
                                     icon.dataset.twyxtcoHelp = description;
                                     if (manualUrl) {
                                         icon.dataset.twyxtcoManualUrl = manualUrl;

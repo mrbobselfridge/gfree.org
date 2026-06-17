@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Forms;
 
 use App\Models\FileDocument;
+use App\Models\Page;
 use App\Rules\HttpOrRelativeUrl;
 use App\Support\CodeBlockAccess;
 use App\Support\ContentBlocks;
@@ -470,8 +471,37 @@ class ContentBlockBuilder
 
         return [
             Block::make('related_content')
-                ->label(fn (?array $state): string => self::blockLabel('Child Info Cards', $state))
+                ->label(fn (?array $state): string => self::blockLabel('Child Page Listing', $state))
                 ->schema([
+                    self::hint(Select::make('associated_parent_page_id')
+                        ->label('Associated Parent'), 'Choose the parent page whose direct child pages and files should feed this card block.')
+                        ->options(fn (mixed $record): array => self::associatedParentPageOptions($record instanceof Page ? $record : null))
+                        ->afterStateHydrated(function (Select $component, mixed $record, mixed $state): void {
+                            $page = $record instanceof Page ? $record : null;
+
+                            if (filled($state) || ! self::pageHasRelatedListingSource($page)) {
+                                return;
+                            }
+
+                            $component->state($page?->getKey());
+                        })
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->required()
+                        ->rule(fn (): \Closure => function (string $attribute, mixed $value, \Closure $fail): void {
+                            if (filled($value) && self::pageHasRelatedListingSource(Page::query()->find($value))) {
+                                return;
+                            }
+
+                            $fail('Choose an associated parent page that has child pages or files.');
+                        }),
+                    self::hint(Select::make('layout')
+                        ->label('Display format'), 'Choose how the child listing should appear on the public page.')
+                        ->options(fn (): array => ContentBlocks::relatedContentLayoutOptions())
+                        ->default(ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID)
+                        ->native(false)
+                        ->required(),
                     self::hint(TextInput::make('heading'), 'Optional heading displayed above the child cards.')
                         ->live(onBlur: true)
                         ->maxLength(255),
@@ -543,6 +573,11 @@ class ContentBlockBuilder
                         ->maxValue(50)
                         ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT)
                         ->required(),
+                    self::hint(Select::make('background'), 'Sets the background color for this listing section.')
+                        ->options(self::backgroundOptions())
+                        ->default('white')
+                        ->required()
+                        ->columnSpanFull(),
                     ...self::scheduleFields($withScheduleFields),
                 ])
                 ->columns(2),
@@ -600,6 +635,35 @@ class ContentBlockBuilder
         return $component
             ->hintIcon(Heroicon::OutlinedInformationCircle, $tooltip)
             ->hintColor('gray');
+    }
+
+    private static function associatedParentPageOptions(?Page $record): array
+    {
+        return Page::query()
+            ->where(fn ($query) => $query
+                ->whereHas('childPages')
+                ->orWhereHas('fileDocuments'))
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug', 'sort_order', 'is_published'])
+            ->mapWithKeys(fn (Page $page): array => [
+                (string) $page->getKey() => self::associatedParentPageOptionLabel($page, $record),
+            ])
+            ->all();
+    }
+
+    private static function associatedParentPageOptionLabel(Page $page, ?Page $record): string
+    {
+        $status = $page->is_published ? 'Active' : 'Inactive';
+        $current = $record?->is($page) ? ' - Current page' : '';
+
+        return sprintf('%s (/%s) - %s%s', $page->title, ltrim((string) $page->slug, '/'), $status, $current);
+    }
+
+    private static function pageHasRelatedListingSource(?Page $page): bool
+    {
+        return (bool) $page?->getKey()
+            && ($page->childPages()->exists() || $page->fileDocuments()->exists());
     }
 
     private static function scheduleFields(bool $withScheduleFields): array

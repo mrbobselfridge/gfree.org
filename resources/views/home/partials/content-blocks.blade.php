@@ -39,6 +39,10 @@
                 @case('related_content')
                     @include('pages.blocks.related-content')
                     @break
+
+                @case('youtube_feed')
+                    @include('pages.blocks.youtube-feed')
+                    @break
             @endswitch
         @endforeach
     </div>

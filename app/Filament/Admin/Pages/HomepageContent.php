@@ -136,7 +136,7 @@ class HomepageContent extends Page
                         'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
                     ])
                     ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'homepage/content-images', withScheduleFields: true),
+                        ContentBlockBuilder::make('content_blocks', 'homepage/content-images', withScheduleFields: true, withPageBlocks: true),
                     ])
                     ->columnSpanFull(),
                 Section::make('Homepage SEO')

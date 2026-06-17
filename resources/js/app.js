@@ -207,3 +207,101 @@ document.querySelectorAll('[data-related-load-more]').forEach((listing) => {
 
     updateTrigger();
 });
+
+document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector('[data-related-carousel-track]');
+    const viewport = carousel.querySelector('[data-related-carousel-viewport]');
+    const controls = carousel.querySelector('.concept-updates__carousel-controls');
+    const previous = carousel.querySelector('[data-related-carousel-previous]');
+    const next = carousel.querySelector('[data-related-carousel-next]');
+
+    if (! track || ! viewport) {
+        return;
+    }
+
+    const cards = () => Array.from(track.children);
+    const configuredVisibleCount = Number.parseInt(carousel.dataset.relatedCarouselVisibleCount || '0', 10);
+
+    const visibleCardCount = () => {
+        const currentCards = cards();
+        const firstCard = currentCards[0];
+
+        if (! firstCard) {
+            return 0;
+        }
+
+        const viewportWidth = viewport.getBoundingClientRect().width;
+        const cardWidth = firstCard.getBoundingClientRect().width;
+        const trackStyles = window.getComputedStyle(track);
+        const gap = Number.parseFloat(trackStyles.columnGap || trackStyles.gap || '0') || 0;
+
+        if (viewportWidth <= 0 || cardWidth <= 0) {
+            return 1;
+        }
+
+        const actualVisibleCount = Math.max(1, Math.floor((viewportWidth + gap) / (cardWidth + gap)));
+
+        if (Number.isNaN(configuredVisibleCount) || configuredVisibleCount < 1) {
+            return actualVisibleCount;
+        }
+
+        return Math.min(configuredVisibleCount, actualVisibleCount);
+    };
+
+    const hasOverflow = () => cards().length > visibleCardCount();
+
+    const updateControls = () => {
+        if (controls) {
+            controls.hidden = ! hasOverflow();
+        }
+    };
+
+    const rotate = (direction) => {
+        if (! hasOverflow()) {
+            return;
+        }
+
+        const currentCards = cards();
+
+        if (direction > 0) {
+            track.append(currentCards[0]);
+        } else {
+            track.prepend(currentCards[currentCards.length - 1]);
+        }
+    };
+
+    previous?.addEventListener('click', () => rotate(-1));
+    next?.addEventListener('click', () => rotate(1));
+
+    let pointerStart = null;
+
+    viewport.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) {
+            return;
+        }
+
+        pointerStart = event.clientX;
+    });
+
+    viewport.addEventListener('pointerup', (event) => {
+        if (pointerStart === null) {
+            return;
+        }
+
+        const delta = event.clientX - pointerStart;
+        pointerStart = null;
+
+        if (Math.abs(delta) < 36) {
+            return;
+        }
+
+        rotate(delta < 0 ? 1 : -1);
+    });
+
+    viewport.addEventListener('pointercancel', () => {
+        pointerStart = null;
+    });
+
+    window.addEventListener('resize', updateControls);
+    updateControls();
+});

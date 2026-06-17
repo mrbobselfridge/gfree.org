@@ -41,6 +41,12 @@ class ContentBlocks
 
     public const RELATED_CONTENT_SORT_CREATED_ASC = 'created_asc';
 
+    public const RELATED_CONTENT_LAYOUT_CARD_GRID = 'card_grid';
+
+    public const RELATED_CONTENT_LAYOUT_CARD_CAROUSEL = 'card_carousel';
+
+    public const RELATED_CONTENT_LAYOUT_BULLET_LIST = 'bullet_list';
+
     public const RELATED_CONTENT_DEFAULT_LIMIT = 6;
 
     public const YOUTUBE_FEED_DEFAULT_LIMIT = 12;
@@ -102,14 +108,33 @@ class ContentBlocks
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public static function relatedContentLayoutOptions(): array
+    {
+        return [
+            self::RELATED_CONTENT_LAYOUT_CARD_GRID => 'Card grid',
+            self::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL => 'Card carousel',
+            self::RELATED_CONTENT_LAYOUT_BULLET_LIST => 'Label list',
+        ];
+    }
+
     private static function prepareRelatedContentBlock(?Page $page, array $data): array
     {
         $data = self::relatedContentDefaults($data);
         $limit = self::relatedContentLimit($data);
-        $items = self::relatedContentItems($page, $data);
+        $associatedParent = self::relatedContentParentPage($page, $data);
+        $items = self::relatedContentItems($associatedParent, $data);
+        $usesLoadMore = in_array($data['layout'], [
+            self::RELATED_CONTENT_LAYOUT_CARD_GRID,
+            self::RELATED_CONTENT_LAYOUT_BULLET_LIST,
+        ], true);
+        $usesAllItems = $usesLoadMore;
 
-        $data['items'] = $items->values()->all();
-        $data['has_more'] = $items->count() > $limit;
+        $data['associated_parent_page_id'] = $associatedParent?->getKey();
+        $data['items'] = ($usesAllItems ? $items : $items->take($limit))->values()->all();
+        $data['has_more'] = $usesLoadMore && $items->count() > $limit;
         $data['initial_item_limit'] = $limit;
 
         return $data;
@@ -121,6 +146,9 @@ class ContentBlocks
         $data['heading'] = $data['heading'] ?? null;
         $data['intro'] = $data['intro'] ?? null;
         $data['background'] = $data['background'] ?? 'white';
+        $data['layout'] = array_key_exists($data['layout'] ?? null, self::relatedContentLayoutOptions())
+            ? $data['layout']
+            : self::RELATED_CONTENT_LAYOUT_CARD_GRID;
         $data['content_type'] = in_array($data['content_type'] ?? null, self::relatedContentTypeOptions(), true)
             ? $data['content_type']
             : self::RELATED_CONTENT_TYPE_BOTH;
@@ -131,9 +159,46 @@ class ContentBlocks
             ? $data['sort_preset']
             : self::defaultRelatedContentSortPreset($data);
         $data['item_limit'] = self::relatedContentLimit($data);
+        $data['associated_parent_page_id'] = filled($data['associated_parent_page_id'] ?? null)
+            ? (int) $data['associated_parent_page_id']
+            : null;
         $data['file_categories'] = self::normalizeStringList($data['file_categories'] ?? []);
 
         return $data;
+    }
+
+    private static function relatedContentParentPage(?Page $page, array $data): ?Page
+    {
+        $associatedParentPageId = $data['associated_parent_page_id'] ?? null;
+
+        if (filled($associatedParentPageId)) {
+            $associatedParentPage = Page::query()
+                ->whereKey($associatedParentPageId)
+                ->first();
+
+            return self::pageHasRelatedContentSource($associatedParentPage, $data) ? $associatedParentPage : null;
+        }
+
+        if (self::pageHasRelatedContentSource($page, $data)) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    private static function pageHasRelatedContentSource(?Page $page, array $data): bool
+    {
+        if (! $page?->getKey()) {
+            return false;
+        }
+
+        if (in_array($data['content_type'], [self::RELATED_CONTENT_TYPE_BOTH, self::RELATED_CONTENT_TYPE_PAGES], true)
+            && $page->childPages()->exists()) {
+            return true;
+        }
+
+        return in_array($data['content_type'], [self::RELATED_CONTENT_TYPE_BOTH, self::RELATED_CONTENT_TYPE_FILES], true)
+            && $page->fileDocuments()->exists();
     }
 
     private static function relatedContentItems(?Page $page, array $data): Collection
