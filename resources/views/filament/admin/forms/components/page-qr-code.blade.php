@@ -5,32 +5,21 @@
 
 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
     @if ($qrCode)
-        <div class="grid gap-4 md:grid-cols-[160px_minmax(0,1fr)]">
-            <div class="rounded-md border border-gray-200 bg-white p-3 dark:border-gray-700">
+        <div class="flex flex-wrap items-start gap-4">
+            <div
+                class="rounded-md border border-gray-200 bg-white dark:border-gray-700"
+                style="width: 72px; height: 72px; padding: 6px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"
+            >
                 <img
                     src="{{ $qrCode->pngUrl() }}"
                     alt="QR code for {{ $qrCode->url }}"
-                    class="h-auto w-full"
+                    width="60"
+                    height="60"
+                    style="display: block; width: 60px; height: 60px; max-width: 60px; max-height: 60px;"
                 >
             </div>
 
-            <div class="min-w-0 space-y-3">
-                <div>
-                    <div class="text-sm font-medium text-gray-950 dark:text-white">Encoded URL</div>
-                    <a
-                        href="{{ $qrCode->url }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="break-all text-sm text-primary-600 hover:underline dark:text-primary-400"
-                    >
-                        {{ $qrCode->url }}
-                    </a>
-                </div>
-
-                <div class="text-sm text-gray-600 dark:text-gray-300">
-                    Generated {{ $qrCode->generated_at?->toDayDateTimeString() }}
-                </div>
-
+            <div class="min-w-0 flex-1 space-y-3">
                 <div class="flex flex-wrap gap-2">
                     <x-filament::button
                         tag="a"
