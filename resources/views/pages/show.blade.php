@@ -71,6 +71,16 @@
             </section>
         @endif
 
+        @if (filled($childPageNavigation ?? []))
+            <nav class="page-context-nav" aria-label="Child page navigation">
+                @if (filled($childPageNavigation['parent_url'] ?? null))
+                    <a class="page-context-nav__more" href="{{ $childPageNavigation['parent_url'] }}">
+                        {{ $childPageNavigation['parent_label'] ?? 'View parent page' }}
+                    </a>
+                @endif
+            </nav>
+        @endif
+
         @if (count($contentBlocks))
             @include('pages.partials.content-blocks')
         @else

@@ -455,6 +455,42 @@
     text-align: left;
 }
 
+.page-context-nav {
+    display: flex;
+    width: min(1180px, calc(100% - 32px));
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 0 auto;
+    padding-top: 24px;
+}
+
+.page-context-nav a {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--site-accent-text);
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.page-context-nav a:hover,
+.page-context-nav a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+}
+
+.page-context-nav__more {
+    margin-left: auto;
+    padding: 0 18px;
+    color: var(--site-ink);
+    background: var(--site-accent);
+    border-radius: 999px;
+}
+
 .page-content {
     width: min(880px, calc(100% - 32px));
     margin: 0 auto;
@@ -523,6 +559,15 @@
 
 .public-page--with-site-chrome.public-page--without-page-header .page-content {
     padding-top: clamp(108px, 9vw, 144px);
+}
+
+.public-page--with-site-chrome.public-page--without-page-header .page-context-nav {
+    padding-top: clamp(108px, 9vw, 144px);
+}
+
+.public-page--with-site-chrome.public-page--without-page-header .page-context-nav + .page-blocks > .page-block:first-child,
+.public-page--with-site-chrome.public-page--without-page-header .page-context-nav + .page-content {
+    padding-top: 28px;
 }
 
 .page-block--light,
@@ -1593,6 +1638,15 @@
     .page-hero--page-message .page-hero-message {
         justify-self: start;
         margin-top: 28px;
+    }
+
+    .page-context-nav {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-context-nav__more {
+        margin-left: 0;
     }
 
     .sermon-index__header {
@@ -2715,6 +2769,32 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
+}
+
+.concept-updates__load-more {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    margin: 28px auto 0;
+    padding: 0 22px;
+    color: var(--site-ink, var(--twyxtco-ink));
+    font: inherit;
+    font-weight: 900;
+    line-height: 1;
+    background: var(--site-accent, var(--twyxtco-teal));
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.concept-updates__load-more:hover,
+.concept-updates__load-more:focus-visible {
+    background: color-mix(in srgb, var(--site-accent, var(--twyxtco-teal)) 82%, white);
+}
+
+.concept-updates__load-more[hidden] {
+    display: none;
 }
 
 .concept-updates article p {

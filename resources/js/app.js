@@ -181,3 +181,29 @@ document.querySelectorAll('[data-related-modal]').forEach((modal) => {
         }
     });
 });
+
+document.querySelectorAll('[data-related-load-more]').forEach((listing) => {
+    const trigger = listing.querySelector('[data-related-load-more-trigger]');
+    const parsedPageSize = Number.parseInt(listing.dataset.relatedPageSize || '1', 10);
+    const pageSize = Number.isNaN(parsedPageSize) ? 1 : Math.max(1, parsedPageSize);
+
+    if (! trigger) {
+        return;
+    }
+
+    const hiddenItems = () => Array.from(listing.querySelectorAll('[data-related-load-more-item][hidden]'));
+
+    const updateTrigger = () => {
+        trigger.hidden = hiddenItems().length === 0;
+    };
+
+    trigger.addEventListener('click', () => {
+        hiddenItems().slice(0, pageSize).forEach((item) => {
+            item.hidden = false;
+        });
+
+        updateTrigger();
+    });
+
+    updateTrigger();
+});

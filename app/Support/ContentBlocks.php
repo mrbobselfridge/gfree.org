@@ -85,69 +85,6 @@ class ContentBlocks
             ->all();
     }
 
-    public static function relatedContentListing(string $slug): ?array
-    {
-        $slug = trim($slug, '/');
-
-        if (Page::query()->where('slug', $slug)->exists()) {
-            return null;
-        }
-
-        $segments = explode('/', $slug);
-
-        if (count($segments) < 2) {
-            return null;
-        }
-
-        $listingSlug = array_pop($segments);
-        $parentSlug = implode('/', $segments);
-
-        $page = Page::query()
-            ->where('slug', $parentSlug)
-            ->active()
-            ->first();
-
-        if (! $page || $page->isRedirect()) {
-            return null;
-        }
-
-        foreach ($page->content_blocks ?? [] as $block) {
-            if (($block['type'] ?? null) !== 'related_content') {
-                continue;
-            }
-
-            $data = self::relatedContentDefaults($block['data'] ?? []);
-
-            if (! (bool) ($data['is_visible'] ?? true)) {
-                continue;
-            }
-
-            if (! hash_equals(self::relatedListingSlug($data), $listingSlug)) {
-                continue;
-            }
-
-            $data = self::prepareRelatedContentBlock($page, $data, allItems: true);
-
-            if (blank($data['items'] ?? [])) {
-                return null;
-            }
-
-            return [
-                'page' => $page,
-                'data' => $data,
-            ];
-        }
-
-        return null;
-    }
-
-    public static function relatedListingSlug(array $data): string
-    {
-        return Str::slug($data['listing_slug'] ?? null)
-            ?: Str::slug($data['heading'] ?? null)
-            ?: 'child-cards';
-    }
-
     /**
      * @return array<string, string>
      */
@@ -165,17 +102,15 @@ class ContentBlocks
         ];
     }
 
-    private static function prepareRelatedContentBlock(?Page $page, array $data, bool $allItems = false): array
+    private static function prepareRelatedContentBlock(?Page $page, array $data): array
     {
         $data = self::relatedContentDefaults($data);
-        $limit = $allItems ? null : self::relatedContentLimit($data);
+        $limit = self::relatedContentLimit($data);
         $items = self::relatedContentItems($page, $data);
-        $hasMore = $limit !== null && $items->count() > $limit;
 
-        $data['items'] = ($limit === null ? $items : $items->take($limit))->values()->all();
-        $data['has_more'] = $hasMore;
-        $data['listing_slug'] = self::relatedListingSlug($data);
-        $data['view_more_url'] = $hasMore ? self::relatedListingUrl($page, $data) : null;
+        $data['items'] = $items->values()->all();
+        $data['has_more'] = $items->count() > $limit;
+        $data['initial_item_limit'] = $limit;
 
         return $data;
     }
@@ -196,7 +131,6 @@ class ContentBlocks
             ? $data['sort_preset']
             : self::defaultRelatedContentSortPreset($data);
         $data['item_limit'] = self::relatedContentLimit($data);
-        $data['link_label'] = $data['link_label'] ?? 'View more';
         $data['file_categories'] = self::normalizeStringList($data['file_categories'] ?? []);
 
         return $data;
@@ -401,21 +335,6 @@ class ContentBlocks
     private static function sortableDate(mixed $date): ?string
     {
         return $date?->toDateTimeString();
-    }
-
-    private static function relatedListingUrl(?Page $page, array $data): ?string
-    {
-        if (! $page?->getKey()) {
-            return null;
-        }
-
-        $slug = trim((string) $page->slug, '/').'/'.self::relatedListingSlug($data);
-
-        if (Page::query()->where('slug', $slug)->exists()) {
-            return null;
-        }
-
-        return url('/'.$slug);
     }
 
     private static function relatedContentLimit(array $data): int

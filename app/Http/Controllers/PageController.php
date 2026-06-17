@@ -21,7 +21,7 @@ class PageController extends Controller
             ->first();
 
         if (! $page) {
-            return $this->relatedContentListing($slug);
+            throw new NotFoundHttpException;
         }
 
         if ($page->isRedirect()) {
@@ -34,20 +34,6 @@ class PageController extends Controller
         }
 
         return view('pages.show', $this->viewData($page));
-    }
-
-    private function relatedContentListing(string $slug): View
-    {
-        $listing = ContentBlocks::relatedContentListing($slug);
-
-        if (! $listing) {
-            throw new NotFoundHttpException;
-        }
-
-        return view('pages.related-content-listing', [
-            ...$this->viewData($listing['page']),
-            'data' => $listing['data'],
-        ]);
     }
 
     private function viewData(Page $page): array
@@ -64,6 +50,26 @@ class PageController extends Controller
                 ?: ContentBlocks::imageUrl($settings?->default_page_header_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'socialLinks' => $this->socialLinks($settings),
+            'childPageNavigation' => $this->childPageNavigation($page),
+        ];
+    }
+
+    private function childPageNavigation(Page $page): array
+    {
+        $parent = filled($page->parent_page_id)
+            ? Page::query()
+                ->whereKey($page->parent_page_id)
+                ->active()
+                ->first()
+            : null;
+
+        if (! $parent) {
+            return [];
+        }
+
+        return [
+            'parent_url' => $parent->publicUrl(),
+            'parent_label' => "View {$parent->title}",
         ];
     }
 
