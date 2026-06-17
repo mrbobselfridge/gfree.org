@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Contracts\HasPublicUrl;
+use App\Support\PageQrCodeService;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -56,6 +58,10 @@ class Page extends Model implements HasPublicUrl
 
             $page->guardAgainstInvalidRedirect();
         });
+
+        static::saved(fn (Page $page): ?PageQrCode => app(PageQrCodeService::class)->regenerate($page));
+
+        static::deleting(fn (Page $page): mixed => app(PageQrCodeService::class)->delete($page));
     }
 
     public function parentPage(): BelongsTo
@@ -71,6 +77,11 @@ class Page extends Model implements HasPublicUrl
     public function fileDocuments(): HasMany
     {
         return $this->hasMany(FileDocument::class, 'parent_page_id');
+    }
+
+    public function qrCode(): HasOne
+    {
+        return $this->hasOne(PageQrCode::class);
     }
 
     public function publicUrl(): ?string

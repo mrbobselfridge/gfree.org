@@ -11,13 +11,18 @@ use Illuminate\Support\Str;
 
 class MediaLibrary
 {
-    private const IMAGE_INDEX_CACHE_KEY = 'media-library.image-index.v2';
+    private const IMAGE_INDEX_CACHE_KEY = 'media-library.image-index.v3';
 
     private const LEGACY_IMAGE_INDEX_CACHE_KEYS = [
+        'media-library.image-index.v2',
         'media-library.image-index.v1',
     ];
 
     private const IMAGE_INDEX_CACHE_SECONDS = 60;
+
+    private const EXCLUDED_DIRECTORIES = [
+        'page-qr-codes/',
+    ];
 
     /**
      * @return Collection<int, array<string, mixed>>
@@ -123,7 +128,7 @@ class MediaLibrary
             ->keyBy('path');
 
         $images = collect($disk->allFiles())
-            ->filter(fn (string $path): bool => self::isImage($path))
+            ->filter(fn (string $path): bool => self::isIndexableImage($path))
             ->map(function (string $path) use ($disk, $metadata): array {
                 $absolutePath = method_exists($disk, 'path') ? $disk->path($path) : null;
                 $dimensions = self::dimensions($absolutePath);
@@ -244,6 +249,21 @@ class MediaLibrary
                 </span>
             </span>
         HTML;
+    }
+
+    private static function isIndexableImage(string $path): bool
+    {
+        if (! self::isImage($path)) {
+            return false;
+        }
+
+        foreach (self::EXCLUDED_DIRECTORIES as $directory) {
+            if (Str::startsWith($path, $directory)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function formatMetadataDate(mixed $date): ?string

@@ -342,6 +342,23 @@ class PageForm
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
+                self::section('QR Code', 'pages-qr-code', collapsedOnEdit: false)
+                    ->description('Download a QR code that points to this page path.')
+                    ->icon(Heroicon::OutlinedQrCode)
+                    ->schema([
+                        ViewField::make('qr_code')
+                            ->hiddenLabel()
+                            ->view('filament.admin.forms.components.page-qr-code')
+                            ->viewData(fn (?Page $record): array => [
+                                'qrCode' => $record?->qrCode()->first(),
+                            ])
+                            ->dehydrated(false)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->visible(fn (?string $operation): bool => $operation === 'edit'),
+
                 self::section('Page Content Blocks', 'pages-content-blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
