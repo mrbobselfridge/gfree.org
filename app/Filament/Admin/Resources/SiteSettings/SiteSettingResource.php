@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\SiteSettings\Schemas\SiteSettingForm;
 use App\Filament\Admin\Resources\SiteSettings\Tables\SiteSettingsTable;
 use App\Models\SiteSetting;
 use BackedEnum;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -22,15 +23,27 @@ class SiteSettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site Tools';
+    protected static string|\UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?int $navigationSort = -10;
+    protected static ?int $navigationSort = 930;
 
     protected static ?string $modelLabel = 'site settings';
 
     protected static ?string $pluralModelLabel = 'site settings';
 
     protected static ?string $recordTitleAttribute = 'church_name';
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return collect(parent::getNavigationItems())
+            ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
+                'class' => 'twyxtco-sidebar-site-tools-divider',
+            ], merge: true))
+            ->all();
+    }
 
     public static function form(Schema $schema): Schema
     {

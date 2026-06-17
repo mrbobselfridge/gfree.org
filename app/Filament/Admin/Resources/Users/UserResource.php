@@ -44,9 +44,9 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site Tools';
+    protected static string|\UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?int $navigationSort = 300;
+    protected static ?int $navigationSort = 980;
 
     protected static ?string $modelLabel = 'user';
 

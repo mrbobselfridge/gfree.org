@@ -23,8 +23,10 @@ class AdminNavigationHelpTest extends TestCase
 
         $response
             ->assertOk()
+            ->assertSee('Website')
             ->assertSee('twyxtco-sidebar-help', false)
             ->assertSee('twyxtco-sidebar-indent-35', false)
+            ->assertSee('twyxtco-sidebar-site-tools-divider', false)
             ->assertDontSee('twyxtco-sidebar-tight-above', false)
             ->assertSee('Your starting point for admin tools and quick account access.', false)
             ->assertDontSee('Manage ministry listing cards and individual ministry detail pages.', false)
@@ -38,6 +40,6 @@ class AdminNavigationHelpTest extends TestCase
         $this->assertSame(1, HomepageBannerResource::getNavigationSort());
         $this->assertGreaterThan(PageResource::getNavigationSort(), NavigationLinkResource::getNavigationSort());
         $this->assertGreaterThan(MediaLibrary::getNavigationSort(), FileDocumentResource::getNavigationSort());
-        $this->assertLessThan(0, SiteSettingResource::getNavigationSort());
+        $this->assertGreaterThan(FileDocumentResource::getNavigationSort(), SiteSettingResource::getNavigationSort());
     }
 }

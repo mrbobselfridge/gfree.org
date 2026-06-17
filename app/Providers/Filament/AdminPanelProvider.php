@@ -41,14 +41,13 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->navigationGroups([
-                'Content',
-                'Site Tools',
+                'Website',
             ])
             ->navigationItems([
                 NavigationItem::make('User Manual')
-                    ->group('Site Tools')
+                    ->group('Website')
                     ->icon(Heroicon::OutlinedBookOpen)
-                    ->sort(0)
+                    ->sort(940)
                     ->url(fn (): string => route('manual'), true),
             ])
             ->renderHook(
@@ -451,6 +450,16 @@ class AdminPanelProvider extends PanelProvider
                             margin-inline-start: 35px;
                             width: calc(100% - 35px);
                             margin-top: -4px;
+                        }
+
+                        .fi-sidebar-open .fi-sidebar-item.twyxtco-sidebar-site-tools-divider {
+                            margin-top: 0.75rem;
+                            padding-top: 0.75rem;
+                            border-top: 1px solid rgb(209 213 219);
+                        }
+
+                        .dark .fi-sidebar-open .fi-sidebar-item.twyxtco-sidebar-site-tools-divider {
+                            border-top-color: rgb(75 85 99);
                         }
 
                         .twyxtco-sidebar-help {

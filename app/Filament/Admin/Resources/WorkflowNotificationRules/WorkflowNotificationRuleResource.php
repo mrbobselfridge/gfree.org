@@ -23,9 +23,9 @@ class WorkflowNotificationRuleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBell;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Site Tools';
+    protected static string|\UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?int $navigationSort = 250;
+    protected static ?int $navigationSort = 970;
 
     protected static ?string $navigationLabel = 'Notifications';
 
