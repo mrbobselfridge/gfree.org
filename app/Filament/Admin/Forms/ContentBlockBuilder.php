@@ -458,17 +458,6 @@ class ContentBlockBuilder
             Block::make('related_content')
                 ->label(fn (?array $state): string => self::blockLabel('Child Info Cards', $state))
                 ->schema([
-                    ToggleButtons::make('is_visible')
-                        ->label('Show child cards')
-                        ->boolean()
-                        ->inline()
-                        ->default(true)
-                        ->required()
-                        ->columnSpanFull(),
-                    Select::make('background')
-                        ->options(self::backgroundOptions())
-                        ->default('white')
-                        ->required(),
                     TextInput::make('heading')
                         ->live(onBlur: true)
                         ->maxLength(255)
@@ -479,9 +468,16 @@ class ContentBlockBuilder
                                 $set('listing_slug', Str::slug($state));
                             }
                         }),
-                    TextInput::make('intro')
-                        ->label('Intro')
-                        ->maxLength(255),
+                    ToggleButtons::make('is_visible')
+                        ->label('Show child cards')
+                        ->boolean()
+                        ->inline()
+                        ->default(true)
+                        ->required(),
+
+                    // TextInput::make('intro')
+                    //     ->label('Intro')
+                    //     ->maxLength(255),
                     ToggleButtons::make('content_type')
                         ->label('Show')
                         ->options([

@@ -350,14 +350,8 @@ class PageParentPageTest extends TestCase
             'sort' => 'parentPage.title:asc',
         ]);
 
-        $expectedTitleUrl = PageResource::getUrl('index', [
-            'filters' => [
-                'parent_page_id' => [
-                    'value' => $child->getKey(),
-                ],
-            ],
-            'sort' => 'parentPage.title:asc',
-        ]);
+        $expectedChildEditUrl = PageResource::getUrl('edit', ['record' => $child]);
+        $expectedTopLevelEditUrl = PageResource::getUrl('edit', ['record' => $topLevel]);
 
         $actionableAttributes = [
             'class' => 'underline underline-offset-4 decoration-warning-500/70 hover:decoration-warning-500',
@@ -373,12 +367,33 @@ class PageParentPageTest extends TestCase
             ->assertTableColumnExists('parentPage.title', fn ($column) => $column->getUrl() === null
                 && $column->getIcon($column->getState()) === null
                 && $column->getExtraAttributes() === [], $topLevel)
-            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === $expectedTitleUrl
+            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === $expectedChildEditUrl
                 && $column->getIcon($column->getState()) === null
-                && $column->getExtraAttributes() === $actionableAttributes, $child)
-            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === null
+                && $column->getExtraAttributes() === [], $child)
+            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === $expectedTopLevelEditUrl
                 && $column->getIcon($column->getState()) === null
                 && $column->getExtraAttributes() === [], $topLevel);
+    }
+
+    public function test_pages_table_live_icon_toggles_page_live_status(): void
+    {
+        $page = Page::query()->create([
+            'title' => 'Draft Page',
+            'slug' => 'draft-page',
+            'is_published' => false,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->callTableColumnAction('is_published', $page);
+
+        $this->assertTrue($page->refresh()->is_published);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListPages::class)
+            ->callTableColumnAction('is_published', $page);
+
+        $this->assertFalse($page->refresh()->is_published);
     }
 
     public function test_page_can_belong_to_another_page(): void

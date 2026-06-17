@@ -27,7 +27,7 @@ class PageSlugs
             ->map(fn (string $prefix): string => preg_quote($prefix, '#'))
             ->implode('|');
 
-        return "^(?!(?i:(?:{$reserved}))(?:/|$))[A-Za-z0-9-]+(?:/[A-Za-z0-9-]+)*$";
+        return "^(?!(?i:(?:{$reserved}))(?:/|$))[A-Za-z0-9()\-]+(?:/[A-Za-z0-9()\-]+)*$";
     }
 
     public static function isValidPath(string $slug): bool

@@ -92,6 +92,9 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(1),
 
+
+
+                    
                 Textarea::make('intro')
                     ->rows(2)
                     ->hintIcon(
@@ -125,6 +128,17 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(2),
 
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
+                    )
+                    ->hintColor('gray')
+                    ->columnSpan(1),
+
                 ViewField::make('section_controls')
                     ->label('Section controls')
                     ->hiddenLabel()
@@ -134,25 +148,25 @@ class PageForm
                     ])
                     ->dehydrated(false)
                     ->key('pages-section-controls')
-                    ->columnSpan(2),
+                    ->columnSpan(1),
 
                 self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
 
-                        ToggleButtons::make('show_site_chrome')
-                            ->label('Show navigation and footer')
-                            ->boolean()
-                            ->inline()
-                            ->default(true)
-                            ->required()
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Turn off only for standalone campaign, embedded, or special-purpose pages that should not show the normal site frame.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
+                        ...ImageUpload::make(
+                            'hero_image_path',
+                            'pages/hero-images',
+                            'Header Image',
+                            fn (ViewField $upload): ViewField => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used in the page header. Landscape photos usually work best.'
+                                )
+                                ->hintColor('gray')
+                                ->columnSpan(2),
+                        ),
 
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
@@ -167,57 +181,18 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(1),
 
-                        Select::make('parent_page_id')
-                            ->label('Parent Page - optional')
-                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                        ToggleButtons::make('show_site_chrome')
+                            ->label('Show navigation and footer')
+                            ->boolean()
+                            ->inline()
+                            ->default(true)
+                            ->required()
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
+                                'Turn off only for standalone campaign, embedded, or special-purpose pages that should not show the normal site frame.'
                             )
                             ->hintColor('gray')
-                            ->columnSpan(2),
-
-                        ...ImageUpload::make(
-                            'hero_image_path',
-                            'pages/hero-images',
-                            'Header Image',
-                            fn (ViewField $upload): ViewField => $upload
-                                ->hintIcon(
-                                    Heroicon::OutlinedInformationCircle,
-                                    'Optional image used in the page header. Landscape photos usually work best.'
-                                )
-                                ->hintColor('gray')
-                                ->columnSpan(1),
-                        ),
-
-                        ...ImageUpload::make(
-                            'card_image_path',
-                            'pages/card-images',
-                            'Card image',
-                            fn (ViewField $upload): ViewField => $upload
-                                ->hintIcon(
-                                    Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
-                                )
-                                ->hintColor('gray')
-                                ->columnSpan(1),
-                        ),
-
-                        Placeholder::make('direct_child_pages')
-                            ->label('Parent to the following pages and files')
-                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
-                            ->visible(fn (?Page $record, Get $get): bool => filled($record?->getKey()) && ! (bool) $get('is_redirect'))
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->columnSpan(1),
 
                         DateTimePicker::make('publish_at')
                             ->label('Publish at')
@@ -258,17 +233,6 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
-                        TextInput::make('sort_order')
-                            ->required()
-                            ->numeric()
-                            ->default(0)
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
-                            )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
-
                         TextInput::make('seo_title')
                             ->label('SEO title')
                             ->maxLength(255)
@@ -278,7 +242,7 @@ class PageForm
                                 'Optional browser and search title. Leave empty to use the page title.'
                             )
                             ->hintColor('gray')
-                            ->columnSpan(1),
+                            ->columnSpan(2),
 
                         Textarea::make('seo_description')
                             ->label('SEO description')
@@ -290,6 +254,46 @@ class PageForm
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
+
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'pages/card-images',
+                            'Card image',
+                            fn (ViewField $upload): ViewField => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
+                                )
+                                ->hintColor('gray')
+                                ->columnSpan(1),
+                        ),
+
+                        Select::make('parent_page_id')
+                            ->label('Parent Page - optional')
+                            ->options(fn (?Page $record): array => self::parentPageOptions($record))
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->rule(fn (?Page $record): ValidPageParent => new ValidPageParent($record?->getKey()))
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(1),
+
+                        Placeholder::make('direct_child_pages')
+                            ->label('Parent to the following pages and files')
+                            ->content(fn (?Page $record): HtmlString => self::directChildPagesContent($record))
+                            ->visible(fn (?Page $record, Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+
 
                     ])
                     ->columns(4)

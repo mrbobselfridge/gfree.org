@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Support;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Models\NavigationLink;
+use App\Models\Page;
 use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
 use App\Support\WorkflowNotificationService;
@@ -30,26 +31,31 @@ class StandardTableActions
                 Heroicon::OutlinedPencilSquare,
             ),
 
-	            IconOnlyAction::make(
-	                Action::make('copy')
-	                    ->label('Copy')
-	                    ->color('success')
-	                    ->authorize(fn (Model $record): bool => self::canCopy($record))
-	                    ->action(function (Model $record): void {
-	                        $copy = $record->replicate();
-	                        self::removeNonColumnAttributes($copy);
-	                        $labelField = self::labelField($record);
-	                        $timestamp = now();
+            IconOnlyAction::make(
+                Action::make('copy')
+                    ->label('Copy')
+                    ->color('success')
+                    ->authorize(fn (Model $record): bool => self::canCopy($record))
+                    ->action(function (Model $record): void {
+                        $copy = $record->replicate();
+                        self::removeNonColumnAttributes($copy);
 
-                        if ($labelField) {
-                            $copy->{$labelField} = self::copyLabel($record, $labelField, $timestamp->format('Y-m-d H:i:s'));
-                        }
+                        if ($record instanceof Page && $copy instanceof Page) {
+                            self::preparePageCopy($record, $copy);
+                        } else {
+                            $labelField = self::labelField($record);
+                            $timestamp = now();
 
-                        if (array_key_exists('slug', $record->getAttributes())) {
-                            $copy->slug = self::uniqueSlug(
-                                $record,
-                                filled($record->slug) ? $record->slug : ($labelField ? $record->{$labelField} : null),
-                            );
+                            if ($labelField) {
+                                $copy->{$labelField} = self::copyLabel($record, $labelField, $timestamp->format('Y-m-d H:i:s'));
+                            }
+
+                            if (array_key_exists('slug', $record->getAttributes())) {
+                                $copy->slug = self::uniqueSlug(
+                                    $record,
+                                    filled($record->slug) ? $record->slug : ($labelField ? $record->{$labelField} : null),
+                                );
+                            }
                         }
 
                         $copy->save();
@@ -134,6 +140,48 @@ class StandardTableActions
         $baseLength = max(1, $maxLength - strlen($suffix));
 
         return Str::limit($source, $baseLength, '').$suffix;
+    }
+
+    private static function preparePageCopy(Page $record, Page $copy): void
+    {
+        $number = self::nextPageCopyNumber($record);
+
+        $copy->title = self::copyValueWithSuffix($record, 'title', " ({$number})");
+        $copy->slug = self::pageCopySlug($record, $number);
+    }
+
+    private static function copyValueWithSuffix(Model $record, string $field, string $suffix): string
+    {
+        $source = (string) $record->{$field};
+        $maxLength = self::stringColumnLength($record, $field) ?? 255;
+        $baseLength = max(1, $maxLength - strlen($suffix));
+
+        return Str::limit($source, $baseLength, '').$suffix;
+    }
+
+    private static function nextPageCopyNumber(Page $record): int
+    {
+        for ($number = 2; $number < 1000; $number++) {
+            if (! $record->newQuery()->where('slug', self::pageCopySlug($record, $number))->exists()) {
+                return $number;
+            }
+        }
+
+        return 2;
+    }
+
+    private static function pageCopySlug(Page $record, int $number): string
+    {
+        $base = trim((string) $record->slug, '/');
+
+        if (blank($base)) {
+            $base = Str::slug((string) $record->title);
+        }
+
+        $suffix = "({$number})";
+        $base = trim(Str::limit($base, 255 - strlen($suffix), ''), '/-');
+
+        return "{$base}{$suffix}";
     }
 
     private static function copyRelatedRecords(Model $record, Model $copy): void

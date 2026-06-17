@@ -2345,9 +2345,14 @@
     border-radius: 999px;
 }
 
-.concept-card-row h3,
-.concept-updates h3 {
+.concept-card-row h3 {
     margin: 24px 0 10px;
+    font-size: 1.45rem;
+    line-height: 1.1;
+}
+
+.concept-updates h3 {
+    margin: 16px 0 10px;
     font-size: 1.45rem;
     line-height: 1.1;
 }
@@ -2368,6 +2373,29 @@
     margin: 0;
     color: var(--twyxtco-muted);
     line-height: 1.55;
+}
+
+.concept-updates__card-message {
+    margin-top: auto;
+    padding-top: 18px;
+    color: var(--twyxtco-ink);
+    font-size: 0.95rem;
+    font-weight: 650;
+    line-height: 1.5;
+    border-top: 1px solid var(--twyxtco-line);
+}
+
+.concept-updates__card-message > :first-child {
+    margin-top: 0;
+}
+
+.concept-updates__card-message > :last-child {
+    margin-bottom: 0;
+}
+
+.concept-updates__card-message a {
+    color: var(--twyxtco-teal-dark);
+    font-weight: 800;
 }
 
 .concept-updates__more-button {

@@ -70,10 +70,10 @@ class PublicPageAdminLinkTest extends TestCase
 
         $copy = Page::query()
             ->whereKeyNot($parent->id)
-            ->where('title', 'like', 'Resources (copy @ %')
+            ->where('title', 'Resources (2)')
             ->firstOrFail();
 
-        $this->assertStringStartsWith('resources-copy-', $copy->slug);
+        $this->assertSame('resources(2)', $copy->slug);
         $this->assertDatabaseCount(Page::class, 3);
     }
 

@@ -36,6 +36,20 @@
                     <span>{{ data_get($item, 'summary') }}</span>
                 @endif
 
+                @if (! $isFile && filled(data_get($item, 'message')))
+                    <div class="concept-updates__card-message">
+                        @php($message = trim((string) data_get($item, 'message')))
+
+                        @if ($message !== strip_tags($message))
+                            {!! \App\Support\RichContent::render($message) !!}
+                        @else
+                            @foreach (preg_split('/\R{2,}/', $message) as $paragraph)
+                                <p>{!! nl2br(e($paragraph)) !!}</p>
+                            @endforeach
+                        @endif
+                    </div>
+                @endif
+
                 @if ($hasMoreContent)
                     <button class="concept-updates__more-button" type="button" data-related-modal-open aria-controls="{{ $modalId }}">More</button>
                 @endif

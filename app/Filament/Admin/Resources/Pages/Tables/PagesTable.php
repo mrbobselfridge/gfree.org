@@ -6,6 +6,8 @@ use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Filament\Admin\Resources\Support\StandardTableActions;
 use App\Models\Page;
+use App\Models\WorkflowNotificationRule;
+use App\Support\WorkflowNotificationService;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Support\Icons\Heroicon;
@@ -25,12 +27,7 @@ class PagesTable
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->url(fn (Page $record): ?string => ((int) ($record->child_pages_count ?? 0)) > 0
-                        ? self::pageHierarchyFilterUrl($record->getKey())
-                        : null)
-                    ->extraAttributes(fn (Page $record): array => ((int) ($record->child_pages_count ?? 0)) > 0
-                        ? self::actionableHierarchyAttributes()
-                        : [])
+                    ->url(fn (Page $record): string => PageResource::getUrl('edit', ['record' => $record]))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('is_redirect')
@@ -92,6 +89,17 @@ class PagesTable
                 IconColumn::make('is_published')
                     ->label('Live')
                     ->boolean()
+                    ->tooltip(fn (Page $record): string => $record->is_published ? 'Turn off live page' : 'Turn on live page')
+                    ->action(function (Page $record): void {
+                        $record->update([
+                            'is_published' => ! $record->is_published,
+                        ]);
+
+                        app(WorkflowNotificationService::class)->automaticForRecord(
+                            $record,
+                            WorkflowNotificationRule::TRIGGER_UPDATED,
+                        );
+                    })
                     ->searchable(query: fn (Builder $query, string $search): Builder => self::applyBooleanSearch(
                         query: $query,
                         search: $search,

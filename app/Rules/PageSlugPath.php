@@ -30,7 +30,7 @@ class PageSlugPath implements ValidationRule
         }
 
         if (! PageSlugs::isValidPath($slug)) {
-            $fail('The :attribute field must use letters, numbers, and hyphens, with single slashes between path segments.');
+            $fail('The :attribute field must use letters, numbers, hyphens, and parentheses, with single slashes between path segments.');
         }
     }
 }
