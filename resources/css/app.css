@@ -978,6 +978,11 @@
     order: 2;
 }
 
+.page-block--image-left-top .page-image-text,
+.page-block--image-right-top .page-image-text {
+    align-items: start;
+}
+
 .page-image-text img {
     display: block;
     width: 100%;

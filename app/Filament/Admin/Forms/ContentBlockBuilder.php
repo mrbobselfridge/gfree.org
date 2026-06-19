@@ -107,8 +107,10 @@ class ContentBlockBuilder
                         self::contentWidthSelect('Controls the maximum width of this image and text section.', 'wide'),
                         self::hint(Select::make('image_position'), 'Controls where the image appears relative to the text.')
                             ->options([
-                                'left' => 'Image left',
-                                'right' => 'Image right',
+                                'left' => 'Image left middle',
+                                'right' => 'Image right middle',
+                                'left_top' => 'Image left top',
+                                'right_top' => 'Image right top',
                                 'top' => 'Image top',
                                 'bottom' => 'Image bottom',
                                 'full_width' => 'Image full width',

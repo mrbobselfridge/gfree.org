@@ -714,6 +714,30 @@ class PublicPageTest extends TestCase
                         'background' => 'white',
                     ],
                 ],
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'pages/content-images/left-top.jpg',
+                        'image_alt' => 'Left top image',
+                        'heading' => 'Image left top',
+                        'body' => '<p>Text beside the image.</p>',
+                        'image_position' => 'left_top',
+                        'content_width' => 'wide',
+                        'background' => 'white',
+                    ],
+                ],
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'pages/content-images/right-top.jpg',
+                        'image_alt' => 'Right top image',
+                        'heading' => 'Image right top',
+                        'body' => '<p>Text beside the image.</p>',
+                        'image_position' => 'right_top',
+                        'content_width' => 'wide',
+                        'background' => 'white',
+                    ],
+                ],
             ],
             'is_published' => true,
         ]);
@@ -722,10 +746,15 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('page-block--image-top', false)
             ->assertSee('page-block--image-bottom', false)
+            ->assertSee('page-block--image-left-top', false)
+            ->assertSee('page-block--image-right-top', false)
+            ->assertSee('page-block--image-right', false)
             ->assertSee('page-block__inner--text-small', false)
             ->assertSee('page-block__inner--text-medium', false)
             ->assertSee('Image above content')
-            ->assertSee('Image below content');
+            ->assertSee('Image below content')
+            ->assertSee('Image left top')
+            ->assertSee('Image right top');
     }
 
     public function test_remaining_content_block_types_render_content_width_classes(): void
