@@ -11,16 +11,9 @@
         default => 'wide',
     };
 
-    $hasRenderableText = function (?string $value): bool {
-        $text = html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = str_replace("\u{00A0}", ' ', $text);
-
-        return trim($text) !== '';
-    };
-
-    $hasContent = $hasRenderableText($data['eyebrow'] ?? null)
-        || $hasRenderableText($data['heading'] ?? null)
-        || $hasRenderableText($data['body'] ?? null)
+    $hasContent = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null)
+        || \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null)
+        || \App\Support\RichContent::hasRenderableContent($data['body'] ?? null)
         || (filled($data['button_label'] ?? null) && filled($data['button_url'] ?? null));
 @endphp
 

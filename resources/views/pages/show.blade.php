@@ -31,7 +31,8 @@
 
     <main class="public-page__main">
         @if ($page->show_page_header)
-            @php($hasPageMessage = filled($page->message))
+            @php($pageMessage = \App\Support\RichContent::nullable($page->message))
+            @php($hasPageMessage = filled($pageMessage))
 
             <section @class([
                 'page-hero',
@@ -58,10 +59,8 @@
                     @if ($hasPageMessage)
                         <div class="ministry-hero-contact page-hero-message" aria-label="Page message">
                             <div class="page-hero-message__body">
-                                @php($pageMessage = trim((string) $page->message))
-
                                 @if ($pageMessage !== strip_tags($pageMessage))
-                                    {!! $pageMessage !!}
+                                    {!! \App\Support\RichContent::render($pageMessage) !!}
                                 @else
                                     @foreach (preg_split('/\R{2,}/', $pageMessage) as $paragraph)
                                         <p>{!! nl2br(e($paragraph)) !!}</p>

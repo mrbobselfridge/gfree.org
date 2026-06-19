@@ -286,6 +286,14 @@ class PublicPageTest extends TestCase
             'is_published' => true,
         ]);
 
+        Page::query()->create([
+            'title' => 'Adults',
+            'slug' => 'adults',
+            'intro' => 'Adult ministry.',
+            'message' => '<p style="text-align: start;"></p>',
+            'is_published' => true,
+        ]);
+
         $this->get('/kids')
             ->assertOk()
             ->assertSee('page-hero--page-message', false)
@@ -294,6 +302,11 @@ class PublicPageTest extends TestCase
             ->assertSee('Our team is ready to help.');
 
         $this->get('/students')
+            ->assertOk()
+            ->assertDontSee('page-hero--page-message', false)
+            ->assertDontSee('page-hero-message', false);
+
+        $this->get('/adults')
             ->assertOk()
             ->assertDontSee('page-hero--page-message', false)
             ->assertDontSee('page-hero-message', false);

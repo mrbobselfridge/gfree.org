@@ -14,6 +14,7 @@ use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
 use App\Support\CodeBlockAccess;
+use App\Support\RichContent;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
@@ -430,7 +431,8 @@ class PageForm
 
     private static function messageEditor(): RichEditor
     {
-        $editor = RichEditor::make('message');
+        $editor = RichEditor::make('message')
+            ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state));
 
         if (CodeBlockAccess::canManage()) {
             $editor->plugins([

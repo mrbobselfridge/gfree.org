@@ -520,7 +520,7 @@ class ContentBlocks
 
     private static function plainText(?string $value): string
     {
-        return trim(html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        return RichContent::plainText($value);
     }
 
     private static function basicHtml(?string $value): string
@@ -637,9 +637,6 @@ class ContentBlocks
 
     private static function hasText(?string $value): bool
     {
-        $text = html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = str_replace("\u{00A0}", ' ', $text);
-
-        return trim($text) !== '';
+        return RichContent::hasRenderableContent($value);
     }
 }

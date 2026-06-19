@@ -45,10 +45,10 @@
             <span>{{ data_get($item, 'summary') }}</span>
         @endif
 
-        @if (! $isFile && filled(data_get($item, 'message')))
-            <div class="concept-updates__card-message">
-                @php($message = trim((string) data_get($item, 'message')))
+        @php($message = \App\Support\RichContent::nullable(data_get($item, 'message')))
 
+        @if (! $isFile && filled($message))
+            <div class="concept-updates__card-message">
                 @if ($message !== strip_tags($message))
                     {!! \App\Support\RichContent::render($message) !!}
                 @else

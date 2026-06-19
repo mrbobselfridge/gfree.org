@@ -115,6 +115,23 @@ class PageParentPageTest extends TestCase
             });
     }
 
+    public function test_page_message_editor_saves_empty_rich_text_markup_as_null(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.title', 'Empty Message')
+            ->set('data.slug', 'empty-message')
+            ->set('data.message', '<p style="text-align: start;"></p>')
+            ->call('create')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas(Page::class, [
+            'title' => 'Empty Message',
+            'slug' => 'empty-message',
+            'message' => null,
+        ]);
+    }
+
     public function test_edit_page_form_defaults_content_open_and_settings_closed(): void
     {
         $page = Page::query()->create([
