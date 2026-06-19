@@ -6,6 +6,7 @@ use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiContentPrompt;
+use App\Support\RichContent;
 use App\Support\SiteDesignPalette;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
@@ -25,6 +26,7 @@ class SiteSettingForm
     private const SECTION_IDS = [
         'site-settings-organizational-information',
         'site-settings-site-design-elements',
+        'site-settings-dashboard-notes',
         'site-settings-ai-settings',
         'site-settings-social-and-video-urls',
         'site-settings-google-tracking',
@@ -109,6 +111,20 @@ class SiteSettingForm
                                 'These colors populate the Background color options in page and homepage content blocks.',
                             )
                             ->hintColor('gray'),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
+                self::section('Dashboard Notes', 'site-settings-dashboard-notes')
+                    ->schema([
+                        RichEditorDefaults::configure(RichEditor::make('dashboard_notes'), withAiRewrite: false)
+                            ->label('Dashboard Notes')
+                            ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Shown in a movable Dashboard Notes widget on the admin dashboard for users and admins. Leave blank to hide the widget.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                     ])
                     ->columns(1)
                     ->columnSpanFull(),

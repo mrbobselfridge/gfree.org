@@ -944,6 +944,63 @@ class AdminPanelProvider extends PanelProvider
                             color: rgb(156 163 175);
                         }
 
+                        .twyxtco-dashboard-notes-content {
+                            display: grid;
+                            gap: 0.75rem;
+                            color: rgb(31 41 55);
+                            font-size: 0.875rem;
+                            line-height: 1.55;
+                        }
+
+                        .dark .twyxtco-dashboard-notes-content {
+                            color: rgb(229 231 235);
+                        }
+
+                        .twyxtco-dashboard-notes-content :where(h2, h3, h4) {
+                            color: rgb(17 24 39);
+                            font-weight: 800;
+                            line-height: 1.25;
+                        }
+
+                        .dark .twyxtco-dashboard-notes-content :where(h2, h3, h4) {
+                            color: white;
+                        }
+
+                        .twyxtco-dashboard-notes-content h2 {
+                            font-size: 1.05rem;
+                        }
+
+                        .twyxtco-dashboard-notes-content h3,
+                        .twyxtco-dashboard-notes-content h4 {
+                            font-size: 0.95rem;
+                        }
+
+                        .twyxtco-dashboard-notes-content :where(ul, ol) {
+                            display: grid;
+                            gap: 0.375rem;
+                            padding-inline-start: 1.25rem;
+                        }
+
+                        .twyxtco-dashboard-notes-content ul {
+                            list-style: disc;
+                        }
+
+                        .twyxtco-dashboard-notes-content ol {
+                            list-style: decimal;
+                        }
+
+                        .twyxtco-dashboard-notes-content a {
+                            color: rgb(180 83 9);
+                            font-weight: 700;
+                            text-decoration: underline;
+                            text-underline-offset: 0.18em;
+                            overflow-wrap: anywhere;
+                        }
+
+                        .dark .twyxtco-dashboard-notes-content a {
+                            color: rgb(251 191 36);
+                        }
+
                         .twyxtco-dashboard-widget.twyxtco-dashboard-widget-dragging {
                             opacity: 0.92;
                             pointer-events: none;
@@ -1211,6 +1268,10 @@ class AdminPanelProvider extends PanelProvider
                                 const state = readState();
 
                                 dashboardWidgets().forEach((widget) => {
+                                    if (! widget.querySelector('[data-twyxtco-dashboard-widget-collapse]')) {
+                                        return;
+                                    }
+
                                     const key = widget.dataset.twyxtcoDashboardWidget;
 
                                     state.collapsed[key] = collapsed;
@@ -1255,12 +1316,11 @@ class AdminPanelProvider extends PanelProvider
                                 const heading = widgetHeading(widget);
                                 const button = widget.querySelector('[data-twyxtco-dashboard-widget-collapse]');
 
-                                widget.classList.toggle('twyxtco-dashboard-widget-collapsed', collapsed);
-
                                 if (! button) {
                                     return;
                                 }
 
+                                widget.classList.toggle('twyxtco-dashboard-widget-collapsed', collapsed);
                                 button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
                                 button.setAttribute('aria-label', (collapsed ? 'Expand ' : 'Collapse ') + heading);
                                 button.setAttribute('title', (collapsed ? 'Expand ' : 'Collapse ') + heading);

@@ -29,6 +29,7 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Default page header image')
             ->assertSee('Site Design elements')
             ->assertSee('Background colors')
+            ->assertSee('Dashboard Notes')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
             ->assertSee('AI Content Prompt')
@@ -75,7 +76,31 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->isCollapsed()
                     && $component->shouldPersistCollapsed(),
             )
+            ->assertSchemaComponentExists(
+                'site-settings-dashboard-notes',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
             ->assertSchemaComponentDoesNotExist('site-settings-ministries-settings');
+    }
+
+    public function test_site_settings_dashboard_notes_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.dashboard_notes', '<p><a href="/admin/pages">Review pages</a> before Sunday.</p>')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'dashboard_notes' => '<p><a href="/admin/pages">Review pages</a> before Sunday.</p>',
+        ]);
     }
 
     public function test_site_settings_ai_content_prompt_can_be_saved(): void

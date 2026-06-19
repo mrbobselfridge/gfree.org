@@ -138,6 +138,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('twyxtco-dashboard-widget-count')
             ->assertDontSeeText('Page Views')
             ->assertDontSee('class="twyxtco-dashboard-widget-type">Analytics', false)
+            ->assertDontSee('data-twyxtco-dashboard-widget="dashboard-notes-widget"', false)
             ->assertSee('twyxtco.admin.dashboard.widgets.v1');
 
         $content = $response->getContent();
@@ -158,6 +159,38 @@ class AdminDashboardWidgetsTest extends TestCase
 
             $this->assertStringNotContainsString('twyxtco-dashboard-widget-count', $widgetMarkup);
         }
+    }
+
+    public function test_admin_dashboard_shows_rich_dashboard_notes_widget_when_configured(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'dashboard_notes' => '<h2>Sunday reminders</h2><p><a href="/admin/pages">Review pages</a> before publishing.</p><ul><li>Check forms</li></ul>',
+        ]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('data-twyxtco-dashboard-widget="dashboard-notes-widget"', false)
+            ->assertSee('Dashboard Notes')
+            ->assertSee('Links and notes from Site Settings.')
+            ->assertSee('Sunday reminders')
+            ->assertSee('<a href="/admin/pages">Review pages</a>', false)
+            ->assertSee('Check forms')
+            ->assertSee('Edit notes')
+            ->assertSee('Move Dashboard Notes');
+
+        $content = $response->getContent();
+        $start = strpos($content, 'data-twyxtco-dashboard-widget="dashboard-notes-widget"');
+
+        $this->assertIsInt($start);
+        $nextWidgetStart = strpos($content, 'data-twyxtco-dashboard-widget="', $start + 1);
+        $widgetMarkup = $nextWidgetStart === false
+            ? substr($content, $start)
+            : substr($content, $start, $nextWidgetStart - $start);
+
+        $this->assertStringContainsString('data-twyxtco-dashboard-widget-drag-handle', $widgetMarkup);
+        $this->assertStringNotContainsString('data-twyxtco-dashboard-widget-collapse', $widgetMarkup);
     }
 
     public function test_dashboard_widgets_respect_editor_admin_permissions(): void

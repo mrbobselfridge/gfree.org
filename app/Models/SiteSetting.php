@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
     'email',
     'office_hours',
     'design_background_colors',
+    'dashboard_notes',
     'openai_api_key',
     'ai_content_prompt',
     'livestream_url',

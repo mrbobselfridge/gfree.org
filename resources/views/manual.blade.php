@@ -719,6 +719,7 @@
                 <li>Use site health cards to find missing or stale content.</li>
                 <li>Use analytics widgets to understand which public pages people visit.</li>
                 <li>Dashboard cards may be collapsed, reordered, or used as shortcuts into content areas.</li>
+                <li>Dashboard Notes can show sitewide links or notes from Site Settings. This card can be moved but is not collapsible.</li>
             </ul>
         </section>
 
@@ -959,6 +960,7 @@
                 <li>Default page header image used on pages that show a header but do not have their own Header Image selected.</li>
                 <li>Address, email, phone, office hours, and Sunday service times.</li>
                 <li>Site Design elements, including managed background colors for content blocks.</li>
+                <li>Dashboard Notes shown to users and admins on the admin dashboard.</li>
                 <li>Social media links.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
                 <li>OpenAI API key used by rewrite, page review, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
