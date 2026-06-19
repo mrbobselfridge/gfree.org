@@ -457,12 +457,17 @@
 
 .page-context-nav {
     display: flex;
+    position: relative;
+    z-index: 1000;
     width: min(1180px, calc(100% - 32px));
     align-items: center;
     justify-content: space-between;
     gap: 18px;
     margin: 0 auto;
-    padding-top: 24px;
+}
+
+.public-page--with-page-header .page-context-nav {
+    margin-top: -55px;
 }
 
 .page-context-nav a {
