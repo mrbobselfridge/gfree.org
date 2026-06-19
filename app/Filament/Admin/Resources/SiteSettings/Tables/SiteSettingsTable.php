@@ -30,10 +30,6 @@ class SiteSettingsTable
                 TextColumn::make('giving_url')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('one_church_url')
-                    ->label('One Church URL')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('facebook_url')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),

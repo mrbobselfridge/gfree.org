@@ -6,18 +6,25 @@ use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiContentPrompt;
+use App\Support\SiteDesignPalette;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class SiteSettingForm
 {
     private const SECTION_IDS = [
         'site-settings-organizational-information',
+        'site-settings-site-design-elements',
         'site-settings-ai-settings',
         'site-settings-social-and-video-urls',
         'site-settings-google-tracking',
@@ -69,6 +76,42 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
+                self::section('Site Design elements', 'site-settings-site-design-elements')
+                    ->schema([
+                        Repeater::make('design_background_colors')
+                            ->label('Background colors')
+                            ->default(SiteDesignPalette::defaultBackgroundColors())
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Name')
+                                    ->required()
+                                    ->maxLength(80),
+                                ColorPicker::make('hex')
+                                    ->label('Hex code')
+                                    ->hex()
+                                    ->placeholder('#17b8ad')
+                                    ->required()
+                                    ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                                    ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
+                                    ->validationMessages([
+                                        'regex' => 'Enter a valid hex color, such as #17b8ad.',
+                                    ]),
+                                Hidden::make('key')
+                                    ->dehydrateStateUsing(fn (mixed $state, Get $get): string => SiteDesignPalette::normalizeKey($state) ?? SiteDesignPalette::normalizeKey($get('name')) ?? 'background'),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->addActionLabel('Add background color')
+                            ->reorderable()
+                            ->dehydrateStateUsing(fn (mixed $state): array => SiteDesignPalette::normalizeBackgroundColors($state) ?: SiteDesignPalette::defaultBackgroundColors())
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'These colors populate the Background color options in page and homepage content blocks.',
+                            )
+                            ->hintColor('gray'),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
                 self::section('AI Settings', 'site-settings-ai-settings')
                     ->schema([
                         TextInput::make('openai_api_key')
@@ -91,10 +134,6 @@ class SiteSettingForm
                             ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('giving_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('one_church_url')
-                            ->label('One Church URL')
                             ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('facebook_url')

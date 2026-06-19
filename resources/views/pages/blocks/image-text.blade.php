@@ -1,5 +1,6 @@
 @php
-    $background = $data['background'] ?? 'white';
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
     $imagePosition = match ($data['image_position'] ?? 'left') {
         'center' => 'full_width',
         default => $data['image_position'] ?? 'left',
@@ -26,7 +27,11 @@
     'page-block--image-full' => $imagePosition === 'full_width',
     'page-block--image-screenwidth' => $imagePosition === 'screen_width',
     'page-block--image-only' => ! $hasContent,
-])>
+])
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div class="page-block__inner page-image-text">
         @if (filled($data['image_url'] ?? null))
             <img src="{{ $data['image_url'] }}" alt="{{ $data['image_alt'] ?? '' }}">

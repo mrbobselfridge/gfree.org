@@ -8,6 +8,7 @@ use App\Rules\HttpOrRelativeUrl;
 use App\Support\CodeBlockAccess;
 use App\Support\ContentBlocks;
 use App\Support\LinkCard;
+use App\Support\SiteDesignPalette;
 use App\Support\YoutubeFeedUrl;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Builder;
@@ -742,14 +743,7 @@ class ContentBlockBuilder
 
     private static function backgroundOptions(): array
     {
-        return [
-            'white' => 'White',
-            'black' => 'Black',
-            'teal' => 'Teal',
-            'gold' => 'Gold',
-            'forest' => 'Forest',
-            'clay' => 'Clay',
-        ];
+        return SiteDesignPalette::backgroundOptions();
     }
 
     private static function textWidthOptions(): array

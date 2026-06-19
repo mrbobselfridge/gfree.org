@@ -155,7 +155,6 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         $hasSocialOrVideoUrl = collect([
             $settings->livestream_url,
             $settings->giving_url,
-            $settings->one_church_url,
             $settings->facebook_url,
             $settings->instagram_url,
             $settings->youtube_url,

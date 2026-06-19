@@ -1,6 +1,11 @@
-@php($background = $data['background'] ?? 'white')
+@php($background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white'))
+@php($backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background))
 
-<section @class(['page-block', 'page-block--embed', 'page-block--bg-' . $background])>
+<section @class(['page-block', 'page-block--embed', 'page-block--bg-' . $background])
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div class="page-block__inner page-block__inner--narrow">
         @if (filled($data['heading'] ?? null))
             <h2>{{ $data['heading'] }}</h2>

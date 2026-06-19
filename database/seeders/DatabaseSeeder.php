@@ -7,6 +7,7 @@ use App\Models\HomepageBanner;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\FileCategoryExtractionInstructions;
+use App\Support\SiteDesignPalette;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -28,7 +29,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'office@twyxtco.org',
             'livestream_url' => '/live',
             'giving_url' => '/give',
-            'one_church_url' => 'https://twyxtco.onechurchsoftware.com',
+            'design_background_colors' => SiteDesignPalette::defaultBackgroundColors(),
         ]);
 
         collect([

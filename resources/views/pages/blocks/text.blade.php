@@ -1,9 +1,6 @@
 @php
-    $background = match ($data['background'] ?? 'white') {
-        'dark' => 'black',
-        'light' => 'white',
-        default => $data['background'] ?? 'white',
-    };
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
 
     $contentWidth = match ($data['content_width'] ?? 'medium') {
         'small' => 'small',
@@ -17,7 +14,11 @@
     'page-block',
     'page-block--text',
     'page-block--bg-' . $background,
-])>
+])
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div @class([
         'page-block__inner',
         'page-block__inner--text-' . $contentWidth,

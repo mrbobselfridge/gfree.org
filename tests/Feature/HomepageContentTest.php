@@ -259,11 +259,10 @@ class HomepageContentTest extends TestCase
             ->assertDontSee('data-type="customBlock"', false);
     }
 
-    public function test_homepage_content_default_feature_url_still_allows_one_church_fallback(): void
+    public function test_homepage_content_default_feature_url_does_not_render_placeholder_button(): void
     {
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
-            'one_church_url' => 'https://example.com/one-church',
         ]);
 
         HomepageContent::query()->create([
@@ -272,7 +271,8 @@ class HomepageContentTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('https://example.com/one-church');
+            ->assertSee('One Church handles the moving parts.')
+            ->assertDontSee('href="#"', false);
     }
 
     public function test_homepage_info_strip_can_pull_values_from_site_settings(): void

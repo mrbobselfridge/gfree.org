@@ -86,13 +86,9 @@ class HomeController extends Controller
         ];
     }
 
-    private function feature(array $defaults, ?SiteSetting $settings, ?HomepageContent $content): array
+    private function feature(array $defaults, ?HomepageContent $content): array
     {
         $featureUrl = $content?->feature_url ?: $defaults['url'];
-
-        if ($settings?->one_church_url && (blank($featureUrl) || $featureUrl === '#')) {
-            $featureUrl = $settings->one_church_url;
-        }
 
         return [
             'eyebrow' => $content?->feature_eyebrow ?: $defaults['eyebrow'],
@@ -108,7 +104,7 @@ class HomeController extends Controller
         $blocks = $content?->content_blocks;
 
         if (blank($blocks)) {
-            $blocks = $this->defaultHomepageBlocks($defaults, $settings);
+            $blocks = $this->defaultHomepageBlocks($defaults);
         }
 
         $blocks = collect($blocks)
@@ -150,10 +146,10 @@ class HomeController extends Controller
         }
     }
 
-    private function defaultHomepageBlocks(array $defaults, ?SiteSetting $settings): array
+    private function defaultHomepageBlocks(array $defaults): array
     {
         $nextSteps = $defaults['next_steps'] ?? [];
-        $feature = $this->feature($defaults['feature'], $settings, null);
+        $feature = $this->feature($defaults['feature'], null);
 
         return [
             [

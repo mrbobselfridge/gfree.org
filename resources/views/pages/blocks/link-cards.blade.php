@@ -1,9 +1,14 @@
 @php
-    $background = $data['background'] ?? 'white';
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
     $cards = $data['cards'] ?? [];
 @endphp
 
-<section @class(['page-block', 'page-block--link-cards', 'page-block--bg-' . $background])>
+<section @class(['page-block', 'page-block--link-cards', 'page-block--bg-' . $background])
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div class="page-block__inner">
         @if (filled($data['eyebrow'] ?? null))
             <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>

@@ -2363,7 +2363,8 @@
 .concept-updates article {
     position: relative;
     padding: 24px;
-    background: white;
+    color: var(--concept-updates-card-fg, inherit);
+    background: var(--concept-updates-card-bg, white);
     border: 1px solid var(--twyxtco-line);
     border-radius: 8px;
     overflow: hidden;
@@ -2432,21 +2433,21 @@
 
 .concept-updates h3 a:hover,
 .concept-updates h3 a:focus-visible {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
 }
 
 .concept-card-row p,
 .concept-updates span {
     display: block;
     margin: 0;
-    color: var(--twyxtco-muted);
+    color: var(--concept-updates-card-muted, var(--twyxtco-muted));
     line-height: 1.55;
 }
 
 .concept-updates__card-message {
     margin-top: auto;
     padding-top: 18px;
-    color: var(--twyxtco-ink);
+    color: var(--concept-updates-card-fg, var(--twyxtco-ink));
     font-size: 0.95rem;
     font-weight: 650;
     line-height: 1.5;
@@ -2462,7 +2463,7 @@
 }
 
 .concept-updates__card-message a {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
     font-weight: 800;
 }
 
@@ -2754,19 +2755,19 @@
 .concept-updates--bg-forest .concept-updates__header a,
 .concept-updates--bg-black article p,
 .concept-updates--bg-forest article p {
-    color: var(--twyxtco-teal);
+    color: var(--concept-updates-link, var(--twyxtco-teal));
 }
 
 .concept-updates--bg-black article,
 .concept-updates--bg-forest article {
     color: white;
-    background: #1d1d1d;
+    background: var(--concept-updates-card-bg, #1d1d1d);
     border-color: rgba(255, 255, 255, 0.12);
 }
 
 .concept-updates--bg-black span,
 .concept-updates--bg-forest span {
-    color: rgba(255, 255, 255, 0.68);
+    color: var(--concept-updates-card-muted, rgba(255, 255, 255, 0.68));
 }
 
 .concept-updates--bg-black .concept-updates__carousel-button,
@@ -2788,13 +2789,13 @@
 .concept-updates--bg-forest .concept-updates__bullet-summary,
 .concept-updates--bg-black .concept-updates__bullet-meta,
 .concept-updates--bg-forest .concept-updates__bullet-meta {
-    color: rgba(255, 255, 255, 0.82);
+    color: var(--concept-updates-card-muted, rgba(255, 255, 255, 0.82));
 }
 
 .concept-updates--bg-black .concept-updates__bullet-item,
 .concept-updates--bg-forest .concept-updates__bullet-item {
     color: white;
-    background: #1d1d1d;
+    background: var(--concept-updates-card-bg, #1d1d1d);
     border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -2812,7 +2813,7 @@
 }
 
 .concept-updates__header a {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
     font-weight: 900;
     text-decoration: none;
 }
@@ -2828,7 +2829,7 @@
 }
 
 .concept-updates__search span {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
     font-size: 0.82rem;
     font-weight: 900;
     letter-spacing: 0.12em;
@@ -2855,10 +2856,10 @@
     width: min(640px, 100%);
     margin: 24px auto 0;
     padding: 18px;
-    color: var(--twyxtco-muted);
+    color: var(--concept-updates-card-muted, var(--twyxtco-muted));
     font-weight: 800;
     text-align: center;
-    background: white;
+    background: var(--concept-updates-card-bg, white);
     border: 1px solid var(--twyxtco-line);
     border-radius: 8px;
 }
@@ -2958,7 +2959,8 @@
     gap: 22px;
     align-items: start;
     padding: 18px;
-    background: white;
+    color: var(--concept-updates-card-fg, inherit);
+    background: var(--concept-updates-card-bg, white);
     border: 1px solid var(--twyxtco-line);
     border-radius: 8px;
 }
@@ -3003,14 +3005,14 @@
 
 .concept-updates__bullet-title:hover,
 .concept-updates__bullet-title:focus-visible {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
 }
 
 .concept-updates__bullet-summary {
     display: block;
     max-width: 70ch;
     margin-top: 8px;
-    color: var(--twyxtco-ink);
+    color: var(--concept-updates-card-fg, var(--twyxtco-ink));
     font-size: 1.08rem;
     line-height: 1.55;
 }
@@ -3021,14 +3023,14 @@
     align-items: baseline;
     gap: 7px;
     margin-top: 12px;
-    color: var(--twyxtco-muted);
+    color: var(--concept-updates-card-muted, var(--twyxtco-muted));
     font-size: 0.94rem;
     line-height: 1.35;
 }
 
 .concept-updates__bullet-label,
 .concept-updates__bullet-message {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
     font-weight: 900;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -3066,7 +3068,7 @@
 
 .concept-updates article p {
     margin: 0;
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
     font-size: 1.14rem;
     font-weight: 900;
     letter-spacing: 0.12em;
@@ -4401,7 +4403,7 @@
 
 .concept-page .concept-updates.concept-updates--bg-white .concept-updates__header a,
 .concept-page .concept-updates.concept-updates--bg-white article p {
-    color: var(--twyxtco-teal-dark);
+    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
 }
 
 .concept-page .concept-updates.concept-updates--bg-teal .concept-updates__header a,
@@ -4410,14 +4412,14 @@
 .concept-page .concept-updates.concept-updates--bg-gold article p,
 .concept-page .concept-updates.concept-updates--bg-clay .concept-updates__header a,
 .concept-page .concept-updates.concept-updates--bg-clay article p {
-    color: var(--twyxtco-ink);
+    color: var(--concept-updates-link, var(--twyxtco-ink));
 }
 
 .concept-page .concept-updates.concept-updates--bg-teal article,
 .concept-page .concept-updates.concept-updates--bg-gold article,
 .concept-page .concept-updates.concept-updates--bg-clay article {
     color: var(--twyxtco-ink);
-    background: rgba(255, 255, 255, 0.62);
+    background: var(--concept-updates-card-bg, rgba(255, 255, 255, 0.62));
     border-color: rgba(20, 20, 20, 0.14);
 }
 
@@ -4425,26 +4427,26 @@
 .concept-page .concept-updates.concept-updates--bg-teal span,
 .concept-page .concept-updates.concept-updates--bg-gold span,
 .concept-page .concept-updates.concept-updates--bg-clay span {
-    color: rgba(20, 20, 20, 0.74);
+    color: var(--concept-updates-card-muted, rgba(20, 20, 20, 0.74));
 }
 
 .concept-page .concept-updates.concept-updates--bg-black .concept-updates__header a,
 .concept-page .concept-updates.concept-updates--bg-black article p,
 .concept-page .concept-updates.concept-updates--bg-forest .concept-updates__header a,
 .concept-page .concept-updates.concept-updates--bg-forest article p {
-    color: var(--twyxtco-teal);
+    color: var(--concept-updates-link, var(--twyxtco-teal));
 }
 
 .concept-page .concept-updates.concept-updates--bg-black article,
 .concept-page .concept-updates.concept-updates--bg-forest article {
     color: white;
-    background: #1d1d1d;
+    background: var(--concept-updates-card-bg, #1d1d1d);
     border-color: rgba(255, 255, 255, 0.12);
 }
 
 .concept-page .concept-updates.concept-updates--bg-black span,
 .concept-page .concept-updates.concept-updates--bg-forest span {
-    color: rgba(255, 255, 255, 0.68);
+    color: var(--concept-updates-card-muted, rgba(255, 255, 255, 0.68));
 }
 
 .concept-page--hub.concept-page--accent-gold,

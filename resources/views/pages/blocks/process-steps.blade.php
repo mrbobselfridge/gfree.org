@@ -1,6 +1,12 @@
-@php($background = $data['background'] ?? 'white')
+@php($background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white'))
+@php($backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background))
 
-<section @class(['page-block', 'page-block--process-steps', 'page-block--bg-' . $background]) aria-label="{{ $data['heading'] ?? 'Process steps' }}">
+<section @class(['page-block', 'page-block--process-steps', 'page-block--bg-' . $background])
+    aria-label="{{ $data['heading'] ?? 'Process steps' }}"
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div class="page-block__inner page-process">
         <div class="page-process__intro">
             @if (filled($data['eyebrow'] ?? null))

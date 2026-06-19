@@ -7,14 +7,19 @@
         'none' => 'none',
         default => 'medium',
     };
-    $background = $data['background'] ?? 'white';
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
 @endphp
 
 @if (filled($code))
     @if ($contentWidth === 'none')
         {!! $code !!}
     @else
-        <section @class(['page-block', 'page-block--code', 'page-block--bg-' . $background])>
+        <section @class(['page-block', 'page-block--code', 'page-block--bg-' . $background])
+            @if ($backgroundStyle)
+                style="{{ $backgroundStyle }}"
+            @endif
+        >
             <div @class([
                 'page-block__inner',
                 'page-block__inner--text-' . $contentWidth => $contentWidth !== 'full',

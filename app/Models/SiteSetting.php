@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\SiteDesignPalette;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -16,11 +17,11 @@ use Illuminate\Support\Facades\Storage;
     'phone',
     'email',
     'office_hours',
+    'design_background_colors',
     'openai_api_key',
     'ai_content_prompt',
     'livestream_url',
     'giving_url',
-    'one_church_url',
     'facebook_url',
     'instagram_url',
     'youtube_url',
@@ -29,6 +30,12 @@ use Illuminate\Support\Facades\Storage;
 ])]
 class SiteSetting extends Model
 {
+    public function backgroundColors(): array
+    {
+        return SiteDesignPalette::normalizeBackgroundColors($this->design_background_colors)
+            ?: SiteDesignPalette::defaultBackgroundColors();
+    }
+
     public function logoUrl(): string
     {
         if (blank($this->site_logo_path)) {
@@ -63,5 +70,12 @@ class SiteSetting extends Model
         }
 
         return $value;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'design_background_colors' => 'array',
+        ];
     }
 }

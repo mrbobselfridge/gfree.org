@@ -1,5 +1,6 @@
 @php($items = collect($data['items'] ?? []))
-@php($background = $data['background'] ?? 'white')
+@php($background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white'))
+@php($backgroundStyle = \App\Support\SiteDesignPalette::relatedContentStyle($background))
 @php($layout = $data['layout'] ?? \App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID)
 @php($hasHeaderText = filled($data['heading'] ?? null) || filled($data['intro'] ?? null))
 @php($searchEnabled = (bool) ($data['enable_search'] ?? true))
@@ -13,6 +14,9 @@
         'concept-updates--layout-' . $layout,
         'concept-updates--bg-' . $background,
     ])
+        @if ($backgroundStyle)
+            style="{{ $backgroundStyle }}"
+        @endif
         @if ($searchEnabled)
             data-related-search-section
         @endif

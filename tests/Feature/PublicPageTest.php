@@ -7,6 +7,7 @@ use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
+use App\Support\SiteDesignPalette;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -615,6 +616,44 @@ class PublicPageTest extends TestCase
 
         $this->assertStringNotContainsString('page-block--bg-gold', $content);
         $this->assertSame(1, substr_count($content, 'page-block--code'));
+    }
+
+    public function test_content_blocks_render_custom_managed_background_color(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'design_background_colors' => [
+                ...SiteDesignPalette::defaultBackgroundColors(),
+                [
+                    'key' => 'midnight-blue',
+                    'name' => 'Midnight Blue',
+                    'hex' => '#102030',
+                ],
+            ],
+        ]);
+
+        Page::query()->create([
+            'title' => 'Custom Color',
+            'slug' => 'custom-color',
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'heading' => 'Custom background',
+                        'body' => '<p>Palette driven section.</p>',
+                        'background' => 'midnight-blue',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/custom-color')
+            ->assertOk()
+            ->assertSee('page-block--bg-midnight-blue', false)
+            ->assertSee('--page-block-bg: #102030', false)
+            ->assertSee('--page-block-fg: #ffffff', false)
+            ->assertSee('Palette driven section.');
     }
 
     public function test_image_blocks_do_not_require_body_content(): void

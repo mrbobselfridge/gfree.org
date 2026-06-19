@@ -9,7 +9,6 @@ use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\HomepageContent as HomepageContentModel;
-use App\Models\SiteSetting;
 use App\Models\WorkflowNotificationRule;
 use App\Support\CodeBlockAccess;
 use App\Support\WorkflowNotificationService;
@@ -193,11 +192,6 @@ class HomepageContent extends Page
     {
         $defaults = config('twyxtco.homepage');
         $featureUrl = $defaults['feature']['url'] ?? null;
-        $oneChurchUrl = SiteSetting::query()->value('one_church_url');
-
-        if ($oneChurchUrl && (blank($featureUrl) || $featureUrl === '#')) {
-            $featureUrl = $oneChurchUrl;
-        }
 
         return [
             'seo_title' => $record?->seo_title,

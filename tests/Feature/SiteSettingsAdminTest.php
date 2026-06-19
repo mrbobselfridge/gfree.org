@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\SiteDesignPalette;
 use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -26,10 +27,13 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Organizational Information')
             ->assertSee('Site logo')
             ->assertSee('Default page header image')
+            ->assertSee('Site Design elements')
+            ->assertSee('Background colors')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
             ->assertSee('AI Content Prompt')
             ->assertSee('Social and Video URLs')
+            ->assertDontSee('One Church URL')
             ->assertSee('Google Tracking')
             ->assertSee('Google Tag Manager container ID')
             ->assertSee('Google Analytics measurement ID')
@@ -61,6 +65,12 @@ class SiteSettingsAdminTest extends TestCase
             )
             ->assertSchemaComponentExists(
                 'site-settings-ai-settings',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'site-settings-site-design-elements',
                 checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
                     && $component->isCollapsed()
                     && $component->shouldPersistCollapsed(),
@@ -132,7 +142,6 @@ class SiteSettingsAdminTest extends TestCase
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
             ->set('data.livestream_url', 'https://live.example.com/twyxtco')
             ->set('data.giving_url', '/give')
-            ->set('data.one_church_url', '/connect-card?source=site')
             ->set('data.facebook_url', 'http://facebook.example/twyxtco')
             ->set('data.instagram_url', '/instagram')
             ->set('data.youtube_url', '/sermons')
@@ -143,11 +152,41 @@ class SiteSettingsAdminTest extends TestCase
             'id' => $settings->getKey(),
             'livestream_url' => 'https://live.example.com/twyxtco',
             'giving_url' => '/give',
-            'one_church_url' => '/connect-card?source=site',
             'facebook_url' => 'http://facebook.example/twyxtco',
             'instagram_url' => '/instagram',
             'youtube_url' => '/sermons',
         ]);
+    }
+
+    public function test_site_design_background_colors_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.design_background_colors', [
+                [
+                    'key' => 'white',
+                    'name' => 'White',
+                    'hex' => '#ffffff',
+                ],
+                [
+                    'name' => 'Midnight Blue',
+                    'hex' => '102030',
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $colors = $settings->refresh()->backgroundColors();
+
+        $this->assertSame([
+            ['key' => 'white', 'name' => 'White', 'hex' => '#ffffff'],
+            ['key' => 'midnight-blue', 'name' => 'Midnight Blue', 'hex' => '#102030'],
+        ], $colors);
+        $this->assertSame('Midnight Blue', SiteDesignPalette::normalizeBackgroundColors($colors)[1]['name']);
     }
 
     public function test_site_settings_url_fields_reject_non_url_text(): void

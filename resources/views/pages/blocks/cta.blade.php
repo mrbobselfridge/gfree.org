@@ -1,9 +1,6 @@
 @php
-    $background = match ($data['background'] ?? $data['style'] ?? 'black') {
-        'dark' => 'black',
-        'light' => 'white',
-        default => $data['background'] ?? $data['style'] ?? 'black',
-    };
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? $data['style'] ?? 'black');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
 
     $layout = $data['layout'] ?? 'content_left';
     $contentWidth = match ($data['content_width'] ?? 'medium') {
@@ -22,7 +19,11 @@
     'page-block--cta-content-right' => $layout === 'content_right',
     'page-block--cta-button-top' => $layout === 'button_top',
     'page-block--cta-button-bottom' => $layout === 'button_bottom',
-])>
+])
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth, 'page-cta'])>
         <div>
             @if (filled($data['eyebrow'] ?? null))
