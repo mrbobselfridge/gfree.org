@@ -12,6 +12,7 @@ use App\Models\Page;
 use App\Rules\HttpOrRelativeUrl;
 use App\Rules\PageSlugPath;
 use App\Rules\ValidPageParent;
+use App\Support\CodeBlockAccess;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -91,7 +92,7 @@ class PageForm
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),
-                    
+
                 Textarea::make('intro')
                     ->rows(2)
                     ->hintIcon(
@@ -189,7 +190,7 @@ class PageForm
                                 )
                                 ->hintColor('gray')
                                 ->columnSpan(1),
-                        ),   
+                        ),
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
                             ->boolean()
@@ -258,7 +259,7 @@ class PageForm
                         TextInput::make('seo_title')
                             ->label('SEO title')
                             ->maxLength(255)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->visible(fn (Get $get): bool => self::canManageSeoFields($get))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional browser and search title. Leave empty to use the page title.'
@@ -266,17 +267,30 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
+                        ToggleButtons::make('noindex_nofollow')
+                            ->label('No Index, No Follow')
+                            ->boolean()
+                            ->inline()
+                            ->default(false)
+                            ->required()
+                            ->visible(fn (Get $get): bool => self::canManageSeoFields($get))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Adds a robots noindex, nofollow meta tag to ask search engines not to index or follow links on this page.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+
                         Textarea::make('seo_description')
                             ->label('SEO description')
                             ->rows(1)
-                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->visible(fn (Get $get): bool => self::canManageSeoFields($get))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional short search/social description for this page. Aim for one clear sentence.'
                             )
                             ->hintColor('gray')
                             ->columnSpanFull(),
-
 
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
@@ -406,6 +420,11 @@ class PageForm
                 (string) $page->getKey() => self::parentPageOptionLabel($page),
             ])
             ->all();
+    }
+
+    public static function canManageSeoFields(Get $get): bool
+    {
+        return ! (bool) $get('is_redirect') && CodeBlockAccess::canManage();
     }
 
     public static function parentPageOptionLabel(Page $page): string

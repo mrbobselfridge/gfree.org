@@ -11,6 +11,7 @@ use App\Models\FileDocument;
 use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\User;
+use App\Support\AdminAccess;
 use Filament\Schemas\Components\Section;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -69,6 +70,7 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldHidden('featured_at')
             ->assertFormFieldHidden('feature_expires_at')
             ->assertFormFieldVisible('seo_title')
+            ->assertFormFieldVisible('noindex_nofollow')
             ->assertFormFieldVisible('seo_description')
             ->assertFormFieldVisible('parent_page_id')
             ->assertSee('Path')
@@ -122,8 +124,62 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldHidden('feature_expires_at')
             ->assertFormFieldHidden('show_site_chrome')
             ->assertFormFieldHidden('seo_title')
+            ->assertFormFieldHidden('noindex_nofollow')
             ->assertFormFieldHidden('seo_description')
             ->assertFormFieldHidden('parent_page_id');
+    }
+
+    public function test_page_seo_and_robots_fields_are_limited_to_admins_and_code_block_editors(): void
+    {
+        $page = Page::query()->create([
+            'title' => 'Private Campaign',
+            'slug' => 'private-campaign',
+            'seo_title' => 'Protected SEO Title',
+            'seo_description' => 'Protected SEO description.',
+            'noindex_nofollow' => true,
+            'is_published' => true,
+        ]);
+
+        $codeEditor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES, AdminAccess::CODE_BLOCKS],
+                'records' => [],
+            ],
+        ]);
+
+        Livewire::actingAs($codeEditor)
+            ->test(EditPage::class, ['record' => $page->getKey()])
+            ->assertFormFieldVisible('seo_title')
+            ->assertFormFieldVisible('noindex_nofollow')
+            ->assertFormFieldVisible('seo_description');
+
+        $pageEditor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES],
+                'records' => [],
+            ],
+        ]);
+
+        Livewire::actingAs($pageEditor)
+            ->test(EditPage::class, ['record' => $page->getKey()])
+            ->assertFormFieldHidden('seo_title')
+            ->assertFormFieldHidden('noindex_nofollow')
+            ->assertFormFieldHidden('seo_description')
+            ->set('data.title', 'Private Campaign Updated')
+            ->set('data.seo_title', 'Unauthorized SEO Title')
+            ->set('data.seo_description', 'Unauthorized SEO description.')
+            ->set('data.noindex_nofollow', false)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $page->refresh();
+
+        $this->assertSame('Private Campaign Updated', $page->title);
+        $this->assertSame('Protected SEO Title', $page->seo_title);
+        $this->assertSame('Protected SEO description.', $page->seo_description);
+        $this->assertTrue($page->noindex_nofollow);
     }
 
     public function test_page_feature_dates_show_only_after_a_parent_page_is_selected(): void

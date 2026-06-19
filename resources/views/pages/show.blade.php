@@ -6,6 +6,9 @@
     @include('partials.analytics-head')
     <title>{{ $page->seo_title ?: $page->title }} | {{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
     <meta name="description" content="{{ $page->seo_description ?: $page->intro ?: $settings?->tagline }}">
+    @if ($page->noindex_nofollow)
+        <meta name="robots" content="noindex, nofollow">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body @class([

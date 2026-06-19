@@ -901,7 +901,7 @@
                 <li><strong>Content blocks:</strong> Preferred flexible page layout.</li>
                 <li><strong>Show navigation and footer:</strong> Turn off only for special landing pages.</li>
                 <li><strong>Parent Page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
-                <li><strong>SEO title and description:</strong> Optional browser/search metadata.</li>
+                <li><strong>SEO title, SEO description, and No Index, No Follow:</strong> Optional search metadata shown only to admins and editors with Code Blocks access. No Index, No Follow asks search engines not to index the page or follow links on it.</li>
                 <li><strong>Make Page Live:</strong> Must be enabled for public display or for a redirect to work.</li>
             </ul>
             <h3>Path Rules</h3>

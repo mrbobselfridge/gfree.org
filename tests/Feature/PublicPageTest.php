@@ -71,6 +71,30 @@ class PublicPageTest extends TestCase
             ->assertSee('A page with an SEO-friendly path.');
     }
 
+    public function test_page_noindex_nofollow_toggle_outputs_robots_meta_tag(): void
+    {
+        Page::query()->create([
+            'title' => 'Private Landing Page',
+            'slug' => 'private-landing-page',
+            'noindex_nofollow' => true,
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Indexed Page',
+            'slug' => 'indexed-page',
+            'is_published' => true,
+        ]);
+
+        $this->get('/private-landing-page')
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+
+        $this->get('/indexed-page')
+            ->assertOk()
+            ->assertDontSee('<meta name="robots" content="noindex, nofollow">', false);
+    }
+
     public function test_page_can_hide_navigation_and_footer_for_minimal_landing_pages(): void
     {
         Page::query()->create([
