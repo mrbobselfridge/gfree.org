@@ -573,13 +573,13 @@ class ContentBlockBuilder
                         ->maxValue(50)
                         ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT)
                         ->required(),
+                    self::contentWidthSelect('Controls the maximum width of this child listing.', 'wide'),
+                    ...self::scheduleFields($withScheduleFields),
                     self::hint(Select::make('background'), 'Sets the background color for this listing section.')
                         ->options(self::backgroundOptions())
                         ->default('white')
                         ->required()
                         ->columnSpanFull(),
-                    self::contentWidthSelect('Controls the maximum width of this child listing.', 'wide'),
-                    ...self::scheduleFields($withScheduleFields),
                 ])
                 ->columns(2),
             Block::make('youtube_feed')
