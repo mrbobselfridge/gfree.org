@@ -94,7 +94,7 @@ class PageForm
                     ->columnSpan(1),
 
                 Textarea::make('intro')
-                    ->rows(2)
+                    ->rows(4)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Optional intro text shown near the top of the page when the page header is visible.'
@@ -103,7 +103,7 @@ class PageForm
                     ->columnSpan(2),
 
                 Textarea::make('message')
-                    ->rows(2)
+                    ->rows(4)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Optional styled supporting message shown with the page header. HTML is rendered as trusted admin content.'
