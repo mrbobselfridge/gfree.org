@@ -497,11 +497,11 @@ class ContentBlockBuilder
                     self::hint(TextInput::make('heading'), 'Optional heading displayed above the child cards.')
                         ->live(onBlur: true)
                         ->maxLength(255),
-                    self::hint(ToggleButtons::make('is_visible')
-                        ->label('Show child cards'), 'Turn this off to keep the block configured without showing it publicly.')
-                        ->boolean()
-                        ->inline()
-                        ->default(true)
+                    self::hint(Select::make('sort_preset')
+                        ->label('Sort cards by'), 'Controls the order of child pages and files before the Load more button reveals additional items.')
+                        ->options(fn (): array => ContentBlocks::relatedContentSortOptions())
+                        ->default(ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM)
+                        ->native(false)
                         ->required(),
                     self::hint(ToggleButtons::make('enable_search')
                         ->label('Enable search'), 'Shows a Search box that filters this child listing by page names, file names, tags, descriptions, and related content.')
@@ -510,20 +510,16 @@ class ContentBlockBuilder
                         ->default(true)
                         ->required(),
 
-                    // TextInput::make('intro')
+                    self::hint(ToggleButtons::make('is_visible')
+                        ->label('Show child cards'), 'Turn this off to keep the block configured without showing it publicly.')
+                        ->boolean()
+                        ->inline()
+                        ->default(true)
+                        ->required(),
+
+                        // TextInput::make('intro')
                     //     ->label('Intro')
                     //     ->maxLength(255),
-                    self::hint(ToggleButtons::make('content_type')
-                        ->label('Show'), 'Choose whether this block lists child pages, attached files, or both.')
-                        ->options([
-                            ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'All Pages',
-                            ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'All Files',
-                            ContentBlocks::RELATED_CONTENT_TYPE_BOTH => 'Both',
-                        ])
-                        ->inline()
-                        ->default(ContentBlocks::RELATED_CONTENT_TYPE_BOTH)
-                        ->required()
-                        ->live(),
                     self::hint(ToggleButtons::make('display_mode')
                         ->label('Mode'), 'Featured/active shows child pages within their featured window; All live shows every live child page.')
                         ->options([
@@ -547,12 +543,18 @@ class ContentBlockBuilder
                             ? ContentBlocks::RELATED_CONTENT_MODE_ALL
                             : ($state ?: ContentBlocks::RELATED_CONTENT_MODE_FEATURED))
                         ->required(),
-                    self::hint(Select::make('sort_preset')
-                        ->label('Sort cards by'), 'Controls the order of child pages and files before the Load more button reveals additional items.')
-                        ->options(fn (): array => ContentBlocks::relatedContentSortOptions())
-                        ->default(ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM)
-                        ->native(false)
-                        ->required(),
+                    self::hint(ToggleButtons::make('content_type')
+                        ->label('Show'), 'Choose whether this block lists child pages, attached files, or both.')
+                        ->options([
+                            ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'All Pages',
+                            ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'All Files',
+                            ContentBlocks::RELATED_CONTENT_TYPE_BOTH => 'Both',
+                        ])
+                        ->inline()
+                        ->default(ContentBlocks::RELATED_CONTENT_TYPE_BOTH)
+                        ->required()
+                        ->live(),
+
                     self::hint(Select::make('file_categories')
                         ->label('File categories'), 'Leave empty to include all file categories.')
                         ->options(fn (): array => FileDocument::categoryOptions())
