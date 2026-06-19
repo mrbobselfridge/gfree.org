@@ -54,11 +54,13 @@
             @endif
 
             @switch($layout)
+                @case(\App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO)
                 @case(\App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL)
                     @include('pages.partials.related-content-carousel', [
                         'items' => $items,
                         'initialCount' => $data['initial_item_limit'] ?? $data['item_limit'] ?? 3,
                         'searchEnabled' => $searchEnabled,
+                        'isAuto' => $layout === \App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO,
                     ])
                     @break
 

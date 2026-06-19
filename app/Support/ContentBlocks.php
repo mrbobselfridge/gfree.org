@@ -45,6 +45,8 @@ class ContentBlocks
 
     public const RELATED_CONTENT_LAYOUT_CARD_CAROUSEL = 'card_carousel';
 
+    public const RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO = 'card_carousel_auto';
+
     public const RELATED_CONTENT_LAYOUT_BULLET_LIST = 'bullet_list';
 
     public const RELATED_CONTENT_DEFAULT_LIMIT = 6;
@@ -116,6 +118,7 @@ class ContentBlocks
         return [
             self::RELATED_CONTENT_LAYOUT_CARD_GRID => 'Card grid',
             self::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL => 'Card carousel',
+            self::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO => 'Card Carousel Auto',
             self::RELATED_CONTENT_LAYOUT_BULLET_LIST => 'Label list',
         ];
     }

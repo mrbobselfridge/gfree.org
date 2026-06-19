@@ -1500,6 +1500,42 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('concept-updates--layout-card_carousel', false)
             ->assertSee('data-related-carousel', false)
+            ->assertDontSee('data-related-carousel-auto', false)
+            ->assertSee('data-related-carousel-previous', false)
+            ->assertSee('data-related-carousel-next', false)
+            ->assertDontSee('data-related-load-more', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child')
+            ->assertSee('Delta Child')
+            ->assertSee('Epsilon Child')
+            ->assertDontSee('Gamma Child');
+    }
+
+    public function test_related_content_auto_carousel_layout_uses_carousel_markup_and_auto_attributes(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO,
+            'enable_search' => false,
+            'item_limit' => 4,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Delta Child', 'Epsilon Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('concept-updates--layout-card_carousel_auto', false)
+            ->assertSee('data-related-carousel', false)
+            ->assertSee('data-related-carousel-auto', false)
+            ->assertSee('data-related-carousel-interval="4000"', false)
             ->assertSee('data-related-carousel-previous', false)
             ->assertSee('data-related-carousel-next', false)
             ->assertDontSee('data-related-load-more', false)
@@ -1538,6 +1574,35 @@ class PublicPageTest extends TestCase
             ->assertSee('Gamma Child');
     }
 
+    public function test_related_content_search_enabled_auto_carousel_renders_items_beyond_limit(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO,
+            'item_limit' => 2,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-search-section', false)
+            ->assertSee('data-related-search-input', false)
+            ->assertSee('data-related-carousel', false)
+            ->assertSee('data-related-carousel-auto', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child')
+            ->assertSee('Gamma Child');
+    }
+
     public function test_related_content_carousel_hides_arrows_when_items_do_not_exceed_limit(): void
     {
         $parent = $this->createRelatedContentParent([
@@ -1559,6 +1624,35 @@ class PublicPageTest extends TestCase
         $this->get('/resources')
             ->assertOk()
             ->assertSee('data-related-carousel', false)
+            ->assertDontSee('data-related-carousel-previous', false)
+            ->assertDontSee('data-related-carousel-next', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child')
+            ->assertSee('Gamma Child');
+    }
+
+    public function test_related_content_auto_carousel_hides_arrows_when_items_do_not_exceed_limit(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO,
+            'item_limit' => 3,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-carousel', false)
+            ->assertSee('data-related-carousel-auto', false)
             ->assertDontSee('data-related-carousel-previous', false)
             ->assertDontSee('data-related-carousel-next', false)
             ->assertSee('Alpha Child')

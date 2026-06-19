@@ -1,6 +1,7 @@
 @php($items = collect($items ?? []))
 @php($visibleCount = max(1, min(3, (int) ($initialCount ?? 3))))
 @php($searchEnabled = (bool) ($searchEnabled ?? false))
+@php($isAuto = (bool) ($isAuto ?? false))
 @php($hasControls = $items->count() > $visibleCount)
 @php($cardBasis = match ($visibleCount) {
     1 => '100%',
@@ -13,6 +14,10 @@
     data-related-carousel
     @if ($searchEnabled)
         data-related-search-listing
+    @endif
+    @if ($isAuto)
+        data-related-carousel-auto
+        data-related-carousel-interval="4000"
     @endif
     data-related-carousel-visible-count="{{ $visibleCount }}"
     style="--related-carousel-card-basis: {{ $cardBasis }}"
