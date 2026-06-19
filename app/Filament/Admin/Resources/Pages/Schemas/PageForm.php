@@ -104,11 +104,12 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(2),
 
-                RichEditorDefaults::configure(RichEditor::make('message'))
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional formatted supporting message shown with the page header. This is rendered as trusted admin content.'
-                    )
+                RichEditorDefaults::configure(RichEditor::make('message'), withAiRewrite: false)
+                    ->toolbarButtons([
+                        ['bold', 'italic', 'link', 'clearFormatting'],
+                        ['paragraph', 'bulletList', 'orderedList'],
+                        ['undo', 'redo'],
+                    ])
                     ->hintColor('gray')
                     ->columnSpan(2),
 
