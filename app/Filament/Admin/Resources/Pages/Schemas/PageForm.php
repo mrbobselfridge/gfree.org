@@ -184,7 +184,7 @@ class PageForm
                         ...ImageUpload::make(
                             'card_image_path',
                             'pages/card-images',
-                            'Card image (leave empty to use Header Image)',
+                            'Card image (No Image=Header)',
                             fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
