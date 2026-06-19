@@ -4366,6 +4366,7 @@
     border-color: rgba(20, 20, 20, 0.14);
 }
 
+.concept-page .concept-updates.concept-updates--bg-white.concept-updates--layout-bullet_list span,
 .concept-page .concept-updates.concept-updates--bg-teal span,
 .concept-page .concept-updates.concept-updates--bg-gold span,
 .concept-page .concept-updates.concept-updates--bg-clay span {
