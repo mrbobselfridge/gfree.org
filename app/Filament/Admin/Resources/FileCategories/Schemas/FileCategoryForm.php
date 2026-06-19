@@ -37,7 +37,8 @@ class FileCategoryForm
                         Heroicon::OutlinedInformationCircle,
                         'Optional. When a file uses this category, this page is suggested as the file parent and can still be changed.'
                     )
-                    ->hintColor('gray'),
+                    ->hintColor('gray')
+                    ->columnSpanFull(),
                 Textarea::make('extraction_instructions')
                     ->label('Extraction Instructions')
                     ->helperText('Used by Extract File Content AI for files in this category.')
