@@ -3,7 +3,9 @@
 namespace App\Filament\Admin\Resources\FileCategories\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Support\FileCategoryExtractionInstructions;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
@@ -24,6 +26,18 @@ class FileCategoryForm
                     ->required()
                     ->numeric()
                     ->default(0),
+                Select::make('default_parent_page_id')
+                    ->label('Default Parent Page')
+                    ->options(fn (): array => PageForm::parentPageOptions())
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->exists('pages', 'id')
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional. When a file uses this category, this page is suggested as the file parent and can still be changed.'
+                    )
+                    ->hintColor('gray'),
                 Textarea::make('extraction_instructions')
                     ->label('Extraction Instructions')
                     ->helperText('Used by Extract File Content AI for files in this category.')

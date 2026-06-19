@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms\RichContentPlugins;
 
+use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\FileCategory;
 use App\Models\FileDocument;
@@ -22,6 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Tiptap\Core\Extension;
@@ -112,6 +114,14 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                                         ->options(fn (): array => FileCategory::options())
                                         ->searchable()
                                         ->preload()
+                                        ->live()
+                                        ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                            $defaultParentPageId = FileCategory::defaultParentPageIdFor($state);
+
+                                            if ($defaultParentPageId !== null) {
+                                                $set('new_parent_page_id', $defaultParentPageId);
+                                            }
+                                        })
                                         ->createOptionForm([
                                             TextInput::make('name')
                                                 ->label('Category')
@@ -124,6 +134,14 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                                             ->name)
                                         ->default(FileCategory::DEFAULT_NAME)
                                         ->required(fn (Get $get): bool => filled($get('upload'))),
+                                    Select::make('new_parent_page_id')
+                                        ->label('Parent Page - optional')
+                                        ->options(fn (): array => PageForm::parentPageOptions())
+                                        ->searchable()
+                                        ->preload()
+                                        ->native(false)
+                                        ->exists('pages', 'id')
+                                        ->helperText('Optional. Defaults from the selected category when that category has a default parent page.'),
                                     FileUpload::make('upload')
                                         ->label('File')
                                         ->helperText('Uploading here creates a public File Library record and inserts a link to it.')

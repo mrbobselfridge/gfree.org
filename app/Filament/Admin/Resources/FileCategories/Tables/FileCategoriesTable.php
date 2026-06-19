@@ -30,6 +30,10 @@ class FileCategoriesTable
                     ->sortable(),
                 TextColumn::make('sort_order')
                     ->sortable(),
+                TextColumn::make('defaultParentPage.title')
+                    ->label('Default Parent')
+                    ->placeholder('None')
+                    ->toggleable(),
                 TextColumn::make('files_count')
                     ->label('Files')
                     ->state(fn (FileCategory $record): int => FileDocument::query()

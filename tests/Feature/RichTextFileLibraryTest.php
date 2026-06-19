@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Forms\RichContentPlugins\FileLibraryLinkPlugin;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
+use App\Models\Page;
 use App\Models\User;
 use App\Support\FileLibrary;
 use App\Support\RichTextFileLibrary;
@@ -71,6 +73,18 @@ class RichTextFileLibraryTest extends TestCase
         $admin = User::factory()->create([
             'role' => User::ROLE_ADMIN,
         ]);
+        $formsPage = Page::query()->create([
+            'title' => 'Forms',
+            'slug' => 'forms',
+            'is_published' => true,
+        ]);
+
+        FileCategory::query()->updateOrCreate([
+            'name' => 'Form',
+        ], [
+            'sort_order' => 10,
+            'default_parent_page_id' => $formsPage->getKey(),
+        ]);
 
         Storage::disk(FileLibrary::DISK)->put('file-library/documents/new-form.pdf', 'document');
 
@@ -85,6 +99,7 @@ class RichTextFileLibraryTest extends TestCase
         $this->assertSame('New Form', $document->title);
         $this->assertSame('form-new-form', $document->file_name);
         $this->assertSame('Form', $document->category);
+        $this->assertTrue($document->parentPage->is($formsPage));
         $this->assertTrue($document->is_published);
         $this->assertSame(FileDocument::VISIBILITY_PUBLIC, $document->visibility);
         $this->assertSame($admin->getKey(), $document->uploaded_by_id);

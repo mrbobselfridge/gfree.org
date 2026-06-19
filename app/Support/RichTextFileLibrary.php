@@ -86,11 +86,15 @@ class RichTextFileLibrary
         }
 
         $category = trim((string) ($data['new_category'] ?? '')) ?: FileCategory::DEFAULT_NAME;
+        $parentPageId = array_key_exists('new_parent_page_id', $data)
+            ? (filled($data['new_parent_page_id']) ? (int) $data['new_parent_page_id'] : null)
+            : FileCategory::defaultParentPageIdFor($category);
 
         $document = FileDocument::query()->create([
             'title' => $title,
             'file_name' => FileDocument::makeUniqueFileNameForCategoryTitle($category, $title),
             'category' => $category,
+            'parent_page_id' => $parentPageId,
             'is_published' => true,
             'visibility' => FileDocument::VISIBILITY_PUBLIC,
             'uploaded_by_id' => $user?->getKey(),

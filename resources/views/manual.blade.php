@@ -851,13 +851,13 @@
             <p>File Library manages downloadable documents as their own content area. Use it for PDFs, forms, bulletins, policies, spreadsheets, handouts, and other files that need stable links or optional extracted web content.</p>
             <h3>Common Fields</h3>
             <ul>
-                <li><strong>Category:</strong> Groups the file and controls category-specific AI extraction instructions.</li>
+                <li><strong>Category:</strong> Groups the file, controls category-specific AI extraction instructions, and can suggest a default parent page.</li>
                 <li><strong>Title:</strong> Admin/public title for the file.</li>
                 <li><strong>Path:</strong> Stable file URL under <code>/files/</code>. New uploads can fill this from the uploaded filename, and the refresh icon can regenerate a <code>category-title</code> path such as <code>bulletin-sunday-worship-guide</code>.</li>
                 <li><strong>Tags:</strong> Optional labels shared with Media Library image tags. Uploading a new file or editing the title can add matching tags automatically.</li>
                 <li><strong>Make File Live:</strong> Turns the public file URL on or off.</li>
                 <li><strong>Public or private:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
-                <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Files are children only.</li>
+                <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Selecting a category can fill this from the category default, and you can still change it.</li>
                 <li><strong>Optional content:</strong> Formatted notes or AI-extracted content for the file record.</li>
                 <li><strong>Publish date, Created Date, Updated Date:</strong> Publish date controls availability; created/updated dates are shown for reference.</li>
             </ul>
@@ -865,6 +865,7 @@
             <ul>
                 <li>Use the tag-shaped <strong>Categories</strong> icon on the File Library page to manage file categories.</li>
                 <li>File Categories are intentionally not shown as a separate main navigation item.</li>
+                <li>Each category can have an optional <strong>Default Parent Page</strong>. Files using that category suggest this page as their parent, but the file can still be changed to another parent.</li>
                 <li>Each category can have an optional <strong>Default Card Image</strong>. Files with their own card image use the file image first; files without one use the category image before the standard file fallback.</li>
                 <li>Each category has <strong>Extraction Instructions</strong> used by the file extraction AI action for files in that category.</li>
                 <li>Keep instructions direct. Example: what to preserve, what to ignore, and what output style is useful for that document type.</li>

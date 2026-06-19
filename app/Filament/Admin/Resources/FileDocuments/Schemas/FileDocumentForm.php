@@ -49,6 +49,12 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                $defaultParentPageId = FileCategory::defaultParentPageIdFor($state);
+
+                                if ($defaultParentPageId !== null) {
+                                    $set('parent_page_id', $defaultParentPageId);
+                                }
+
                                 if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $old, $get('title'), $record)) {
                                     return;
                                 }

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'name',
     'sort_order',
+    'default_parent_page_id',
     'default_card_image_path',
     'extraction_instructions',
 ])]
@@ -32,5 +34,23 @@ class FileCategory extends Model
         }
 
         return $options;
+    }
+
+    public static function defaultParentPageIdFor(?string $category): ?int
+    {
+        if (blank($category)) {
+            return null;
+        }
+
+        $pageId = static::query()
+            ->where('name', $category)
+            ->value('default_parent_page_id');
+
+        return filled($pageId) ? (int) $pageId : null;
+    }
+
+    public function defaultParentPage(): BelongsTo
+    {
+        return $this->belongsTo(Page::class, 'default_parent_page_id');
     }
 }

@@ -67,6 +67,11 @@ class FileLibraryTest extends TestCase
         $admin = User::factory()->create([
             'role' => User::ROLE_ADMIN,
         ]);
+        $defaultParent = Page::query()->create([
+            'title' => 'Forms',
+            'slug' => 'forms',
+            'is_published' => true,
+        ]);
 
         $this->actingAs($admin)
             ->get('/admin/file-categories')
@@ -96,9 +101,11 @@ class FileLibraryTest extends TestCase
         Livewire::actingAs($admin)
             ->test(CreateFileCategory::class)
             ->assertFormFieldExists('default_card_image_path')
+            ->assertFormFieldExists('default_parent_page_id')
             ->assertFormFieldExists('extraction_instructions')
             ->set('data.name', 'Volunteer Packet')
             ->set('data.sort_order', 15)
+            ->set('data.default_parent_page_id', $defaultParent->getKey())
             ->set('data.default_card_image_path', ['file-categories/default-card-images/volunteer-packet.jpg'])
             ->set('data.extraction_instructions', 'Only extract volunteer signup steps.')
             ->call('create')
@@ -107,6 +114,7 @@ class FileLibraryTest extends TestCase
         $category = FileCategory::query()->where('name', 'Volunteer Packet')->firstOrFail();
 
         $this->assertSame(15, $category->sort_order);
+        $this->assertTrue($category->defaultParentPage->is($defaultParent));
         $this->assertSame('file-categories/default-card-images/volunteer-packet.jpg', $category->default_card_image_path);
         $this->assertSame('Only extract volunteer signup steps.', $category->extraction_instructions);
         $this->assertArrayHasKey('Volunteer Packet', FileCategory::options());
@@ -154,6 +162,12 @@ class FileLibraryTest extends TestCase
         ]))
             ->test(ListFileDocuments::class)
             ->assertTableColumnExists('sort_order', fn ($column): bool => $column->isSortable());
+
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(ListFileCategories::class)
+            ->assertTableColumnExists('defaultParentPage.title');
 
         $this->actingAs(User::factory()->create([
             'role' => User::ROLE_ADMIN,
@@ -295,6 +309,67 @@ class FileLibraryTest extends TestCase
         $this->assertSame(['bulletin'], $document->tags);
         $this->assertSame('2026-06-16 00:00:00', $document->publish_at?->format('Y-m-d H:i:s'));
         $this->assertSame('sunday-bulletin-20260616.pdf', $document->currentVersion->original_name);
+    }
+
+    public function test_file_category_default_parent_page_is_suggested_when_file_category_changes(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+        $formsPage = Page::query()->create([
+            'title' => 'Forms',
+            'slug' => 'forms',
+            'is_published' => true,
+        ]);
+        $resourcesPage = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'is_published' => true,
+        ]);
+        $manualPage = Page::query()->create([
+            'title' => 'Manuals',
+            'slug' => 'manuals',
+            'is_published' => true,
+        ]);
+
+        FileCategory::query()->updateOrCreate([
+            'name' => 'Form',
+        ], [
+            'sort_order' => 10,
+            'default_parent_page_id' => $formsPage->getKey(),
+        ]);
+        FileCategory::query()->updateOrCreate([
+            'name' => 'Manual',
+        ], [
+            'sort_order' => 20,
+            'default_parent_page_id' => $manualPage->getKey(),
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.category', 'Form')
+            ->assertSet('data.parent_page_id', $formsPage->getKey())
+            ->set('data.parent_page_id', $resourcesPage->getKey())
+            ->assertSet('data.parent_page_id', $resourcesPage->getKey());
+
+        $document = FileDocument::query()->create([
+            'title' => 'Connection Card',
+            'file_name' => 'connection-card',
+            'category' => 'Form',
+            'parent_page_id' => $formsPage->getKey(),
+            'visibility' => FileDocument::VISIBILITY_PUBLIC,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(EditFileDocument::class, ['record' => $document->getKey()])
+            ->set('data.category', 'Manual')
+            ->assertSet('data.parent_page_id', $manualPage->getKey())
+            ->set('data.parent_page_id', $resourcesPage->getKey())
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertTrue($document->refresh()->parentPage->is($resourcesPage));
+        $this->assertSame('Manual', $document->category);
     }
 
     public function test_create_file_document_adds_pretty_uploaded_filename_date_to_title(): void
