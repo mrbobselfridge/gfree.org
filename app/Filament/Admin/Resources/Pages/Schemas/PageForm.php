@@ -274,7 +274,7 @@ class PageForm
                                 'Optional short search/social description for this page. Aim for one clear sentence.'
                             )
                             ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->columnSpanFull(),
 
 
                         Select::make('parent_page_id')
