@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Pages\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
@@ -15,6 +16,7 @@ use App\Rules\ValidPageParent;
 use App\Support\CodeBlockAccess;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -102,11 +104,10 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(2),
 
-                Textarea::make('message')
-                    ->rows(4)
+                RichEditorDefaults::configure(RichEditor::make('message'))
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional styled supporting message shown with the page header. HTML is rendered as trusted admin content.'
+                        'Optional formatted supporting message shown with the page header. This is rendered as trusted admin content.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(1),

@@ -12,6 +12,7 @@ use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\User;
 use App\Support\AdminAccess;
+use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Components\Section;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -61,6 +62,7 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('show_page_header')
             ->assertFormFieldVisible('hero_label')
             ->assertFormFieldVisible('intro')
+            ->assertFormFieldExists('message', fn (RichEditor $field): bool => $field->getName() === 'message')
             ->assertFormFieldVisible('hero_image_path')
             ->assertFormFieldVisible('card_image_path')
             ->assertFormFieldVisible('slug')

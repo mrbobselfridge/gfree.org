@@ -897,7 +897,7 @@
             <ul>
                 <li><strong>Title:</strong> The page name.</li>
                 <li><strong>Path:</strong> The URL path. Example: a path of <code>new-here</code> creates <code>/new-here</code>. Nested paths such as <code>resources/forms</code> are allowed.</li>
-                <li><strong>Message:</strong> Optional styled content shown in the page header. Plain text works, and trusted HTML can be used for short callouts, contact details, links, lists, or other header notes.</li>
+                <li><strong>Message:</strong> Optional rich text shown in the page header for short callouts, contact details, links, lists, or other header notes.</li>
                 <li><strong>Content blocks:</strong> Preferred flexible page layout.</li>
                 <li><strong>Show navigation and footer:</strong> Turn off only for special landing pages.</li>
                 <li><strong>Parent Page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
