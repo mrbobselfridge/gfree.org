@@ -189,6 +189,7 @@ class PageForm
                                 )
                                 ->hintColor('gray')
                                 ->columnSpan(1),
+                        ),   
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
                             ->boolean()
@@ -303,8 +304,6 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
-
-                        ),
                     ])
                     ->columns(4)
                     ->columnSpanFull()
