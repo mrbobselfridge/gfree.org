@@ -1,4 +1,18 @@
-<section class="concept-hero" data-hero-carousel>
+@php
+    $heroAutoRotate = (bool) ($heroBannersAutoRotate ?? false);
+    $primaryLabel = $hero['primary_label'] ?? null;
+    $secondaryLabel = $hero['secondary_label'] ?? null;
+@endphp
+
+<section
+    class="concept-hero"
+    data-hero-carousel
+    @if ($heroAutoRotate)
+        data-hero-auto
+        data-hero-interval="20000"
+        data-hero-fade-duration="3000"
+    @endif
+>
     <div class="concept-hero__image" data-hero-image style="background-image: url('{{ $hero['image_url'] }}')"></div>
 
     <div class="concept-hero__content">
@@ -7,11 +21,6 @@
         <p data-hero-subtitle @if (blank($hero['subtitle'])) hidden @endif>{{ $hero['subtitle'] }}</p>
 
         <div class="concept-actions">
-            @php
-                $primaryLabel = $hero['primary_label'] ?? null;
-                $secondaryLabel = $hero['secondary_label'] ?? null;
-            @endphp
-
             <a
                 href="{{ $hero['primary_url'] }}"
                 class="concept-button concept-button--primary"
@@ -38,6 +47,11 @@
                 <button type="button" data-hero-previous aria-label="Previous homepage banner">
                     <span aria-hidden="true">&larr;</span>
                 </button>
+                @if ($heroAutoRotate)
+                    <button type="button" data-hero-pause aria-label="Pause homepage banner rotation" aria-pressed="false">
+                        <span data-hero-pause-label>Pause</span>
+                    </button>
+                @endif
                 <button type="button" data-hero-next aria-label="Next homepage banner">
                     <span aria-hidden="true">&rarr;</span>
                 </button>

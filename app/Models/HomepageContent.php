@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable([
     'seo_title',
     'seo_description',
+    'hero_banners_auto_rotate',
     'intro_eyebrow',
     'intro_title',
     'intro_body',
@@ -28,6 +29,7 @@ class HomepageContent extends Model
         return [
             'process_steps' => 'array',
             'content_blocks' => 'array',
+            'hero_banners_auto_rotate' => 'boolean',
         ];
     }
 }

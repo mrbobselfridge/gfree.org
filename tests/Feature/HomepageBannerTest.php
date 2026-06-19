@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\HomepageBanner;
+use App\Models\HomepageContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -170,6 +171,8 @@ class HomepageBannerTest extends TestCase
         $response
             ->assertSee('data-hero-previous', false)
             ->assertSee('data-hero-next', false)
+            ->assertDontSee('data-hero-auto', false)
+            ->assertDontSee('data-hero-pause', false)
             ->assertDontSee('data-hero-count', false)
             ->assertDontSee('1 / 2')
             ->assertSee('Active Banner One')
@@ -177,5 +180,34 @@ class HomepageBannerTest extends TestCase
             ->assertDontSee('Draft Banner')
             ->assertDontSee('Future Banner')
             ->assertDontSee('Expired Banner');
+    }
+
+    public function test_homepage_banner_auto_rotation_renders_timing_and_pause_controls_when_enabled(): void
+    {
+        HomepageContent::query()->create([
+            'hero_banners_auto_rotate' => true,
+        ]);
+
+        HomepageBanner::query()->create([
+            'title' => 'Active Banner One',
+            'is_published' => true,
+        ]);
+
+        HomepageBanner::query()->create([
+            'title' => 'Active Banner Two',
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-hero-auto', false)
+            ->assertSee('data-hero-interval="20000"', false)
+            ->assertSee('data-hero-fade-duration="3000"', false)
+            ->assertSee('data-hero-pause', false)
+            ->assertSee('Pause')
+            ->assertSee('data-hero-previous', false)
+            ->assertSee('data-hero-next', false)
+            ->assertSee('Active Banner One')
+            ->assertSee('Active Banner Two');
     }
 }

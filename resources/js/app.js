@@ -91,13 +91,7 @@ document.querySelectorAll('[data-site-header]').forEach((header) => {
     });
 });
 
-const updateHeroSlide = (carousel, slides, index) => {
-    const slide = slides[index];
-
-    if (! slide) {
-        return;
-    }
-
+const applyHeroSlide = (carousel, slide) => {
     carousel.querySelector('[data-hero-image]').style.backgroundImage = `url("${slide.image_url}")`;
     carousel.querySelector('[data-hero-eyebrow]').textContent = slide.eyebrow;
     carousel.querySelector('[data-hero-title]').textContent = slide.title;
@@ -120,7 +114,41 @@ const updateHeroSlide = (carousel, slides, index) => {
     secondary.href = slide.secondary_url;
     setLinkTarget(secondary, slide.secondary_url);
     secondary.hidden = ! secondaryLabel;
+};
 
+const updateHeroSlide = (carousel, slides, index, shouldFade = false) => {
+    const slide = slides[index];
+
+    if (! slide) {
+        return Promise.resolve();
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (! shouldFade || prefersReducedMotion) {
+        applyHeroSlide(carousel, slide);
+
+        return Promise.resolve();
+    }
+
+    const duration = Number.parseInt(carousel.dataset.heroFadeDuration || '3000', 10);
+    const totalDuration = Number.isNaN(duration) || duration < 1 ? 3000 : duration;
+    const phaseDuration = Math.round(totalDuration / 2);
+
+    carousel.style.setProperty('--hero-fade-duration', `${phaseDuration}ms`);
+    carousel.classList.add('is-hero-fading');
+
+    return new Promise((resolve) => {
+        window.setTimeout(() => {
+            applyHeroSlide(carousel, slide);
+
+            window.requestAnimationFrame(() => {
+                carousel.classList.remove('is-hero-fading');
+
+                window.setTimeout(resolve, phaseDuration);
+            });
+        }, phaseDuration);
+    });
 };
 
 document.querySelectorAll('[data-hero-carousel]').forEach((carousel) => {
@@ -143,18 +171,97 @@ document.querySelectorAll('[data-hero-carousel]').forEach((carousel) => {
     }
 
     let index = 0;
+    let isChangingSlide = false;
+    let autoTimer = null;
+    let isPaused = false;
     const previous = carousel.querySelector('[data-hero-previous]');
     const next = carousel.querySelector('[data-hero-next]');
+    const pause = carousel.querySelector('[data-hero-pause]');
+    const pauseLabel = carousel.querySelector('[data-hero-pause-label]');
+    const isAuto = carousel.hasAttribute('data-hero-auto');
+    const interval = Number.parseInt(carousel.dataset.heroInterval || '20000', 10);
+    const autoInterval = Number.isNaN(interval) || interval < 1 ? 20000 : interval;
+
+    const stopAuto = () => {
+        if (! autoTimer) {
+            return;
+        }
+
+        window.clearInterval(autoTimer);
+        autoTimer = null;
+    };
+
+    const startAuto = () => {
+        if (! isAuto || isPaused || autoTimer) {
+            return;
+        }
+
+        autoTimer = window.setInterval(() => {
+            changeSlide(index + 1, false);
+        }, autoInterval);
+    };
+
+    const updatePauseButton = () => {
+        if (! pause || ! pauseLabel) {
+            return;
+        }
+
+        pause.setAttribute('aria-pressed', String(isPaused));
+        pause.setAttribute('aria-label', isPaused ? 'Resume homepage banner rotation' : 'Pause homepage banner rotation');
+        pauseLabel.textContent = isPaused ? 'Play' : 'Pause';
+    };
+
+    const changeSlide = (nextIndex, shouldRestartAuto = true) => {
+        if (isChangingSlide) {
+            return;
+        }
+
+        isChangingSlide = true;
+        stopAuto();
+        index = (nextIndex + slides.length) % slides.length;
+
+        updateHeroSlide(carousel, slides, index, true).finally(() => {
+            isChangingSlide = false;
+
+            if (shouldRestartAuto) {
+                startAuto();
+            }
+        });
+    };
 
     previous?.addEventListener('click', () => {
-        index = (index - 1 + slides.length) % slides.length;
-        updateHeroSlide(carousel, slides, index);
+        changeSlide(index - 1);
     });
 
     next?.addEventListener('click', () => {
-        index = (index + 1) % slides.length;
-        updateHeroSlide(carousel, slides, index);
+        changeSlide(index + 1);
     });
+
+    pause?.addEventListener('click', () => {
+        isPaused = ! isPaused;
+        updatePauseButton();
+
+        if (isPaused) {
+            stopAuto();
+
+            return;
+        }
+
+        startAuto();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAuto();
+
+            return;
+        }
+
+        startAuto();
+    });
+
+    updatePauseButton();
+    startAuto();
 });
 
 document.querySelectorAll('[data-related-modal-open]').forEach((trigger) => {

@@ -2,15 +2,30 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Pages\HomepageContent as HomepageContentPage;
 use App\Models\HomepageContent;
 use App\Models\SiteSetting;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class HomepageContentTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_homepage_content_saves_hero_banner_auto_rotation_toggle(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(HomepageContentPage::class)
+            ->assertFormFieldExists('hero_banners_auto_rotate')
+            ->set('data.hero_banners_auto_rotate', true)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertTrue(HomepageContent::query()->firstOrFail()->hero_banners_auto_rotate);
+    }
 
     public function test_homepage_content_overrides_static_homepage_sections(): void
     {

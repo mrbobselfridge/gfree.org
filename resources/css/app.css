@@ -2197,6 +2197,16 @@
     background-color: #ddd;
     background-position: center;
     background-size: cover;
+    transition: opacity var(--hero-fade-duration, 1500ms) ease;
+}
+
+.concept-hero__content {
+    transition: opacity var(--hero-fade-duration, 1500ms) ease;
+}
+
+.concept-hero.is-hero-fading .concept-hero__image,
+.concept-hero.is-hero-fading .concept-hero__content {
+    opacity: 0;
 }
 
 .concept-hero__content h1,
@@ -2255,6 +2265,12 @@
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.28);
     border-radius: 999px;
+}
+
+.concept-hero__controls [data-hero-pause] {
+    width: auto;
+    min-width: 78px;
+    padding: 0 14px;
 }
 
 .concept-hero__controls span {

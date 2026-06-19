@@ -16,6 +16,7 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -127,6 +128,25 @@ class HomepageContent extends Page
             ->operation('edit')
             ->statePath('data')
             ->components([
+                Section::make('Homepage Hero')
+                    ->description('Controls the public homepage hero banner rotation.')
+                    ->icon(Heroicon::OutlinedPhoto)
+                    ->schema([
+                        ToggleButtons::make('hero_banners_auto_rotate')
+                            ->label('Auto-rotate hero banners')
+                            ->boolean()
+                            ->inline()
+                            ->default(false)
+                            ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'When enabled, multiple live homepage banners fade from one to the next every 20 seconds. Visitors can pause the rotation on the public page.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
                 Section::make('Homepage Content Blocks')
                     ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at TwyxtCo.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
@@ -196,6 +216,7 @@ class HomepageContent extends Page
         return [
             'seo_title' => $record?->seo_title,
             'seo_description' => $record?->seo_description,
+            'hero_banners_auto_rotate' => $record?->hero_banners_auto_rotate ?? false,
             'content_blocks' => [
                 [
                     'type' => 'info_strip',

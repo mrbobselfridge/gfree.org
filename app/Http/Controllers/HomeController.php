@@ -40,6 +40,7 @@ class HomeController extends Controller
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
             'hero' => $hero,
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
+            'heroBannersAutoRotate' => (bool) ($homepageContent?->hero_banners_auto_rotate ?? false),
             'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $now),
             'socialLinks' => $this->socialLinks($settings),
         ]);
