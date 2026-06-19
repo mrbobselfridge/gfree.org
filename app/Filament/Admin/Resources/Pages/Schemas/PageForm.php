@@ -127,17 +127,6 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(1),
 
-                ViewField::make('qr_code')
-                    ->label('QR Code')
-                    ->hiddenLabel()
-                    ->view('filament.admin.forms.components.page-qr-code')
-                    ->viewData(fn (?Page $record): array => [
-                        'qrCode' => $record?->qrCode()->first(),
-                    ])
-                    ->visible(fn (?string $operation): bool => $operation === 'edit')
-                    ->dehydrated(false)
-                    ->columnSpan(1),
-
                 TextInput::make('sort_order')
                     ->required()
                     ->numeric()
@@ -148,6 +137,17 @@ class PageForm
                     )
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->hintColor('gray')
+                    ->columnSpan(1),
+
+                ViewField::make('qr_code')
+                    ->label('QR Code')
+                    ->hiddenLabel()
+                    ->view('filament.admin.forms.components.page-qr-code')
+                    ->viewData(fn (?Page $record): array => [
+                        'qrCode' => $record?->qrCode()->first(),
+                    ])
+                    ->visible(fn (?string $operation): bool => $operation === 'edit')
+                    ->dehydrated(false)
                     ->columnSpan(1),
 
                 ViewField::make('section_controls')
