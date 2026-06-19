@@ -51,6 +51,8 @@ class ContentBlocks
 
     public const RELATED_CONTENT_DEFAULT_LIMIT = 6;
 
+    public const RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS = 10;
+
     public const YOUTUBE_FEED_DEFAULT_LIMIT = 12;
 
     public const DEFAULT_PAGE_CARD_IMAGE_PATH = 'images/page-card-default.svg';
@@ -163,12 +165,24 @@ class ContentBlocks
             ? $data['sort_preset']
             : self::defaultRelatedContentSortPreset($data);
         $data['item_limit'] = self::relatedContentLimit($data);
+        $data['carousel_auto_delay_seconds'] = self::relatedContentAutoDelaySeconds($data);
         $data['associated_parent_page_id'] = filled($data['associated_parent_page_id'] ?? null)
             ? (int) $data['associated_parent_page_id']
             : null;
         $data['file_categories'] = self::normalizeStringList($data['file_categories'] ?? []);
 
         return $data;
+    }
+
+    private static function relatedContentAutoDelaySeconds(array $data): int
+    {
+        $seconds = $data['carousel_auto_delay_seconds'] ?? null;
+
+        if (! is_numeric($seconds)) {
+            return self::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS;
+        }
+
+        return max(1, (int) $seconds);
     }
 
     private static function relatedContentParentPage(?Page $page, array $data): ?Page

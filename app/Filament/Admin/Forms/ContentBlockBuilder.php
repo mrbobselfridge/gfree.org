@@ -492,8 +492,17 @@ class ContentBlockBuilder
                         ->label('Display format'), 'Choose how the child listing should appear on the public page.')
                         ->options(fn (): array => ContentBlocks::relatedContentLayoutOptions())
                         ->default(ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID)
+                        ->live()
                         ->native(false)
                         ->required(),
+                    self::hint(TextInput::make('carousel_auto_delay_seconds')
+                        ->label('Auto-rotate delay seconds')
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(300)
+                        ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS)
+                        ->required()
+                        ->visible(fn (Get $get): bool => $get('layout') === ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO), 'Seconds to wait before moving to the next card when Display format is Card Carousel Auto.'),
                     self::hint(TextInput::make('heading'), 'Optional heading displayed above the child cards.')
                         ->live(onBlur: true)
                         ->maxLength(255),

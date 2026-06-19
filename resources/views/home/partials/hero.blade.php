@@ -1,5 +1,7 @@
 @php
     $heroAutoRotate = (bool) ($heroBannersAutoRotate ?? false);
+    $heroRotationDelayMilliseconds = max(1000, (int) ($heroBannersRotationDelayMilliseconds ?? 20000));
+    $heroFadeDurationMilliseconds = max(1000, (int) ($heroBannersFadeDurationMilliseconds ?? 3000));
     $primaryLabel = $hero['primary_label'] ?? null;
     $secondaryLabel = $hero['secondary_label'] ?? null;
 @endphp
@@ -9,8 +11,8 @@
     data-hero-carousel
     @if ($heroAutoRotate)
         data-hero-auto
-        data-hero-interval="20000"
-        data-hero-fade-duration="3000"
+        data-hero-interval="{{ $heroRotationDelayMilliseconds }}"
+        data-hero-fade-duration="{{ $heroFadeDurationMilliseconds }}"
     @endif
 >
     <div class="concept-hero__image" data-hero-image style="background-image: url('{{ $hero['image_url'] }}')"></div>

@@ -1546,6 +1546,31 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Gamma Child');
     }
 
+    public function test_related_content_auto_carousel_layout_uses_configured_delay_seconds(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO,
+            'carousel_auto_delay_seconds' => 18,
+            'item_limit' => 4,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Delta Child', 'Epsilon Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-carousel-auto', false)
+            ->assertSee('data-related-carousel-interval="18000"', false);
+    }
+
     public function test_related_content_search_enabled_carousel_renders_items_beyond_limit(): void
     {
         $parent = $this->createRelatedContentParent([

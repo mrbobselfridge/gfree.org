@@ -20,11 +20,19 @@ class HomepageContentTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(HomepageContentPage::class)
             ->assertFormFieldExists('hero_banners_auto_rotate')
+            ->assertFormFieldExists('hero_banners_rotation_delay_seconds')
+            ->assertFormFieldExists('hero_banners_fade_duration_seconds')
             ->set('data.hero_banners_auto_rotate', true)
+            ->set('data.hero_banners_rotation_delay_seconds', 35)
+            ->set('data.hero_banners_fade_duration_seconds', 5)
             ->call('save')
             ->assertHasNoErrors();
 
-        $this->assertTrue(HomepageContent::query()->firstOrFail()->hero_banners_auto_rotate);
+        $homepageContent = HomepageContent::query()->firstOrFail();
+
+        $this->assertTrue($homepageContent->hero_banners_auto_rotate);
+        $this->assertSame(35, $homepageContent->hero_banners_rotation_delay_seconds);
+        $this->assertSame(5, $homepageContent->hero_banners_fade_duration_seconds);
     }
 
     public function test_homepage_content_overrides_static_homepage_sections(): void

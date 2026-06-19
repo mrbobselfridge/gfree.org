@@ -2,6 +2,7 @@
 @php($visibleCount = max(1, min(3, (int) ($initialCount ?? 3))))
 @php($searchEnabled = (bool) ($searchEnabled ?? false))
 @php($isAuto = (bool) ($isAuto ?? false))
+@php($autoIntervalMilliseconds = max(1000, (int) ($autoIntervalMilliseconds ?? 10000)))
 @php($hasControls = $items->count() > $visibleCount)
 @php($cardBasis = match ($visibleCount) {
     1 => '100%',
@@ -17,7 +18,7 @@
     @endif
     @if ($isAuto)
         data-related-carousel-auto
-        data-related-carousel-interval="10000"
+        data-related-carousel-interval="{{ $autoIntervalMilliseconds }}"
     @endif
     data-related-carousel-visible-count="{{ $visibleCount }}"
     style="--related-carousel-card-basis: {{ $cardBasis }}"

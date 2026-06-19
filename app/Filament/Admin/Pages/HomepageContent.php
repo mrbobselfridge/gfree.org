@@ -140,10 +140,26 @@ class HomepageContent extends Page
                             ->required()
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'When enabled, multiple live homepage banners fade from one to the next every 20 seconds. Visitors can pause the rotation on the public page.'
+                                'When enabled, multiple live homepage banners fade from one to the next using the timing settings below. Visitors can pause the rotation on the public page.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
+                        TextInput::make('hero_banners_rotation_delay_seconds')
+                            ->label('Rotation delay seconds')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(300)
+                            ->default(HomepageContentModel::DEFAULT_HERO_BANNERS_ROTATION_DELAY_SECONDS)
+                            ->required()
+                            ->helperText('Seconds to wait before moving to the next homepage banner when auto-rotate is enabled.'),
+                        TextInput::make('hero_banners_fade_duration_seconds')
+                            ->label('Fade duration seconds')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(30)
+                            ->default(HomepageContentModel::DEFAULT_HERO_BANNERS_FADE_DURATION_SECONDS)
+                            ->required()
+                            ->helperText('Seconds used for the fade-out/fade-in transition between homepage banners.'),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -217,6 +233,8 @@ class HomepageContent extends Page
             'seo_title' => $record?->seo_title,
             'seo_description' => $record?->seo_description,
             'hero_banners_auto_rotate' => $record?->hero_banners_auto_rotate ?? false,
+            'hero_banners_rotation_delay_seconds' => $record?->heroBannersRotationDelaySeconds() ?? HomepageContentModel::DEFAULT_HERO_BANNERS_ROTATION_DELAY_SECONDS,
+            'hero_banners_fade_duration_seconds' => $record?->heroBannersFadeDurationSeconds() ?? HomepageContentModel::DEFAULT_HERO_BANNERS_FADE_DURATION_SECONDS,
             'content_blocks' => [
                 [
                     'type' => 'info_strip',

@@ -61,6 +61,7 @@
                         'initialCount' => $data['initial_item_limit'] ?? $data['item_limit'] ?? 3,
                         'searchEnabled' => $searchEnabled,
                         'isAuto' => $layout === \App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO,
+                        'autoIntervalMilliseconds' => (($data['carousel_auto_delay_seconds'] ?? \App\Support\ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS) * 1000),
                     ])
                     @break
 

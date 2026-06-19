@@ -210,4 +210,29 @@ class HomepageBannerTest extends TestCase
             ->assertSee('Active Banner One')
             ->assertSee('Active Banner Two');
     }
+
+    public function test_homepage_banner_auto_rotation_uses_configured_timing_values(): void
+    {
+        HomepageContent::query()->create([
+            'hero_banners_auto_rotate' => true,
+            'hero_banners_rotation_delay_seconds' => 45,
+            'hero_banners_fade_duration_seconds' => 6,
+        ]);
+
+        HomepageBanner::query()->create([
+            'title' => 'Active Banner One',
+            'is_published' => true,
+        ]);
+
+        HomepageBanner::query()->create([
+            'title' => 'Active Banner Two',
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-hero-auto', false)
+            ->assertSee('data-hero-interval="45000"', false)
+            ->assertSee('data-hero-fade-duration="6000"', false);
+    }
 }

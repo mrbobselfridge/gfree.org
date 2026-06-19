@@ -41,6 +41,8 @@ class HomeController extends Controller
             'hero' => $hero,
             'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
             'heroBannersAutoRotate' => (bool) ($homepageContent?->hero_banners_auto_rotate ?? false),
+            'heroBannersRotationDelayMilliseconds' => ($homepageContent?->heroBannersRotationDelaySeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_ROTATION_DELAY_SECONDS) * 1000,
+            'heroBannersFadeDurationMilliseconds' => ($homepageContent?->heroBannersFadeDurationSeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_FADE_DURATION_SECONDS) * 1000,
             'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $now),
             'socialLinks' => $this->socialLinks($settings),
         ]);
