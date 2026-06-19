@@ -268,7 +268,7 @@ class PageForm
                             ->columnSpan(2),
 
                         ToggleButtons::make('noindex_nofollow')
-                            ->label('No Index, No Follow')
+                            ->label('No Index, No Follow (note: do not touch if you do not understand!)')
                             ->boolean()
                             ->inline()
                             ->default(false)
