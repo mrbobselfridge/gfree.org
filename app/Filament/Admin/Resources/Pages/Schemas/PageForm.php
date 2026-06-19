@@ -175,9 +175,20 @@ class PageForm
                                     'Optional image used in the page header. Landscape photos usually work best.'
                                 )
                                 ->hintColor('gray')
-                                ->columnSpan(2),
+                                ->columnSpan(1),
                         ),
 
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'pages/card-images',
+                            'Card image (optional)',
+                            fn (ViewField $upload): ViewField => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
+                                )
+                                ->hintColor('gray')
+                                ->columnSpan(1),
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
                             ->boolean()
@@ -265,18 +276,6 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
 
-                        ...ImageUpload::make(
-                            'card_image_path',
-                            'pages/card-images',
-                            'Card image',
-                            fn (ViewField $upload): ViewField => $upload
-                                ->hintIcon(
-                                    Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
-                                )
-                                ->hintColor('gray')
-                                ->columnSpan(1),
-                        ),
 
                         Select::make('parent_page_id')
                             ->label('Parent Page - optional')
@@ -291,7 +290,7 @@ class PageForm
                                 'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
                             )
                             ->hintColor('gray')
-                            ->columnSpan(1),
+                            ->columnSpan(2),
 
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following pages and files')
@@ -305,6 +304,7 @@ class PageForm
                             ->columnSpan(2),
 
 
+                        ),
                     ])
                     ->columns(4)
                     ->columnSpanFull()
