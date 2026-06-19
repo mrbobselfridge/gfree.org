@@ -66,16 +66,7 @@ class ContentBlockBuilder
                             ->maxLength(255),
                         self::hint(RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false), 'Main formatted copy shown in this section.')
                             ->columnSpanFull(),
-                        self::hint(Select::make('content_width')
-                            ->label('Content width'), 'Controls the maximum readable width of the text on the public page.')
-                            ->options(self::textWidthOptions())
-                            ->default('medium')
-                            ->afterStateHydrated(function (Select $component, ?string $state): void {
-                                if (blank($state) || $state === 'normal') {
-                                    $component->state('medium');
-                                }
-                            })
-                            ->required(),
+                        self::contentWidthSelect('Controls the maximum readable width of the text on the public page.'),
                         self::hint(Select::make('background'), 'Sets the background color for this section.')
                             ->options(self::backgroundOptions())
                             ->default('white')
@@ -113,10 +104,13 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
+                        self::contentWidthSelect('Controls the maximum width of this image and text section.', 'wide'),
                         self::hint(Select::make('image_position'), 'Controls where the image appears relative to the text.')
                             ->options([
                                 'left' => 'Image left',
                                 'right' => 'Image right',
+                                'top' => 'Image top',
+                                'bottom' => 'Image bottom',
                                 'full_width' => 'Image full width',
                                 'screen_width' => 'Image screenwidth',
                             ])
@@ -139,6 +133,7 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('black')
                             ->required(),
+                        self::contentWidthSelect('Controls the maximum width of this process list.', 'wide'),
                         self::hint(Repeater::make('steps'), 'Add each step in the order it should appear.')
                             ->schema([
                                 self::hint(TextInput::make('title'), 'Short step title.')
@@ -186,16 +181,7 @@ class ContentBlockBuilder
                             ])
                             ->default('content_left')
                             ->required(),
-                        self::hint(Select::make('content_width')
-                            ->label('Content width'), 'Controls the maximum width of this call-to-action section.')
-                            ->options(self::textWidthOptions())
-                            ->default('medium')
-                            ->afterStateHydrated(function (Select $component, ?string $state): void {
-                                if (blank($state) || $state === 'normal') {
-                                    $component->state('medium');
-                                }
-                            })
-                            ->required(),
+                        self::contentWidthSelect('Controls the maximum width of this call-to-action section.'),
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
@@ -213,6 +199,7 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
+                        self::contentWidthSelect('Controls the maximum width of this card section.', 'wide'),
                         self::hint(Repeater::make('cards'), 'Add each card in the order it should appear.')
                             ->schema([
                                 Hidden::make('key')
@@ -319,6 +306,7 @@ class ContentBlockBuilder
                             ])
                             ->default('both')
                             ->required(),
+                        self::contentWidthSelect('Controls the maximum width of this info strip.', 'wide'),
                         self::hint(Repeater::make('items'), 'Add up to five compact facts, links, or contact details.')
                             ->schema([
                                 self::hint(TextInput::make('label'), 'Short label for this info item.')
@@ -355,6 +343,7 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
+                        self::contentWidthSelect('Controls the maximum width of this embedded content.'),
                         self::hint(Textarea::make('embed_code')
                             ->label('Embed code'), 'Paste trusted embed code, including script tags when the provider requires them.')
                             ->rows(8)
@@ -585,6 +574,7 @@ class ContentBlockBuilder
                         ->default('white')
                         ->required()
                         ->columnSpanFull(),
+                    self::contentWidthSelect('Controls the maximum width of this child listing.', 'wide'),
                     ...self::scheduleFields($withScheduleFields),
                 ])
                 ->columns(2),
@@ -618,6 +608,7 @@ class ContentBlockBuilder
                         ->maxValue(50)
                         ->default(ContentBlocks::YOUTUBE_FEED_DEFAULT_LIMIT)
                         ->required(),
+                    self::contentWidthSelect('Controls the maximum width of this YouTube feed.', 'wide'),
                     ...self::scheduleFields($withScheduleFields),
                 ])
                 ->columns(2),
@@ -753,6 +744,20 @@ class ContentBlockBuilder
             'medium' => 'Medium (880px)',
             'wide' => 'Large (1180px)',
         ];
+    }
+
+    private static function contentWidthSelect(string $hint, string $default = 'medium'): Select
+    {
+        return self::hint(Select::make('content_width')
+            ->label('Content width'), $hint)
+            ->options(self::textWidthOptions())
+            ->default($default)
+            ->afterStateHydrated(function (Select $component, ?string $state) use ($default): void {
+                if (blank($state) || $state === 'normal') {
+                    $component->state($default);
+                }
+            })
+            ->required();
     }
 
     private static function codeWidthOptions(): array

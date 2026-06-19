@@ -5,6 +5,11 @@
         'center' => 'full_width',
         default => $data['image_position'] ?? 'left',
     };
+    $contentWidth = match ($data['content_width'] ?? 'wide') {
+        'small' => 'small',
+        'medium', 'normal' => 'medium',
+        default => 'wide',
+    };
 
     $hasRenderableText = function (?string $value): bool {
         $text = html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -24,6 +29,8 @@
     'page-block--image-text',
     'page-block--bg-' . $background,
     'page-block--image-right' => $imagePosition === 'right',
+    'page-block--image-top' => $imagePosition === 'top',
+    'page-block--image-bottom' => $imagePosition === 'bottom',
     'page-block--image-full' => $imagePosition === 'full_width',
     'page-block--image-screenwidth' => $imagePosition === 'screen_width',
     'page-block--image-only' => ! $hasContent,
@@ -32,7 +39,11 @@
         style="{{ $backgroundStyle }}"
     @endif
 >
-    <div class="page-block__inner page-image-text">
+    <div @class([
+        'page-block__inner',
+        'page-block__inner--text-' . $contentWidth => $imagePosition !== 'screen_width',
+        'page-image-text',
+    ])>
         @if (filled($data['image_url'] ?? null))
             <img src="{{ $data['image_url'] }}" alt="{{ $data['image_alt'] ?? '' }}">
         @endif

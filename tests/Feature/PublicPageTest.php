@@ -684,6 +684,132 @@ class PublicPageTest extends TestCase
             ->assertDontSee('page-image-text__content');
     }
 
+    public function test_image_text_blocks_support_top_and_bottom_positions_with_content_widths(): void
+    {
+        Page::query()->create([
+            'title' => 'Image Layouts',
+            'slug' => 'image-layouts',
+            'content_blocks' => [
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'pages/content-images/top.jpg',
+                        'image_alt' => 'Top image',
+                        'heading' => 'Image above content',
+                        'body' => '<p>Text below the image.</p>',
+                        'image_position' => 'top',
+                        'content_width' => 'small',
+                        'background' => 'white',
+                    ],
+                ],
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => 'pages/content-images/bottom.jpg',
+                        'image_alt' => 'Bottom image',
+                        'heading' => 'Image below content',
+                        'body' => '<p>Text above the image.</p>',
+                        'image_position' => 'bottom',
+                        'content_width' => 'medium',
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/image-layouts')
+            ->assertOk()
+            ->assertSee('page-block--image-top', false)
+            ->assertSee('page-block--image-bottom', false)
+            ->assertSee('page-block__inner--text-small', false)
+            ->assertSee('page-block__inner--text-medium', false)
+            ->assertSee('Image above content')
+            ->assertSee('Image below content');
+    }
+
+    public function test_remaining_content_block_types_render_content_width_classes(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resource Hub',
+            'slug' => 'resource-hub',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Child Resource',
+            'slug' => 'resource-hub/child-resource',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Widths',
+            'slug' => 'widths',
+            'content_blocks' => [
+                [
+                    'type' => 'process_steps',
+                    'data' => [
+                        'heading' => 'Small process',
+                        'content_width' => 'small',
+                        'steps' => [
+                            ['title' => 'Step one', 'summary' => 'Do this first.'],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'link_cards',
+                    'data' => [
+                        'heading' => 'Medium cards',
+                        'content_width' => 'medium',
+                        'cards' => [
+                            ['title' => 'Card one', 'summary' => 'A card summary.'],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'embed',
+                    'data' => [
+                        'heading' => 'Small embed',
+                        'content_width' => 'small',
+                        'embed_code' => '<iframe src="https://example.com/embed"></iframe>',
+                    ],
+                ],
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'spacing' => 'none',
+                        'content_width' => 'medium',
+                        'items' => [
+                            ['label' => 'Office', 'source' => 'custom', 'value' => 'Open today'],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'associated_parent_page_id' => $parent->getKey(),
+                        'heading' => 'Small listing',
+                        'content_width' => 'small',
+                        'content_type' => ContentBlocks::RELATED_CONTENT_TYPE_PAGES,
+                        'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+                        'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+                        'item_limit' => 6,
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/widths')
+            ->assertOk()
+            ->assertSee('page-block__inner--text-small', false)
+            ->assertSee('page-block__inner--text-medium', false)
+            ->assertSee('page-block--info-strip-width-medium', false)
+            ->assertSee('concept-updates--width-small', false)
+            ->assertSee('Child Resource');
+    }
+
     public function test_page_info_strip_can_pull_office_hours_from_site_settings(): void
     {
         SiteSetting::query()->create([
@@ -1592,6 +1718,7 @@ class PublicPageTest extends TestCase
                         'youtube_feed_url' => $feedUrl,
                         'youtube_link_label' => 'View more on YouTube',
                         'item_limit' => 12,
+                        'content_width' => 'medium',
                     ],
                 ],
             ],
@@ -1602,6 +1729,7 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('sermon-index', false)
             ->assertSee('sermon-grid', false)
+            ->assertSee('page-block__inner--text-medium', false)
             ->assertSee('Latest Teaching Video')
             ->assertSee('https://i2.ytimg.com/vi/pagevideo123/hqdefault.jpg')
             ->assertSee('https://www.youtube.com/watch?v=pagevideo123')

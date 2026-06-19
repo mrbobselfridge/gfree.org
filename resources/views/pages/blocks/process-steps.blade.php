@@ -1,5 +1,12 @@
-@php($background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white'))
-@php($backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background))
+@php
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
+    $contentWidth = match ($data['content_width'] ?? 'wide') {
+        'small' => 'small',
+        'medium', 'normal' => 'medium',
+        default => 'wide',
+    };
+@endphp
 
 <section @class(['page-block', 'page-block--process-steps', 'page-block--bg-' . $background])
     aria-label="{{ $data['heading'] ?? 'Process steps' }}"
@@ -7,7 +14,7 @@
         style="{{ $backgroundStyle }}"
     @endif
 >
-    <div class="page-block__inner page-process">
+    <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth, 'page-process'])>
         <div class="page-process__intro">
             @if (filled($data['eyebrow'] ?? null))
                 <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>

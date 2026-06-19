@@ -1,6 +1,11 @@
 @php
     $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
     $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
+    $contentWidth = match ($data['content_width'] ?? 'wide') {
+        'small' => 'small',
+        'medium', 'normal' => 'medium',
+        default => 'wide',
+    };
     $cards = $data['cards'] ?? [];
 @endphp
 
@@ -9,7 +14,7 @@
         style="{{ $backgroundStyle }}"
     @endif
 >
-    <div class="page-block__inner">
+    <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
         @if (filled($data['eyebrow'] ?? null))
             <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>
         @endif

@@ -2,10 +2,15 @@
     $videos = collect($data['videos'] ?? []);
     $channelUrl = $data['channel_url'] ?? null;
     $linkLabel = $data['youtube_link_label'] ?? 'View more on YouTube';
+    $contentWidth = match ($data['content_width'] ?? 'wide') {
+        'small' => 'small',
+        'medium', 'normal' => 'medium',
+        default => 'wide',
+    };
 @endphp
 
 <section class="sermon-index page-block page-block--bg-black">
-    <div class="page-block__inner">
+    <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
         <div class="sermon-index__header">
             <div class="sermon-tabs" aria-label="YouTube video filters">
                 <span class="sermon-tabs__item sermon-tabs__item--active">Latest</span>

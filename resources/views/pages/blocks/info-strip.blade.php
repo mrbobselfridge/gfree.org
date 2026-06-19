@@ -1,5 +1,12 @@
-@php($items = $data['items'] ?? [])
-@php($spacing = $data['spacing'] ?? 'bottom')
+@php
+    $items = $data['items'] ?? [];
+    $spacing = $data['spacing'] ?? 'bottom';
+    $contentWidth = match ($data['content_width'] ?? 'wide') {
+        'small' => 'small',
+        'medium', 'normal' => 'medium',
+        default => 'wide',
+    };
+@endphp
 
 @if (filled($items))
     <section
@@ -7,6 +14,7 @@
             'concept-service-strip',
             'page-block--info-strip',
             'page-block--info-strip-spacing-' . $spacing,
+            'page-block--info-strip-width-' . $contentWidth,
         ])
         style="--info-strip-count: {{ count($items) }}"
         aria-label="Service details"

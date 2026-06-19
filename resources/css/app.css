@@ -974,6 +974,10 @@
     order: 2;
 }
 
+.page-block--image-bottom .page-image-text img {
+    order: 2;
+}
+
 .page-image-text img {
     display: block;
     width: 100%;
@@ -983,6 +987,8 @@
 }
 
 .page-block--image-full .page-image-text,
+.page-block--image-top .page-image-text,
+.page-block--image-bottom .page-image-text,
 .page-block--image-screenwidth .page-image-text {
     grid-template-columns: 1fr;
 }
@@ -1000,6 +1006,13 @@
 .page-block--image-full .page-image-text__content,
 .page-block--image-screenwidth .page-image-text__content {
     width: min(880px, 100%);
+    justify-self: center;
+}
+
+.page-block--image-top .page-image-text img,
+.page-block--image-bottom .page-image-text img {
+    width: min(calc(100% + 96px), 1180px);
+    max-width: calc(100% + 96px);
     justify-self: center;
 }
 
@@ -1668,8 +1681,15 @@
         flex-direction: column;
     }
 
-    .page-block--image-right .page-image-text img {
+    .page-block--image-right .page-image-text img,
+    .page-block--image-bottom .page-image-text img {
         order: initial;
+    }
+
+    .page-block--image-top .page-image-text img,
+    .page-block--image-bottom .page-image-text img {
+        width: 100%;
+        max-width: 100%;
     }
 
     .listing-search__controls {
@@ -2277,6 +2297,18 @@
     border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
+.page-block--info-strip-width-small {
+    width: min(600px, calc(100% - 32px));
+}
+
+.page-block--info-strip-width-medium {
+    width: min(880px, calc(100% - 32px));
+}
+
+.page-block--info-strip-width-wide {
+    width: min(1180px, calc(100% - 32px));
+}
+
 .page-block--info-strip-spacing-both,
 .page-block--info-strip-spacing-top {
     margin-top: 72px;
@@ -2722,6 +2754,24 @@
 
 .concept-updates__inner {
     width: 100%;
+}
+
+.concept-updates--width-small .concept-updates__inner {
+    width: min(600px, 100%);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.concept-updates--width-medium .concept-updates__inner {
+    width: min(880px, 100%);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.concept-updates--width-wide .concept-updates__inner {
+    width: min(1180px, 100%);
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .concept-updates--bg-white {

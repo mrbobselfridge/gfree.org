@@ -1,9 +1,16 @@
-@php($items = collect($data['items'] ?? []))
-@php($background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white'))
-@php($backgroundStyle = \App\Support\SiteDesignPalette::relatedContentStyle($background))
-@php($layout = $data['layout'] ?? \App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID)
-@php($hasHeaderText = filled($data['heading'] ?? null) || filled($data['intro'] ?? null))
-@php($searchEnabled = (bool) ($data['enable_search'] ?? true))
+@php
+    $items = collect($data['items'] ?? []);
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::relatedContentStyle($background);
+    $layout = $data['layout'] ?? \App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID;
+    $hasHeaderText = filled($data['heading'] ?? null) || filled($data['intro'] ?? null);
+    $searchEnabled = (bool) ($data['enable_search'] ?? true);
+    $contentWidth = match ($data['content_width'] ?? 'wide') {
+        'small' => 'small',
+        'medium', 'normal' => 'medium',
+        default => 'wide',
+    };
+@endphp
 
 @if ($items->isNotEmpty())
     <section @class([
@@ -12,6 +19,7 @@
         'concept-updates--child-info-cards',
         'concept-updates--child-info-cards-has-heading' => filled($data['heading'] ?? null),
         'concept-updates--layout-' . $layout,
+        'concept-updates--width-' . $contentWidth,
         'concept-updates--bg-' . $background,
     ])
         @if ($backgroundStyle)
