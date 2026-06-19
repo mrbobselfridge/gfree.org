@@ -17,7 +17,7 @@
     @endif
     @if ($isAuto)
         data-related-carousel-auto
-        data-related-carousel-interval="4000"
+        data-related-carousel-interval="10000"
     @endif
     data-related-carousel-visible-count="{{ $visibleCount }}"
     style="--related-carousel-card-basis: {{ $cardBasis }}"

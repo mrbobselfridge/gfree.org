@@ -1535,7 +1535,7 @@ class PublicPageTest extends TestCase
             ->assertSee('concept-updates--layout-card_carousel_auto', false)
             ->assertSee('data-related-carousel', false)
             ->assertSee('data-related-carousel-auto', false)
-            ->assertSee('data-related-carousel-interval="4000"', false)
+            ->assertSee('data-related-carousel-interval="10000"', false)
             ->assertSee('data-related-carousel-previous', false)
             ->assertSee('data-related-carousel-next', false)
             ->assertDontSee('data-related-load-more', false)

@@ -247,9 +247,11 @@ document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
     const previous = carousel.querySelector('[data-related-carousel-previous]');
     const next = carousel.querySelector('[data-related-carousel-next]');
     const isAuto = carousel.hasAttribute('data-related-carousel-auto');
-    const interval = Number.parseInt(carousel.dataset.relatedCarouselInterval || '4000', 10);
-    const autoInterval = Number.isNaN(interval) || interval < 1 ? 4000 : interval;
+    const interval = Number.parseInt(carousel.dataset.relatedCarouselInterval || '10000', 10);
+    const autoInterval = Number.isNaN(interval) || interval < 1 ? 10000 : interval;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let autoTimer = null;
+    let isAnimating = false;
     const autoPauseReasons = new Set();
 
     if (! track || ! viewport) {
@@ -286,6 +288,25 @@ document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
     };
 
     const hasOverflow = () => cards().length > visibleCardCount();
+
+    const gapSize = () => {
+        const trackStyles = window.getComputedStyle(track);
+
+        return Number.parseFloat(trackStyles.columnGap || trackStyles.gap || '0') || 0;
+    };
+
+    const slideDistance = (card) => card.getBoundingClientRect().width + gapSize();
+
+    const setTrackTransition = (enabled) => {
+        track.style.transition = enabled ? 'transform 360ms ease' : 'none';
+    };
+
+    const resetTrackPosition = () => {
+        setTrackTransition(false);
+        track.style.transform = 'translateX(0)';
+        track.offsetHeight;
+        track.style.transition = '';
+    };
 
     const updateControls = () => {
         if (controls) {
@@ -350,7 +371,7 @@ document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
     };
 
     const rotate = (direction, shouldRestartAuto = true) => {
-        if (! hasOverflow()) {
+        if (isAnimating || ! hasOverflow()) {
             syncAuto();
 
             return;
@@ -358,15 +379,67 @@ document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
 
         const currentCards = cards();
 
-        if (direction > 0) {
-            track.append(currentCards[0]);
-        } else {
-            track.prepend(currentCards[currentCards.length - 1]);
+        if (currentCards.length < 2) {
+            syncAuto();
+
+            return;
         }
 
-        if (shouldRestartAuto) {
-            restartAuto();
+        if (prefersReducedMotion) {
+            if (direction > 0) {
+                track.append(currentCards[0]);
+            } else {
+                track.prepend(currentCards[currentCards.length - 1]);
+            }
+
+            if (shouldRestartAuto) {
+                restartAuto();
+            }
+
+            return;
         }
+
+        isAnimating = true;
+
+        const finishRotation = (event) => {
+            if (event && event.target !== track) {
+                return;
+            }
+
+            track.removeEventListener('transitionend', finishRotation);
+
+            if (direction > 0) {
+                track.append(currentCards[0]);
+            }
+
+            resetTrackPosition();
+            isAnimating = false;
+
+            if (shouldRestartAuto) {
+                restartAuto();
+            }
+        };
+
+        if (direction > 0) {
+            setTrackTransition(true);
+            track.style.transform = `translateX(-${slideDistance(currentCards[0])}px)`;
+        } else {
+            track.prepend(currentCards[currentCards.length - 1]);
+            setTrackTransition(false);
+            track.style.transform = `translateX(-${slideDistance(currentCards[currentCards.length - 1])}px)`;
+            track.offsetHeight;
+            setTrackTransition(true);
+            track.style.transform = 'translateX(0)';
+        }
+
+        track.addEventListener('transitionend', finishRotation);
+        window.setTimeout(() => {
+            if (! isAnimating) {
+                return;
+            }
+
+            finishRotation();
+        }, 420);
     };
 
     previous?.addEventListener('click', () => rotate(-1));
