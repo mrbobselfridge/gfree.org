@@ -1,5 +1,6 @@
 @php($items = collect($items ?? []))
 @php($visibleCount = max(1, min(3, (int) ($initialCount ?? 3))))
+@php($searchEnabled = (bool) ($searchEnabled ?? false))
 @php($hasControls = $items->count() > $visibleCount)
 @php($cardBasis = match ($visibleCount) {
     1 => '100%',
@@ -10,6 +11,9 @@
 <div
     class="concept-updates__carousel"
     data-related-carousel
+    @if ($searchEnabled)
+        data-related-search-listing
+    @endif
     data-related-carousel-visible-count="{{ $visibleCount }}"
     style="--related-carousel-card-basis: {{ $cardBasis }}"
 >
@@ -37,6 +41,7 @@
                     'item' => $item,
                     'index' => $loop->iteration,
                     'modalIdPrefix' => 'related-carousel-file-content',
+                    'searchEnabled' => $searchEnabled,
                 ])
             @endforeach
         </div>

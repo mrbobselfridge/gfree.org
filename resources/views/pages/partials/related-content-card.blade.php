@@ -4,12 +4,18 @@
 @php($url = data_get($item, 'url'))
 @php($modalId = $hasMoreContent ? ($modalIdPrefix ?? 'related-file-content') . '-' . ($index ?? 1) : null)
 @php($isHidden = (bool) ($isHidden ?? false))
+@php($searchEnabled = (bool) ($searchEnabled ?? false))
 
 <article
     @class([
         'concept-updates__card',
         'concept-updates__card--file' => $isFile,
     ])
+    @if ($searchEnabled)
+        data-related-search-item
+        data-related-search="{{ data_get($item, 'search_text') }}"
+        data-related-initial-hidden="{{ $isHidden ? 'true' : 'false' }}"
+    @endif
     @if ($isHidden)
         hidden
         data-related-load-more-item

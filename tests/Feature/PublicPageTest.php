@@ -1274,6 +1274,7 @@ class PublicPageTest extends TestCase
     {
         $parent = $this->createRelatedContentParent([
             'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL,
+            'enable_search' => false,
             'item_limit' => 4,
             'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
         ]);
@@ -1300,6 +1301,34 @@ class PublicPageTest extends TestCase
             ->assertSee('Delta Child')
             ->assertSee('Epsilon Child')
             ->assertDontSee('Gamma Child');
+    }
+
+    public function test_related_content_search_enabled_carousel_renders_items_beyond_limit(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL,
+            'item_limit' => 2,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        foreach (['Alpha Child', 'Beta Child', 'Gamma Child'] as $title) {
+            Page::query()->create([
+                'parent_page_id' => $parent->getKey(),
+                'title' => $title,
+                'slug' => 'resources/'.(string) str($title)->slug(),
+                'intro' => "{$title} summary.",
+                'is_published' => true,
+            ]);
+        }
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-search-section', false)
+            ->assertSee('data-related-search-input', false)
+            ->assertSee('data-related-carousel', false)
+            ->assertSee('Alpha Child')
+            ->assertSee('Beta Child')
+            ->assertSee('Gamma Child');
     }
 
     public function test_related_content_carousel_hides_arrows_when_items_do_not_exceed_limit(): void
@@ -1377,6 +1406,76 @@ class PublicPageTest extends TestCase
             ->assertSee('Gamma Child')
             ->assertSee('Gamma Child Label')
             ->assertSee('Gamma Child message.');
+    }
+
+    public function test_related_content_search_renders_search_box_and_searchable_metadata(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'content_type' => ContentBlocks::RELATED_CONTENT_TYPE_BOTH,
+            'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+            'item_limit' => 1,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Alpha Child',
+            'slug' => 'resources/alpha-child',
+            'hero_label' => 'Ministry',
+            'intro' => 'Alpha child intro.',
+            'message' => '<p>Prayer team welcome details.</p>',
+            'is_published' => true,
+        ]);
+
+        $file = $this->createLiveFileDocument(
+            parent: $parent,
+            title: 'Connection Packet',
+            fileName: 'connection-packet',
+            category: 'Form',
+            description: 'Download this welcome PDF.',
+            content: '<p>Hidden file covenant content.</p>',
+        );
+        $file->update(['tags' => ['downloadable-tag']]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('data-related-search-section', false)
+            ->assertSee('data-related-search-input', false)
+            ->assertSee('data-related-search-listing', false)
+            ->assertSee('data-related-search-item', false)
+            ->assertSee('No matching items.')
+            ->assertSee('Alpha Child')
+            ->assertSee('Ministry')
+            ->assertSee('Alpha child intro.')
+            ->assertSee('Prayer team welcome details.')
+            ->assertSee('Connection Packet')
+            ->assertSee('Form')
+            ->assertSee('connection-packet')
+            ->assertSee('Download this welcome PDF.')
+            ->assertSee('downloadable-tag')
+            ->assertSee('Hidden file covenant content.');
+    }
+
+    public function test_related_content_search_can_be_disabled(): void
+    {
+        $parent = $this->createRelatedContentParent([
+            'enable_search' => false,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Alpha Child',
+            'slug' => 'resources/alpha-child',
+            'is_published' => true,
+        ]);
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertDontSee('data-related-search-section', false)
+            ->assertDontSee('data-related-search-input', false)
+            ->assertDontSee('data-related-search-listing', false)
+            ->assertDontSee('data-related-search-item', false);
     }
 
     public function test_real_page_slug_takes_priority_over_related_content_listing_slug(): void

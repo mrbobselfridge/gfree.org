@@ -130,7 +130,7 @@ class ContentBlocks
             self::RELATED_CONTENT_LAYOUT_CARD_GRID,
             self::RELATED_CONTENT_LAYOUT_BULLET_LIST,
         ], true);
-        $usesAllItems = $usesLoadMore;
+        $usesAllItems = $usesLoadMore || (bool) $data['enable_search'];
 
         $data['associated_parent_page_id'] = $associatedParent?->getKey();
         $data['items'] = ($usesAllItems ? $items : $items->take($limit))->values()->all();
@@ -143,6 +143,7 @@ class ContentBlocks
     private static function relatedContentDefaults(array $data): array
     {
         $data['is_visible'] = $data['is_visible'] ?? true;
+        $data['enable_search'] = $data['enable_search'] ?? true;
         $data['heading'] = $data['heading'] ?? null;
         $data['intro'] = $data['intro'] ?? null;
         $data['background'] = $data['background'] ?? 'white';
@@ -337,6 +338,14 @@ class ContentBlocks
                 'message' => $child->message,
                 'image_url' => self::relatedPageImageUrl($child),
                 'url' => $child->publicUrl(),
+                'search_text' => self::relatedSearchText([
+                    $child->title,
+                    $child->hero_label,
+                    $child->intro,
+                    $child->message,
+                    $child->publicUrl(),
+                    $child->slug,
+                ]),
                 'sort_group' => 0,
                 'sort_order' => $child->sort_order ?? 0,
                 'featured_at' => self::sortableDate($child->featured_at),
@@ -377,6 +386,7 @@ class ContentBlocks
     private static function relatedFileItem(FileDocument $document): array
     {
         $optionalContentText = self::plainText($document->content);
+        $url = $document->publicUrl();
 
         return [
             'kind' => 'file',
@@ -384,9 +394,19 @@ class ContentBlocks
             'title' => $document->title,
             'summary' => $document->description ?: self::excerpt($document->content),
             'image_url' => $document->cardImageUrl(),
-            'url' => $document->publicUrl(),
+            'url' => $url,
             'optional_content_html' => filled($optionalContentText) ? self::basicHtml($document->content) : null,
             'has_more_content' => Str::length($optionalContentText) > self::RELATED_CONTENT_SUMMARY_LIMIT,
+            'search_text' => self::relatedSearchText([
+                $document->title,
+                $document->category,
+                $document->file_name,
+                $url,
+                $document->description,
+                $document->tags ?? [],
+                $document->currentVersion?->original_name,
+                $optionalContentText,
+            ]),
             'sort_group' => 1,
             'sort_order' => $document->sort_order ?? 0,
             'featured_at' => null,
@@ -405,6 +425,19 @@ class ContentBlocks
     private static function relatedContentLimit(array $data): int
     {
         return min(50, max(1, (int) ($data['item_limit'] ?? self::RELATED_CONTENT_DEFAULT_LIMIT)));
+    }
+
+    /**
+     * @param  array<int, mixed>  $values
+     */
+    private static function relatedSearchText(array $values): string
+    {
+        return collect($values)
+            ->flatten()
+            ->map(fn (mixed $value): string => trim(html_entity_decode(strip_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8')))
+            ->filter()
+            ->unique()
+            ->implode(' ');
     }
 
     private static function prepareYoutubeFeedBlock(array $data): array

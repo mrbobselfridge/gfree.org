@@ -511,6 +511,12 @@ class ContentBlockBuilder
                         ->inline()
                         ->default(true)
                         ->required(),
+                    self::hint(ToggleButtons::make('enable_search')
+                        ->label('Enable search'), 'Shows a Search box that filters this child listing by page names, file names, tags, descriptions, and related content.')
+                        ->boolean()
+                        ->inline()
+                        ->default(true)
+                        ->required(),
 
                     // TextInput::make('intro')
                     //     ->label('Intro')

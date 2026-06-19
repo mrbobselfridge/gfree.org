@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Resources\Pages\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\ImageUpload;
-use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Filament\Admin\Forms\RichContentPlugins\HtmlSourcePlugin;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
@@ -104,12 +104,11 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(2),
 
-                RichEditorDefaults::configure(RichEditor::make('message'), withAiRewrite: false)
-                    ->toolbarButtons([
-                        ['bold', 'italic', 'link', 'clearFormatting'],
-                        ['paragraph', 'bulletList', 'orderedList'],
-                        ['undo', 'redo'],
-                    ])
+                self::messageEditor()
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional message shown in the page header. Supports basic rich text for links, lists, and emphasis.'
+                    )
                     ->hintColor('gray')
                     ->columnSpan(2),
 
@@ -427,6 +426,37 @@ class PageForm
     public static function canManageSeoFields(Get $get): bool
     {
         return ! (bool) $get('is_redirect') && CodeBlockAccess::canManage();
+    }
+
+    private static function messageEditor(): RichEditor
+    {
+        $editor = RichEditor::make('message');
+
+        if (CodeBlockAccess::canManage()) {
+            $editor->plugins([
+                new HtmlSourcePlugin,
+            ]);
+        }
+
+        return $editor->toolbarButtons(self::messageToolbarButtons());
+    }
+
+    /**
+     * @return array<int, array<int, string>>
+     */
+    private static function messageToolbarButtons(): array
+    {
+        $toolbarButtons = [
+            ['bold', 'italic', 'link', 'clearFormatting'],
+            ['paragraph', 'bulletList', 'orderedList'],
+            ['undo', 'redo'],
+        ];
+
+        if (CodeBlockAccess::canManage()) {
+            $toolbarButtons[] = [HtmlSourcePlugin::TOOL];
+        }
+
+        return $toolbarButtons;
     }
 
     public static function parentPageOptionLabel(Page $page): string

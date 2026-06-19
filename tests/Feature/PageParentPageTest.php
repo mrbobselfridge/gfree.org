@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Forms\RichContentPlugins\HtmlSourcePlugin;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
@@ -78,6 +79,40 @@ class PageParentPageTest extends TestCase
             ->assertSee('Path')
             ->assertSee('Collapse all')
             ->assertSee('Expand all');
+    }
+
+    public function test_page_message_editor_shows_source_tool_for_admins(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->assertFormFieldExists('message', function (RichEditor $field): bool {
+                $plugins = $field->getPlugins();
+                $toolbarButtons = collect($field->getToolbarButtons())->flatten()->all();
+
+                return collect($plugins)->contains(fn (object $plugin): bool => $plugin instanceof HtmlSourcePlugin)
+                    && in_array(HtmlSourcePlugin::TOOL, $toolbarButtons, true);
+            });
+    }
+
+    public function test_page_message_editor_hides_source_tool_without_code_access(): void
+    {
+        $pageEditor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::PAGES],
+                'records' => [],
+            ],
+        ]);
+
+        Livewire::actingAs($pageEditor)
+            ->test(CreatePage::class)
+            ->assertFormFieldExists('message', function (RichEditor $field): bool {
+                $plugins = $field->getPlugins();
+                $toolbarButtons = collect($field->getToolbarButtons())->flatten()->all();
+
+                return collect($plugins)->doesntContain(fn (object $plugin): bool => $plugin instanceof HtmlSourcePlugin)
+                    && ! in_array(HtmlSourcePlugin::TOOL, $toolbarButtons, true);
+            });
     }
 
     public function test_edit_page_form_defaults_content_open_and_settings_closed(): void

@@ -182,30 +182,62 @@ document.querySelectorAll('[data-related-modal]').forEach((modal) => {
     });
 });
 
-document.querySelectorAll('[data-related-load-more]').forEach((listing) => {
+const relatedLoadMoreSetups = new WeakMap();
+
+const setupRelatedLoadMore = (listing) => {
+    if (relatedLoadMoreSetups.has(listing)) {
+        return relatedLoadMoreSetups.get(listing);
+    }
+
     const trigger = listing.querySelector('[data-related-load-more-trigger]');
     const parsedPageSize = Number.parseInt(listing.dataset.relatedPageSize || '1', 10);
     const pageSize = Number.isNaN(parsedPageSize) ? 1 : Math.max(1, parsedPageSize);
 
-    if (! trigger) {
-        return;
-    }
-
     const hiddenItems = () => Array.from(listing.querySelectorAll('[data-related-load-more-item][hidden]'));
 
     const updateTrigger = () => {
-        trigger.hidden = hiddenItems().length === 0;
+        if (trigger) {
+            trigger.hidden = hiddenItems().length === 0;
+        }
     };
 
-    trigger.addEventListener('click', () => {
-        hiddenItems().slice(0, pageSize).forEach((item) => {
-            item.hidden = false;
+    const restoreInitialItems = () => {
+        listing.querySelectorAll('[data-related-search-item]').forEach((item) => {
+            item.hidden = item.dataset.relatedInitialHidden === 'true';
         });
 
         updateTrigger();
-    });
+    };
+
+    if (trigger) {
+        trigger.addEventListener('click', () => {
+            hiddenItems().slice(0, pageSize).forEach((item) => {
+                item.hidden = false;
+            });
+
+            updateTrigger();
+        });
+    }
+
+    const setup = {
+        hideTrigger: () => {
+            if (trigger) {
+                trigger.hidden = true;
+            }
+        },
+        restoreInitialItems,
+        updateTrigger,
+    };
+
+    relatedLoadMoreSetups.set(listing, setup);
 
     updateTrigger();
+
+    return setup;
+};
+
+document.querySelectorAll('[data-related-load-more]').forEach((listing) => {
+    setupRelatedLoadMore(listing);
 });
 
 document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
@@ -219,7 +251,7 @@ document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
         return;
     }
 
-    const cards = () => Array.from(track.children);
+    const cards = () => Array.from(track.children).filter((card) => ! card.hidden);
     const configuredVisibleCount = Number.parseInt(carousel.dataset.relatedCarouselVisibleCount || '0', 10);
 
     const visibleCardCount = () => {
@@ -303,5 +335,65 @@ document.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
     });
 
     window.addEventListener('resize', updateControls);
+    carousel.addEventListener('related-search-updated', updateControls);
     updateControls();
+});
+
+document.querySelectorAll('[data-related-search-section]').forEach((section) => {
+    const input = section.querySelector('[data-related-search-input]');
+    const listing = section.querySelector('[data-related-search-listing]');
+    const emptyMessage = section.querySelector('[data-related-search-empty]');
+
+    if (! input || ! listing) {
+        return;
+    }
+
+    const items = Array.from(listing.querySelectorAll('[data-related-search-item]'));
+    const loadMore = setupRelatedLoadMore(listing);
+
+    const normalize = (value) => (value || '').toLocaleLowerCase();
+
+    const notifyCarousel = () => {
+        section.querySelectorAll('[data-related-carousel]').forEach((carousel) => {
+            carousel.dispatchEvent(new CustomEvent('related-search-updated'));
+        });
+    };
+
+    const updateSearch = () => {
+        const query = normalize(input.value.trim());
+
+        if (query === '') {
+            loadMore.restoreInitialItems();
+
+            if (emptyMessage) {
+                emptyMessage.hidden = true;
+            }
+
+            notifyCarousel();
+
+            return;
+        }
+
+        let matchCount = 0;
+
+        items.forEach((item) => {
+            const isMatch = normalize(item.dataset.relatedSearch).includes(query);
+            item.hidden = ! isMatch;
+
+            if (isMatch) {
+                matchCount++;
+            }
+        });
+
+        loadMore.hideTrigger();
+
+        if (emptyMessage) {
+            emptyMessage.hidden = matchCount > 0;
+        }
+
+        notifyCarousel();
+    };
+
+    input.addEventListener('input', updateSearch);
+    updateSearch();
 });

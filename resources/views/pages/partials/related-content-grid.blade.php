@@ -1,9 +1,13 @@
 @php($items = collect($items ?? []))
 @php($initialCount = max(1, (int) ($initialCount ?? $items->count())))
 @php($hasLoadMore = (bool) ($hasLoadMore ?? false))
+@php($searchEnabled = (bool) ($searchEnabled ?? false))
 
 <div
     class="concept-updates__listing"
+    @if ($searchEnabled)
+        data-related-search-listing
+    @endif
     @if ($hasLoadMore)
         data-related-load-more
         data-related-page-size="{{ $initialCount }}"
@@ -16,6 +20,7 @@
                 'index' => $loop->iteration,
                 'isHidden' => $hasLoadMore && $loop->iteration > $initialCount,
                 'modalIdPrefix' => 'related-grid-file-content',
+                'searchEnabled' => $searchEnabled,
             ])
         @endforeach
     </div>

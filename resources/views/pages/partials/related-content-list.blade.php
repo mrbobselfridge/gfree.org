@@ -1,9 +1,13 @@
 @php($items = collect($items ?? []))
 @php($initialCount = max(1, (int) ($initialCount ?? $items->count())))
 @php($hasLoadMore = (bool) ($hasLoadMore ?? false))
+@php($searchEnabled = (bool) ($searchEnabled ?? false))
 
 <div
     class="concept-updates__label-list"
+    @if ($searchEnabled)
+        data-related-search-listing
+    @endif
     @if ($hasLoadMore)
         data-related-load-more
         data-related-page-size="{{ $initialCount }}"
@@ -18,10 +22,16 @@
         @php($summary = filled(data_get($item, 'summary')) ? \Illuminate\Support\Str::limit((string) data_get($item, 'summary'), 180) : null)
         @php($message = trim(html_entity_decode(strip_tags((string) data_get($item, 'message')), ENT_QUOTES | ENT_HTML5, 'UTF-8')))
         @php($message = $message !== '' ? \Illuminate\Support\Str::limit($message, 120) : null)
+        @php($isHidden = $hasLoadMore && $loop->iteration > $initialCount)
 
         <li
             class="concept-updates__bullet-item"
-            @if ($hasLoadMore && $loop->iteration > $initialCount)
+            @if ($searchEnabled)
+                data-related-search-item
+                data-related-search="{{ data_get($item, 'search_text') }}"
+                data-related-initial-hidden="{{ $isHidden ? 'true' : 'false' }}"
+            @endif
+            @if ($isHidden)
                 hidden
                 data-related-load-more-item
             @endif
