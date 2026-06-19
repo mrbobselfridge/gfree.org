@@ -110,18 +110,7 @@ class PageForm
                         'Optional formatted supporting message shown with the page header. This is rendered as trusted admin content.'
                     )
                     ->hintColor('gray')
-                    ->columnSpan(1),
-
-                ViewField::make('qr_code')
-                    ->label('QR Code')
-                    ->hiddenLabel()
-                    ->view('filament.admin.forms.components.page-qr-code')
-                    ->viewData(fn (?Page $record): array => [
-                        'qrCode' => $record?->qrCode()->first(),
-                    ])
-                    ->visible(fn (?string $operation): bool => $operation === 'edit')
-                    ->dehydrated(false)
-                    ->columnSpan(1),
+                    ->columnSpan(2),
 
                 TextInput::make('slug')
                     ->label('Path')
@@ -136,7 +125,18 @@ class PageForm
                         'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
                     )
                     ->hintColor('gray')
-                    ->columnSpan(2),
+                    ->columnSpan(1),
+
+                ViewField::make('qr_code')
+                    ->label('QR Code')
+                    ->hiddenLabel()
+                    ->view('filament.admin.forms.components.page-qr-code')
+                    ->viewData(fn (?Page $record): array => [
+                        'qrCode' => $record?->qrCode()->first(),
+                    ])
+                    ->visible(fn (?string $operation): bool => $operation === 'edit')
+                    ->dehydrated(false)
+                    ->columnSpan(1),
 
                 TextInput::make('sort_order')
                     ->required()
