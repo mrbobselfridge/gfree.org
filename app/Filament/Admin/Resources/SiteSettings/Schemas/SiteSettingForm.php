@@ -151,7 +151,7 @@ class SiteSettingForm
                                 Hidden::make('key')
                                     ->dehydrateStateUsing(fn (mixed $state, Get $get): string => SiteDesignPalette::normalizeKey($state) ?? SiteDesignPalette::normalizeKey($get('name')) ?? 'background'),
                             ])
-                            ->columns(2)
+                            ->columns(1)
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->addActionLabel('Add background color')
                             ->reorderable()
