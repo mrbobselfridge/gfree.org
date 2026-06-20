@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\ListNavigationLinks;
 use App\Models\NavigationLink;
 use App\Models\Page;
@@ -300,6 +301,118 @@ class NavigationLinkTest extends TestCase
             ->assertSee('Header Link 1')
             ->assertSee('Header Link 5')
             ->assertSee('Header Link 6');
+    }
+
+    public function test_navigation_links_table_has_requested_sortable_columns_and_label_edit_link(): void
+    {
+        $parent = NavigationLink::query()->create([
+            'label' => 'Resources',
+            'url' => '/resources',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        $child = NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'RightNow Media',
+            'url' => 'https://www.rightnowmedia.org/',
+            'location' => 'header',
+            'sort_order' => 2,
+            'is_published' => true,
+        ]);
+
+        $expectedEditUrl = NavigationLinkResource::getUrl('edit', ['record' => $child]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->assertTableColumnExists('label', fn ($column) => $column->isSortable()
+                && $column->isGloballySearchable()
+                && $column->getUrl() === $expectedEditUrl, $child)
+            ->assertTableColumnExists('url', fn ($column): bool => $column->isSortable()
+                && $column->isGloballySearchable()
+                && $column->getLabel() === 'URL')
+            ->assertTableColumnExists('parent.label', fn ($column): bool => $column->isSortable()
+                && $column->isGloballySearchable())
+            ->assertTableColumnExists('is_published', fn ($column): bool => $column->isSortable())
+            ->tap(function ($component): void {
+                $columns = $component->instance()->getTable()->getColumns();
+
+                $this->assertSame(['label', 'url', 'parent.label'], array_slice(array_keys($columns), 0, 3));
+            });
+    }
+
+    public function test_navigation_links_table_sorts_by_parent_label(): void
+    {
+        $resources = NavigationLink::query()->create([
+            'label' => 'Resources',
+            'url' => '/resources',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        $members = NavigationLink::query()->create([
+            'label' => 'Members',
+            'url' => '/members',
+            'location' => 'header',
+            'sort_order' => 2,
+            'is_published' => true,
+        ]);
+
+        $topLevel = NavigationLink::query()->create([
+            'label' => 'New Here',
+            'url' => '/new-here',
+            'location' => 'header',
+            'sort_order' => 3,
+            'is_published' => true,
+        ]);
+
+        $memberChild = NavigationLink::query()->create([
+            'parent_id' => $members->id,
+            'label' => 'OneChurch',
+            'url' => 'https://example.com/onechurch',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        $resourceChild = NavigationLink::query()->create([
+            'parent_id' => $resources->id,
+            'label' => 'RightNow Media',
+            'url' => 'https://example.com/rightnow-media',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->sortTable('parent.label', 'asc')
+            ->assertCanSeeTableRecords([$topLevel, $memberChild, $resourceChild], inOrder: true);
+    }
+
+    public function test_navigation_links_table_published_icon_toggles_link_status(): void
+    {
+        $link = NavigationLink::query()->create([
+            'label' => 'OneChurch',
+            'url' => 'https://example.com/onechurch',
+            'location' => 'header',
+            'sort_order' => 1,
+            'is_published' => false,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->callTableColumnAction('is_published', $link);
+
+        $this->assertTrue($link->refresh()->is_published);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListNavigationLinks::class)
+            ->callTableColumnAction('is_published', $link);
+
+        $this->assertFalse($link->refresh()->is_published);
     }
 
     public function test_navigation_links_can_be_copied_from_admin_table(): void
