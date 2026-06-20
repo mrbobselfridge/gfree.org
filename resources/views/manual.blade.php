@@ -1,15 +1,10 @@
-@php
-    $churchName = $settings?->church_name ?? 'TwyxtCo Church';
-    $logoUrl = $settings?->logoUrl() ?? asset('images/twyxtco-logo.png');
-@endphp
-
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Website Manual | {{ $churchName }}</title>
-    <meta name="description" content="Printable website and CMS manual for {{ $churchName }} admins and content editors.">
+    <title>Website Manual</title>
+    <meta name="description" content="Printable website and CMS manual for admins and content editors.">
     <script>
         (() => {
             const hash = window.location.hash;
@@ -101,17 +96,6 @@
             align-items: center;
             gap: 12px;
             min-width: 0;
-        }
-
-        .manual-brand img {
-            width: 58px;
-            height: 58px;
-            object-fit: contain;
-            padding: 8px;
-            background: #fff;
-            border: 1px solid rgb(215 222 216 / 0.9);
-            border-radius: 8px;
-            box-shadow: 0 10px 28px rgb(41 78 60 / 0.12);
         }
 
         .manual-brand span {
@@ -600,7 +584,6 @@
         <section class="manual-cover" id="top">
             <div class="manual-cover-top">
                 <div class="manual-brand">
-                    <img src="{{ $logoUrl }}" alt="{{ $churchName }} logo">
                     <span>Website operations guide</span>
                 </div>
 
@@ -612,8 +595,8 @@
             </div>
 
             <p class="manual-kicker">Website and CMS Manual</p>
-            <h1>{{ $churchName }} Admin and Content Editor Guide</h1>
-            <p>This manual explains the functional areas of the church website CMS, how to keep public content current, and how to print or save this guide for less technical users.</p>
+            <h1>Website Admin and Content Editor Guide</h1>
+            <p>This manual explains the functional areas of the website CMS, how to keep public content current, and how to print or save this guide for less technical users.</p>
 
             <div class="manual-meta">
                 <span class="manual-pill">Manual URL: {{ url('/manual') }}</span>
@@ -953,10 +936,9 @@
 
         <section class="manual-section" id="settings">
             <h2>Site Settings</h2>
-            <p>Site Settings control church-wide information and default public page settings.</p>
+            <p>Site Settings control sitewide information and default public page settings.</p>
             <ul>
-                <li>Church name.</li>
-                <li>Site logo used in the public header and footer.</li>
+                <li>Site name.</li>
                 <li>Default page header image used on pages that show a header but do not have their own Header Image selected.</li>
                 <li>Address, email, phone, office hours, and Sunday service times.</li>
                 <li>Site Design elements, including managed background colors for content blocks.</li>
@@ -1210,7 +1192,7 @@
             </ul>
 
             <div class="manual-print-footer">
-                <p>{{ $churchName }} Website Manual. Printed from {{ url('/manual') }}.</p>
+                <p>Website Manual. Printed from {{ url('/manual') }}.</p>
             </div>
         </section>
     </main>
