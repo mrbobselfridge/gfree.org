@@ -25,10 +25,16 @@ use Illuminate\Support\Facades\Storage;
     'dashboard_notes',
     'openai_api_key',
     'ai_content_prompt',
-    'livestream_url',
     'facebook_url',
     'instagram_url',
     'youtube_url',
+    'tiktok_url',
+    'linkedin_url',
+    'google_business_profile_url',
+    'pinterest_url',
+    'x_url',
+    'threads_url',
+    'additional_social_links',
     'google_tag_manager_id',
     'google_analytics_measurement_id',
 ])]
@@ -44,6 +50,54 @@ class SiteSetting extends Model
     {
         return SiteDesignPalette::normalizeBackgroundColors($this->design_background_colors)
             ?: SiteDesignPalette::defaultBackgroundColors();
+    }
+
+    public function socialLinks()
+    {
+        $builtInLinks = collect([
+            ['label' => 'Facebook', 'url' => $this->facebook_url, 'icon' => 'facebook'],
+            ['label' => 'Instagram', 'url' => $this->instagram_url, 'icon' => 'instagram'],
+            ['label' => 'YouTube', 'url' => $this->youtube_url, 'icon' => 'youtube'],
+            ['label' => 'TikTok', 'url' => $this->tiktok_url, 'icon' => 'tiktok'],
+            ['label' => 'LinkedIn', 'url' => $this->linkedin_url, 'icon' => 'linkedin'],
+            ['label' => 'Google Business Profile', 'url' => $this->google_business_profile_url, 'icon' => 'google-business-profile'],
+            ['label' => 'Pinterest', 'url' => $this->pinterest_url, 'icon' => 'pinterest'],
+            ['label' => 'X', 'url' => $this->x_url, 'icon' => 'x'],
+            ['label' => 'Threads', 'url' => $this->threads_url, 'icon' => 'threads'],
+        ])
+            ->filter(fn (array $link): bool => filled($link['url']))
+            ->map(fn (array $link): array => [
+                ...$link,
+                'image_url' => null,
+            ]);
+
+        return $builtInLinks
+            ->merge($this->additionalSocialLinks())
+            ->values();
+    }
+
+    public function additionalSocialLinks()
+    {
+        return collect(is_array($this->additional_social_links) ? $this->additional_social_links : [])
+            ->filter(fn (mixed $link): bool => is_array($link))
+            ->map(function (array $link): ?array {
+                $label = trim((string) ($link['label'] ?? ''));
+                $url = trim((string) ($link['url'] ?? ''));
+                $imagePath = $this->selectedImagePath($link['image_path'] ?? null);
+
+                if ($label === '' || $url === '' || $imagePath === null) {
+                    return null;
+                }
+
+                return [
+                    'label' => $label,
+                    'url' => $url,
+                    'icon' => 'custom',
+                    'image_url' => $this->imageUrl($imagePath),
+                ];
+            })
+            ->filter()
+            ->values();
     }
 
     public function publicDesignCss(): ?string
@@ -112,6 +166,26 @@ class SiteSetting extends Model
         return Storage::disk('public')->url($path);
     }
 
+    private function imageUrl(string $path): string
+    {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return Storage::disk('public')->url($path);
+    }
+
+    private function selectedImagePath(mixed $path): ?string
+    {
+        if (is_array($path)) {
+            $path = collect($path)->first();
+        }
+
+        $path = trim((string) $path);
+
+        return $path === '' ? null : $path;
+    }
+
     public function normalizedGoogleTagManagerId(): ?string
     {
         return $this->normalizeTrackingId($this->google_tag_manager_id, '/^GTM-[A-Z0-9]+$/');
@@ -137,6 +211,7 @@ class SiteSetting extends Model
     {
         return [
             'design_background_colors' => 'array',
+            'additional_social_links' => 'array',
         ];
     }
 }

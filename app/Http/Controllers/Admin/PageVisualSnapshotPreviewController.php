@@ -54,11 +54,7 @@ class PageVisualSnapshotPreviewController extends Controller
 
         return [
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
-            'socialLinks' => collect([
-                ['label' => 'Facebook', 'url' => $settings?->facebook_url],
-                ['label' => 'Instagram', 'url' => $settings?->instagram_url],
-                ['label' => 'YouTube', 'url' => $settings?->youtube_url],
-            ])->filter(fn (array $link): bool => filled($link['url'])),
+            'socialLinks' => $settings?->socialLinks() ?? collect(),
         ];
     }
 

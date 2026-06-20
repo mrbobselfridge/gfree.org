@@ -30,7 +30,7 @@ class SiteSettingForm
         'site-settings-site-design-elements',
         'site-settings-dashboard-notes',
         'site-settings-ai-settings',
-        'site-settings-social-and-video-urls',
+        'site-settings-social-and-additional-links',
         'site-settings-google-tracking',
     ];
 
@@ -67,22 +67,79 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Social and Video URLs', 'site-settings-social-and-video-urls')
+                self::section('Social and Additional Links', 'site-settings-social-and-additional-links')
                     ->schema([
-                        TextInput::make('livestream_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
                         TextInput::make('facebook_url')
+                            ->label('Facebook URL')
                             ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('instagram_url')
+                            ->label('Instagram URL')
                             ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
                         TextInput::make('youtube_url')
+                            ->label('YouTube URL')
                             ->rules([new HttpOrRelativeUrl])
                             ->maxLength(255),
+                        TextInput::make('tiktok_url')
+                            ->label('TikTok URL')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('linkedin_url')
+                            ->label('LinkedIn URL')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('google_business_profile_url')
+                            ->label('Google Business Profile URL')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('pinterest_url')
+                            ->label('Pinterest URL')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('x_url')
+                            ->label('X URL')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('threads_url')
+                            ->label('Threads URL')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        Repeater::make('additional_social_links')
+                            ->label('Additional links')
+                            ->schema([
+                                TextInput::make('label')
+                                    ->label('Label')
+                                    ->required()
+                                    ->maxLength(80),
+                                TextInput::make('url')
+                                    ->label('Link')
+                                    ->required()
+                                    ->rules([new HttpOrRelativeUrl])
+                                    ->maxLength(255),
+                                ...ImageUpload::make(
+                                    'image_path',
+                                    'site-settings/additional-links',
+                                    'Image',
+                                    fn (ViewField $upload): ViewField => $upload
+                                        ->required()
+                                        ->helperText('Icon shown in the public footer for this link.')
+                                        ->columnSpanFull(),
+                                ),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                            ->addActionLabel('Add additional link')
+                            ->reorderable()
+                            ->dehydrateStateUsing(fn (mixed $state): array => self::normalizeAdditionalSocialLinks($state))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional footer links with custom icons. The label is used for hover and screen-reader text.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
                 self::section('Site Design elements', 'site-settings-site-design-elements')
                     ->schema([
@@ -267,5 +324,40 @@ class SiteSettingForm
             ->collapsible()
             ->collapsed()
             ->persistCollapsed();
+    }
+
+    private static function normalizeAdditionalSocialLinks(mixed $links): array
+    {
+        return collect(is_array($links) ? $links : [])
+            ->filter(fn (mixed $link): bool => is_array($link))
+            ->map(function (array $link): ?array {
+                $label = trim((string) ($link['label'] ?? ''));
+                $url = trim((string) ($link['url'] ?? ''));
+                $imagePath = self::selectedImagePath($link['image_path'] ?? null);
+
+                if ($label === '' || $url === '' || $imagePath === null) {
+                    return null;
+                }
+
+                return [
+                    'label' => $label,
+                    'url' => $url,
+                    'image_path' => $imagePath,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private static function selectedImagePath(mixed $path): ?string
+    {
+        if (is_array($path)) {
+            $path = collect($path)->first();
+        }
+
+        $path = trim((string) $path);
+
+        return $path === '' ? null : $path;
     }
 }

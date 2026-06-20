@@ -20,11 +20,17 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->text('office_hours')->nullable();
-            $table->string('livestream_url')->nullable();
             $table->string('one_church_url')->nullable();
             $table->string('facebook_url')->nullable();
             $table->string('instagram_url')->nullable();
             $table->string('youtube_url')->nullable();
+            $table->string('tiktok_url')->nullable();
+            $table->string('linkedin_url')->nullable();
+            $table->string('google_business_profile_url')->nullable();
+            $table->string('pinterest_url')->nullable();
+            $table->string('x_url')->nullable();
+            $table->string('threads_url')->nullable();
+            $table->json('additional_social_links')->nullable();
             $table->timestamps();
         });
     }

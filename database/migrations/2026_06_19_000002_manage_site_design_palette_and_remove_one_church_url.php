@@ -35,7 +35,7 @@ return new class extends Migration
     {
         if (Schema::hasTable('site_settings') && ! Schema::hasColumn('site_settings', 'one_church_url')) {
             Schema::table('site_settings', function (Blueprint $table): void {
-                $table->string('one_church_url')->nullable()->after('livestream_url');
+                $table->string('one_church_url')->nullable()->after('office_hours');
             });
         }
 

@@ -5098,6 +5098,29 @@
     background: #ff0033;
 }
 
+.site-footer__social-link--tiktok,
+.site-footer__social-link--x,
+.site-footer__social-link--threads {
+    background: #050505;
+}
+
+.site-footer__social-link--linkedin {
+    background: #0a66c2;
+}
+
+.site-footer__social-link--google-business-profile {
+    background: #4285f4;
+}
+
+.site-footer__social-link--pinterest {
+    background: #bd081c;
+}
+
+.site-footer__social-link--custom {
+    padding: 8px;
+    background: white;
+}
+
 .site-footer__social .site-footer__social-link:hover,
 .site-footer__social .site-footer__social-link:focus-visible {
     color: white;
@@ -5139,6 +5162,27 @@
 
 .site-footer__social-link--youtube svg path + path {
     fill: #ff0033;
+}
+
+.site-footer__social-link--tiktok svg path,
+.site-footer__social-link--linkedin svg path,
+.site-footer__social-link--pinterest svg path,
+.site-footer__social-link--x svg path {
+    fill: white;
+    stroke: none;
+}
+
+.site-footer__social-link--google-business-profile svg path,
+.site-footer__social-link--threads svg path {
+    fill: none;
+    stroke: white;
+}
+
+.site-footer__social-link img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .site-footer__social-label {

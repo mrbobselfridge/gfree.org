@@ -153,14 +153,19 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         }
 
         $hasSocialOrVideoUrl = collect([
-            $settings->livestream_url,
             $settings->facebook_url,
             $settings->instagram_url,
             $settings->youtube_url,
+            $settings->tiktok_url,
+            $settings->linkedin_url,
+            $settings->google_business_profile_url,
+            $settings->pinterest_url,
+            $settings->x_url,
+            $settings->threads_url,
         ])->contains(fn (?string $value): bool => filled($value));
 
-        if (! $hasSocialOrVideoUrl) {
-            $rows[] = $this->row('Site Settings', 'Social and video URLs', 'No social, livestream, or video links are filled in.', $url, 'Review', 'warning');
+        if (! $hasSocialOrVideoUrl && $settings->additionalSocialLinks()->isEmpty()) {
+            $rows[] = $this->row('Site Settings', 'Social and Additional Links', 'No social or additional footer links are filled in.', $url, 'Review', 'warning');
         }
 
         if (blank($settings->openai_api_key)) {

@@ -44,7 +44,7 @@ class HomeController extends Controller
             'heroBannersRotationDelayMilliseconds' => ($homepageContent?->heroBannersRotationDelaySeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_ROTATION_DELAY_SECONDS) * 1000,
             'heroBannersFadeDurationMilliseconds' => ($homepageContent?->heroBannersFadeDurationSeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_FADE_DURATION_SECONDS) * 1000,
             'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $now),
-            'socialLinks' => $this->socialLinks($settings),
+            'socialLinks' => $settings?->socialLinks() ?? collect(),
         ]);
     }
 
@@ -223,15 +223,6 @@ class HomeController extends Controller
                 ];
             })
             ->all();
-    }
-
-    private function socialLinks(?SiteSetting $settings)
-    {
-        return collect([
-            ['label' => 'Facebook', 'url' => $settings?->facebook_url],
-            ['label' => 'Instagram', 'url' => $settings?->instagram_url],
-            ['label' => 'YouTube', 'url' => $settings?->youtube_url],
-        ])->filter(fn (array $link) => filled($link['url']));
     }
 
     private function imageUrl(mixed $path): ?string

@@ -130,6 +130,19 @@ class PublicPageTest extends TestCase
             'facebook_url' => 'https://facebook.example/twyxtco',
             'instagram_url' => 'https://instagram.example/twyxtco',
             'youtube_url' => 'https://youtube.example/twyxtco',
+            'tiktok_url' => 'https://tiktok.example/@twyxtco',
+            'linkedin_url' => 'https://linkedin.example/company/twyxtco',
+            'google_business_profile_url' => 'https://business.google.com/example',
+            'pinterest_url' => 'https://pinterest.example/twyxtco',
+            'x_url' => 'https://x.example/twyxtco',
+            'threads_url' => 'https://threads.example/@twyxtco',
+            'additional_social_links' => [
+                [
+                    'label' => 'Podcast',
+                    'url' => '/podcast',
+                    'image_path' => 'site-settings/additional-links/podcast.png',
+                ],
+            ],
         ]);
 
         Page::query()->create([
@@ -156,6 +169,21 @@ class PublicPageTest extends TestCase
             ->assertSee('tel:8145551212', false)
             ->assertSee('aria-label="Facebook"', false)
             ->assertSee('site-footer__social-link--facebook', false)
+            ->assertSee('aria-label="TikTok"', false)
+            ->assertSee('site-footer__social-link--tiktok', false)
+            ->assertSee('title="LinkedIn"', false)
+            ->assertSee('site-footer__social-link--linkedin', false)
+            ->assertSee('aria-label="Google Business Profile"', false)
+            ->assertSee('site-footer__social-link--google-business-profile', false)
+            ->assertSee('site-footer__social-link--pinterest', false)
+            ->assertSee('aria-label="X"', false)
+            ->assertSee('site-footer__social-link--x', false)
+            ->assertSee('aria-label="Threads"', false)
+            ->assertSee('site-footer__social-link--threads', false)
+            ->assertSee('aria-label="Podcast"', false)
+            ->assertSee('title="Podcast"', false)
+            ->assertSee('href="/podcast"', false)
+            ->assertSee('/storage/site-settings/additional-links/podcast.png', false)
             ->assertSee('target="_blank"', false)
             ->assertSee('rel="noopener noreferrer"', false)
             ->assertSee('title="Instagram"', false)

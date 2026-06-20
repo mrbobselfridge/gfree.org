@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('site_settings') && Schema::hasColumn('site_settings', 'giving_url')) {
+        if (Schema::hasTable('site_settings') && Schema::hasColumn('site_settings', 'livestream_url')) {
             Schema::table('site_settings', function (Blueprint $table): void {
-                $table->dropColumn('giving_url');
+                $table->dropColumn('livestream_url');
             });
         }
     }
 
     public function down(): void
     {
-        if (Schema::hasTable('site_settings') && ! Schema::hasColumn('site_settings', 'giving_url')) {
+        if (Schema::hasTable('site_settings') && ! Schema::hasColumn('site_settings', 'livestream_url')) {
             Schema::table('site_settings', function (Blueprint $table): void {
-                $table->string('giving_url')->nullable()->after('office_hours');
+                $table->string('livestream_url')->nullable()->after('office_hours');
             });
         }
     }

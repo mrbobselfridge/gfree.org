@@ -38,7 +38,15 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
             ->assertSee('AI Content Prompt')
-            ->assertSee('Social and Video URLs')
+            ->assertSee('Social and Additional Links')
+            ->assertSee('TikTok URL')
+            ->assertSee('LinkedIn URL')
+            ->assertSee('Google Business Profile URL')
+            ->assertSee('Pinterest URL')
+            ->assertSee('X URL')
+            ->assertSee('Threads URL')
+            ->assertSee('Additional links')
+            ->assertDontSee('Social and Video URLs')
             ->assertDontSee('One Church URL')
             ->assertSee('Google Tracking')
             ->assertSee('Google Tag Manager container ID')
@@ -83,6 +91,12 @@ class SiteSettingsAdminTest extends TestCase
             )
             ->assertSchemaComponentExists(
                 'site-settings-dashboard-notes',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentExists(
+                'site-settings-social-and-additional-links',
                 checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
                     && $component->isCollapsed()
                     && $component->shouldPersistCollapsed(),
@@ -170,20 +184,55 @@ class SiteSettingsAdminTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
-            ->set('data.livestream_url', 'https://live.example.com/twyxtco')
             ->set('data.facebook_url', 'http://facebook.example/twyxtco')
             ->set('data.instagram_url', '/instagram')
             ->set('data.youtube_url', '/sermons')
+            ->set('data.tiktok_url', 'https://tiktok.example/twyxtco')
+            ->set('data.linkedin_url', 'https://linkedin.example/company/twyxtco')
+            ->set('data.google_business_profile_url', 'https://business.google.com/example')
+            ->set('data.pinterest_url', 'https://pinterest.example/twyxtco')
+            ->set('data.x_url', 'https://x.example/twyxtco')
+            ->set('data.threads_url', 'https://threads.example/@twyxtco')
+            ->set('data.additional_social_links', [
+                [
+                    'label' => 'Podcast',
+                    'url' => '/podcast',
+                    'image_path' => 'site-settings/additional-links/podcast.png',
+                ],
+                [
+                    'label' => 'Newsletter',
+                    'url' => 'https://newsletter.example/twyxtco',
+                    'image_path' => ['site-settings/additional-links/newsletter.png'],
+                ],
+            ])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
-            'livestream_url' => 'https://live.example.com/twyxtco',
             'facebook_url' => 'http://facebook.example/twyxtco',
             'instagram_url' => '/instagram',
             'youtube_url' => '/sermons',
+            'tiktok_url' => 'https://tiktok.example/twyxtco',
+            'linkedin_url' => 'https://linkedin.example/company/twyxtco',
+            'google_business_profile_url' => 'https://business.google.com/example',
+            'pinterest_url' => 'https://pinterest.example/twyxtco',
+            'x_url' => 'https://x.example/twyxtco',
+            'threads_url' => 'https://threads.example/@twyxtco',
         ]);
+
+        $this->assertSame([
+            [
+                'label' => 'Podcast',
+                'url' => '/podcast',
+                'image_path' => 'site-settings/additional-links/podcast.png',
+            ],
+            [
+                'label' => 'Newsletter',
+                'url' => 'https://newsletter.example/twyxtco',
+                'image_path' => 'site-settings/additional-links/newsletter.png',
+            ],
+        ], $settings->refresh()->additional_social_links);
     }
 
     public function test_site_design_background_colors_can_be_saved(): void
@@ -278,9 +327,19 @@ class SiteSettingsAdminTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
-            ->set('data.livestream_url', 'livestream page')
+            ->set('data.linkedin_url', 'linkedin page')
+            ->set('data.additional_social_links', [
+                [
+                    'label' => 'Podcast',
+                    'url' => 'podcast page',
+                    'image_path' => 'site-settings/additional-links/podcast.png',
+                ],
+            ])
             ->call('save')
-            ->assertHasFormErrors(['livestream_url']);
+            ->assertHasFormErrors([
+                'linkedin_url',
+                'additional_social_links.0.url',
+            ]);
     }
 
     public function test_site_settings_google_tracking_fields_can_be_saved(): void

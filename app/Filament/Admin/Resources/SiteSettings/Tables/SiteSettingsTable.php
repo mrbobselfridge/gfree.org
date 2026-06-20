@@ -24,9 +24,6 @@ class SiteSettingsTable
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
-                TextColumn::make('livestream_url')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('facebook_url')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -34,6 +31,31 @@ class SiteSettingsTable
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('youtube_url')
+                    ->label('YouTube URL')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('tiktok_url')
+                    ->label('TikTok URL')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('linkedin_url')
+                    ->label('LinkedIn URL')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('google_business_profile_url')
+                    ->label('Google Business Profile URL')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('pinterest_url')
+                    ->label('Pinterest URL')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('x_url')
+                    ->label('X URL')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('threads_url')
+                    ->label('Threads URL')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')

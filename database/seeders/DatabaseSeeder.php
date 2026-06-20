@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             'sunday_service_times' => '9:15 & 11 AM',
             'address' => '305 Keystone Hill Road',
             'email' => 'office@twyxtco.org',
-            'livestream_url' => '/live',
             'design_background_colors' => SiteDesignPalette::defaultBackgroundColors(),
         ]);
 

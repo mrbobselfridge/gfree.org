@@ -21,7 +21,7 @@ class PublicPageViewData
             'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path)
                 ?: ContentBlocks::imageUrl($settings?->default_page_header_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
-            'socialLinks' => $this->socialLinks($settings),
+            'socialLinks' => $settings?->socialLinks() ?? collect(),
             'childPageNavigation' => $this->childPageNavigation($page),
         ];
     }
@@ -45,12 +45,4 @@ class PublicPageViewData
         ];
     }
 
-    private function socialLinks(?SiteSetting $settings)
-    {
-        return collect([
-            ['label' => 'Facebook', 'url' => $settings?->facebook_url],
-            ['label' => 'Instagram', 'url' => $settings?->instagram_url],
-            ['label' => 'YouTube', 'url' => $settings?->youtube_url],
-        ])->filter(fn (array $link) => filled($link['url']));
-    }
 }

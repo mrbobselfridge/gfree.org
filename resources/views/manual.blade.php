@@ -943,7 +943,7 @@
                 <li>Address, email, phone, office hours, and Sunday service times.</li>
                 <li>Site Design elements, including managed background colors for content blocks.</li>
                 <li>Dashboard Notes shown to users and admins on the admin dashboard.</li>
-                <li>Social media links.</li>
+                <li>Social and additional footer links, including optional custom link icons.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
                 <li>OpenAI API key used by rewrite, page review, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
                 <li>Google Tag Manager and Google Analytics tracking IDs.</li>
