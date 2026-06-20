@@ -342,6 +342,67 @@ class PublicPageTest extends TestCase
         $this->get('/draft-page')->assertNotFound();
     }
 
+    public function test_missing_pages_render_published_404_page_with_not_found_status(): void
+    {
+        Page::query()->create([
+            'title' => 'Page Not Found',
+            'slug' => '404',
+            'intro' => 'We could not find that page.',
+            'body' => 'Try starting from the home page.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/missing-page')
+            ->assertNotFound()
+            ->assertSee('Page Not Found')
+            ->assertSee('We could not find that page.')
+            ->assertSee('Try starting from the home page.');
+    }
+
+    public function test_404_page_slug_is_available_as_a_normal_page(): void
+    {
+        Page::query()->create([
+            'title' => 'Page Not Found',
+            'slug' => '404',
+            'body' => 'This page can be edited in the CMS.',
+            'is_published' => true,
+        ]);
+
+        $this->get('/404')
+            ->assertOk()
+            ->assertSee('Page Not Found')
+            ->assertSee('This page can be edited in the CMS.');
+    }
+
+    public function test_missing_pages_ignore_unpublished_404_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Draft 404',
+            'slug' => '404',
+            'body' => 'This should not render.',
+            'is_published' => false,
+        ]);
+
+        $this->get('/missing-page')
+            ->assertNotFound()
+            ->assertDontSee('This should not render.');
+    }
+
+    public function test_missing_pages_ignore_redirect_404_pages(): void
+    {
+        Page::query()->create([
+            'title' => 'Redirect 404',
+            'slug' => '404',
+            'is_published' => true,
+            'is_redirect' => true,
+            'redirect_url' => '/',
+        ]);
+
+        $this->get('/missing-page')
+            ->assertNotFound()
+            ->assertDontSee('Redirecting to');
+    }
+
     public function test_pages_respect_publish_and_expiration_dates(): void
     {
         Page::query()->create([
