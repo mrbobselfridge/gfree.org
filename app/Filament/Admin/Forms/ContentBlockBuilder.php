@@ -474,7 +474,6 @@ class ContentBlockBuilder
                             if (filled($state) || ! self::pageHasRelatedListingSource($page)) {
                                 return;
                             }
-
                             $component->state($page?->getKey());
                         })
                         ->searchable()
