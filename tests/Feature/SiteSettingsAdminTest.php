@@ -171,7 +171,6 @@ class SiteSettingsAdminTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
             ->set('data.livestream_url', 'https://live.example.com/twyxtco')
-            ->set('data.giving_url', '/give')
             ->set('data.facebook_url', 'http://facebook.example/twyxtco')
             ->set('data.instagram_url', '/instagram')
             ->set('data.youtube_url', '/sermons')
@@ -181,7 +180,6 @@ class SiteSettingsAdminTest extends TestCase
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
             'livestream_url' => 'https://live.example.com/twyxtco',
-            'giving_url' => '/give',
             'facebook_url' => 'http://facebook.example/twyxtco',
             'instagram_url' => '/instagram',
             'youtube_url' => '/sermons',
@@ -280,9 +278,9 @@ class SiteSettingsAdminTest extends TestCase
 
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
-            ->set('data.giving_url', 'give page')
+            ->set('data.livestream_url', 'livestream page')
             ->call('save')
-            ->assertHasFormErrors(['giving_url']);
+            ->assertHasFormErrors(['livestream_url']);
     }
 
     public function test_site_settings_google_tracking_fields_can_be_saved(): void

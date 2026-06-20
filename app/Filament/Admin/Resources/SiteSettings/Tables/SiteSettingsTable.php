@@ -27,9 +27,6 @@ class SiteSettingsTable
                 TextColumn::make('livestream_url')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('giving_url')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('facebook_url')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),

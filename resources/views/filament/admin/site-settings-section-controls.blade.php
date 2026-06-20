@@ -1,5 +1,6 @@
 <div
-    class="flex justify-end text-sm"
+    class="text-sm"
+    style="display: flex; width: 100%; justify-content: flex-end;"
     x-data="{ sectionIds: @js($sectionIds) }"
 >
     <button

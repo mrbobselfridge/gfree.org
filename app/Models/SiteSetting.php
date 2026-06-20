@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\Storage;
     'openai_api_key',
     'ai_content_prompt',
     'livestream_url',
-    'giving_url',
     'facebook_url',
     'instagram_url',
     'youtube_url',

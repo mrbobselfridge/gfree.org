@@ -62,6 +62,30 @@ class SiteSettingForm
                             ->maxLength(255),
                         RichEditorDefaults::configure(RichEditor::make('sunday_service_times')),
                         RichEditorDefaults::configure(RichEditor::make('address')),
+
+                        RichEditorDefaults::configure(RichEditor::make('office_hours')),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+                self::section('Social and Video URLs', 'site-settings-social-and-video-urls')
+                    ->schema([
+                        TextInput::make('livestream_url')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('facebook_url')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('instagram_url')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                        TextInput::make('youtube_url')
+                            ->rules([new HttpOrRelativeUrl])
+                            ->maxLength(255),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+                self::section('Site Design elements', 'site-settings-site-design-elements')
+                    ->schema([
                         ...ImageUpload::make(
                             'site_logo_path',
                             'site-settings/logo',
@@ -74,14 +98,9 @@ class SiteSettingForm
                             'site-settings/page-header-images',
                             'Default page header image',
                             fn (ViewField $upload): ViewField => $upload
-                                ->helperText('Used on public pages when Show page header is on but that page has no Header Image selected.'),
+                                ->helperText('Used on public pages when Show page header is on but that page has no Header Image selected.')
+                                ->columnSpan(2),
                         ),
-                        RichEditorDefaults::configure(RichEditor::make('office_hours')),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-                self::section('Site Design elements', 'site-settings-site-design-elements')
-                    ->schema([
                         ColorPicker::make('design_accent_color')
                             ->label('Site accent color')
                             ->hex()
@@ -133,6 +152,10 @@ class SiteSettingForm
                         Repeater::make('design_background_colors')
                             ->label('Background colors')
                             ->default(SiteDesignPalette::defaultBackgroundColors())
+                            ->grid([
+                                'md' => 2,
+                                'xl' => 3,
+                            ])
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Name')
@@ -151,7 +174,7 @@ class SiteSettingForm
                                 Hidden::make('key')
                                     ->dehydrateStateUsing(fn (mixed $state, Get $get): string => SiteDesignPalette::normalizeKey($state) ?? SiteDesignPalette::normalizeKey($get('name')) ?? 'background'),
                             ])
-                            ->columns(1)
+                            ->columns(2)
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->addActionLabel('Add background color')
                             ->reorderable()
@@ -160,10 +183,11 @@ class SiteSettingForm
                                 Heroicon::OutlinedInformationCircle,
                                 'These colors populate the Background color options in page and homepage content blocks.',
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                         Textarea::make('custom_css')
                             ->label('Custom CSS')
-                            ->rows(10)
+                            ->rows(5)
                             ->visible(fn (): bool => CodeBlockAccess::canManage())
                             ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? trim($state) : null)
                             ->hintIcon(
@@ -205,26 +229,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Social and Video URLs', 'site-settings-social-and-video-urls')
-                    ->schema([
-                        TextInput::make('livestream_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('giving_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('facebook_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('instagram_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('youtube_url')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
+
                 self::section('Google Tracking', 'site-settings-google-tracking')
                     ->description('Optional. Use Google Tag Manager for the most flexibility. If both are filled in, only Google Tag Manager is rendered to avoid duplicate Analytics page views.')
                     ->schema([

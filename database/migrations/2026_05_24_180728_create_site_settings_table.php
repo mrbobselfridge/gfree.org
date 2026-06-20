@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->text('office_hours')->nullable();
             $table->string('livestream_url')->nullable();
-            $table->string('giving_url')->nullable();
             $table->string('one_church_url')->nullable();
             $table->string('facebook_url')->nullable();
             $table->string('instagram_url')->nullable();

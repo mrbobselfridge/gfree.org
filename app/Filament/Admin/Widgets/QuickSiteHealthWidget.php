@@ -154,14 +154,13 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
 
         $hasSocialOrVideoUrl = collect([
             $settings->livestream_url,
-            $settings->giving_url,
             $settings->facebook_url,
             $settings->instagram_url,
             $settings->youtube_url,
         ])->contains(fn (?string $value): bool => filled($value));
 
         if (! $hasSocialOrVideoUrl) {
-            $rows[] = $this->row('Site Settings', 'Social and video URLs', 'No social, giving, livestream, or video links are filled in.', $url, 'Review', 'warning');
+            $rows[] = $this->row('Site Settings', 'Social and video URLs', 'No social, livestream, or video links are filled in.', $url, 'Review', 'warning');
         }
 
         if (blank($settings->openai_api_key)) {

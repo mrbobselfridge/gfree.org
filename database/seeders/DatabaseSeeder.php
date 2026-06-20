@@ -28,7 +28,6 @@ class DatabaseSeeder extends Seeder
             'address' => '305 Keystone Hill Road',
             'email' => 'office@twyxtco.org',
             'livestream_url' => '/live',
-            'giving_url' => '/give',
             'design_background_colors' => SiteDesignPalette::defaultBackgroundColors(),
         ]);
 
