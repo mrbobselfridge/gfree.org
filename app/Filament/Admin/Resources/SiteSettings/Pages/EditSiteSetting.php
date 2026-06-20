@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
+use App\Support\CodeBlockAccess;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
@@ -74,6 +75,15 @@ class EditSiteSetting extends EditRecord
     protected function getRedirectUrl(): ?string
     {
         return null;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (! CodeBlockAccess::canManage()) {
+            $data['custom_css'] = $this->getRecord()->custom_css;
+        }
+
+        return $data;
     }
 
     protected function afterSave(): void

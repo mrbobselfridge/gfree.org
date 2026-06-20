@@ -18,6 +18,9 @@ class ListSiteSettings extends ListRecords
             'church_name' => 'TwyxtCo Church',
             'ai_content_prompt' => AiContentPrompt::DEFAULT,
             'design_background_colors' => SiteDesignPalette::defaultBackgroundColors(),
+            'design_accent_color' => SiteSetting::DEFAULT_DESIGN_ACCENT_COLOR,
+            'design_accent_text_color' => SiteSetting::DEFAULT_DESIGN_ACCENT_TEXT_COLOR,
+            'design_accent_soft_color' => SiteSetting::DEFAULT_DESIGN_ACCENT_SOFT_COLOR,
         ]);
 
         $this->redirect(SiteSettingResource::getUrl('edit', ['record' => $record]));

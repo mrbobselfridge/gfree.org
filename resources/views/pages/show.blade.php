@@ -10,6 +10,7 @@
         <meta name="robots" content="noindex, nofollow">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.site-design')
 </head>
 <body @class([
     'site-page',

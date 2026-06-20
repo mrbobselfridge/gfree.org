@@ -4,8 +4,10 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
+use App\Models\SiteSetting;
 use App\Rules\HttpOrRelativeUrl;
 use App\Support\AiContentPrompt;
+use App\Support\CodeBlockAccess;
 use App\Support\RichContent;
 use App\Support\SiteDesignPalette;
 use Filament\Forms\Components\ColorPicker;
@@ -78,9 +80,58 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Site Background Color Settings', 'site-settings-site-design-elements')
+                self::section('Site Design elements', 'site-settings-site-design-elements')
                     ->schema([
+                        ColorPicker::make('design_accent_color')
+                            ->label('Site accent color')
+                            ->hex()
+                            ->default(SiteSetting::DEFAULT_DESIGN_ACCENT_COLOR)
+                            ->formatStateUsing(fn (mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_COLOR)
+                            ->required()
+                            ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                            ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
+                            ->validationMessages([
+                                'regex' => 'Enter a valid hex color, such as #17b8ad.',
+                            ])
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Primary public-site accent used for buttons, labels, rules, links, and highlights.',
+                            )
+                            ->hintColor('gray'),
+                        ColorPicker::make('design_accent_text_color')
+                            ->label('Accent text color')
+                            ->hex()
+                            ->default(SiteSetting::DEFAULT_DESIGN_ACCENT_TEXT_COLOR)
+                            ->formatStateUsing(fn (mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_TEXT_COLOR)
+                            ->required()
+                            ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                            ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
+                            ->validationMessages([
+                                'regex' => 'Enter a valid hex color, such as #05756f.',
+                            ])
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Darker accent used where accent text needs better contrast on light backgrounds.',
+                            )
+                            ->hintColor('gray'),
+                        ColorPicker::make('design_accent_soft_color')
+                            ->label('Soft accent color')
+                            ->hex()
+                            ->default(SiteSetting::DEFAULT_DESIGN_ACCENT_SOFT_COLOR)
+                            ->formatStateUsing(fn (mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_SOFT_COLOR)
+                            ->required()
+                            ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                            ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
+                            ->validationMessages([
+                                'regex' => 'Enter a valid hex color, such as #ddf8f5.',
+                            ])
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Light accent tint used for softer public-site backgrounds and highlights.',
+                            )
+                            ->hintColor('gray'),
                         Repeater::make('design_background_colors')
+                            ->label('Background colors')
                             ->default(SiteDesignPalette::defaultBackgroundColors())
                             ->schema([
                                 TextInput::make('name')
@@ -110,8 +161,19 @@ class SiteSettingForm
                                 'These colors populate the Background color options in page and homepage content blocks.',
                             )
                             ->hintColor('gray'),
+                        Textarea::make('custom_css')
+                            ->label('Custom CSS')
+                            ->rows(10)
+                            ->visible(fn (): bool => CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? trim($state) : null)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional public-site CSS override for admins and editors with Code Blocks access. Leave blank to use the standard stylesheet.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
                     ])
-                    ->columns(1)
+                    ->columns(3)
                     ->columnSpanFull(),
                 self::section('Dashboard Notes', 'site-settings-dashboard-notes')
                     ->schema([

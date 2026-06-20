@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Storage;
     'email',
     'office_hours',
     'design_background_colors',
+    'design_accent_color',
+    'design_accent_text_color',
+    'design_accent_soft_color',
+    'custom_css',
     'dashboard_notes',
     'openai_api_key',
     'ai_content_prompt',
@@ -31,10 +35,67 @@ use Illuminate\Support\Facades\Storage;
 ])]
 class SiteSetting extends Model
 {
+    public const DEFAULT_DESIGN_ACCENT_COLOR = '#17b8ad';
+
+    public const DEFAULT_DESIGN_ACCENT_TEXT_COLOR = '#05756f';
+
+    public const DEFAULT_DESIGN_ACCENT_SOFT_COLOR = '#ddf8f5';
+
     public function backgroundColors(): array
     {
         return SiteDesignPalette::normalizeBackgroundColors($this->design_background_colors)
             ?: SiteDesignPalette::defaultBackgroundColors();
+    }
+
+    public function publicDesignCss(): ?string
+    {
+        $css = [];
+        $variables = $this->publicDesignVariables();
+
+        if ($variables !== []) {
+            $css[] = sprintf(
+                ".site-home, .site-page {\n%s\n}",
+                collect($variables)
+                    ->map(fn (string $value, string $name): string => "    {$name}: {$value};")
+                    ->implode("\n")
+            );
+        }
+
+        $customCss = $this->safeCustomCss();
+
+        if ($customCss !== null) {
+            $css[] = $customCss;
+        }
+
+        return $css === [] ? null : implode("\n\n", $css);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function publicDesignVariables(): array
+    {
+        return collect([
+            '--site-accent' => $this->design_accent_color ?: self::DEFAULT_DESIGN_ACCENT_COLOR,
+            '--site-accent-text' => $this->design_accent_text_color ?: self::DEFAULT_DESIGN_ACCENT_TEXT_COLOR,
+            '--site-accent-soft' => $this->design_accent_soft_color ?: self::DEFAULT_DESIGN_ACCENT_SOFT_COLOR,
+        ])
+            ->map(fn (mixed $color): ?string => SiteDesignPalette::normalizeHex($color))
+            ->filter()
+            ->all();
+    }
+
+    private function safeCustomCss(): ?string
+    {
+        $css = trim((string) $this->custom_css);
+
+        if ($css === '') {
+            return null;
+        }
+
+        $css = preg_replace('/<\/?style\b[^>]*>/i', '', $css) ?? $css;
+
+        return str_ireplace('</style', '<\/style', trim($css));
     }
 
     public function logoUrl(): string

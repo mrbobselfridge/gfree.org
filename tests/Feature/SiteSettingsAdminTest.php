@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\AdminAccess;
 use App\Support\SiteDesignPalette;
 use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,7 +29,11 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Site logo')
             ->assertSee('Default page header image')
             ->assertSee('Site Design elements')
+            ->assertSee('Site accent color')
+            ->assertSee('Accent text color')
+            ->assertSee('Soft accent color')
             ->assertSee('Background colors')
+            ->assertSee('Custom CSS')
             ->assertSee('Dashboard Notes')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
@@ -212,6 +217,59 @@ class SiteSettingsAdminTest extends TestCase
             ['key' => 'midnight-blue', 'name' => 'Midnight Blue', 'hex' => '#102030'],
         ], $colors);
         $this->assertSame('Midnight Blue', SiteDesignPalette::normalizeBackgroundColors($colors)[1]['name']);
+    }
+
+    public function test_site_design_public_colors_and_custom_css_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.design_accent_color', '445566')
+            ->set('data.design_accent_text_color', '#223344')
+            ->set('data.design_accent_soft_color', '#ddeeff')
+            ->set('data.custom_css', ".page-hero h1 {\n    text-transform: uppercase;\n}")
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'design_accent_color' => '#445566',
+            'design_accent_text_color' => '#223344',
+            'design_accent_soft_color' => '#ddeeff',
+            'custom_css' => ".page-hero h1 {\n    text-transform: uppercase;\n}",
+        ]);
+    }
+
+    public function test_site_settings_editor_without_code_access_cannot_change_custom_css(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'custom_css' => '.site-header { color: red; }',
+        ]);
+
+        $editor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::SITE_SETTINGS],
+                'records' => [],
+            ],
+        ]);
+
+        $this->actingAs($editor)
+            ->get("/admin/site-settings/{$settings->getKey()}/edit")
+            ->assertOk()
+            ->assertDontSee('Custom CSS');
+
+        Livewire::actingAs($editor)
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.custom_css', '.site-header { color: blue; }')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame('.site-header { color: red; }', $settings->refresh()->custom_css);
     }
 
     public function test_site_settings_url_fields_reject_non_url_text(): void

@@ -730,6 +730,32 @@ class PublicPageTest extends TestCase
             ->assertSee('Palette driven section.');
     }
 
+    public function test_public_pages_render_site_design_overrides(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'design_accent_color' => '#445566',
+            'design_accent_text_color' => '#223344',
+            'design_accent_soft_color' => '#ddeeff',
+            'custom_css' => '<style>.page-hero h1 { text-transform: uppercase; }</style>',
+        ]);
+
+        Page::query()->create([
+            'title' => 'Styled Page',
+            'slug' => 'styled-page',
+            'is_published' => true,
+        ]);
+
+        $this->get('/styled-page')
+            ->assertOk()
+            ->assertSee('--site-accent: #445566;', false)
+            ->assertSee('--site-accent-text: #223344;', false)
+            ->assertSee('--site-accent-soft: #ddeeff;', false)
+            ->assertSee('.page-hero h1 { text-transform: uppercase; }', false)
+            ->assertDontSee('<style>.page-hero h1', false)
+            ->assertDontSee('</style></style>', false);
+    }
+
     public function test_image_blocks_do_not_require_body_content(): void
     {
         Page::query()->create([

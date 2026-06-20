@@ -9,6 +9,7 @@
         <meta name="description" content="{{ $pageDescription }}">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.site-design')
 </head>
 <body @class([
     'site-home',
