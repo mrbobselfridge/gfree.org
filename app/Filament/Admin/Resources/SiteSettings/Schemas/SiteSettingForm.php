@@ -78,10 +78,9 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Site Design elements', 'site-settings-site-design-elements')
+                self::section('Site Background Color Settings', 'site-settings-site-design-elements')
                     ->schema([
                         Repeater::make('design_background_colors')
-                            ->label('Background colors')
                             ->default(SiteDesignPalette::defaultBackgroundColors())
                             ->schema([
                                 TextInput::make('name')
