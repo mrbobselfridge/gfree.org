@@ -426,6 +426,14 @@
     padding-left: 1.25em;
 }
 
+.page-hero-message__body ul {
+    list-style: disc;
+}
+
+.page-hero-message__body ol {
+    list-style: decimal;
+}
+
 .page-hero-message__body li + li {
     margin-top: 0.25em;
 }
@@ -2516,6 +2524,19 @@
 
 .concept-updates__card-message > :last-child {
     margin-bottom: 0;
+}
+
+.concept-updates__card-message ul,
+.concept-updates__card-message ol {
+    padding-left: 1.2rem;
+}
+
+.concept-updates__card-message ul {
+    list-style: disc;
+}
+
+.concept-updates__card-message ol {
+    list-style: decimal;
 }
 
 .concept-updates__card-message a {
