@@ -28,21 +28,23 @@ class WorkflowNotificationRuleForm
                             ->required()
                             ->maxLength(255),
 
-                        ToggleButtons::make('is_enabled')
-                            ->inline()
-                            ->boolean()
-                            ->default(false)
-                            ->required(),
-
                         Select::make('content_area')
                             ->label('Content area')
                             ->options(WorkflowNotificationAreas::options())
                             ->native(false)
                             ->required(),
 
+
+                        ToggleButtons::make('is_enabled')
+                            ->inline()
+                            ->boolean()
+                            ->default(false)
+                            ->required(),
+
                         CheckboxList::make('triggers')
+                            ->label('Available triggers')
                             ->options(WorkflowNotificationAreas::triggerOptions())
-                            ->columns(3)
+                            ->columns(2)
                             ->required(),
 
                         Select::make('delay_minutes')
@@ -53,10 +55,14 @@ class WorkflowNotificationRuleForm
                             ->required(),
 
                         Placeholder::make('delay_minutes_help')
-                            ->label('**Automatic send delay defined')
+                            ->label('What is "Automatic send delay"?')
                             ->content(new HtmlString(
-                                'Automatic send delay controls how long the system waits before sending an automatic notifications after an change. Therefore, repeated updates during this period pauses notifications until no further changes are made.  This avoids sending multiple emails instantly when multiple updates are occuring quickly.'
-                            )),
+                                '<div style="font-size: 0.75rem; line-height: 1.35;">
+                                    Sets how long the system waits before sending a notification after a change. If more updates happen during that time, the delay restarts to avoid sending multiple emails.
+                                </div>'
+                            ))
+                            ->columnSpan(1),
+
 
                     ])
                     ->columns(3)
@@ -81,17 +87,18 @@ class WorkflowNotificationRuleForm
                                 ->mapWithKeys(fn (User $user): array => [
                                     (string) $user->getKey() => trim("{$user->name} <{$user->email}>"),
                                 ])
-                                ->all()),
+                                ->all())
+                                ->columnSpan(2),
                         Textarea::make('extra_emails')
                             ->label('Extra email addresses')
                             ->helperText('Separate addresses with commas, semicolons, or new lines.')
-                            ->rows(3),
+                            ->rows(2)
+                                ->columnSpan(2),
                     ])
-                    ->columns(3)
+                    ->columns(2)
                     ->columnSpanFull(),
                 Section::make('Email')
-                    ->description('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title},
-      {action_status}, {updater_name}, and {updater_email}.')
+                    ->description('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, and {updater_email}.')
                     ->schema([
                         TextInput::make('subject')
                             ->required()
@@ -100,7 +107,7 @@ class WorkflowNotificationRuleForm
                             ->required()
                             ->rows(6),
                     ])
-                    ->columns(3)
+                    ->columns(1)
                     ->columnSpanFull(),
             ]);
     }

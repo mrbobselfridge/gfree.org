@@ -81,12 +81,6 @@ class UserResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
-                        TextInput::make('password')
-                            ->password()
-                            ->revealable()
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (?string $state): bool => filled($state))
-                            ->maxLength(255),
                         Select::make('role')
                             ->options([
                                 User::ROLE_ADMIN => 'Admin',
@@ -95,6 +89,12 @@ class UserResource extends Resource
                             ->default(User::ROLE_EDITOR)
                             ->live()
                             ->required(),
+                        TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->maxLength(255),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

@@ -11,7 +11,7 @@
         Collapse all
     </button>
 
-    <span class="mx-2 text-gray-400 dark:text-gray-500">|</span>
+    <span class="text-gray-400 dark:text-gray-500" style="margin: 0 0.5rem;">|</span>
 
     <button
         type="button"

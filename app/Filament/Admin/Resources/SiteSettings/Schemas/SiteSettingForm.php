@@ -67,58 +67,14 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                self::section('Site Variables', 'site-settings-site-variables')
+                self::section('Dashboard notes', 'site-settings-dashboard-notes')
                     ->schema([
-                        Repeater::make('site_variables')
-                            ->label('Site variables')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label('Name')
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->maxLength(120)
-                                    ->afterStateUpdated(fn (Set $set, Get $get, ?string $state): mixed => blank($get('variable'))
-                                        ? $set('variable', SiteVariables::normalizeKey($state))
-                                        : null),
-                                TextInput::make('variable')
-                                    ->label('Variable')
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->maxLength(120)
-                                    ->dehydrateStateUsing(fn (mixed $state): string => SiteVariables::normalizeKey($state))
-                                    ->rule('regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
-                                    ->validationMessages([
-                                        'regex' => 'Use lowercase letters and numbers separated by dashes, such as service-times.',
-                                    ])
-                                    ->hintIcon(
-                                        Heroicon::OutlinedInformationCircle,
-                                        'Use this in content as [[variable-name]]. Do not include the brackets in this field.',
-                                    )
-                                    ->hintColor('gray'),
-                                Placeholder::make('token')
-                                    ->label('Token')
-                                    ->content(fn (Get $get): string => SiteVariables::tokenFor($get('variable') ?: $get('name')) ?? 'Add a variable name')
-                                    ->columnSpan(1),
-                                Textarea::make('value')
-                                    ->label('Value')
-                                    ->rows(4)
-                                    ->required()
-                                    ->hintIcon(
-                                        Heroicon::OutlinedInformationCircle,
-                                        'Trusted HTML is allowed here because only admins and Code Blocks users can edit site variables.',
-                                    )
-                                    ->hintColor('gray')
-                                    ->columnSpanFull(),
-                            ])
-                            ->columns(3)
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                            ->addActionLabel('Add site variable')
-                            ->reorderable()
-                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
-                            ->dehydrateStateUsing(fn (mixed $state): array => SiteVariables::normalizeRows($state))
+                        RichEditorDefaults::configure(RichEditor::make('dashboard_notes'), withAiRewrite: false)
+                            ->label('Dashboard notes')
+                            ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Reusable sitewide content. Type tokens like [[address]] or [[service-times]] in public content fields.',
+                                'Shown in a movable Dashboard notes widget on the admin dashboard for users and admins. Leave blank to hide the widget.',
                             )
                             ->hintColor('gray')
                             ->columnSpanFull(),
@@ -199,6 +155,65 @@ class SiteSettingForm
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
+                self::section('Site Variables', 'site-settings-site-variables')
+                    ->schema([
+                        Repeater::make('site_variables')
+                            ->label('Site variables')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Name')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(120)
+                                    ->afterStateUpdated(fn (Set $set, Get $get, ?string $state): mixed => blank($get('variable'))
+                                        ? $set('variable', SiteVariables::normalizeKey($state))
+                                        : null),
+                                TextInput::make('variable')
+                                    ->label('Variable')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(120)
+                                    ->dehydrateStateUsing(fn (mixed $state): string => SiteVariables::normalizeKey($state))
+                                    ->rule('regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                                    ->validationMessages([
+                                        'regex' => 'Use lowercase letters and numbers separated by dashes, such as service-times.',
+                                    ])
+                                    ->hintIcon(
+                                        Heroicon::OutlinedInformationCircle,
+                                        'Use this in content as [[variable-name]]. Do not include the brackets in this field.',
+                                    )
+                                    ->hintColor('gray'),
+                                Placeholder::make('token')
+                                    ->label('Token')
+                                    ->content(fn (Get $get): string => SiteVariables::tokenFor($get('variable') ?: $get('name')) ?? 'Add a variable name')
+                                    ->columnSpan(1),
+                                Textarea::make('value')
+                                    ->label('Value')
+                                    ->rows(4)
+                                    ->required()
+                                    ->hintIcon(
+                                        Heroicon::OutlinedInformationCircle,
+                                        'Trusted HTML is allowed here because only admins and Code Blocks users can edit site variables.',
+                                    )
+                                    ->hintColor('gray')
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(3)
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->addActionLabel('Add site variable')
+                            ->reorderable()
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn (mixed $state): array => SiteVariables::normalizeRows($state))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Reusable sitewide content. Type tokens like [[address]] or [[service-times]] in public content fields.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
+
                 self::section('Site design', 'site-settings-site-design-elements')
                     ->schema([
                         ...ImageUpload::make(
@@ -314,39 +329,8 @@ class SiteSettingForm
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
-                self::section('Dashboard notes', 'site-settings-dashboard-notes')
-                    ->schema([
-                        RichEditorDefaults::configure(RichEditor::make('dashboard_notes'), withAiRewrite: false)
-                            ->label('Dashboard notes')
-                            ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Shown in a movable Dashboard notes widget on the admin dashboard for users and admins. Leave blank to hide the widget.',
-                            )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(1)
-                    ->columnSpanFull(),
-                self::section('AI Settings', 'site-settings-ai-settings')
-                    ->schema([
-                        TextInput::make('openai_api_key')
-                            ->label('OpenAI API key')
-                            ->password()
-                            ->revealable()
-                            ->autocomplete('new-password')
-                            ->maxLength(1000)
-                            ->helperText('Used for AI rewrite, page review, and file extraction tools. File extraction model and reasoning settings are configured in the app environment.'),
-                        Textarea::make('ai_content_prompt')
-                            ->label('AI content prompt')
-                            ->default(AiContentPrompt::DEFAULT)
-                            ->rows(6),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
 
                 self::section('Google tracking', 'site-settings-google-tracking')
-                    ->description('Optional. Use Google Tag Manager for the most flexibility. If both are filled in, only Google Tag Manager is rendered to avoid duplicate Analytics page views.')
                     ->schema([
                         TextInput::make('google_tag_manager_id')
                             ->label('Google Tag Manager container ID')
@@ -371,6 +355,23 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
+                self::section('AI Settings', 'site-settings-ai-settings')
+                    ->schema([
+                        TextInput::make('openai_api_key')
+                            ->label('OpenAI API key')
+                            ->password()
+                            ->revealable()
+                            ->autocomplete('new-password')
+                            ->maxLength(1000)
+                            ->helperText('Used for AI rewrite, page review, and file extraction tools. File extraction model and reasoning settings are configured in the app environment.'),
+                        Textarea::make('ai_content_prompt')
+                            ->label('AI content prompt')
+                            ->default(AiContentPrompt::DEFAULT)
+                            ->rows(6),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+
             ]);
     }
 
