@@ -42,7 +42,7 @@ class PageForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(4)
+            ->columns(3)
             ->components([
                 TextInput::make('title')
                     ->label('Page title')
@@ -56,8 +56,7 @@ class PageForm
                     ->hintColor('gray')
                     ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
                         ? $set('slug', Str::slug($state))
-                        : null)
-                    ->columnSpan(1),
+                        : null),
 
                 TextInput::make('hero_label')
                     ->label('Small label')
@@ -66,8 +65,7 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Optional short label shown above the page title, such as New Here or Resources.'
                     )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->hintColor('gray'),
 
                 ToggleButtons::make('is_redirect')
                     ->label('Redirect this page')
@@ -80,8 +78,7 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Use this when this path should forward visitors somewhere else instead of rendering page content.'
                     )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->hintColor('gray'),
 
                 ToggleButtons::make('is_published')
                     ->label('Page is live')
@@ -94,8 +91,7 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Controls whether visitors can view this page or redirect, subject to publish and expiration dates.'
                     )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->hintColor('gray'),
 
                 Textarea::make('intro')
                     ->label('Intro text')
@@ -104,16 +100,14 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Optional intro text shown near the top of the page when the page header is visible.'
                     )
-                    ->hintColor('gray')
-                    ->columnSpan(2),
+                    ->hintColor('gray'),
 
                 self::messageEditor()
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Optional message shown in the page header. Supports basic rich text for links, lists, and emphasis.'
                     )
-                    ->hintColor('gray')
-                    ->columnSpan(2),
+                    ->hintColor('gray'),
 
                 TextInput::make('slug')
                     ->label('Page path')
@@ -127,8 +121,7 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
                     )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->hintColor('gray'),
 
                 TextInput::make('sort_order')
                     ->required()
@@ -139,8 +132,7 @@ class PageForm
                         'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
                     )
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->hintColor('gray')
-                    ->columnSpan(1),
+                    ->hintColor('gray'),
 
                 ViewField::make('qr_code')
                     ->label('QR Code')
@@ -150,8 +142,7 @@ class PageForm
                         'qrCode' => $record?->qrCode()->first(),
                     ])
                     ->visible(fn (?string $operation): bool => $operation === 'edit')
-                    ->dehydrated(false)
-                    ->columnSpan(1),
+                    ->dehydrated(false),
 
                 ViewField::make('section_controls')
                     ->label('Section controls')
@@ -162,8 +153,7 @@ class PageForm
                     ])
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->dehydrated(false)
-                    ->key('pages-section-controls')
-                    ->columnSpan(1),
+                    ->key('pages-section-controls'),
 
                 self::section('Page settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
@@ -179,8 +169,7 @@ class PageForm
                                     Heroicon::OutlinedInformationCircle,
                                     'Optional image used in the page header. Landscape photos usually work best.'
                                 )
-                                ->hintColor('gray')
-                                ->columnSpan(1),
+                                ->hintColor('gray'),
                         ),
 
                         ...ImageUpload::make(
@@ -192,8 +181,7 @@ class PageForm
                                     Heroicon::OutlinedInformationCircle,
                                     'Optional image used when this page appears in cards, parent-page child lists, or other listing areas. If empty, the header image is used.'
                                 )
-                                ->hintColor('gray')
-                                ->columnSpan(1),
+                                ->hintColor('gray'),
                         ),
                         ToggleButtons::make('show_page_header')
                             ->label('Show page header')
@@ -205,8 +193,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Controls whether the public page shows its title, intro, message, and header image area.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
+                            ->hintColor('gray'),
 
                         ToggleButtons::make('show_site_chrome')
                             ->label('Show navigation')
@@ -218,8 +205,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Turn off only for standalone campaign, embedded, or special-purpose pages that should not show the normal site frame.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(1),
+                            ->hintColor('gray'),
 
                         DateTimePicker::make('publish_at')
                             ->label('Publish at')
@@ -227,8 +213,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Leave empty to allow the page to be visible immediately once Page is live is enabled.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
                         DateTimePicker::make('expires_at')
                             ->label('Expires at')
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
@@ -236,8 +221,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Leave empty to keep the live page visible indefinitely.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
                         DateTimePicker::make('featured_at')
                             ->label('Feature start')
                             ->visible(fn (Get $get): bool => filled($get('parent_page_id')))
@@ -246,8 +230,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional for child pages. Controls when this page starts being featured under its parent.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
                         DateTimePicker::make('feature_expires_at')
                             ->label('Feature end')
                             ->visible(fn (Get $get): bool => filled($get('parent_page_id')))
@@ -257,8 +240,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional for child pages. Controls when this page stops being featured under its parent.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
 
                         TextInput::make('seo_title')
                             ->label('SEO title')
@@ -268,8 +250,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional browser and search title. Leave empty to use the page title.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
 
                         ToggleButtons::make('noindex_nofollow')
                             ->label('Hide from search engines')
@@ -282,8 +263,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Adds a robots noindex, nofollow meta tag to ask search engines not to index or follow links on this page.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
 
                         Textarea::make('seo_description')
                             ->label('SEO description')
@@ -293,8 +273,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional short search/social description for this page. Aim for one clear sentence.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
 
                         Select::make('parent_page_id')
                             ->label('Parent page')
@@ -308,8 +287,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Makes this page a child of another page, useful for Resources, Forms, or grouped landing pages.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
 
                         Placeholder::make('direct_child_pages')
                             ->label('Parent to the following pages and files')
@@ -319,11 +297,10 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Shows direct child pages and files attached to this page. Edit the child page or file to change or remove its parent.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
 
                     ])
-                    ->columns(4)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
@@ -339,8 +316,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Redirects only work publicly when the page is live.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
                         TextInput::make('redirect_url')
                             ->label('Send visitors to')
                             ->placeholder('/new-here')
@@ -351,8 +327,7 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Use a local path like /new-here or a full https:// URL.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
                         ToggleButtons::make('redirect_status_code')
                             ->label('Redirect type')
                             ->options(Page::redirectStatusOptions())
@@ -363,10 +338,9 @@ class PageForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Temporary is safest for links that may change. Permanent is for URLs that permanently moved.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
                     ])
-                    ->columns(4)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
@@ -386,7 +360,7 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpanFull(),
                     ])
-                    ->columns(4)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 
@@ -396,7 +370,7 @@ class PageForm
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->schema([
                     ])
-                    ->columns(4)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
 ***********************************/

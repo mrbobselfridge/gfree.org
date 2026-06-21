@@ -16,6 +16,7 @@ class NavigationLinkForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
                 Select::make('parent_id')
                     ->label('Parent link')

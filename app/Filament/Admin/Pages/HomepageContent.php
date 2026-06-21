@@ -129,6 +129,7 @@ class HomepageContent extends Page
             ->model($this->record)
             ->operation('edit')
             ->statePath('data')
+            ->columns(3)
             ->components([
                 Section::make('Homepage Hero')
                     ->description('Controls the public homepage hero banner rotation.')
@@ -144,8 +145,7 @@ class HomepageContent extends Page
                                 Heroicon::OutlinedInformationCircle,
                                 'When enabled, multiple live homepage banners fade from one to the next using the timing settings below. Visitors can pause the rotation on the public page.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpan(2),
+                            ->hintColor('gray'),
                         TextInput::make('hero_banners_rotation_delay_seconds')
                             ->label('Rotation delay seconds')
                             ->numeric()
@@ -163,7 +163,7 @@ class HomepageContent extends Page
                             ->required()
                             ->helperText('Seconds used for the fade-out/fade-in transition between homepage banners.'),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
                 Section::make('Homepage Content Blocks')
                     ->description('Build the homepage body here. These sections appear after the Sunday details and before Latest at TwyxtCo.')
@@ -175,6 +175,7 @@ class HomepageContent extends Page
                     ->schema([
                         ContentBlockBuilder::make('content_blocks', 'homepage/content-images', withScheduleFields: true, withPageBlocks: true),
                     ])
+                    ->columns(3)
                     ->columnSpanFull(),
                 Section::make('Homepage SEO')
                     ->description('Controls the public homepage title and description used by browsers, search engines, and analytics.')
@@ -187,10 +188,9 @@ class HomepageContent extends Page
                         Textarea::make('seo_description')
                             ->label('SEO Page Description')
                             ->helperText('Defaults to the site tagline, then the active banner subtitle, when blank.')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                            ->rows(3),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
             ]);
     }

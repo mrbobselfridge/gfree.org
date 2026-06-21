@@ -20,6 +20,7 @@ class WorkflowNotificationRuleForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
                 Section::make('Rule')
                     ->schema([
@@ -41,7 +42,7 @@ class WorkflowNotificationRuleForm
 
                         CheckboxList::make('triggers')
                             ->options(WorkflowNotificationAreas::triggerOptions())
-                            ->columns(4)
+                            ->columns(3)
                             ->required(),
 
                         Select::make('delay_minutes')
@@ -58,7 +59,7 @@ class WorkflowNotificationRuleForm
                             )),
 
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
                 Section::make('Recipients')
                     ->description('Choose users, groups, external emails, or any combination.')
@@ -84,10 +85,9 @@ class WorkflowNotificationRuleForm
                         Textarea::make('extra_emails')
                             ->label('Extra email addresses')
                             ->helperText('Separate addresses with commas, semicolons, or new lines.')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                            ->rows(3),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
                 Section::make('Email')
                     ->description('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title},
@@ -95,14 +95,12 @@ class WorkflowNotificationRuleForm
                     ->schema([
                         TextInput::make('subject')
                             ->required()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->maxLength(255),
                         Textarea::make('message')
                             ->required()
-                            ->rows(6)
-                            ->columnSpanFull(),
+                            ->rows(6),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
             ]);
     }

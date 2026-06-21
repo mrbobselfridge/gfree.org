@@ -17,6 +17,7 @@ class HomepageBannerForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
                 TextInput::make('title')
                     ->label('Banner title')
@@ -110,8 +111,7 @@ class HomepageBannerForm
                             Heroicon::OutlinedInformationCircle,
                             'Primary homepage banner image. Use a wide, high-quality image that still works when cropped on mobile.'
                         )
-                        ->hintColor('gray')
-                        ->columnSpanFull(),
+                        ->hintColor('gray'),
                 ),
 
             ]);

@@ -34,6 +34,7 @@ class FileDocumentForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
                 Section::make('File Details')
                     ->schema([
@@ -113,8 +114,7 @@ class FileDocumentForm
                                 }
 
                                 self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
-                            })
-                            ->columnSpanFull(),
+                            }),
                         TextInput::make('pending_original_name')
                             ->hidden(),
                         FileUpload::make('current_file')
@@ -139,8 +139,7 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Shows the currently active file version. Use Replace file to upload a new version.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
                         TextInput::make('title')
                             ->label('File title')
                             ->required()
@@ -276,8 +275,7 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Uploading here creates a new current version and preserves older versions below.'
                             )
-                            ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->hintColor('gray'),
                         TextInput::make('replacement_original_name')
                             ->hidden(),
                         DateTimePicker::make('publish_at')
@@ -331,7 +329,7 @@ class FileDocumentForm
                                 ->hintColor('gray'),
                         ),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
             ]);
     }
