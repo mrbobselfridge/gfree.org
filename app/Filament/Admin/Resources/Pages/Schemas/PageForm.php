@@ -44,6 +44,25 @@ class PageForm
         return $schema
             ->columns(3)
             ->components([
+
+                ToggleButtons::make('is_published')
+                    ->label('Page is live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->live()
+                    ->required()
+                    ->extraFieldWrapperAttributes([
+                            'style' => 'text-align:right;',
+                        ])
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Controls whether visitors can view this page or redirect, subject to publish and expiration dates.'
+                    )
+                    ->hintColor('gray')
+                    ->columnSpanFull(),
+
+
                 TextInput::make('title')
                     ->label('Page title')
                     ->required()
@@ -67,48 +86,6 @@ class PageForm
                     )
                     ->hintColor('gray'),
 
-                ToggleButtons::make('is_redirect')
-                    ->label('Redirect this page')
-                    ->boolean()
-                    ->inline()
-                    ->live()
-                    ->default(false)
-                    ->required()
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Use this when this path should forward visitors somewhere else instead of rendering page content.'
-                    )
-                    ->hintColor('gray'),
-
-                ToggleButtons::make('is_published')
-                    ->label('Page is live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->live()
-                    ->required()
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Controls whether visitors can view this page or redirect, subject to publish and expiration dates.'
-                    )
-                    ->hintColor('gray'),
-
-                Textarea::make('intro')
-                    ->label('Intro text')
-                    ->rows(4)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional intro text shown near the top of the page when the page header is visible.'
-                    )
-                    ->hintColor('gray'),
-
-                self::messageEditor()
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional message shown in the page header. Supports basic rich text for links, lists, and emphasis.'
-                    )
-                    ->hintColor('gray'),
-
                 TextInput::make('slug')
                     ->label('Page path')
                     ->prefix('/')
@@ -123,6 +100,23 @@ class PageForm
                     )
                     ->hintColor('gray'),
 
+                Textarea::make('intro')
+                    ->label('Intro text')
+                    ->rows(3)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional intro text shown near the top of the page when the page header is visible.'
+                    )
+                    ->hintColor('gray'),
+
+                self::messageEditor()
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional message shown in the page header. Supports basic rich text for links, lists, and emphasis.'
+                    )
+                    ->hintColor('gray')
+                    ->columnSpan(2),
+
                 TextInput::make('sort_order')
                     ->required()
                     ->numeric()
@@ -131,8 +125,9 @@ class PageForm
                         Heroicon::OutlinedInformationCircle,
                         'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
                     )
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->hintColor('gray'),
+                    ->disabled(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                    ->hintColor('gray')
+                    ->columnSpan(1),
 
                 ViewField::make('qr_code')
                     ->label('QR Code')
@@ -141,11 +136,28 @@ class PageForm
                     ->viewData(fn (?Page $record): array => [
                         'qrCode' => $record?->qrCode()->first(),
                     ])
-                    ->visible(fn (?string $operation): bool => $operation === 'edit')
-                    ->dehydrated(false),
+                    ->disabled(fn (?string $operation): bool => $operation === 'edit')
+                    ->dehydrated(false)
+                    ->extraAttributes([
+                        'class' => 'flex justify-center',
+                    ])
+                    ->columnSpan(1),
+                                
+                ToggleButtons::make('is_redirect')
+                    ->label('Redirect this page')
+                    ->boolean()
+                    ->inline()
+                    ->live()
+                    ->default(false)
+                    ->required()
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Use this when this path should forward visitors somewhere else instead of rendering page content.'
+                    )
+                    ->hintColor('gray'),
+
 
                 ViewField::make('section_controls')
-                    ->label('Section controls')
                     ->hiddenLabel()
                     ->view('filament.admin.section-controls')
                     ->viewData([
@@ -153,7 +165,11 @@ class PageForm
                     ])
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->dehydrated(false)
-                    ->key('pages-section-controls'),
+                    ->key('pages-section-controls')
+                    ->extraFieldWrapperAttributes([
+                        'style' => 'margin-top:-50px;'
+                        ])
+                    ->columnSpanFull(),
 
                 self::section('Page settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
