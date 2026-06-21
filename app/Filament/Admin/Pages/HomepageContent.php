@@ -188,7 +188,8 @@ class HomepageContent extends Page
                         Textarea::make('seo_description')
                             ->label('SEO Page Description')
                             ->helperText('Defaults to the site tagline, then the active banner subtitle, when blank.')
-                            ->rows(3),
+                            ->rows(1)
+                            ->columnSpan(2),
                     ])
                     ->columns(3)
                     ->columnSpanFull(),

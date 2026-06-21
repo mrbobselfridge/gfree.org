@@ -625,10 +625,43 @@ class ContentBlockBuilder
             Block::make('related_content')
                 ->label(fn (?array $state): string => self::blockLabel('Child Cards', $state))
                 ->schema([
-                    Placeholder::make('text_spacer')
-                        ->hiddenLabel()
-                        ->content(new HtmlString('&nbsp;'))
-                        ->columnSpan(2),
+                    self::hint(ToggleButtons::make('enable_search')
+                        ->label('Enable search'), 'Shows a Search box that filters this child listing by page names, file names, tags, descriptions, and related content.')
+                        ->boolean()
+                        ->inline()
+                        ->default(true)
+                        ->required()
+                        ->columnSpan(1),
+
+                        // TextInput::make('intro')
+                    //     ->label('Intro')
+                    //     ->maxLength(255),
+                    self::hint(ToggleButtons::make('display_mode')
+                        ->label('Listing mode'), 'Featured/active shows child pages within their feature window; All live shows every live child page.')
+                        ->options([
+                            ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
+                            ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
+                        ])
+                        ->inline()
+                        ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
+                        ->afterStateHydrated(function (Set $set, Get $get, ?string $state): void {
+                            if ($state !== ContentBlocks::RELATED_CONTENT_MODE_NEWEST) {
+                                return;
+                            }
+
+                            $set('display_mode', ContentBlocks::RELATED_CONTENT_MODE_ALL);
+
+                            if (blank($get('sort_preset'))) {
+                                $set('sort_preset', ContentBlocks::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM);
+                            }
+                        })
+                        ->dehydrateStateUsing(fn (?string $state): string => $state === ContentBlocks::RELATED_CONTENT_MODE_NEWEST
+                            ? ContentBlocks::RELATED_CONTENT_MODE_ALL
+                            : ($state ?: ContentBlocks::RELATED_CONTENT_MODE_FEATURED))
+                        ->required()
+                        ->columnSpan(1),
+                        
+
                     self::hint(ToggleButtons::make('is_visible')
                         ->label('Listing is live'), 'Turn this off to keep the block configured without showing it publicly.')
                         ->boolean()
@@ -728,41 +761,8 @@ class ContentBlockBuilder
                         ], true))
                         ->columnSpan(2),
 
-                    self::hint(ToggleButtons::make('enable_search')
-                        ->label('Enable search'), 'Shows a Search box that filters this child listing by page names, file names, tags, descriptions, and related content.')
-                        ->boolean()
-                        ->inline()
-                        ->default(true)
-                        ->required()
-                        ->columnSpan(1),
+                    ...self::scheduleFields($withScheduleFields),
 
-                        // TextInput::make('intro')
-                    //     ->label('Intro')
-                    //     ->maxLength(255),
-                    self::hint(ToggleButtons::make('display_mode')
-                        ->label('Listing mode'), 'Featured/active shows child pages within their feature window; All live shows every live child page.')
-                        ->options([
-                            ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
-                            ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
-                        ])
-                        ->inline()
-                        ->default(ContentBlocks::RELATED_CONTENT_MODE_FEATURED)
-                        ->afterStateHydrated(function (Set $set, Get $get, ?string $state): void {
-                            if ($state !== ContentBlocks::RELATED_CONTENT_MODE_NEWEST) {
-                                return;
-                            }
-
-                            $set('display_mode', ContentBlocks::RELATED_CONTENT_MODE_ALL);
-
-                            if (blank($get('sort_preset'))) {
-                                $set('sort_preset', ContentBlocks::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM);
-                            }
-                        })
-                        ->dehydrateStateUsing(fn (?string $state): string => $state === ContentBlocks::RELATED_CONTENT_MODE_NEWEST
-                            ? ContentBlocks::RELATED_CONTENT_MODE_ALL
-                            : ($state ?: ContentBlocks::RELATED_CONTENT_MODE_FEATURED))
-                        ->required()
-                        ->columnSpan(1),
                     self::hint(TextInput::make('carousel_auto_delay_seconds')
                         ->label('Auto-rotate delay')
                         ->numeric()
@@ -770,9 +770,9 @@ class ContentBlockBuilder
                         ->maxValue(180)
                         ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS)
                         ->required()
-                        ->visible(fn (Get $get): bool => $get('layout') === ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO)
+                        ->disabled(fn (Get $get): bool => !($get('layout') === ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO))
                         ->columnSpan(1), 'Seconds to wait before moving to the next card when Layout is Card Carousel Auto.'),
-                    ...self::scheduleFields($withScheduleFields),
+
                 ])
                 ->columns(3),
             Block::make('youtube_feed')
