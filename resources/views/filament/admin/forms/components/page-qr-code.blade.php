@@ -17,7 +17,7 @@
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                 <div
                     class="rounded-md border border-gray-200 bg-white dark:border-gray-700"
-                    style="width: 72px; height: 72px; padding: 6px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"
+                    style="margin-top: 10px;width: 36px; height: 36px; padding: 3px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"
                 >
                     <a
                         href="{{ $qrCode->pngUrl() }}"
@@ -28,14 +28,14 @@
                         <img
                             src="{{ $qrCode->pngUrl() }}"
                             alt="QR code for {{ $qrCode->url }}"
-                            width="60"
-                            height="60"
-                            style="display: block; width: 60px; height: 60px; max-width: 60px; max-height: 60px;"
+                            width="30"
+                            height="30"
+                            style="display: block; width: 32px; height: 32px; max-width: 32px; max-height: 32px;"
                         >
                     </a>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 3px; margin-top:5px;">
                     <x-filament::icon-button
                         tag="a"
                         color="gray"
