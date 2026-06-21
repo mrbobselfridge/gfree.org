@@ -121,11 +121,11 @@ class PageForm
                     ->required()
                     ->numeric()
                     ->default(0)
+                    ->hidden(fn (Get $get): bool => (bool) $get('is_redirect'))
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
                     )
-                    ->disabled(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->hintColor('gray')
                     ->columnSpan(1),
 
