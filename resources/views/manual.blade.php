@@ -253,6 +253,40 @@
             margin-bottom: 4px;
         }
 
+        .manual-screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 22px;
+        }
+
+        .manual-screenshot {
+            margin: 22px 0 0;
+            padding: 10px;
+            background: #fbfbf8;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .manual-screenshot-grid .manual-screenshot {
+            margin-top: 0;
+        }
+
+        .manual-screenshot img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid #d9dfdc;
+            border-radius: 6px;
+        }
+
+        .manual-screenshot figcaption {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.35;
+        }
+
         .manual-section {
             margin-top: 18px;
             padding: 34px 44px 40px;
@@ -497,6 +531,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .manual-screenshot-grid {
+                grid-template-columns: 1fr;
+            }
+
             .manual-toc {
                 columns: 1;
             }
@@ -557,6 +595,7 @@
 
             .manual-note,
             .manual-card,
+            .manual-screenshot,
             .manual-checklist {
                 background: #fff;
                 border-color: #999;
@@ -635,6 +674,7 @@
             <ol class="manual-toc" id="manual-contents-links" hidden>
                 <li><a href="#roles">Roles and Permissions</a></li>
                 <li><a href="#daily-workflow">Daily Workflow</a></li>
+                <li><a href="#system-overview">System Overview</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="#homepage">Homepage</a></li>
                 <li><a href="#banners">Banners</a></li>
@@ -694,6 +734,59 @@
             </div>
         </section>
 
+        <section class="manual-section" id="system-overview">
+            <h2>System Overview</h2>
+            <p>The CMS is organized around a simple flow: create or update content in the admin area, attach media or files when needed, save the record, then review the public page. Most tools use the same patterns: searchable lists, edit screens, live toggles, image/file pickers, and optional notifications.</p>
+
+            <div class="manual-screenshot-grid">
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('images/manual/admin-dashboard-overview.jpg') }}" alt="Admin dashboard overview with cards for site status and recent activity.">
+                    <figcaption>The Dashboard gives admins a quick view of site status, recent work, and shortcuts into common areas.</figcaption>
+                </figure>
+                <figure class="manual-screenshot">
+                    <img src="{{ asset('images/manual/homepage-public-preview.jpg') }}" alt="Public homepage preview with banner, calls to action, and service information.">
+                    <figcaption>The public site is built from Banners, Homepage sections, Pages, Navigation, Media Library images, and File Library links.</figcaption>
+                </figure>
+            </div>
+
+            <table class="manual-table">
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Primary job</th>
+                        <th>Feeds into</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Homepage and Banners</td>
+                        <td>Keep the front page current with featured messages, sections, buttons, and seasonal images.</td>
+                        <td>Homepage hero and content below the hero.</td>
+                    </tr>
+                    <tr>
+                        <td>Pages and Navigation</td>
+                        <td>Create public pages, redirects, parent-child page groups, and header menu links.</td>
+                        <td>Standalone pages, dropdown navigation, page listings, and short links.</td>
+                    </tr>
+                    <tr>
+                        <td>Media Library and File Library</td>
+                        <td>Store reusable images and downloadable documents with searchable titles, paths, tags, and usage notes.</td>
+                        <td>Images, banners, page blocks, file cards, and public download links.</td>
+                    </tr>
+                    <tr>
+                        <td>Site Settings</td>
+                        <td>Manage sitewide contact details, variables, design options, footer links, default images, analytics IDs, and AI settings.</td>
+                        <td>Footer, page defaults, reusable variables, analytics, AI tools, and dashboard notes.</td>
+                    </tr>
+                    <tr>
+                        <td>Notifications, Users, Analytics, and Backups</td>
+                        <td>Control who can work in the CMS, who gets notified, how site traffic is reviewed, and how recovery copies are maintained.</td>
+                        <td>Admin operations, accountability, reporting, and recovery planning.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
         <section class="manual-section" id="dashboard">
             <h2>Dashboard</h2>
             <p>The Dashboard is the starting point for site health, recent changes, media activity, analytics snapshots, and items that may need attention.</p>
@@ -721,6 +814,10 @@
                 <li>The homepage also uses <strong>Banners</strong> for the top hero/banner area.</li>
                 <li>If Homepage is empty, the site can fall back to starter/default content.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/homepage-public-preview.jpg') }}" alt="Public homepage example with banner and homepage content.">
+                <figcaption>After changing Homepage content or Banners, review the public homepage and check that the hero, buttons, service details, and lower sections still work together.</figcaption>
+            </figure>
         </section>
 
         <section class="manual-section" id="banners">
@@ -797,6 +894,10 @@
                 <li>Keep button text short: "Register", "Learn More", "Contact Us", or "Plan a Visit".</li>
                 <li>Use local paths such as <code>/give</code> for pages on this site, or full <code>https://</code> links for external sites.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/content-block-cards-preview.jpg') }}" alt="Public page showing a cards content block with teal card styling.">
+                <figcaption>Content blocks should read as complete public sections after saving. Use preview checks to confirm spacing, background choices, card colors, and button links.</figcaption>
+            </figure>
         </section>
 
         <section class="manual-section" id="media-library">
@@ -845,6 +946,10 @@
                 <li><strong>Optional file content:</strong> Formatted notes or AI-extracted content for the file record.</li>
                 <li><strong>Publish at, Created date, Updated date:</strong> Publish at controls availability; created/updated dates are shown for reference.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/file-library-overview.jpg') }}" alt="File Library list view with file records and admin actions.">
+                <figcaption>Use the File Library list to scan documents, confirm live status, find records by title or path, and open files for editing, replacement, extraction, or link copying.</figcaption>
+            </figure>
             <h3>File Categories</h3>
             <ul>
                 <li>Use the tag-shaped <strong>Categories</strong> icon on the File Library page to manage file categories.</li>
