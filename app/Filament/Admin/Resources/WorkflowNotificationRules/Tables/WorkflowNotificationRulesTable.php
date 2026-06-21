@@ -3,6 +3,8 @@
 namespace App\Filament\Admin\Resources\WorkflowNotificationRules\Tables;
 
 use App\Filament\Admin\Resources\Support\StandardTableActions;
+use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
+use App\Models\WorkflowNotificationRule;
 use App\Support\WorkflowNotificationAreas;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -21,6 +23,7 @@ class WorkflowNotificationRulesTable
                     ->label('Enabled')
                     ->boolean(),
                 TextColumn::make('name')
+                    ->url(fn (WorkflowNotificationRule $record): string => WorkflowNotificationRuleResource::getUrl('edit', ['record' => $record]))
                     ->searchable(),
                 TextColumn::make('content_area')
                     ->label('Area')

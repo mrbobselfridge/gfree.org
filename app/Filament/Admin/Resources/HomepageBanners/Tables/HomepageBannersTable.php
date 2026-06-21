@@ -2,7 +2,9 @@
 
 namespace App\Filament\Admin\Resources\HomepageBanners\Tables;
 
+use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\Support\StandardTableActions;
+use App\Models\HomepageBanner;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
@@ -19,6 +21,7 @@ class HomepageBannersTable
             ->columns([
                 TextColumn::make('title')
                     ->label('Banner title')
+                    ->url(fn (HomepageBanner $record): string => HomepageBannerResource::getUrl('edit', ['record' => $record]))
                     ->searchable(),
                 TextColumn::make('eyebrow')
                     ->label('Small label')

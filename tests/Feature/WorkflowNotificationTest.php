@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
+use App\Filament\Admin\Resources\WorkflowNotificationRules\Pages\ListWorkflowNotificationRules;
+use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Jobs\SendWorkflowNotificationJob;
 use App\Mail\WorkflowNotificationMail;
 use App\Models\Page;
@@ -38,6 +40,23 @@ class WorkflowNotificationTest extends TestCase
             ->assertSee('Extra email addresses')
             ->assertSee('Automatic send delay')
             ->assertSee('Email');
+    }
+
+    public function test_workflow_notification_rule_name_links_to_edit_page_from_listing(): void
+    {
+        $rule = WorkflowNotificationRule::query()->create([
+            'name' => 'Page ready',
+            'content_area' => AdminAccess::PAGES,
+            'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
+            'subject' => 'Page ready',
+            'message' => 'Please update the connection card.',
+            'delay_minutes' => 15,
+            'is_enabled' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListWorkflowNotificationRules::class)
+            ->assertTableColumnExists('name', fn ($column) => $column->getUrl() === WorkflowNotificationRuleResource::getUrl('edit', ['record' => $rule]), $rule);
     }
 
     public function test_automatic_notifications_are_debounced_for_the_same_rule_and_record(): void

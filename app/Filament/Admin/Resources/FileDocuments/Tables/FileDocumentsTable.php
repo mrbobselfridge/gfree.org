@@ -35,6 +35,7 @@ class FileDocumentsTable
                     ->toggleable(),
                 TextColumn::make('title')
                     ->label('File title')
+                    ->url(fn (FileDocument $record): string => FileDocumentResource::getUrl('edit', ['record' => $record]))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('file_name')

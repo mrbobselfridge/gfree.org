@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\HomepageBanners\Pages\CreateHomepageBanner;
+use App\Filament\Admin\Resources\HomepageBanners\Pages\ListHomepageBanners;
+use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\User;
@@ -26,6 +28,18 @@ class HomepageBannerTest extends TestCase
             ->assertSee('Secondary button text')
             ->assertSee('Secondary button destination')
             ->assertSee('Banner image');
+    }
+
+    public function test_homepage_banner_title_links_to_edit_page_from_listing(): void
+    {
+        $banner = HomepageBanner::query()->create([
+            'title' => 'Holiday services',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(ListHomepageBanners::class)
+            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === HomepageBannerResource::getUrl('edit', ['record' => $banner]), $banner);
     }
 
     public function test_active_homepage_banner_replaces_default_hero_content(): void

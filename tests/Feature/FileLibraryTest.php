@@ -161,6 +161,7 @@ class FileLibraryTest extends TestCase
             'role' => User::ROLE_ADMIN,
         ]))
             ->test(ListFileDocuments::class)
+            ->assertTableColumnExists('title', fn ($column) => $column->getUrl() === FileDocumentResource::getUrl('edit', ['record' => FileDocument::query()->firstOrFail()]), FileDocument::query()->firstOrFail())
             ->assertTableColumnExists('sort_order', fn ($column): bool => $column->isSortable());
 
         Livewire::actingAs(User::factory()->create([
