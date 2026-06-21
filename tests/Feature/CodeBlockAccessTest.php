@@ -339,8 +339,8 @@ class CodeBlockAccessTest extends TestCase
         $this->actingAs($editor)
             ->get("/admin/pages/{$page->getKey()}/edit")
             ->assertOk()
-            ->assertSee('Flip Image')
-            ->assertDontSee('Flip HTML')
+            ->assertSee('Flip card with image back')
+            ->assertDontSee('Flip card with HTML back')
             ->assertDontSee('JavaScript widget');
 
         $this->actingAs(User::factory()->create([
@@ -348,8 +348,8 @@ class CodeBlockAccessTest extends TestCase
         ]))
             ->get("/admin/pages/{$page->getKey()}/edit")
             ->assertOk()
-            ->assertSee('Flip Image')
-            ->assertSee('Flip HTML')
+            ->assertSee('Flip card with image back')
+            ->assertSee('Flip card with HTML back')
             ->assertSee('JavaScript widget');
     }
 

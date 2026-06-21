@@ -106,7 +106,7 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                             Tab::make('Upload New File')
                                 ->schema([
                                     TextInput::make('new_title')
-                                        ->label('Title')
+                                        ->label('File title')
                                         ->helperText('Optional. If empty, the uploaded file name is used.')
                                         ->maxLength(255),
                                     Select::make('new_category')
@@ -135,7 +135,7 @@ class FileLibraryLinkPlugin implements RichContentPlugin
                                         ->default(FileCategory::DEFAULT_NAME)
                                         ->required(fn (Get $get): bool => filled($get('upload'))),
                                     Select::make('new_parent_page_id')
-                                        ->label('Parent Page - optional')
+                                        ->label('Parent page')
                                         ->options(fn (): array => PageForm::parentPageOptions())
                                         ->searchable()
                                         ->preload()

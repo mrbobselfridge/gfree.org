@@ -52,7 +52,7 @@ class AiPageReviewActions
                 ->fillForm(fn (): array => self::initialFormData($record, $snapshotBuilder))
                 ->schema([
                     Textarea::make('prompt')
-                        ->label('AI Content Prompt')
+                        ->label('AI content prompt')
                         ->helperText('Defaults from Site Settings. Adjust it here for this page review only.')
                         ->rows(4)
                         ->required()

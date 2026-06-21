@@ -19,6 +19,7 @@ class HomepageBannerForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Banner title')
                     ->required()
                     ->maxLength(255)
                     ->hintIcon(
@@ -27,7 +28,7 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 ToggleButtons::make('is_published')
-                    ->label('Make Banner Live')
+                    ->label('Banner is live')
                     ->boolean()
                     ->inline()
                     ->default(false)
@@ -46,6 +47,7 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 Textarea::make('subtitle')
+                    ->label('Banner message')
                     ->rows(1)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -53,14 +55,14 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 DateTimePicker::make('starts_at')
-                    ->label('Starts at')
+                    ->label('Publish at')
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional. Leave empty to allow the banner to appear immediately once Make Banner Live is Yes.'
+                        'Optional. Leave empty to allow the banner to appear immediately once Banner is live is enabled.'
                     )
                     ->hintColor('gray'),
                 DateTimePicker::make('ends_at')
-                    ->label('Ends at')
+                    ->label('Expires at')
                     ->afterOrEqual(fn (Get $get): ?string => $get('starts_at'))
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -68,7 +70,7 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 TextInput::make('button_label')
-                    ->label('Primary button label')
+                    ->label('Primary button text')
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -76,7 +78,7 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 TextInput::make('button_url')
-                    ->label('Primary button URL')
+                    ->label('Primary button destination')
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -84,6 +86,7 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 TextInput::make('secondary_button_label')
+                    ->label('Secondary button text')
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -91,6 +94,7 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray'),
                 TextInput::make('secondary_button_url')
+                    ->label('Secondary button destination')
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -100,7 +104,7 @@ class HomepageBannerForm
                 ...ImageUpload::make(
                     'image_path',
                     'homepage-banners',
-                    'Banner Image',
+                    'Banner image',
                     fn (ViewField $upload): ViewField => $upload
                         ->hintIcon(
                             Heroicon::OutlinedInformationCircle,

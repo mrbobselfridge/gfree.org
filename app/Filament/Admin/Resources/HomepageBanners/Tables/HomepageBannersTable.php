@@ -18,35 +18,39 @@ class HomepageBannersTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Banner title')
                     ->searchable(),
                 TextColumn::make('eyebrow')
                     ->label('Small label')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 ImageColumn::make('image_path')
+                    ->label('Banner image')
                     ->disk('public'),
                 TextColumn::make('button_label')
-                    ->label('Primary button')
+                    ->label('Primary button text')
                     ->searchable(),
                 TextColumn::make('button_url')
-                    ->label('Primary URL')
+                    ->label('Primary button destination')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('secondary_button_label')
-                    ->label('Secondary button')
+                    ->label('Secondary button text')
                     ->searchable(),
                 TextColumn::make('secondary_button_url')
-                    ->label('Secondary URL')
+                    ->label('Secondary button destination')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('starts_at')
+                    ->label('Publish at')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('ends_at')
+                    ->label('Expires at')
                     ->dateTime()
                     ->sortable(),
                 IconColumn::make('is_published')
-                    ->label('Published')
+                    ->label('Banner is live')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()

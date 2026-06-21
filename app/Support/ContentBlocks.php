@@ -101,14 +101,14 @@ class ContentBlocks
     public static function relatedContentSortOptions(): array
     {
         return [
-            self::RELATED_CONTENT_SORT_ORDER_RANDOM => 'Order ASC, random',
-            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => 'Featured DESC, Published DESC, order ASC, random',
-            self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM => 'Published DESC, order ASC, random',
-            self::RELATED_CONTENT_SORT_TITLE_ASC => "Title A-Z (A's first)",
-            self::RELATED_CONTENT_SORT_TITLE_DESC => "Title Z-A (Z's First)",
-            self::RELATED_CONTENT_SORT_UPDATED_DESC => 'Updated DESC (last updated first)',
-            self::RELATED_CONTENT_SORT_CREATED_DESC => 'Created DESC (newest first)',
-            self::RELATED_CONTENT_SORT_CREATED_ASC => 'Created ASC (oldest first)',
+            self::RELATED_CONTENT_SORT_ORDER_RANDOM => 'Sort order, then random',
+            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => 'Feature start, publish at, sort order, then random',
+            self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM => 'Publish at, sort order, then random',
+            self::RELATED_CONTENT_SORT_TITLE_ASC => 'Title A-Z',
+            self::RELATED_CONTENT_SORT_TITLE_DESC => 'Title Z-A',
+            self::RELATED_CONTENT_SORT_UPDATED_DESC => 'Updated date, newest first',
+            self::RELATED_CONTENT_SORT_CREATED_DESC => 'Created date, newest first',
+            self::RELATED_CONTENT_SORT_CREATED_ASC => 'Created date, oldest first',
         ];
     }
 

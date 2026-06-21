@@ -1059,6 +1059,7 @@ class PublicPageTest extends TestCase
                 [
                     'type' => 'info_strip',
                     'data' => [
+                        'background' => 'gold',
                         'items' => [
                             ['label' => 'Sunday', 'source' => 'sunday_service_times', 'value' => 'Fallback Times'],
                             ['label' => 'Visit', 'source' => 'address', 'value' => 'Fallback Address'],
@@ -1073,6 +1074,7 @@ class PublicPageTest extends TestCase
         $this->get('/visit')
             ->assertOk()
             ->assertSee('concept-service-strip', false)
+            ->assertSee('page-block--bg-gold', false)
             ->assertSee('<strong>11 AM</strong>', false)
             ->assertSee('305 Keystone Hill Road')
             ->assertSee('Fallback Hours')
@@ -2073,6 +2075,9 @@ class PublicPageTest extends TestCase
                 [
                     'type' => 'youtube_feed',
                     'data' => [
+                        'eyebrow' => 'Latest messages',
+                        'heading' => 'Watch recent teaching',
+                        'background' => 'gold',
                         'youtube_channel_url' => 'https://www.youtube.com/@gfreesermons9521',
                         'youtube_feed_url' => $feedUrl,
                         'youtube_link_label' => 'View more on YouTube',
@@ -2087,8 +2092,11 @@ class PublicPageTest extends TestCase
         $this->get('/messages')
             ->assertOk()
             ->assertSee('sermon-index', false)
+            ->assertSee('page-block--bg-gold', false)
             ->assertSee('sermon-grid', false)
             ->assertSee('page-block__inner--text-medium', false)
+            ->assertSee('Latest messages')
+            ->assertSee('Watch recent teaching')
             ->assertSee('Latest Teaching Video')
             ->assertSee('https://i2.ytimg.com/vi/pagevideo123/hqdefault.jpg')
             ->assertSee('https://www.youtube.com/watch?v=pagevideo123')

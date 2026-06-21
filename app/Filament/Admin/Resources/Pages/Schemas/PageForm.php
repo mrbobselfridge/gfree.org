@@ -45,6 +45,7 @@ class PageForm
             ->columns(4)
             ->components([
                 TextInput::make('title')
+                    ->label('Page title')
                     ->required()
                     ->live(onBlur: true)
                     ->maxLength(255)
@@ -83,7 +84,7 @@ class PageForm
                     ->columnSpan(1),
 
                 ToggleButtons::make('is_published')
-                    ->label('Make Page Live')
+                    ->label('Page is live')
                     ->boolean()
                     ->inline()
                     ->default(false)
@@ -97,6 +98,7 @@ class PageForm
                     ->columnSpan(1),
 
                 Textarea::make('intro')
+                    ->label('Intro text')
                     ->rows(4)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
@@ -114,7 +116,7 @@ class PageForm
                     ->columnSpan(2),
 
                 TextInput::make('slug')
-                    ->label('Path')
+                    ->label('Page path')
                     ->prefix('/')
                     ->required()
                     ->unique(ignoreRecord: true)
@@ -163,7 +165,7 @@ class PageForm
                     ->key('pages-section-controls')
                     ->columnSpan(1),
 
-                self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
+                self::section('Page settings', 'pages-settings', collapsedOnEdit: true)
                     ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
@@ -171,7 +173,7 @@ class PageForm
                         ...ImageUpload::make(
                             'hero_image_path',
                             'pages/hero-images',
-                            'Header Image',
+                            'Header image',
                             fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
@@ -184,11 +186,11 @@ class PageForm
                         ...ImageUpload::make(
                             'card_image_path',
                             'pages/card-images',
-                            'Card image (No Image=Header)',
+                            'Card image',
                             fn (ViewField $upload): ViewField => $upload
                                 ->hintIcon(
                                     Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas.'
+                                    'Optional image used when this page appears in cards, parent-page child lists, or other listing areas. If empty, the header image is used.'
                                 )
                                 ->hintColor('gray')
                                 ->columnSpan(1),
@@ -207,7 +209,7 @@ class PageForm
                             ->columnSpan(1),
 
                         ToggleButtons::make('show_site_chrome')
-                            ->label('Show navigation and footer')
+                            ->label('Show navigation')
                             ->boolean()
                             ->inline()
                             ->default(true)
@@ -223,7 +225,7 @@ class PageForm
                             ->label('Publish at')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Leave empty to allow the page to be visible immediately once Make Page Live is Yes.'
+                                'Optional. Leave empty to allow the page to be visible immediately once Page is live is enabled.'
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
@@ -237,7 +239,7 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
                         DateTimePicker::make('featured_at')
-                            ->label('Featured at')
+                            ->label('Feature start')
                             ->visible(fn (Get $get): bool => filled($get('parent_page_id')))
                             ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
                             ->hintIcon(
@@ -247,7 +249,7 @@ class PageForm
                             ->hintColor('gray')
                             ->columnSpan(2),
                         DateTimePicker::make('feature_expires_at')
-                            ->label('Featured expires at')
+                            ->label('Feature end')
                             ->visible(fn (Get $get): bool => filled($get('parent_page_id')))
                             ->afterOrEqual(fn (Get $get): ?string => $get('featured_at'))
                             ->beforeOrEqual(fn (Get $get): ?string => $get('expires_at'))
@@ -270,7 +272,7 @@ class PageForm
                             ->columnSpan(2),
 
                         ToggleButtons::make('noindex_nofollow')
-                            ->label('No Index, No Follow (note: do not touch if you do not understand!)')
+                            ->label('Hide from search engines')
                             ->boolean()
                             ->inline()
                             ->default(false)
@@ -295,7 +297,7 @@ class PageForm
                             ->columnSpanFull(),
 
                         Select::make('parent_page_id')
-                            ->label('Parent Page - optional')
+                            ->label('Parent page')
                             ->options(fn (?Page $record): array => self::parentPageOptions($record))
                             ->searchable()
                             ->preload()
@@ -331,7 +333,7 @@ class PageForm
                     ->schema([
                         Placeholder::make('redirect_inactive_notice')
                             ->label('Redirect inactive')
-                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Make Page Live is set to Yes.</span>'))
+                            ->content(new HtmlString('<span class="text-sm font-medium text-warning-600 dark:text-warning-400">This redirect is saved but will not work publicly until Page is live is enabled.</span>'))
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_published'))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
@@ -368,7 +370,7 @@ class PageForm
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => (bool) $get('is_redirect')),
 
-                self::section('Page Content Blocks', 'pages-content-blocks')
+                self::section('Page content', 'pages-content-blocks')
                     ->description('Build the visible page body here. Each block becomes a public section on the page.')
                     ->icon(Heroicon::OutlinedRectangleGroup)
                     ->iconColor('success')
@@ -376,7 +378,7 @@ class PageForm
                         'class' => 'rounded-xl border border-success-500/30 bg-success-50/40 p-6 dark:bg-success-950/10',
                     ])
                     ->schema([
-                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page Content', true, withPageBlocks: true)
+                        ContentBlockBuilder::make('content_blocks', 'pages/content-images', 'Page content', true, withPageBlocks: true)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Add and reorder the visible content sections for this page.'

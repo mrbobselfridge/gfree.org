@@ -63,7 +63,7 @@ class FileDocumentForm
                             })
                             ->required(),
                         ToggleButtons::make('is_published')
-                            ->label('Make File Live')
+                            ->label('File is live')
                             ->boolean()
                             ->inline()
                             ->default(true)
@@ -142,6 +142,7 @@ class FileDocumentForm
                             ->hintColor('gray')
                             ->columnSpanFull(),
                         TextInput::make('title')
+                            ->label('File title')
                             ->required()
                             ->live(onBlur: true)
                             ->maxLength(255)
@@ -160,7 +161,7 @@ class FileDocumentForm
                                 $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
                             }),
                         ToggleButtons::make('visibility')
-                            ->label('Public or private')
+                            ->label('Visibility')
                             ->options([
                                 FileDocument::VISIBILITY_PUBLIC => 'Public',
                                 FileDocument::VISIBILITY_PRIVATE => 'Private',
@@ -202,7 +203,7 @@ class FileDocumentForm
                             ->nestedRecursiveRules(['max:80'])
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional labels for organizing files. Uploading a file or editing the title can add matching tags automatically.'
+                                'Optional tags for organizing files. Uploading a file or editing the title can add matching tags automatically.'
                             )
                             ->hintColor('gray'),
 /**                        Textarea::make('description')
@@ -214,7 +215,7 @@ class FileDocumentForm
                             ->hintColor('gray'),
 **/
                         TextInput::make('file_name')
-                            ->label('Path')
+                            ->label('File path')
                             ->prefix('/files/')
                             ->live(onBlur: true)
                             ->maxLength(255)
@@ -240,18 +241,18 @@ class FileDocumentForm
                             )
                             ->hintColor('gray'),
                         TextInput::make('sort_order')
-                            ->label('Order')
+                            ->label('Sort order')
                             ->numeric()
                             ->minValue(0)
                             ->default(0)
                             ->required()
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Lower numbers appear earlier when a parent page Child Page Listing block sorts by Order.'
+                                'Lower numbers appear earlier when a parent page Child Cards block sorts by Sort order.'
                             )
                             ->hintColor('gray'),
                         Select::make('parent_page_id')
-                            ->label('Parent Page - optional')
+                            ->label('Parent page')
                             ->options(fn (): array => PageForm::parentPageOptions())
                             ->searchable()
                             ->preload()
@@ -280,21 +281,21 @@ class FileDocumentForm
                         TextInput::make('replacement_original_name')
                             ->hidden(),
                         DateTimePicker::make('publish_at')
-                            ->label('Publish date')
+                            ->label('Publish at')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Leave empty to allow the file to be available immediately once Make File Live is Yes.'
+                                'Optional. Leave empty to allow the file to be available immediately once File is live is enabled.'
                             )
                             ->hintColor('gray'),
                         DateTimePicker::make('expires_at')
-                            ->label('Expiration date')
+                            ->label('Expires at')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Use for temporary files that should stop loading after a certain date.'
                             )
                             ->hintColor('gray'),
                         Placeholder::make('created_at')
-                            ->label('Created Date')
+                            ->label('Created date')
                             ->content(fn (?FileDocument $record): string => $record?->created_at?->toDayDateTimeString() ?? 'Set when the file is created')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
@@ -302,7 +303,7 @@ class FileDocumentForm
                             )
                             ->hintColor('gray'),
                         Placeholder::make('updated_at')
-                            ->label('Updated Date')
+                            ->label('Updated date')
                             ->content(fn (?FileDocument $record): string => $record?->updated_at?->toDayDateTimeString() ?? 'Set when the file is saved')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
@@ -311,7 +312,7 @@ class FileDocumentForm
                             ->hintColor('gray'),
 
                         RichEditorDefaults::configure(RichEditor::make('content'))
-                            ->label('Optional Page / File Content')
+                            ->label('Optional file content')
                             ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,

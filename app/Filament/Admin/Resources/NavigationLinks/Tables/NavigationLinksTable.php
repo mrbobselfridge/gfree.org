@@ -22,15 +22,16 @@ class NavigationLinksTable
         return $table
             ->columns([
                 TextColumn::make('label')
+                    ->label('Link text')
                     ->url(fn (NavigationLink $record): string => NavigationLinkResource::getUrl('edit', ['record' => $record]))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('url')
-                    ->label('URL')
+                    ->label('Destination')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('parent.label')
-                    ->label('Parent')
+                    ->label('Parent link')
                     ->searchable()
                     ->sortable(query: fn (Builder $query, string $direction): Builder => self::applyParentSort($query, $direction)),
                 TextColumn::make('sort_order')
@@ -50,7 +51,7 @@ class NavigationLinksTable
                     ->label('New tab')
                     ->boolean(),
                 IconColumn::make('is_published')
-                    ->label('Published')
+                    ->label('Link is live')
                     ->boolean()
                     ->tooltip(fn (NavigationLink $record): string => $record->is_published ? 'Unpublish link' : 'Publish link')
                     ->action(function (NavigationLink $record): void {

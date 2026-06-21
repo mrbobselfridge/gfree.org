@@ -35,6 +35,33 @@ class HomepageContentTest extends TestCase
         $this->assertSame(5, $homepageContent->hero_banners_fade_duration_seconds);
     }
 
+    public function test_homepage_content_block_name_is_editor_only_and_used_in_builder_label(): void
+    {
+        HomepageContent::query()->create([
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'title' => 'Homepage editor block',
+                        'heading' => 'Homepage public heading',
+                        'body' => '<p>Homepage public body.</p>',
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(HomepageContentPage::class)
+            ->assertSee('Text - Homepage editor block');
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Homepage public heading')
+            ->assertSee('Homepage public body.')
+            ->assertDontSee('Homepage editor block');
+    }
+
     public function test_homepage_content_overrides_static_homepage_sections(): void
     {
         HomepageContent::query()->create([

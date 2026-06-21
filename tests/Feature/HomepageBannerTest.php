@@ -2,14 +2,31 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\HomepageBanners\Pages\CreateHomepageBanner;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class HomepageBannerTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_homepage_banner_form_uses_taxonomy_v2_labels(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreateHomepageBanner::class)
+            ->assertSee('Banner title')
+            ->assertSee('Banner message')
+            ->assertSee('Banner is live')
+            ->assertSee('Primary button text')
+            ->assertSee('Primary button destination')
+            ->assertSee('Secondary button text')
+            ->assertSee('Secondary button destination')
+            ->assertSee('Banner image');
+    }
 
     public function test_active_homepage_banner_replaces_default_hero_content(): void
     {

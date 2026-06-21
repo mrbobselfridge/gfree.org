@@ -22,13 +22,13 @@ class LinkCard
     {
         $options = [
             self::TYPE_DISPLAY => 'Nothing / display only',
-            self::TYPE_LINK_SAME => 'Link in same window',
-            self::TYPE_LINK_NEW => 'Link in new window',
-            self::TYPE_FLIP_IMAGE => 'Flip Image',
+            self::TYPE_LINK_SAME => 'Link opens in same tab',
+            self::TYPE_LINK_NEW => 'Link opens in new tab',
+            self::TYPE_FLIP_IMAGE => 'Flip card with image back',
         ];
 
         if ($includeCodeTypes) {
-            $options[self::TYPE_FLIP_HTML] = 'Flip HTML';
+            $options[self::TYPE_FLIP_HTML] = 'Flip card with HTML back';
             $options[self::TYPE_JAVASCRIPT_WIDGET] = 'JavaScript widget';
         }
 

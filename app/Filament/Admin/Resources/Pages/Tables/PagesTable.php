@@ -27,6 +27,7 @@ class PagesTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Page title')
                     ->url(fn (Page $record): string => PageResource::getUrl('edit', ['record' => $record]))
                     ->searchable()
                     ->sortable(),
@@ -44,14 +45,14 @@ class PagesTable
                     ))
                     ->sortable(),
                 TextColumn::make('slug')
-                    ->label('Path')
+                    ->label('Page path')
                     ->formatStateUsing(fn (string $state): string => '/'.ltrim($state, '/'))
                     ->url(fn ($record): string => url('/'.ltrim((string) $record->slug, '/')))
                     ->openUrlInNewTab()
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('parentPage.title')
-                    ->label('Parent Page')
+                    ->label('Parent page')
                     ->url(fn (Page $record): ?string => filled($record->parent_page_id)
                         ? self::pageHierarchyFilterUrl((int) $record->parent_page_id)
                         : null)
@@ -70,7 +71,7 @@ class PagesTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('redirect_url')
-                    ->label('Redirects To')
+                    ->label('Redirects to')
                     ->placeholder('Not a redirect')
                     ->limit(44)
                     ->searchable()
@@ -140,7 +141,7 @@ class PagesTable
                         default => $query,
                     }),
                 SelectFilter::make('parent_page_id')
-                    ->label('Parent Page')
+                    ->label('Parent page')
                     ->options(fn (): array => PageForm::parentPageOptions())
                     ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
                         ? $query->where(fn (Builder $query): Builder => $query

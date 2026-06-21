@@ -510,8 +510,8 @@
                                     type="button"
                                     x-data
                                     x-on:click="navigator.clipboard.writeText(@js($image['url']))"
-                                    title="Copy URL"
-                                    aria-label="Copy URL"
+                                    title="Copy link"
+                                    aria-label="Copy link"
                                 >
                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 8V5.5A1.5 1.5 0 0 1 9.5 4h8A1.5 1.5 0 0 1 19 5.5v8A1.5 1.5 0 0 1 17.5 15H15M6.5 9h8A1.5 1.5 0 0 1 16 10.5v8a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 18.5v-8A1.5 1.5 0 0 1 6.5 9Z" />

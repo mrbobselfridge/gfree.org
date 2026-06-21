@@ -14,6 +14,10 @@
     @endif
 >
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
+        @if (filled($data['eyebrow'] ?? null))
+            <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
+        @endif
+
         @if (filled($data['heading'] ?? null))
             <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
         @endif

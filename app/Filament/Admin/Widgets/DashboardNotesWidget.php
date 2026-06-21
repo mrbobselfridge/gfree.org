@@ -32,7 +32,7 @@ class DashboardNotesWidget extends Widget
         $canEditNotes = AdminAccess::canAccessTool(Filament::auth()->user(), AdminAccess::SITE_SETTINGS);
 
         return [
-            'heading' => 'Dashboard Notes',
+            'heading' => 'Dashboard notes',
             'description' => 'Links and notes from Site Settings.',
             'notesHtml' => $notes,
             'actionLabel' => $canEditNotes ? 'Edit notes' : null,

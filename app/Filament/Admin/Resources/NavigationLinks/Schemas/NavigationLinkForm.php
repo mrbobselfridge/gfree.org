@@ -28,7 +28,7 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray'),
                 ToggleButtons::make('is_published')
-                    ->label('Make Link Live')
+                    ->label('Link is live')
                     ->boolean()
                     ->inline()
                     ->default(false)
@@ -39,7 +39,7 @@ class NavigationLinkForm
                     ->hintColor('gray')
                     ->required(),
                 TextInput::make('label')
-                    ->label('Link Text')
+                    ->label('Link text')
                     ->required()
                     ->maxLength(255)
                     ->hintIcon(
@@ -59,6 +59,7 @@ class NavigationLinkForm
                     ->hintColor('gray')
                     ->required(),
                 TextInput::make('url')
+                    ->label('Destination')
                     ->required()
                     ->maxLength(255)
                     ->hintIcon(

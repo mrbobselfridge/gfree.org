@@ -29,9 +29,10 @@ class FileCategoriesTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('sort_order')
+                    ->label('Sort order')
                     ->sortable(),
                 TextColumn::make('defaultParentPage.title')
-                    ->label('Default Parent')
+                    ->label('Default parent page')
                     ->placeholder('None')
                     ->toggleable(),
                 TextColumn::make('files_count')

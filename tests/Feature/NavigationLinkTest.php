@@ -331,7 +331,7 @@ class NavigationLinkTest extends TestCase
                 && $column->getUrl() === $expectedEditUrl, $child)
             ->assertTableColumnExists('url', fn ($column): bool => $column->isSortable()
                 && $column->isGloballySearchable()
-                && $column->getLabel() === 'URL')
+                && $column->getLabel() === 'Destination')
             ->assertTableColumnExists('parent.label', fn ($column): bool => $column->isSortable()
                 && $column->isGloballySearchable())
             ->assertTableColumnExists('is_published', fn ($column): bool => $column->isSortable())

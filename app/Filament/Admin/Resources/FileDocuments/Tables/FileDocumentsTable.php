@@ -34,10 +34,11 @@ class FileDocumentsTable
                     ->state(fn (FileDocument $record): string => $record->cardImageUrl())
                     ->toggleable(),
                 TextColumn::make('title')
+                    ->label('File title')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('file_name')
-                    ->label('Path')
+                    ->label('File path')
                     ->formatStateUsing(fn (FileDocument $record): string => $record->publicUrl() ?? 'Not live')
                     ->url(fn (FileDocument $record): ?string => $record->publicUrl(), true)
                     ->copyable(fn (FileDocument $record): bool => filled($record->publicUrl()))
@@ -49,13 +50,13 @@ class FileDocumentsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('parentPage.title')
-                    ->label('Parent Page')
+                    ->label('Parent page')
                     ->placeholder('None')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('sort_order')
-                    ->label('Order')
+                    ->label('Sort order')
                     ->sortable()
                     ->toggleable(),
                 IconColumn::make('is_published')
@@ -63,7 +64,7 @@ class FileDocumentsTable
                     ->boolean()
                     ->sortable(),
                 IconColumn::make('visibility')
-                    ->label('Public')
+                    ->label('Visibility')
                     ->boolean()
                     ->state(fn (FileDocument $record): bool => $record->visibility === FileDocument::VISIBILITY_PUBLIC),
                 TextColumn::make('currentVersion.extension')
@@ -81,7 +82,7 @@ class FileDocumentsTable
                     ->sortable()
                     ->placeholder('Never'),
                 TextColumn::make('publish_at')
-                    ->label('Publish date')
+                    ->label('Publish at')
                     ->dateTime()
                     ->sortable()
                     ->placeholder('Immediate'),
@@ -150,7 +151,7 @@ class FileDocumentsTable
             ),
             IconOnlyAction::make(
                 Action::make('copyPublicLink')
-                    ->label('Copy Link')
+                    ->label('Copy link')
                     ->alpineClickHandler(fn (FileDocument $record): string => 'window.navigator.clipboard.writeText('.Js::from($record->publicUrl()).')')
                     ->hidden(fn (FileDocument $record): bool => blank($record->publicUrl())),
                 Heroicon::OutlinedClipboardDocument,

@@ -57,6 +57,7 @@ class ContentBlockBuilder
                 Block::make('text')
                     ->label(fn (?array $state): string => self::blockLabel('Text', $state))
                     ->schema([
+                        self::blockNameField(),
                         self::hint(TextInput::make('eyebrow')
                             ->label('Small label'), 'Optional short label shown above the heading.')
                             ->live(onBlur: true)
@@ -67,7 +68,8 @@ class ContentBlockBuilder
                         self::hint(RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false), 'Main formatted copy shown in this section.')
                             ->columnSpanFull(),
                         self::contentWidthSelect('Controls the maximum readable width of the text on the public page.'),
-                        self::hint(Select::make('background'), 'Sets the background color for this section.')
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this section.')
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
@@ -77,6 +79,7 @@ class ContentBlockBuilder
                 Block::make('image_text')
                     ->label(fn (?array $state): string => self::blockLabel('Image + Text', $state))
                     ->schema([
+                        self::blockNameField(),
                         ...ImageUpload::make(
                             'image_path',
                             $imageDirectory,
@@ -84,7 +87,7 @@ class ContentBlockBuilder
                             fn (ViewField $upload): ViewField => self::hint($upload, 'Optional image displayed with the text. Landscape images usually work best.'),
                         ),
                         self::hint(TextInput::make('image_alt')
-                            ->label('Image description'), 'Briefly describe the image for accessibility when the image adds meaning.')
+                            ->label('Image alt text'), 'Briefly describe the image for accessibility when the image adds meaning. This is not hover text.')
                             ->maxLength(255),
                         self::hint(TextInput::make('eyebrow')
                             ->label('Small label'), 'Optional short label shown above the heading.')
@@ -95,17 +98,21 @@ class ContentBlockBuilder
                             ->maxLength(255),
                         self::hint(RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false), 'Formatted copy shown beside or below the image.')
                             ->columnSpanFull(),
-                        self::hint(TextInput::make('button_label'), 'Optional button text. Leave empty when no button is needed.')
+                        self::hint(TextInput::make('button_label')
+                            ->label('Button text'), 'Optional button text. Leave empty when no button is needed.')
                             ->maxLength(80),
-                        self::hint(TextInput::make('button_url'), 'Optional button destination. Use a site path like /give or a full https:// URL.')
+                        self::hint(TextInput::make('button_url')
+                            ->label('Button destination'), 'Optional button destination. Use a site path like /give or a full https:// URL.')
                             ->helperText('Use a site path like /give or a full https:// URL.')
                             ->maxLength(255),
-                        self::hint(Select::make('background'), 'Sets the background color for this section.')
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this section.')
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
                         self::contentWidthSelect('Controls the maximum width of this image and text section.', 'wide'),
-                        self::hint(Select::make('image_position'), 'Controls where the image appears relative to the text.')
+                        self::hint(Select::make('image_position')
+                            ->label('Layout'), 'Choose how the image and text are arranged.')
                             ->options([
                                 'left' => 'Image left middle',
                                 'right' => 'Image right middle',
@@ -124,6 +131,7 @@ class ContentBlockBuilder
                 Block::make('process_steps')
                     ->label(fn (?array $state): string => self::blockLabel('Process List', $state))
                     ->schema([
+                        self::blockNameField(),
                         self::hint(TextInput::make('eyebrow')
                             ->label('Small label'), 'Optional short label shown above the heading.')
                             ->live(onBlur: true)
@@ -131,21 +139,25 @@ class ContentBlockBuilder
                         self::hint(TextInput::make('heading'), 'Main heading for the process list.')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        self::hint(Select::make('background'), 'Sets the background color for this section.')
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this section.')
                             ->options(self::backgroundOptions())
                             ->default('black')
                             ->required(),
                         self::contentWidthSelect('Controls the maximum width of this process list.', 'wide'),
-                        self::hint(Repeater::make('steps'), 'Add each step in the order it should appear.')
+                        self::hint(Repeater::make('steps')
+                            ->label('Step entries'), 'Add each step in the order it should appear.')
                             ->schema([
-                                self::hint(TextInput::make('title'), 'Short step title.')
+                                self::hint(TextInput::make('title')
+                                    ->label('Step label'), 'Short step label.')
                                     ->required()
                                     ->maxLength(255),
-                                self::hint(Textarea::make('summary'), 'One or two sentences explaining this step.')
+                                self::hint(Textarea::make('summary')
+                                    ->label('Step text'), 'One or two sentences explaining this step.')
                                     ->rows(2)
                                     ->required(),
                             ])
-                            ->addActionLabel('Add step')
+                            ->addActionLabel('Add step entry')
                             ->columns(2)
                             ->minItems(1)
                             ->columnSpanFull(),
@@ -155,6 +167,7 @@ class ContentBlockBuilder
                 Block::make('cta')
                     ->label(fn (?array $state): string => self::blockLabel('Button + Text', $state))
                     ->schema([
+                        self::blockNameField(),
                         self::hint(TextInput::make('eyebrow')
                             ->label('Small label'), 'Optional short label shown above the heading.')
                             ->live(onBlur: true)
@@ -164,17 +177,20 @@ class ContentBlockBuilder
                             ->maxLength(255),
                         self::hint(RichEditorDefaults::configure(RichEditor::make('body'), withAiRewrite: false), 'Supporting copy shown with the button.')
                             ->columnSpanFull(),
-                        self::hint(TextInput::make('button_label'), 'Required button text.')
+                        self::hint(TextInput::make('button_label')
+                            ->label('Button text'), 'Required button text.')
                             ->required()
                             ->maxLength(80),
-                        self::hint(TextInput::make('button_url'), 'Required button destination. Use a site path like /give or a full https:// URL.')
+                        self::hint(TextInput::make('button_url')
+                            ->label('Button destination'), 'Required button destination. Use a site path like /give or a full https:// URL.')
                             ->required()
                             ->maxLength(255),
-                        self::hint(Select::make('background'), 'Sets the background color for this section.')
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this section.')
                             ->options(self::backgroundOptions())
                             ->default('black')
                             ->required(),
-                        self::hint(Select::make('layout'), 'Controls the arrangement of the text and button.')
+                        self::hint(Select::make('layout'), 'Choose where the button appears in relation to the text.')
                             ->options([
                                 'content_left' => 'Content left, button right',
                                 'content_right' => 'Button left, content right',
@@ -188,8 +204,9 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('link_cards')
-                    ->label(fn (?array $state): string => self::blockLabel('Info Cards', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Cards', $state))
                     ->schema([
+                        self::blockNameField(),
                         self::hint(TextInput::make('eyebrow')
                             ->label('Small label'), 'Optional short label shown above the card group heading.')
                             ->live(onBlur: true)
@@ -197,12 +214,14 @@ class ContentBlockBuilder
                         self::hint(TextInput::make('heading'), 'Main heading for this group of cards.')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        self::hint(Select::make('background'), 'Sets the background color for this card section.')
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this card section.')
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
                         self::contentWidthSelect('Controls the maximum width of this card section.', 'wide'),
-                        self::hint(Repeater::make('cards'), 'Add each card in the order it should appear.')
+                        self::hint(Repeater::make('cards')
+                            ->label('Card entries'), 'Add each card in the order it should appear.')
                             ->schema([
                                 Hidden::make('key')
                                     ->default(fn (): string => LinkCard::newKey())
@@ -211,11 +230,12 @@ class ContentBlockBuilder
                                             $component->state(LinkCard::newKey());
                                         }
                                     }),
-                                self::hint(TextInput::make('title'), 'Card title shown on the public page.')
+                                self::hint(TextInput::make('title')
+                                    ->label('Card label'), 'Short visible label for the card.')
                                     ->required()
                                     ->maxLength(160),
                                 self::hint(Select::make('type')
-                                    ->label('Card type'), 'Choose whether this card is display-only, links somewhere, flips, or mounts a widget.')
+                                    ->label('Layout'), 'Choose how this card behaves or displays.')
                                     ->options(fn (): array => LinkCard::typeOptions(CodeBlockAccess::canManage()))
                                     ->default(LinkCard::TYPE_DISPLAY)
                                     ->afterStateHydrated(function (Select $component, ?string $state, Get $get): void {
@@ -225,11 +245,12 @@ class ContentBlockBuilder
                                     })
                                     ->required()
                                     ->live(),
-                                self::hint(Textarea::make('summary'), 'Short supporting text for the card.')
+                                self::hint(Textarea::make('summary')
+                                    ->label('Card text'), 'Short supporting text for the card.')
                                     ->rows(2)
                                     ->columnSpanFull(),
                                 self::hint(Textarea::make('url')
-                                    ->label('URL / href'), 'Destination for link cards. Use a site path like /give or a full https:// URL.')
+                                    ->label('Destination'), 'Destination for link cards. Use a site path like /give or a full https:// URL.')
                                     ->rows(2)
                                     ->helperText('Use a site path like /give or a full https:// URL.')
                                     ->visible(fn (Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true))
@@ -237,18 +258,18 @@ class ContentBlockBuilder
                                 ...ImageUpload::make(
                                     'image_path',
                                     $imageDirectory,
-                                    'Flip image',
+                                    'Card back image',
                                     fn (ViewField $upload): ViewField => $upload
                                         ->hintIcon(
                                             Heroicon::OutlinedInformationCircle,
-                                            'Image shown on the front of a flip-image card.'
+                                            'Image shown on the back of a flip card.'
                                         )
                                         ->hintColor('gray')
                                         ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                         ->columnSpanFull(),
                                 ),
                                 self::hint(TextInput::make('image_alt')
-                                    ->label('Image description'), 'Briefly describe the flip image for accessibility when it adds meaning.')
+                                    ->label('Image alt text'), 'Briefly describe the card back image for accessibility when it adds meaning.')
                                     ->maxLength(255)
                                     ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE),
                                 self::hint(Select::make('image_fit')
@@ -271,7 +292,7 @@ class ContentBlockBuilder
                                     ->default(100)
                                     ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE),
                                 self::hint(Textarea::make('html')
-                                    ->label('Flip HTML'), 'Trusted raw HTML shown on the back of the flip card.')
+                                    ->label('Card back HTML'), 'Trusted raw HTML shown on the back of the flip card.')
                                     ->rows(7)
                                     ->helperText('Trusted raw HTML shown on the back of the flip card.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
@@ -283,23 +304,25 @@ class ContentBlockBuilder
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
                                     ->columnSpanFull(),
                                 self::hint(Textarea::make('javascript')
-                                    ->label('JavaScript'), 'Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
+                                    ->label('JavaScript widget'), 'Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
                                     ->rows(9)
                                     ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
                                     ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
                                     ->columnSpanFull(),
                             ])
-                            ->addActionLabel('Add card')
+                            ->addActionLabel('Add card entry')
                             ->columns(2)
                             ->minItems(1)
                             ->columnSpanFull(),
                         ...self::scheduleFields($withScheduleFields),
                     ]),
                 Block::make('info_strip')
-                    ->label(fn (?array $state): string => self::blockLabel('Info Strip (top)', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Strip', $state))
                     ->schema([
-                        self::hint(Select::make('spacing'), 'Controls extra spacing around the info strip.')
+                        self::blockNameField(),
+                        self::hint(Select::make('spacing')
+                            ->label('Layout'), 'Choose extra spacing around the strip.')
                             ->options([
                                 'both' => 'Space above and below',
                                 'top' => 'Space above only',
@@ -309,31 +332,46 @@ class ContentBlockBuilder
                             ->default('both')
                             ->required(),
                         self::contentWidthSelect('Controls the maximum width of this info strip.', 'wide'),
-                        self::hint(Repeater::make('items'), 'Add up to five compact facts, links, or contact details.')
+                        self::hint(Repeater::make('items')
+                            ->label('Strip entries'), 'Add up to five compact facts, links, or contact details.')
                             ->schema([
-                                self::hint(TextInput::make('label'), 'Short label for this info item.')
+                                self::hint(TextInput::make('label')
+                                    ->label('Strip label'), 'Short label for this strip entry.')
                                     ->live(onBlur: true)
                                     ->maxLength(80),
-                                self::hint(Textarea::make('value'), 'Value shown for this info item. Site Variables like [[address]] are allowed.')
+                                self::hint(Textarea::make('value')
+                                    ->label('Strip text'), 'Text shown with the label. Site variables like [[address]] are allowed.')
                                     ->rows(2)
                                     ->maxLength(500)
                                     ->columnSpanFull(),
                             ])
-                            ->addActionLabel('Add item')
+                            ->addActionLabel('Add strip entry')
                             ->columns(2)
                             ->minItems(1)
                             ->maxItems(5)
                             ->columnSpanFull(),
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this strip.')
+                            ->options(self::backgroundOptions())
+                            ->default('white')
+                            ->afterStateHydrated(fn (Select $component, ?string $state): mixed => blank($state) ? $component->state('white') : null)
+                            ->required(),
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(2),
                 Block::make('embed')
-                    ->label(fn (?array $state): string => self::blockLabel('Embedded Content', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Embedded', $state))
                     ->schema([
+                        self::blockNameField(),
+                        self::hint(TextInput::make('eyebrow')
+                            ->label('Small label'), 'Optional short label shown above the heading.')
+                            ->live(onBlur: true)
+                            ->maxLength(80),
                         self::hint(TextInput::make('heading'), 'Optional heading displayed above the embedded content.')
                             ->live(onBlur: true)
                             ->maxLength(255),
-                        self::hint(Select::make('background'), 'Sets the background color for this embed section.')
+                        self::hint(Select::make('background')
+                            ->label('Background color'), 'Sets the background color for this embedded section.')
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->required(),
@@ -348,11 +386,21 @@ class ContentBlockBuilder
                     ])
                     ->columns(2),
                 Block::make('code')
-                    ->label(fn (?array $state): string => self::blockLabel('Code (JS or HTML)', $state))
+                    ->label(fn (?array $state): string => self::blockLabel('Code', $state))
                     ->maxItems(fn (): ?int => CodeBlockAccess::canManage() ? null : 0)
                     ->schema([
-                        self::hint(TextInput::make('title'), 'Admin label only. This is not shown on the public page.')
+                        self::hint(TextInput::make('title')
+                            ->label('Block name'), 'Admin label only. This is not shown on the public page.')
                             ->helperText('Admin label only. This is not shown on the public page.')
+                            ->live(onBlur: true)
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->maxLength(255),
+                        self::hint(TextInput::make('eyebrow')
+                            ->label('Small label'), 'Optional short label shown above the heading when the code block uses a wrapper.')
+                            ->live(onBlur: true)
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->maxLength(80),
+                        self::hint(TextInput::make('heading'), 'Optional heading shown above the custom code when the code block uses a wrapper.')
                             ->live(onBlur: true)
                             ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
                             ->maxLength(255),
@@ -370,7 +418,7 @@ class ContentBlockBuilder
                             ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
                             ->required(),
                         self::hint(Textarea::make('code')
-                            ->label('Code'), 'Trusted raw HTML, CSS, or JavaScript. It is rendered directly on the public page.')
+                            ->label('Custom code'), 'Trusted raw HTML, CSS, or JavaScript. It is rendered directly on the public page.')
                             ->rows(14)
                             ->required()
                             ->helperText('Trusted raw HTML, CSS, or JavaScript. It is rendered directly on the public page.')
@@ -455,10 +503,15 @@ class ContentBlockBuilder
 
         return [
             Block::make('related_content')
-                ->label(fn (?array $state): string => self::blockLabel('Child Page Listing', $state))
+                ->label(fn (?array $state): string => self::blockLabel('Child Cards', $state))
                 ->schema([
+                    self::blockNameField(),
+                    self::hint(TextInput::make('eyebrow')
+                        ->label('Small label'), 'Optional short label shown above the heading.')
+                        ->live(onBlur: true)
+                        ->maxLength(80),
                     self::hint(Select::make('associated_parent_page_id')
-                        ->label('Associated Parent'), 'Choose the parent page whose direct child pages and files should feed this card block.')
+                        ->label('Parent page'), 'Choose the parent page whose direct child pages and files should feed this card block.')
                         ->options(fn (mixed $record): array => self::associatedParentPageOptions($record instanceof Page ? $record : null))
                         ->afterStateHydrated(function (Select $component, mixed $record, mixed $state): void {
                             $page = $record instanceof Page ? $record : null;
@@ -480,25 +533,26 @@ class ContentBlockBuilder
                             $fail('Choose an associated parent page that has child pages or files.');
                         }),
                     self::hint(Select::make('layout')
-                        ->label('Display format'), 'Choose how the child listing should appear on the public page.')
+                        ->label('Layout'), 'Choose how child pages and files are displayed.')
                         ->options(fn (): array => ContentBlocks::relatedContentLayoutOptions())
                         ->default(ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID)
                         ->live()
                         ->native(false)
                         ->required(),
                     self::hint(TextInput::make('carousel_auto_delay_seconds')
-                        ->label('Auto-rotate delay seconds')
+                        ->label('Auto-rotate delay')
                         ->numeric()
                         ->minValue(1)
                         ->maxValue(300)
                         ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS)
                         ->required()
-                        ->visible(fn (Get $get): bool => $get('layout') === ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO), 'Seconds to wait before moving to the next card when Display format is Card Carousel Auto.'),
+                        ->helperText('Seconds to wait before moving to the next card.')
+                        ->visible(fn (Get $get): bool => $get('layout') === ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO), 'Seconds to wait before moving to the next card when Layout is Card Carousel Auto.'),
                     self::hint(TextInput::make('heading'), 'Optional heading displayed above the child cards.')
                         ->live(onBlur: true)
                         ->maxLength(255),
                     self::hint(Select::make('sort_preset')
-                        ->label('Sort cards by'), 'Controls the order of child pages and files before the Load more button reveals additional items.')
+                        ->label('Sort by'), 'Controls the order of child pages and files before the Load more button reveals additional items.')
                         ->options(fn (): array => ContentBlocks::relatedContentSortOptions())
                         ->default(ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM)
                         ->native(false)
@@ -511,7 +565,7 @@ class ContentBlockBuilder
                         ->required(),
 
                     self::hint(ToggleButtons::make('is_visible')
-                        ->label('Show child cards'), 'Turn this off to keep the block configured without showing it publicly.')
+                        ->label('Listing is live'), 'Turn this off to keep the block configured without showing it publicly.')
                         ->boolean()
                         ->inline()
                         ->default(true)
@@ -521,7 +575,7 @@ class ContentBlockBuilder
                     //     ->label('Intro')
                     //     ->maxLength(255),
                     self::hint(ToggleButtons::make('display_mode')
-                        ->label('Mode'), 'Featured/active shows child pages within their featured window; All live shows every live child page.')
+                        ->label('Listing mode'), 'Featured/active shows child pages within their feature window; All live shows every live child page.')
                         ->options([
                             ContentBlocks::RELATED_CONTENT_MODE_FEATURED => 'Featured/active',
                             ContentBlocks::RELATED_CONTENT_MODE_ALL => 'All live',
@@ -544,7 +598,7 @@ class ContentBlockBuilder
                             : ($state ?: ContentBlocks::RELATED_CONTENT_MODE_FEATURED))
                         ->required(),
                     self::hint(ToggleButtons::make('content_type')
-                        ->label('Show'), 'Choose whether this block lists child pages, attached files, or both.')
+                        ->label('Content type'), 'Choose whether this block lists child pages, attached files, or both.')
                         ->options([
                             ContentBlocks::RELATED_CONTENT_TYPE_PAGES => 'All Pages',
                             ContentBlocks::RELATED_CONTENT_TYPE_FILES => 'All Files',
@@ -575,7 +629,8 @@ class ContentBlockBuilder
                         ->required(),
                     self::contentWidthSelect('Controls the maximum width of this child listing.', 'wide'),
                     ...self::scheduleFields($withScheduleFields),
-                    self::hint(Select::make('background'), 'Sets the background color for this listing section.')
+                    self::hint(Select::make('background')
+                        ->label('Background color'), 'Sets the background color for this listing section.')
                         ->options(self::backgroundOptions())
                         ->default('white')
                         ->required()
@@ -583,10 +638,18 @@ class ContentBlockBuilder
                 ])
                 ->columns(2),
             Block::make('youtube_feed')
-                ->label(fn (?array $state): string => self::blockLabel('YouTube Feed Listing', $state))
+                ->label(fn (?array $state): string => self::blockLabel('YouTube Feed', $state))
                 ->schema([
+                    self::blockNameField(),
+                    self::hint(TextInput::make('eyebrow')
+                        ->label('Small label'), 'Optional short label shown above the heading.')
+                        ->live(onBlur: true)
+                        ->maxLength(80),
+                    self::hint(TextInput::make('heading'), 'Optional heading displayed above the YouTube feed.')
+                        ->live(onBlur: true)
+                        ->maxLength(255),
                     self::hint(TextInput::make('youtube_channel_url')
-                        ->label('YouTube Channel URL'), 'Paste the public YouTube channel URL. The RSS feed URL is filled automatically when possible.')
+                        ->label('YouTube channel URL'), 'Paste the public YouTube channel URL. The RSS feed URL is filled automatically when possible.')
                         ->helperText('Paste the public YouTube channel URL. The RSS feed URL is filled automatically when a channel ID can be found.')
                         ->rules([new HttpOrRelativeUrl])
                         ->live(onBlur: true)
@@ -602,7 +665,7 @@ class ContentBlockBuilder
                         ->helperText('Optional. Paste a YouTube RSS feed URL when the channel URL cannot be resolved automatically.')
                         ->rules([new HttpOrRelativeUrl]),
                     self::hint(TextInput::make('youtube_link_label')
-                        ->label('View on YouTube text'), 'Link text shown for opening more videos on YouTube.')
+                        ->label('YouTube link text'), 'Link text shown for opening more videos on YouTube.')
                         ->default('View more on YouTube')
                         ->maxLength(255),
                     self::hint(TextInput::make('item_limit')
@@ -613,6 +676,12 @@ class ContentBlockBuilder
                         ->default(ContentBlocks::YOUTUBE_FEED_DEFAULT_LIMIT)
                         ->required(),
                     self::contentWidthSelect('Controls the maximum width of this YouTube feed.', 'wide'),
+                    self::hint(Select::make('background')
+                        ->label('Background color'), 'Sets the background color for this YouTube feed.')
+                        ->options(self::backgroundOptions())
+                        ->default('white')
+                        ->afterStateHydrated(fn (Select $component, ?string $state): mixed => blank($state) ? $component->state('white') : null)
+                        ->required(),
                     ...self::scheduleFields($withScheduleFields),
                 ])
                 ->columns(2),
@@ -621,6 +690,12 @@ class ContentBlockBuilder
 
     private static function blockLabel(string $type, ?array $state): string
     {
+        if (filled($state['title'] ?? null)) {
+            return collect([$type, $state['title'], self::scheduleLabel($state)])
+                ->filter()
+                ->implode(' - ');
+        }
+
         $parts = array_filter([
             $type,
             $state['eyebrow'] ?? null,
@@ -630,6 +705,15 @@ class ContentBlockBuilder
         ], filled(...));
 
         return implode(' - ', $parts);
+    }
+
+    private static function blockNameField(): TextInput
+    {
+        return self::hint(TextInput::make('title')
+            ->label('Block name'), 'Optional admin-only name used to identify this block in the editor. It is not shown on the public page.')
+            ->helperText('Admin-only. This is used in the editor and is not shown on the public page.')
+            ->live(onBlur: true)
+            ->maxLength(255);
     }
 
     private static function hint(mixed $component, string $tooltip): mixed

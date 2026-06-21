@@ -138,7 +138,7 @@ class PageRedirectTest extends TestCase
             ->assertSee('Redirect this page')
             ->set('data.is_redirect', true)
             ->set('data.is_published', false)
-            ->assertSee('This redirect is saved but will not work publicly until Make Page Live is set to Yes.')
+            ->assertSee('This redirect is saved but will not work publicly until Page is live is enabled.')
             ->set('data.title', 'Give Redirect')
             ->set('data.slug', 'give-now')
             ->set('data.is_published', true)

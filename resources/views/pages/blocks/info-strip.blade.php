@@ -6,17 +6,20 @@
         'medium', 'normal' => 'medium',
         default => 'wide',
     };
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
 @endphp
 
 @if (filled($items))
     <section
         @class([
             'concept-service-strip',
+            'page-block--bg-' . $background,
             'page-block--info-strip',
             'page-block--info-strip-spacing-' . $spacing,
             'page-block--info-strip-width-' . $contentWidth,
         ])
-        style="--info-strip-count: {{ count($items) }}"
+        style="--info-strip-count: {{ count($items) }}; {{ $backgroundStyle }}"
         aria-label="Service details"
     >
         @foreach ($items as $item)

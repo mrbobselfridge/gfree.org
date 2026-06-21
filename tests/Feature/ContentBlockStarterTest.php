@@ -20,7 +20,7 @@ class ContentBlockStarterTest extends TestCase
             ->test(CreatePage::class)
             ->assertSet('data.content_blocks', fn (array $blocks): bool => $this->hasOneStarterTextBlock($blocks))
             ->assertSee('YouTube Feed')
-            ->assertSee('Child Page Listing');
+            ->assertSee('Child Cards');
     }
 
     public function test_edit_pages_without_content_blocks_do_not_get_new_starter_blocks(): void
@@ -52,6 +52,36 @@ class ContentBlockStarterTest extends TestCase
             ])
             ->set('data.content_blocks.0.data.youtube_channel_url', 'https://www.youtube.com/channel/UCPageBlockChannelId/videos')
             ->assertSet('data.content_blocks.0.data.youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCPageBlockChannelId');
+    }
+
+    public function test_page_content_block_name_is_editor_only_and_used_in_builder_label(): void
+    {
+        $page = Page::query()->create([
+            'title' => 'Block Names',
+            'slug' => 'block-names',
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'title' => 'Welcome editor block',
+                        'heading' => 'Public heading',
+                        'body' => '<p>Public body.</p>',
+                        'background' => 'white',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditPage::class, ['record' => $page->getKey()])
+            ->assertSee('Text - Welcome editor block');
+
+        $this->get('/block-names')
+            ->assertOk()
+            ->assertSee('Public heading')
+            ->assertSee('Public body.')
+            ->assertDontSee('Welcome editor block');
     }
 
     private function hasOneStarterTextBlock(array $blocks): bool

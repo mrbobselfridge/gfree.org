@@ -172,13 +172,13 @@ class AdminDashboardWidgetsTest extends TestCase
             ->get('/admin')
             ->assertOk()
             ->assertSee('data-twyxtco-dashboard-widget="dashboard-notes-widget"', false)
-            ->assertSee('Dashboard Notes')
+            ->assertSee('Dashboard notes')
             ->assertSee('Links and notes from Site Settings.')
             ->assertSee('Sunday reminders')
             ->assertSee('<a href="/admin/pages">Review pages</a>', false)
             ->assertSee('Check forms')
             ->assertSee('Edit notes')
-            ->assertSee('Move Dashboard Notes');
+            ->assertSee('Move Dashboard notes');
 
         $content = $response->getContent();
         $start = strpos($content, 'data-twyxtco-dashboard-widget="dashboard-notes-widget"');

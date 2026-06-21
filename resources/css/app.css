@@ -838,6 +838,10 @@
     padding: 0 0 96px;
 }
 
+.sermon-index__title {
+    margin-bottom: 28px;
+}
+
 .sermon-index__intro {
     margin: 0 0 36px;
 }
@@ -862,19 +866,19 @@
     justify-content: center;
     min-height: 44px;
     padding: 0 18px;
-    color: white;
+    color: var(--page-block-fg);
     font-weight: 850;
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--page-block-card-bg);
     border-radius: 8px;
 }
 
 .sermon-tabs__item--active {
-    color: var(--site-ink);
-    background: white;
+    color: var(--page-block-button-fg);
+    background: var(--page-block-button-bg);
 }
 
 .sermon-index__channel-link {
-    color: var(--site-accent);
+    color: var(--page-block-link);
     font-weight: 850;
     text-decoration: none;
 }
@@ -887,7 +891,7 @@
 
 .sermon-card {
     min-width: 0;
-    color: white;
+    color: var(--page-block-fg);
 }
 
 .sermon-card__media {
@@ -895,9 +899,9 @@
     display: block;
     overflow: hidden;
     aspect-ratio: 16 / 9;
-    color: white;
+    color: var(--page-block-fg);
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--page-block-card-bg);
     border-radius: 10px;
 }
 
@@ -913,7 +917,7 @@
     right: 12px;
     bottom: 12px;
     padding: 5px 9px;
-    color: white;
+    color: var(--page-block-fg);
     font-size: 0.76rem;
     font-weight: 850;
     line-height: 1;
@@ -928,7 +932,7 @@
 .sermon-card h2 {
     max-width: none;
     margin: 0;
-    color: white;
+    color: var(--page-block-fg);
     font-size: clamp(1.08rem, 1.4vw, 1.3rem);
     line-height: 1.22;
 }
@@ -940,7 +944,7 @@
 
 .sermon-card p {
     margin: 8px 0 0;
-    color: rgba(255, 255, 255, 0.66);
+    color: var(--page-block-muted);
     font-size: 0.98rem;
     font-weight: 700;
 }
@@ -949,7 +953,7 @@
     display: -webkit-box;
     margin-top: 10px;
     overflow: hidden;
-    color: rgba(255, 255, 255, 0.74);
+    color: var(--page-block-muted);
     font-size: 0.96rem;
     line-height: 1.55;
     -webkit-line-clamp: 3;
@@ -2315,7 +2319,7 @@
     width: min(1180px, calc(100% - 32px));
     margin: 20px auto 0;
     overflow: hidden;
-    background: var(--twyxtco-ink);
+    background: var(--page-block-bg, var(--twyxtco-ink));
     border-radius: 8px;
 }
 
@@ -2352,8 +2356,8 @@
 .concept-service-strip__item {
     min-height: 112px;
     padding: 24px;
-    color: white;
-    border-right: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--page-block-fg, white);
+    border-right: 1px solid var(--page-block-border, rgba(255, 255, 255, 0.16));
 }
 
 .concept-service-strip > div:last-child,

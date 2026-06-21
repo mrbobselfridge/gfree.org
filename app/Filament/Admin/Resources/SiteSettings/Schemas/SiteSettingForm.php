@@ -51,7 +51,7 @@ class SiteSettingForm
                 self::section('Organizational Information', 'site-settings-organizational-information')
                     ->schema([
                         TextInput::make('church_name')
-                            ->label('Site Name')
+                            ->label('Site name')
                             ->required()
                             ->default('TwyxtCo')
                             ->maxLength(255),
@@ -70,7 +70,7 @@ class SiteSettingForm
                 self::section('Site Variables', 'site-settings-site-variables')
                     ->schema([
                         Repeater::make('site_variables')
-                            ->label('Site Variables')
+                            ->label('Site variables')
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Name')
@@ -167,11 +167,11 @@ class SiteSettingForm
                             ->label('Additional links')
                             ->schema([
                                 TextInput::make('label')
-                                    ->label('Label')
+                                    ->label('Link text')
                                     ->required()
                                     ->maxLength(80),
                                 TextInput::make('url')
-                                    ->label('Link')
+                                    ->label('Destination')
                                     ->required()
                                     ->rules([new HttpOrRelativeUrl])
                                     ->maxLength(255),
@@ -199,7 +199,7 @@ class SiteSettingForm
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
-                self::section('Site Design elements', 'site-settings-site-design-elements')
+                self::section('Site design', 'site-settings-site-design-elements')
                     ->schema([
                         ...ImageUpload::make(
                             'site_logo_path',
@@ -314,14 +314,14 @@ class SiteSettingForm
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
-                self::section('Dashboard Notes', 'site-settings-dashboard-notes')
+                self::section('Dashboard notes', 'site-settings-dashboard-notes')
                     ->schema([
                         RichEditorDefaults::configure(RichEditor::make('dashboard_notes'), withAiRewrite: false)
-                            ->label('Dashboard Notes')
+                            ->label('Dashboard notes')
                             ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Shown in a movable Dashboard Notes widget on the admin dashboard for users and admins. Leave blank to hide the widget.',
+                                'Shown in a movable Dashboard notes widget on the admin dashboard for users and admins. Leave blank to hide the widget.',
                             )
                             ->hintColor('gray')
                             ->columnSpanFull(),
@@ -338,14 +338,14 @@ class SiteSettingForm
                             ->maxLength(1000)
                             ->helperText('Used for AI rewrite, page review, and file extraction tools. File extraction model and reasoning settings are configured in the app environment.'),
                         Textarea::make('ai_content_prompt')
-                            ->label('AI Content Prompt')
+                            ->label('AI content prompt')
                             ->default(AiContentPrompt::DEFAULT)
                             ->rows(6),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
 
-                self::section('Google Tracking', 'site-settings-google-tracking')
+                self::section('Google tracking', 'site-settings-google-tracking')
                     ->description('Optional. Use Google Tag Manager for the most flexibility. If both are filled in, only Google Tag Manager is rendered to avoid duplicate Analytics page views.')
                     ->schema([
                         TextInput::make('google_tag_manager_id')

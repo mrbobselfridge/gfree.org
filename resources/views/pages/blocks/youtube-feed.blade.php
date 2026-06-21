@@ -7,10 +7,28 @@
         'medium', 'normal' => 'medium',
         default => 'wide',
     };
+    $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
+    $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
 @endphp
 
-<section class="sermon-index page-block page-block--bg-black">
+<section @class(['sermon-index', 'page-block', 'page-block--bg-' . $background])
+    @if ($backgroundStyle)
+        style="{{ $backgroundStyle }}"
+    @endif
+>
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
+        @if (filled($data['eyebrow'] ?? null) || filled($data['heading'] ?? null))
+            <div class="sermon-index__title">
+                @if (filled($data['eyebrow'] ?? null))
+                    <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
+                @endif
+
+                @if (filled($data['heading'] ?? null))
+                    <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
+                @endif
+            </div>
+        @endif
+
         <div class="sermon-index__header">
             <div class="sermon-tabs" aria-label="YouTube video filters">
                 <span class="sermon-tabs__item sermon-tabs__item--active">Latest</span>

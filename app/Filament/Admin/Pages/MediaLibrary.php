@@ -284,7 +284,7 @@ class MediaLibrary extends Page
     {
         return [
             TextInput::make('title')
-                ->label('Title')
+                ->label('Image title')
                 ->helperText('Leave blank to use the uploaded filename without the extension.')
                 ->live(onBlur: true)
                 ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
@@ -315,7 +315,7 @@ class MediaLibrary extends Page
                 ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
                 ->nestedRecursiveRules(['max:80']),
             TextInput::make('slug')
-                ->label('Optional Slug / Path')
+                ->label('Image path')
                 ->helperText('Optional. Leave blank to use the uploaded filename. Slashes are allowed for grouped paths.')
                 ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
                 ->maxLength(255)

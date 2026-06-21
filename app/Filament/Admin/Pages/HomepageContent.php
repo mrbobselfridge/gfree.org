@@ -243,6 +243,8 @@ class HomepageContent extends Page
                     'type' => 'info_strip',
                     'data' => [
                         'spacing' => 'bottom',
+                        'content_width' => 'wide',
+                        'background' => 'white',
                         'items' => collect($defaults['service_details'] ?? [])
                             ->map(fn (array $detail, int $index): array => [
                                 'label' => $detail['label'] ?? null,

@@ -23,11 +23,12 @@ class FileCategoryForm
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
                 TextInput::make('sort_order')
+                    ->label('Sort order')
                     ->required()
                     ->numeric()
                     ->default(0),
                 Select::make('default_parent_page_id')
-                    ->label('Default Parent Page')
+                    ->label('Default parent page')
                     ->options(fn (): array => PageForm::parentPageOptions())
                     ->searchable()
                     ->preload()
@@ -40,14 +41,14 @@ class FileCategoryForm
                     ->hintColor('gray')
                     ->columnSpanFull(),
                 Textarea::make('extraction_instructions')
-                    ->label('Extraction Instructions')
+                    ->label('Extraction instructions')
                     ->helperText('Used by Extract File Content AI for files in this category.')
                     ->default(fn (): string => FileCategoryExtractionInstructions::DEFAULT)
                     ->rows(6),
                 ...ImageUpload::make(
                     'default_card_image_path',
                     'file-categories/default-card-images',
-                    'Default Card Image',
+                    'Default card image',
                     fn (ViewField $upload): ViewField => $upload
                         ->hintIcon(
                             Heroicon::OutlinedInformationCircle,

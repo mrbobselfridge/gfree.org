@@ -702,7 +702,7 @@
                 <li>Use site health cards to find missing or stale content.</li>
                 <li>Use analytics widgets to understand which public pages people visit.</li>
                 <li>Dashboard cards may be collapsed, reordered, or used as shortcuts into content areas.</li>
-                <li>Dashboard Notes can show sitewide links or notes from Site Settings. This card can be moved but is not collapsible.</li>
+                <li>Dashboard notes can show sitewide links or notes from Site Settings. This card can be moved but is not collapsible.</li>
             </ul>
         </section>
 
@@ -759,17 +759,17 @@
                     <tr>
                         <td>Image + Text</td>
                         <td>A photo with supporting copy and optional button.</td>
-                        <td>Choose image position. Full-screen image layouts work best with high-quality landscape photos.</td>
+                        <td>Choose a layout. Full-screen image layouts work best with high-quality landscape photos.</td>
                     </tr>
                     <tr>
-                        <td>Process Steps</td>
+                        <td>Process List</td>
                         <td>Step-by-step instructions such as visit, serve, join, or sign up.</td>
-                        <td>Use short step titles and practical summaries.</td>
+                        <td>Use short step labels and practical step text.</td>
                     </tr>
                     <tr>
                         <td>CTA</td>
                         <td>A clear action such as Contact Us, Give, Register, or Plan a Visit.</td>
-                        <td>Always test the button URL after saving.</td>
+                        <td>Always test the button destination after saving.</td>
                     </tr>
                     <tr>
                         <td>Cards</td>
@@ -777,12 +777,12 @@
                         <td>Cards center by row. One, two, four, or five cards should balance visually.</td>
                     </tr>
                     <tr>
-                        <td>Info Strip</td>
+                        <td>Strip</td>
                         <td>Service times, address, links, or short facts.</td>
-                        <td>Use custom values directly. Site Variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Value field.</td>
+                        <td>Use custom values directly. Site variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Strip text field.</td>
                     </tr>
                     <tr>
-                        <td>Embed</td>
+                        <td>Embedded</td>
                         <td>Trusted third-party embed code such as calendar or forms.</td>
                         <td>Only paste embed code from trusted providers.</td>
                     </tr>
@@ -794,7 +794,7 @@
                 <li>Collapse blocks to make long pages easier to manage.</li>
                 <li>Copy a block when creating a similar section.</li>
                 <li>Use backgrounds intentionally. Too many alternating colors can feel busy.</li>
-                <li>Keep button labels short: "Register", "Learn More", "Contact Us", or "Plan a Visit".</li>
+                <li>Keep button text short: "Register", "Learn More", "Contact Us", or "Plan a Visit".</li>
                 <li>Use local paths such as <code>/give</code> for pages on this site, or full <code>https://</code> links for external sites.</li>
             </ul>
         </section>
@@ -812,10 +812,10 @@
             </ul>
             <h3>Image Details</h3>
             <ul>
-                <li>Upload image starts with the image field, then shows title, slug, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
-                <li>Image fields elsewhere in the admin use icon actions: choose an existing image, remove the selected image, add a new image, or edit the selected image. New image uploads show title, slug/path, and tags after a file is selected.</li>
-                <li><strong>Title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
-                <li><strong>Optional Slug / Path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a slug and used here.</li>
+                <li>Upload image starts with the image field, then shows image title, image path, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
+                <li>Image fields elsewhere in the admin use icon actions: choose an existing image, remove the selected image, add a new image, or edit the selected image. New image uploads show image title, image path, and tags after a file is selected.</li>
+                <li><strong>Image title:</strong> Optional friendly title shown in Media Library and image picker results. If left blank while uploading or replacing, the uploaded filename is cleaned up and used as the title.</li>
+                <li><strong>Image path:</strong> Optional searchable path-style label for organizing images without changing the actual file location. If left blank while uploading or replacing, the uploaded filename is cleaned into a path and used here.</li>
                 <li><strong>Tags:</strong> Optional multi-select labels shared with File Library tags. Existing tags can be selected directly from the list, new tags can be added from the field, and common image titles can add helpful tags automatically.</li>
                 <li><strong>Created, Updated, and By:</strong> Automatically tracked details shown on each image card. These fields are searchable when available.</li>
                 <li>When the last image using a tag is deleted or changed, that tag no longer appears as an option.</li>
@@ -836,22 +836,22 @@
             <h3>Common Fields</h3>
             <ul>
                 <li><strong>Category:</strong> Groups the file, controls category-specific AI extraction instructions, and can suggest a default parent page.</li>
-                <li><strong>Title:</strong> Admin/public title for the file.</li>
-                <li><strong>Path:</strong> Stable file URL under <code>/files/</code>. New uploads can fill this from the uploaded filename, and the refresh icon can regenerate a <code>category-title</code> path such as <code>bulletin-sunday-worship-guide</code>.</li>
-                <li><strong>Tags:</strong> Optional labels shared with Media Library image tags. Uploading a new file or editing the title can add matching tags automatically.</li>
-                <li><strong>Make File Live:</strong> Turns the public file URL on or off.</li>
-                <li><strong>Public or private:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
-                <li><strong>Parent Page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Selecting a category can fill this from the category default, and you can still change it.</li>
-                <li><strong>Optional content:</strong> Formatted notes or AI-extracted content for the file record.</li>
-                <li><strong>Publish date, Created Date, Updated Date:</strong> Publish date controls availability; created/updated dates are shown for reference.</li>
+                <li><strong>File title:</strong> Admin/public title for the file.</li>
+                <li><strong>File path:</strong> Stable file path under <code>/files/</code>. New uploads can fill this from the uploaded filename, and the refresh icon can regenerate a <code>category-title</code> path such as <code>bulletin-sunday-worship-guide</code>.</li>
+                <li><strong>Tags:</strong> Optional tags shared with Media Library image tags. Uploading a new file or editing the title can add matching tags automatically.</li>
+                <li><strong>File is live:</strong> Turns the public file path on or off.</li>
+                <li><strong>Visibility:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
+                <li><strong>Parent page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Selecting a category can fill this from the category default, and you can still change it.</li>
+                <li><strong>Optional file content:</strong> Formatted notes or AI-extracted content for the file record.</li>
+                <li><strong>Publish at, Created date, Updated date:</strong> Publish at controls availability; created/updated dates are shown for reference.</li>
             </ul>
             <h3>File Categories</h3>
             <ul>
                 <li>Use the tag-shaped <strong>Categories</strong> icon on the File Library page to manage file categories.</li>
                 <li>File Categories are intentionally not shown as a separate main navigation item.</li>
-                <li>Each category can have an optional <strong>Default Parent Page</strong>. Files using that category suggest this page as their parent, but the file can still be changed to another parent.</li>
-                <li>Each category can have an optional <strong>Default Card Image</strong>. Files with their own card image use the file image first; files without one use the category image before the standard file fallback.</li>
-                <li>Each category has <strong>Extraction Instructions</strong> used by the file extraction AI action for files in that category.</li>
+                <li>Each category can have an optional <strong>Default parent page</strong>. Files using that category suggest this page as their parent, but the file can still be changed to another parent.</li>
+                <li>Each category can have an optional <strong>Default card image</strong>. Files with their own card image use the file image first; files without one use the category image before the standard file fallback.</li>
+                <li>Each category has <strong>Extraction instructions</strong> used by the file extraction AI action for files in that category.</li>
                 <li>Keep instructions direct. Example: what to preserve, what to ignore, and what output style is useful for that document type.</li>
             </ul>
             <h3>AI File Extraction</h3>
@@ -861,7 +861,7 @@
                 <li>The tool saves the current file record and shows the exact prompt that will be sent with the saved file.</li>
                 <li>Choose <strong>Continue</strong> to send the saved file and prompt to OpenAI.</li>
                 <li>Review and edit the extracted HTML when it returns, then choose <strong>Use extracted content</strong>.</li>
-                <li>Accepted extracted content is placed into Optional content. Review it before using it publicly.</li>
+                <li>Accepted extracted content is placed into Optional file content. Review it before using it publicly.</li>
             </ul>
             <h3>Document Guidelines</h3>
             <ul>
@@ -879,14 +879,14 @@
             <p>Pages are general website pages such as About, New Here, Give, Contact, or other standalone content.</p>
             <h3>Common Fields</h3>
             <ul>
-                <li><strong>Title:</strong> The page name.</li>
-                <li><strong>Path:</strong> The URL path. Example: a path of <code>new-here</code> creates <code>/new-here</code>. Nested paths such as <code>resources/forms</code> are allowed.</li>
+                <li><strong>Page title:</strong> The page name.</li>
+                <li><strong>Page path:</strong> The local site path. Example: a path of <code>new-here</code> creates <code>/new-here</code>. Nested paths such as <code>resources/forms</code> are allowed.</li>
                 <li><strong>Message:</strong> Optional rich text shown in the page header for short callouts, contact details, links, lists, or other header notes.</li>
-                <li><strong>Content blocks:</strong> Preferred flexible page layout.</li>
-                <li><strong>Show navigation and footer:</strong> Turn off only for special landing pages.</li>
-                <li><strong>Parent Page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
-                <li><strong>SEO title, SEO description, and No Index, No Follow:</strong> Optional search metadata shown only to admins and editors with Code Blocks access. No Index, No Follow asks search engines not to index the page or follow links on it.</li>
-                <li><strong>Make Page Live:</strong> Must be enabled for public display or for a redirect to work.</li>
+                <li><strong>Page content:</strong> Preferred flexible page layout.</li>
+                <li><strong>Show navigation:</strong> Turn off only for special landing pages.</li>
+                <li><strong>Parent page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
+                <li><strong>SEO title, SEO description, and Hide from search engines:</strong> Optional search metadata shown only to admins and editors with Code Blocks access. Hide from search engines asks search engines not to index the page or follow links on it.</li>
+                <li><strong>Page is live:</strong> Must be enabled for public display or for a redirect to work.</li>
             </ul>
             <h3>Path Rules</h3>
             <ul>
@@ -899,7 +899,7 @@
             <ul>
                 <li>A page can be a parent to other pages.</li>
                 <li>Set Parent Page on the child page, not on the parent.</li>
-                <li>Child pages can use Featured at and Featured expires at for parent-page listing or feature areas.</li>
+                <li>Child pages can use Feature start and Feature end for parent-page listing or feature areas.</li>
                 <li>The edit screen shows direct child pages attached to the current page.</li>
             </ul>
             <h3>Redirect Pages</h3>
@@ -917,11 +917,11 @@
             <h2>Navigation</h2>
             <p>Navigation controls the public header navigation and dropdown structure.</p>
             <ul>
-                <li><strong>Label:</strong> Text visitors see in the header.</li>
-                <li><strong>URL:</strong> Internal path, file link, or full external URL.</li>
+                <li><strong>Link text:</strong> Text visitors see in the header.</li>
+                <li><strong>Destination:</strong> Internal path, file link, or full external URL.</li>
                 <li><strong>Parent link:</strong> Use to place a link under another top-level link as a dropdown item.</li>
                 <li><strong>Sort order:</strong> Controls order in the header or dropdown.</li>
-                <li><strong>Make Link Live, Publish at, Expires at:</strong> Control whether and when the link appears publicly.</li>
+                <li><strong>Link is live, Publish at, Expires at:</strong> Control whether and when the link appears publicly.</li>
                 <li><strong>Page limits:</strong> The list can warn when a navigation link points to a page that is draft, scheduled, expired, or missing.</li>
             </ul>
             <h3>Navigation Checklist</h3>
@@ -943,7 +943,7 @@
                 <li>Email, phone, and reusable Site Variables for sitewide text such as address and service times.</li>
                 <li>Site Variables use a pretty name, a lowercase variable key, and an HTML-capable value. Type them in content as <code>[[variable-name]]</code>.</li>
                 <li>Site Design elements, including managed background colors for content blocks.</li>
-                <li>Dashboard Notes shown to users and admins on the admin dashboard.</li>
+                <li>Dashboard notes shown to users and admins on the admin dashboard.</li>
                 <li>Social and additional footer links, including optional custom link icons.</li>
                 <li>Default listing page titles, subtitles, images, and SEO information.</li>
                 <li>OpenAI API key used by rewrite, page review, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
@@ -1149,7 +1149,7 @@
                 <li>Confirm it is marked published.</li>
                 <li>Check Publish at is not in the future.</li>
                 <li>Check Expires at is not in the past.</li>
-                <li>For featured sections, check Featured, Featured at, and Feature expires at.</li>
+                <li>For featured sections, check Feature start and Feature end.</li>
             </ul>
 
             <h3>An image is missing.</h3>
@@ -1161,8 +1161,8 @@
 
             <h3>A file link is missing or unavailable.</h3>
             <ul>
-                <li>Confirm the file record is marked Make File Live.</li>
-                <li>Check whether Publish date is in the future or the file has expired.</li>
+                <li>Confirm the file record is marked File is live.</li>
+                <li>Check whether Publish at is in the future or the file has expired.</li>
                 <li>Check whether the file is private. Private published files require a user or admin login.</li>
                 <li>Open the file record in File Library and copy the current View or Download link after saving.</li>
             </ul>
