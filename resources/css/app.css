@@ -604,6 +604,7 @@
     --page-block-card-bg: var(--site-paper);
     --page-block-card-fg: var(--site-ink);
     --page-block-card-muted: var(--site-muted);
+    --page-block-border: var(--site-line);
 }
 
 .page-block--dark,
@@ -632,6 +633,7 @@
     --page-block-card-bg: rgba(255, 255, 255, 0.48);
     --page-block-card-fg: var(--site-ink);
     --page-block-card-muted: rgba(20, 20, 20, 0.74);
+    --page-block-border: rgba(20, 20, 20, 0.12);
 }
 
 .page-block--bg-gold {
@@ -645,6 +647,7 @@
     --page-block-card-bg: rgba(255, 255, 255, 0.46);
     --page-block-card-fg: var(--site-ink);
     --page-block-card-muted: rgba(20, 20, 20, 0.74);
+    --page-block-border: rgba(20, 20, 20, 0.12);
 }
 
 .page-block--bg-forest {
@@ -672,6 +675,7 @@
     --page-block-card-bg: rgba(255, 255, 255, 0.42);
     --page-block-card-fg: var(--site-ink);
     --page-block-card-muted: rgba(20, 20, 20, 0.74);
+    --page-block-border: rgba(20, 20, 20, 0.12);
 }
 
 .page-block__inner {
@@ -1129,6 +1133,12 @@
     line-height: 1.6;
 }
 
+.page-link-cards--target-item {
+    --page-block-card-bg: var(--page-block-bg);
+    --page-block-card-fg: var(--page-block-fg);
+    --page-block-card-muted: var(--page-block-muted);
+}
+
 .page-link-card--flip {
     padding: 0;
     background: transparent;
@@ -1231,6 +1241,12 @@
     color: var(--page-block-card-muted);
     font-size: 1.02rem;
     line-height: 1.6;
+}
+
+.page-process__steps--target-item {
+    --page-block-card-bg: var(--page-block-bg);
+    --page-block-card-fg: var(--page-block-fg);
+    --page-block-card-muted: var(--page-block-muted);
 }
 
 .listing-search {
@@ -2330,6 +2346,33 @@
     border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
+.page-block--info-strip-page {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.page-block--info-strip-target-page {
+    background: transparent;
+    border: 0;
+    gap: 16px;
+    overflow: visible;
+}
+
+.page-block--info-strip-target-page .concept-service-strip__item {
+    color: var(--page-block-card-fg);
+    background: var(--page-block-card-bg);
+    border: 1px solid var(--page-block-border);
+    border-radius: 8px;
+}
+
+.page-block--info-strip-target-page span {
+    color: var(--page-block-eyebrow);
+}
+
+.page-block--info-strip-target-page .concept-service-strip__value {
+    color: var(--page-block-card-fg);
+}
+
 .page-block--info-strip-width-small {
     width: min(600px, calc(100% - 32px));
 }
@@ -2368,7 +2411,7 @@
 .concept-service-strip span {
     display: block;
     margin-bottom: 10px;
-    color: var(--twyxtco-teal);
+    color: var(--page-block-eyebrow, var(--twyxtco-teal));
     font-size: 1.22rem;
     font-weight: 900;
     letter-spacing: 0.14em;
@@ -3819,6 +3862,34 @@
 .concept-page .page-block--info-strip {
     margin-top: 0;
     margin-bottom: 0;
+    color: var(--page-block-fg);
+    background: var(--page-block-bg);
+    border-color: var(--page-block-border);
+}
+
+.concept-page .page-block--info-strip .concept-service-strip__item {
+    color: var(--page-block-fg);
+    border-color: var(--page-block-border);
+}
+
+.concept-page .page-block--info-strip span {
+    color: var(--page-block-eyebrow);
+}
+
+.concept-page .page-block--info-strip-target-page {
+    color: var(--page-block-card-fg);
+    background: transparent;
+    border: 0;
+}
+
+.concept-page .page-block--info-strip-target-page .concept-service-strip__item {
+    color: var(--page-block-card-fg);
+    background: var(--page-block-card-bg);
+    border-color: var(--page-block-border);
+}
+
+.concept-page .page-block--info-strip-target-page .concept-service-strip__value {
+    color: var(--page-block-card-fg);
 }
 
 .concept-page .page-block--info-strip-spacing-both,
@@ -4911,7 +4982,11 @@
     .concept-service-strip > div,
     .concept-service-strip__item {
         border-right: 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        border-bottom: 1px solid var(--page-block-border, rgba(255, 255, 255, 0.16));
+    }
+
+    .page-block--info-strip-target-page .concept-service-strip__item {
+        border-right: 1px solid var(--page-block-border, rgba(255, 255, 255, 0.16));
     }
 
     .concept-page--hub .concept-service-strip > div,
@@ -4922,6 +4997,10 @@
     .concept-service-strip > div:last-child,
     .concept-service-strip__item:last-child {
         border-bottom: 0;
+    }
+
+    .page-block--info-strip-target-page .concept-service-strip__item:last-child {
+        border-bottom: 1px solid var(--page-block-border, rgba(255, 255, 255, 0.16));
     }
 
     .concept-footer {

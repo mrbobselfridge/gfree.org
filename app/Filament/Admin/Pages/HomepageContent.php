@@ -245,6 +245,7 @@ class HomepageContent extends Page
                         'spacing' => 'bottom',
                         'content_width' => 'wide',
                         'background' => 'white',
+                        'background_target' => 'item',
                         'items' => collect($defaults['service_details'] ?? [])
                             ->map(fn (array $detail, int $index): array => [
                                 'label' => $detail['label'] ?? null,
@@ -272,6 +273,7 @@ class HomepageContent extends Page
                         'eyebrow' => 'Serving',
                         'heading' => 'Start with a clear next step.',
                         'background' => 'black',
+                        'background_target' => 'page',
                         'cards' => collect($defaults['next_steps'] ?? [])->map(fn (array $step): array => [
                             'title' => $step['title'] ?? '',
                             'summary' => $step['summary'] ?? null,
@@ -285,6 +287,7 @@ class HomepageContent extends Page
                         'eyebrow' => $record?->process_eyebrow ?? $defaults['process']['eyebrow'] ?? null,
                         'heading' => $record?->process_title ?? $defaults['process']['title'] ?? null,
                         'background' => 'white',
+                        'background_target' => 'page',
                         'steps' => $record?->process_steps ?? $defaults['process']['steps'] ?? [],
                     ],
                 ],

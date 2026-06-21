@@ -142,6 +142,16 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('black')
                             ->required(),
+                        self::hint(ToggleButtons::make('background_target')
+                            ->label('Affected background'), 'Choose whether the selected Background color affects the process steps or the full page band behind them.')
+                            ->options([
+                                'item' => 'Item',
+                                'page' => 'Page',
+                            ])
+                            ->inline()
+                            ->default('page')
+                            ->afterStateHydrated(fn (ToggleButtons $component, ?string $state): mixed => blank($state) ? $component->state('page') : null)
+                            ->required(),
                         self::contentWidthSelect('Controls the maximum width of this process list.', 'wide'),
                         self::hint(Repeater::make('steps')
                             ->label('Step entries'), 'Add each step in the order it should appear.')
@@ -214,6 +224,16 @@ class ContentBlockBuilder
                             ->label('Background color'), 'Sets the background color for this card section.')
                             ->options(self::backgroundOptions())
                             ->default('white')
+                            ->required(),
+                        self::hint(ToggleButtons::make('background_target')
+                            ->label('Affected background'), 'Choose whether the selected Background color affects the cards or the full page band behind them.')
+                            ->options([
+                                'item' => 'Item',
+                                'page' => 'Page',
+                            ])
+                            ->inline()
+                            ->default('page')
+                            ->afterStateHydrated(fn (ToggleButtons $component, ?string $state): mixed => blank($state) ? $component->state('page') : null)
                             ->required(),
                         self::contentWidthSelect('Controls the maximum width of this card section.', 'wide'),
                         self::hint(Repeater::make('cards')
@@ -343,6 +363,16 @@ class ContentBlockBuilder
                             ->options(self::backgroundOptions())
                             ->default('white')
                             ->afterStateHydrated(fn (Select $component, ?string $state): mixed => blank($state) ? $component->state('white') : null)
+                            ->required(),
+                        self::hint(ToggleButtons::make('background_target')
+                            ->label('Affected background'), 'Choose whether the selected Background color affects the strip items or the full page band behind them.')
+                            ->options([
+                                'item' => 'Item',
+                                'page' => 'Page',
+                            ])
+                            ->inline()
+                            ->default('item')
+                            ->afterStateHydrated(fn (ToggleButtons $component, ?string $state): mixed => blank($state) ? $component->state('item') : null)
                             ->required(),
                         ...self::scheduleFields($withScheduleFields),
                     ])

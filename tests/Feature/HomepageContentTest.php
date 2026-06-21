@@ -400,6 +400,8 @@ class HomepageContentTest extends TestCase
                     'type' => 'info_strip',
                     'data' => [
                         'spacing' => 'both',
+                        'background' => 'gold',
+                        'background_target' => 'item',
                         'items' => [
                             ['label' => 'One', 'source' => 'custom', 'value' => 'First'],
                             ['label' => 'Two', 'source' => 'custom', 'value' => 'Second'],
@@ -415,8 +417,11 @@ class HomepageContentTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('page-block--info-strip-spacing-both', false)
+            ->assertSee('page-block--info-strip-target-item', false)
+            ->assertSee('page-block--bg-gold', false)
             ->assertSee('--info-strip-count: 5', false)
-            ->assertSee('Fifth');
+            ->assertSee('Fifth')
+            ->assertDontSee('page-block--info-strip-page', false);
     }
 
     private function embedBlockHtml(string $embedCode, string $label = 'Signup form'): string

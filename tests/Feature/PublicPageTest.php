@@ -693,7 +693,8 @@ class PublicPageTest extends TestCase
         $this->get('/serve')
             ->assertOk()
             ->assertSee('Serving teams')
-            ->assertSee('class="page-link-cards"', false)
+            ->assertSee('page-block--link-cards-target-page', false)
+            ->assertSee('page-link-cards page-link-cards--target-page', false)
             ->assertSee('<a class="page-link-card" href="/kids">', false)
             ->assertSee('<a class="page-link-card" href="/storage/media/serve.pdf" target="_blank" rel="noopener noreferrer">', false)
             ->assertSee('id="content-card-flip-flip123"', false)
@@ -717,6 +718,41 @@ class PublicPageTest extends TestCase
             ->assertSee('Care')
             ->assertSee('Unsafe')
             ->assertSee('Production');
+    }
+
+    public function test_link_cards_can_apply_background_to_card_items(): void
+    {
+        Page::query()->create([
+            'title' => 'Serve',
+            'slug' => 'serve',
+            'content_blocks' => [
+                [
+                    'type' => 'link_cards',
+                    'data' => [
+                        'heading' => 'Serving teams',
+                        'background' => 'black',
+                        'background_target' => 'item',
+                        'cards' => [
+                            [
+                                'title' => 'Kids',
+                                'summary' => 'Help children know Jesus.',
+                                'type' => 'link_same',
+                                'url' => '/kids',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/serve')
+            ->assertOk()
+            ->assertSee('page-block page-block--link-cards page-block--link-cards-target-item page-block--bg-white', false)
+            ->assertSee('page-link-cards page-link-cards--target-item page-block--bg-black', false)
+            ->assertSee('<a class="page-link-card" href="/kids">', false)
+            ->assertSee('Help children know Jesus.')
+            ->assertDontSee('page-block--link-cards-target-page', false);
     }
 
     public function test_structured_blocks_can_render_without_headings(): void
@@ -1075,11 +1111,46 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('concept-service-strip', false)
             ->assertSee('page-block--bg-gold', false)
+            ->assertSee('page-block--info-strip-target-item', false)
+            ->assertDontSee('page-block--info-strip-page', false)
             ->assertSee('<strong>11 AM</strong>', false)
             ->assertSee('305 Keystone Hill Road')
             ->assertSee('Fallback Hours')
             ->assertDontSee('Fallback Times')
             ->assertDontSee('Fallback Address');
+    }
+
+    public function test_page_info_strip_can_apply_background_to_page_band_with_card_items(): void
+    {
+        Page::query()->create([
+            'title' => 'Visit',
+            'slug' => 'visit',
+            'content_blocks' => [
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'spacing' => 'both',
+                        'content_width' => 'medium',
+                        'background' => 'gold',
+                        'background_target' => 'page',
+                        'items' => [
+                            ['label' => 'Sunday', 'value' => '9:00 & 10:45 AM'],
+                            ['label' => 'Visit', 'value' => '305 Keystone Hill Road'],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/visit')
+            ->assertOk()
+            ->assertSee('page-block page-block--bg-gold page-block--info-strip-page page-block--info-strip-spacing-both', false)
+            ->assertSee('concept-service-strip page-block--info-strip page-block--info-strip-target-page page-block--info-strip-width-medium', false)
+            ->assertSee('--info-strip-count: 2', false)
+            ->assertSee('9:00 & 10:45 AM', false)
+            ->assertSee('305 Keystone Hill Road')
+            ->assertDontSee('page-block--info-strip-target-item', false);
     }
 
     public function test_child_cards_block_renders_limited_parent_pages_and_public_files(): void
@@ -2219,11 +2290,44 @@ class PublicPageTest extends TestCase
         $this->get('/serve')
             ->assertOk()
             ->assertSee('page-block--process-steps', false)
+            ->assertSee('page-block--process-steps-target-page', false)
             ->assertSee('page-block--bg-black', false)
             ->assertSee('Ready to serve?')
             ->assertSee('Start with three steps.')
             ->assertSee('Fill out the form')
             ->assertSee('Find a team that fits your gifts.');
+    }
+
+    public function test_process_step_blocks_can_apply_background_to_step_items(): void
+    {
+        Page::query()->create([
+            'title' => 'Serve',
+            'slug' => 'serve',
+            'content_blocks' => [
+                [
+                    'type' => 'process_steps',
+                    'data' => [
+                        'eyebrow' => 'Ready to serve?',
+                        'heading' => 'Start with three steps.',
+                        'background' => 'black',
+                        'background_target' => 'item',
+                        'steps' => [
+                            ['title' => 'Fill out the form', 'summary' => 'Tell us where you are interested.'],
+                            ['title' => 'Talk with a leader', 'summary' => 'Find a team that fits your gifts.'],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/serve')
+            ->assertOk()
+            ->assertSee('page-block page-block--process-steps page-block--process-steps-target-item page-block--bg-white', false)
+            ->assertSee('page-process__steps page-process__steps--target-item page-block--bg-black', false)
+            ->assertSee('Fill out the form')
+            ->assertSee('Find a team that fits your gifts.')
+            ->assertDontSee('page-block--process-steps-target-page', false);
     }
 
     private function assertStringOrder(string $content, array $values): void

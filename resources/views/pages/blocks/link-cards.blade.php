@@ -1,6 +1,8 @@
 @php
     $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
     $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
+    $backgroundTarget = ($data['background_target'] ?? 'page') === 'item' ? 'item' : 'page';
+    $sectionBackground = $backgroundTarget === 'page' ? $background : 'white';
     $contentWidth = match ($data['content_width'] ?? 'wide') {
         'small' => 'small',
         'medium', 'normal' => 'medium',
@@ -9,8 +11,14 @@
     $cards = $data['cards'] ?? [];
 @endphp
 
-<section @class(['page-block', 'page-block--link-cards', 'page-block--bg-' . $background])
-    @if ($backgroundStyle)
+<section
+    @class([
+        'page-block',
+        'page-block--link-cards',
+        'page-block--link-cards-target-' . $backgroundTarget,
+        'page-block--bg-' . $sectionBackground,
+    ])
+    @if ($backgroundTarget === 'page' && $backgroundStyle)
         style="{{ $backgroundStyle }}"
     @endif
 >
@@ -23,7 +31,16 @@
             <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
         @endif
 
-        <div class="page-link-cards">
+        <div
+            @class([
+                'page-link-cards',
+                'page-link-cards--target-' . $backgroundTarget,
+                'page-block--bg-' . $background => $backgroundTarget === 'item',
+            ])
+            @if ($backgroundTarget === 'item' && $backgroundStyle)
+                style="{{ $backgroundStyle }}"
+            @endif
+        >
             @foreach ($cards as $card)
                 @php
                     $url = trim((string) ($card['url'] ?? ''));

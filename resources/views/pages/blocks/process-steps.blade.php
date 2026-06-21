@@ -1,6 +1,8 @@
 @php
     $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
     $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
+    $backgroundTarget = ($data['background_target'] ?? 'page') === 'item' ? 'item' : 'page';
+    $sectionBackground = $backgroundTarget === 'page' ? $background : 'white';
     $contentWidth = match ($data['content_width'] ?? 'wide') {
         'small' => 'small',
         'medium', 'normal' => 'medium',
@@ -8,9 +10,15 @@
     };
 @endphp
 
-<section @class(['page-block', 'page-block--process-steps', 'page-block--bg-' . $background])
+<section
+    @class([
+        'page-block',
+        'page-block--process-steps',
+        'page-block--process-steps-target-' . $backgroundTarget,
+        'page-block--bg-' . $sectionBackground,
+    ])
     aria-label="{{ $data['heading'] ?? 'Process steps' }}"
-    @if ($backgroundStyle)
+    @if ($backgroundTarget === 'page' && $backgroundStyle)
         style="{{ $backgroundStyle }}"
     @endif
 >
@@ -25,7 +33,16 @@
             @endif
         </div>
 
-        <div class="page-process__steps">
+        <div
+            @class([
+                'page-process__steps',
+                'page-process__steps--target-' . $backgroundTarget,
+                'page-block--bg-' . $background => $backgroundTarget === 'item',
+            ])
+            @if ($backgroundTarget === 'item' && $backgroundStyle)
+                style="{{ $backgroundStyle }}"
+            @endif
+        >
             @foreach (($data['steps'] ?? []) as $step)
                 <article>
                     <strong>{!! \App\Support\SiteVariables::renderText($step['title'] ?? '', $settings ?? null) !!}</strong>

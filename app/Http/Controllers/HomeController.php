@@ -174,6 +174,7 @@ class HomeController extends Controller
                     'type' => 'info_strip',
                     'data' => [
                         'spacing' => 'bottom',
+                        'background_target' => 'item',
                         'items' => $this->defaultInfoStripItems($defaults['service_details'] ?? [], $settings),
                 ],
             ],
@@ -192,6 +193,7 @@ class HomeController extends Controller
                     'eyebrow' => 'Serving',
                     'heading' => 'Start with a clear next step.',
                     'background' => 'black',
+                    'background_target' => 'page',
                     'cards' => collect($nextSteps)->map(fn (array $step): array => [
                         'title' => $step['title'] ?? '',
                         'summary' => $step['summary'] ?? null,
@@ -205,6 +207,7 @@ class HomeController extends Controller
                     'eyebrow' => $defaults['process']['eyebrow'] ?? null,
                     'heading' => $defaults['process']['title'] ?? null,
                     'background' => 'white',
+                    'background_target' => 'page',
                     'steps' => $defaults['process']['steps'] ?? [],
                 ],
             ],

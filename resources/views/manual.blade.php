@@ -764,7 +764,7 @@
                     <tr>
                         <td>Process List</td>
                         <td>Step-by-step instructions such as visit, serve, join, or sign up.</td>
-                        <td>Use short step labels and practical step text.</td>
+                        <td>Use short step labels and practical step text. Use Affected background to choose whether the selected color applies to the step items or the full page band behind them.</td>
                     </tr>
                     <tr>
                         <td>CTA</td>
@@ -774,12 +774,12 @@
                     <tr>
                         <td>Cards</td>
                         <td>Groups of links to pages, forms, files, or next steps.</td>
-                        <td>Cards center by row. One, two, four, or five cards should balance visually.</td>
+                        <td>Cards center by row. One, two, four, or five cards should balance visually. Use Affected background to choose whether the selected color applies to the cards or the full page band behind them.</td>
                     </tr>
                     <tr>
                         <td>Strip</td>
                         <td>Service times, address, links, or short facts.</td>
-                        <td>Use custom values directly. Site variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Strip text field.</td>
+                        <td>Use custom values directly. Site variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Strip text field. Use Affected background to choose whether the selected color applies to the strip items or the full page band behind them.</td>
                     </tr>
                     <tr>
                         <td>Embedded</td>
