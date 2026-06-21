@@ -121,20 +121,6 @@ class PageForm
                     ->hintColor('gray')
                     ->columnSpan(2),
 
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
-                    )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
-
-
-
 
                     TextInput::make('slug')
                     ->label('Page path')
@@ -149,6 +135,18 @@ class PageForm
                         'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
                     )
                     ->hintColor('gray'),
+
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
+                    )
+                    ->hintColor('gray')
+                    ->columnSpan(1),
 
 
                     ViewField::make('qr_code')
@@ -392,7 +390,7 @@ class PageForm
                             )
                             ->hintColor('gray')
                             ->columnSpan(2),
-                            
+
                         ToggleButtons::make('redirect_status_code')
                             ->label('Redirect type')
                             ->options(Page::redirectStatusOptions())

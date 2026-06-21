@@ -7,9 +7,11 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Placeholder;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 
 class NavigationLinkForm
 {
@@ -18,6 +20,25 @@ class NavigationLinkForm
         return $schema
             ->columns(3)
             ->components([
+                // Placeholder::make('text_spacer')
+                //         ->hiddenLabel()
+                //         ->content(new HtmlString('&nbsp;'))
+                //         ->columnSpan(2),
+                        
+
+
+
+
+
+                TextInput::make('label')
+                    ->label('Link text')
+                    ->required()
+                    ->maxLength(255)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'The text visitors see in the header or dropdown.'
+                    )
+                    ->hintColor('gray'),
                 Select::make('parent_id')
                     ->label('Parent link')
                     ->relationship('parent', 'label')
@@ -28,6 +49,8 @@ class NavigationLinkForm
                         'Optional. Choose a top-level link to make this link appear inside that link\'s dropdown.'
                     )
                     ->hintColor('gray'),
+
+
                 ToggleButtons::make('is_published')
                     ->label('Link is live')
                     ->boolean()
@@ -39,16 +62,27 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray')
                     ->required(),
-                TextInput::make('label')
-                    ->label('Link text')
+
+                TextInput::make('url')
+                    ->label('Destination')
                     ->required()
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'The text visitors see in the header or dropdown.'
+                        'Use a local path like /new-here, a file link like /files/bulletin-guide, or a full https:// URL.'
                     )
                     ->hintColor('gray'),
-                ToggleButtons::make('opens_in_new_tab')
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
+                    )
+                    ->hintColor('gray'),
+
+                    ToggleButtons::make('opens_in_new_tab')
                     ->label('Open in new tab')
                     ->boolean()
                     ->inline()
@@ -59,27 +93,10 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray')
                     ->required(),
-                TextInput::make('url')
-                    ->label('Destination')
-                    ->required()
-                    ->maxLength(255)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Use a local path like /new-here, a file link like /files/bulletin-guide, or a full https:// URL.'
-                    )
-                    ->hintColor('gray'),
+
                 Hidden::make('location')
                     ->default('header')
                     ->dehydrateStateUsing(fn (): string => 'header'),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
-                    )
-                    ->hintColor('gray'),
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
                     ->hintIcon(

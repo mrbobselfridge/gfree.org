@@ -27,6 +27,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
+use Illuminate\Support\HtmlString;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FileDocumentForm
@@ -39,6 +40,10 @@ class FileDocumentForm
                 Section::make('File Details')
                     ->schema([
                         Select::make('category')
+                            ->label(fn (?string $operation): string => $operation === 'create'
+                                ? 'Step #1 - Select File category'
+                                : 'File category'
+                            )
                             ->options(fn (?FileDocument $record): array => FileCategory::options($record?->category))
                             ->searchable()
                             ->preload()
@@ -62,7 +67,9 @@ class FileDocumentForm
 
                                 $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($state, $get('title'), $record));
                             })
-                            ->required(),
+                            ->required()
+                            ->columnSpan(2),
+                        
                         ToggleButtons::make('is_published')
                             ->label('File is live')
                             ->boolean()
@@ -74,9 +81,13 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->required(),
+
                         FileUpload::make('pending_upload')
-                            ->label('File')
-                            ->acceptedFileTypes(FileLibrary::allowedMimeTypes())
+                            ->label('Step #2 - Upload the File')
+                            ->label(fn (?string $operation): string => $operation === 'create'
+                                ? 'Step #2 - Upload the File'
+                                : 'File'
+                            )                            ->acceptedFileTypes(FileLibrary::allowedMimeTypes())
                             ->disk(FileLibrary::DISK)
                             ->directory(FileLibrary::DIRECTORY)
                             ->storeFileNamesIn('pending_original_name')
@@ -114,7 +125,8 @@ class FileDocumentForm
                                 }
 
                                 self::mergeAutoTagsIntoForm($set, $get, $title ?: $get('title'));
-                            }),
+                            })
+                            ->columnSpan(2),
                         TextInput::make('pending_original_name')
                             ->hidden(),
                         FileUpload::make('current_file')
@@ -139,26 +151,9 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Shows the currently active file version. Use Replace file to upload a new version.'
                             )
-                            ->hintColor('gray'),
-                        TextInput::make('title')
-                            ->label('File title')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->maxLength(255)
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Admin and public title for this file. New files use this with Category to build the first path.'
-                            )
                             ->hintColor('gray')
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
-                                self::mergeAutoTagsIntoForm($set, $get, $state);
+                            ->columnSpan(2),
 
-                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
-                                    return;
-                                }
-
-                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
-                            }),
                         ToggleButtons::make('visibility')
                             ->label('Visibility')
                             ->options([
@@ -181,6 +176,28 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->required(),
+                        TextInput::make('title')
+                            ->label(fn (?string $operation): string => $operation === 'create'
+                                ? 'Step #3 - Adjust the File title'
+                                : 'File title'
+                            )                            
+                            ->required()
+                            ->live(onBlur: true)
+                            ->maxLength(255)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Admin and public title for this file. New files use this with Category to build the first path.'
+                            )
+                            ->hintColor('gray')
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
+                                self::mergeAutoTagsIntoForm($set, $get, $state);
+
+                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
+                                    return;
+                                }
+
+                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
+                            }),
                         Select::make('tags')
                             ->label('Tags')
                             ->placeholder('Add tag')
@@ -205,16 +222,29 @@ class FileDocumentForm
                                 'Optional tags for organizing files. Uploading a file or editing the title can add matching tags automatically.'
                             )
                             ->hintColor('gray'),
-/**                        Textarea::make('description')
-                            ->rows(1)
+
+                        Select::make('parent_page_id')
+                            ->label('Parent page')
+                            ->options(fn (): array => PageForm::parentPageOptions())
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->exists('pages', 'id')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional intro text on cards of parent page.'
+                                'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
                             )
-                            ->hintColor('gray'),
-**/
+                            ->hintColor('gray')
+                            ->columnSpan(1),                        
+                            
+
+
                         TextInput::make('file_name')
-                            ->label('File path')
+                            ->label('Step #4 - Adjust the File path (if needed)')
+                            ->label(fn (?string $operation): string => $operation === 'create'
+                                ? 'Step #4 - Adjust the File path (if needed)'
+                                : 'File path'
+                            )        
                             ->prefix('/files/')
                             ->live(onBlur: true)
                             ->maxLength(255)
@@ -238,7 +268,9 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Stable URL path ending under /files/. Defaults to category-title and can be generated with the refresh icon.'
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+
                         TextInput::make('sort_order')
                             ->label('Sort order')
                             ->numeric()
@@ -250,18 +282,30 @@ class FileDocumentForm
                                 'Lower numbers appear earlier when a parent page Child Cards block sorts by Sort order.'
                             )
                             ->hintColor('gray'),
-                        Select::make('parent_page_id')
-                            ->label('Parent page')
-                            ->options(fn (): array => PageForm::parentPageOptions())
-                            ->searchable()
-                            ->preload()
-                            ->native(false)
-                            ->exists('pages', 'id')
+
+                        RichEditorDefaults::configure(RichEditor::make('content'))
+                            ->label('Optional file content')
+                            ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
-                                'Optional. Lists this file under a parent page such as Resources, Forms, or Bulletins.'
+                                'Optional rich text shown with the file record. AI extraction can place reviewed content here.'
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpan(2),
+
+                        ...ImageUpload::make(
+                            'card_image_path',
+                            'file-documents/card-images',
+                            'Card image',
+                            fn (ViewField $upload): ViewField => $upload
+                                ->hintIcon(
+                                    Heroicon::OutlinedInformationCircle,
+                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
+                                )
+                                ->hintColor('gray'),
+                        ),
+
+
                         FileUpload::make('replacement_upload')
                             ->label('Replace file')
                             ->helperText('Optional. Uploading a replacement creates a new version and keeps older versions available below.')
@@ -275,7 +319,9 @@ class FileDocumentForm
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional. Uploading here creates a new current version and preserves older versions below.'
                             )
-                            ->hintColor('gray'),
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                            
                         TextInput::make('replacement_original_name')
                             ->hidden(),
                         DateTimePicker::make('publish_at')
@@ -292,6 +338,13 @@ class FileDocumentForm
                                 'Optional. Use for temporary files that should stop loading after a certain date.'
                             )
                             ->hintColor('gray'),
+
+                        Placeholder::make('text_spacer')
+                                ->hiddenLabel()
+                                ->content(new HtmlString('&nbsp;'))
+                                ->columnSpan(1),
+
+
                         Placeholder::make('created_at')
                             ->label('Created date')
                             ->content(fn (?FileDocument $record): string => $record?->created_at?->toDayDateTimeString() ?? 'Set when the file is created')
@@ -309,25 +362,6 @@ class FileDocumentForm
                             )
                             ->hintColor('gray'),
 
-                        RichEditorDefaults::configure(RichEditor::make('content'))
-                            ->label('Optional file content')
-                            ->helperText('Optional formatted notes. This can hold extracted or AI-assisted content later.')
-                            ->hintIcon(
-                                Heroicon::OutlinedInformationCircle,
-                                'Optional rich text shown with the file record. AI extraction can place reviewed content here.'
-                            )
-                            ->hintColor('gray'),
-                        ...ImageUpload::make(
-                            'card_image_path',
-                            'file-documents/card-images',
-                            'Card image',
-                            fn (ViewField $upload): ViewField => $upload
-                                ->hintIcon(
-                                    Heroicon::OutlinedInformationCircle,
-                                    'Optional image used when this file appears in cards or listing areas. If empty, the category default image is used before the standard file image.'
-                                )
-                                ->hintColor('gray'),
-                        ),
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
