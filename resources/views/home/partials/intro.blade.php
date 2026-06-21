@@ -1,7 +1,7 @@
 <section class="concept-section concept-section--intro">
     <div>
-        <p class="concept-eyebrow">{{ $intro['eyebrow'] }}</p>
-        <h2>{{ $intro['title'] }}</h2>
+        <p class="concept-eyebrow">{!! \App\Support\SiteVariables::renderText($intro['eyebrow'], $settings ?? null) !!}</p>
+        <h2>{!! \App\Support\SiteVariables::renderText($intro['title'], $settings ?? null) !!}</h2>
     </div>
-    <p>{{ $intro['body'] }}</p>
+    <p>{!! \App\Support\SiteVariables::renderText($intro['body'], $settings ?? null) !!}</p>
 </section>

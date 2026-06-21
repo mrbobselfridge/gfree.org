@@ -35,7 +35,7 @@
                             aria-haspopup="true"
                             @if (data_get($link, 'opens_in_new_tab', false) === true) target="_blank" rel="noreferrer" @endif
                         >
-                            {{ data_get($link, 'label') }}
+                            {!! \App\Support\SiteVariables::renderText(data_get($link, 'label'), $settings ?? null) !!}
                         </a>
 
                         <button
@@ -56,7 +56,7 @@
                                 href="{{ data_get($child, 'url') }}"
                                 @if (data_get($child, 'opens_in_new_tab', false) === true) target="_blank" rel="noreferrer" @endif
                             >
-                                {{ data_get($child, 'label') }}
+                                {!! \App\Support\SiteVariables::renderText(data_get($child, 'label'), $settings ?? null) !!}
                             </a>
                         @endforeach
                     </div>
@@ -67,7 +67,7 @@
                     class="concept-nav__link"
                     @if (data_get($link, 'opens_in_new_tab', false) === true) target="_blank" rel="noreferrer" @endif
                 >
-                    {{ data_get($link, 'label') }}
+                    {!! \App\Support\SiteVariables::renderText(data_get($link, 'label'), $settings ?? null) !!}
                 </a>
             @endif
         @endforeach

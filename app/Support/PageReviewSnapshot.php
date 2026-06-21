@@ -97,8 +97,8 @@ class PageReviewSnapshot
         $snapshot['site_context'] = [
             'church_name' => $settings?->church_name,
             'tagline' => $this->plainText($settings?->tagline),
-            'sunday_service_times' => $this->plainText($settings?->sunday_service_times),
-            'address' => $this->plainText($settings?->address),
+            'service_times' => $this->plainText($settings?->siteVariableValue('service-times')),
+            'address' => $this->plainText($settings?->siteVariableValue('address')),
         ];
 
         return $snapshot;

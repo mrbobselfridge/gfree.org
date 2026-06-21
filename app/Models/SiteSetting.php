@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\SiteDesignPalette;
+use App\Support\SiteVariables;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -12,17 +13,15 @@ use Illuminate\Support\Facades\Storage;
     'site_logo_path',
     'default_page_header_image_path',
     'tagline',
-    'sunday_service_times',
-    'address',
     'phone',
     'email',
-    'office_hours',
     'design_background_colors',
     'design_accent_color',
     'design_accent_text_color',
     'design_accent_soft_color',
     'custom_css',
     'dashboard_notes',
+    'site_variables',
     'openai_api_key',
     'ai_content_prompt',
     'facebook_url',
@@ -98,6 +97,11 @@ class SiteSetting extends Model
             })
             ->filter()
             ->values();
+    }
+
+    public function siteVariableValue(string $variable): ?string
+    {
+        return SiteVariables::variableValue($variable, $this);
     }
 
     public function publicDesignCss(): ?string
@@ -212,6 +216,7 @@ class SiteSetting extends Model
         return [
             'design_background_colors' => 'array',
             'additional_social_links' => 'array',
+            'site_variables' => 'array',
         ];
     }
 }

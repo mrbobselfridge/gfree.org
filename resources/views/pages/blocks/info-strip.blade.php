@@ -21,7 +21,7 @@
     >
         @foreach ($items as $item)
             <div class="concept-service-strip__item">
-                <span>{{ $item['label'] }}</span>
+                <span>{!! \App\Support\SiteVariables::renderText($item['label'], $settings ?? null) !!}</span>
                 <div class="concept-service-strip__value">{!! \App\Support\RichContent::render($item['value']) !!}</div>
             </div>
         @endforeach

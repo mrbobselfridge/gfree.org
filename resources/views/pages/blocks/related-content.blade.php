@@ -34,11 +34,11 @@
                 <div class="concept-updates__header">
                     <div>
                         @if (filled($data['heading'] ?? null))
-                            <h2>{{ $data['heading'] }}</h2>
+                            <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
                         @endif
 
                         @if (filled($data['intro'] ?? null))
-                            <span>{{ $data['intro'] }}</span>
+                            <span>{!! \App\Support\SiteVariables::renderText($data['intro'], $settings ?? null) !!}</span>
                         @endif
                     </div>
                 </div>

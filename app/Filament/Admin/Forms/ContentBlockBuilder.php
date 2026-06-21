@@ -314,21 +314,13 @@ class ContentBlockBuilder
                                 self::hint(TextInput::make('label'), 'Short label for this info item.')
                                     ->live(onBlur: true)
                                     ->maxLength(80),
-                                self::hint(Select::make('source'), 'Choose whether this item uses custom text or pulls from site settings.')
-                                    ->options([
-                                        'custom' => 'Custom value',
-                                        'sunday_service_times' => 'Sunday service times',
-                                        'office_hours' => 'Office hours',
-                                        'address' => 'Address',
-                                    ])
-                                    ->default('custom')
-                                    ->required(),
-                                self::hint(Textarea::make('value'), 'Custom value shown when Source is Custom value.')
+                                self::hint(Textarea::make('value'), 'Value shown for this info item. Site Variables like [[address]] are allowed.')
                                     ->rows(2)
-                                    ->maxLength(500),
+                                    ->maxLength(500)
+                                    ->columnSpanFull(),
                             ])
                             ->addActionLabel('Add item')
-                            ->columns(3)
+                            ->columns(2)
                             ->minItems(1)
                             ->maxItems(5)
                             ->columnSpanFull(),

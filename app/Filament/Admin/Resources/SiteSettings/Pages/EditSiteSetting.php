@@ -7,10 +7,12 @@ use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
 use App\Support\CodeBlockAccess;
+use App\Support\SiteVariables;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Validation\ValidationException;
 
 class EditSiteSetting extends EditRecord
 {
@@ -81,6 +83,20 @@ class EditSiteSetting extends EditRecord
     {
         if (! CodeBlockAccess::canManage()) {
             $data['custom_css'] = $this->getRecord()->custom_css;
+            $data['site_variables'] = $this->getRecord()->site_variables;
+        } else {
+            $data['site_variables'] = SiteVariables::normalizeRows($data['site_variables'] ?? []);
+            $duplicates = collect($data['site_variables'])
+                ->countBy('variable')
+                ->filter(fn (int $count): bool => $count > 1)
+                ->keys()
+                ->all();
+
+            if ($duplicates !== []) {
+                throw ValidationException::withMessages([
+                    'data.site_variables' => 'Each site variable must have a unique variable name. Duplicate: '.$duplicates[0].'.',
+                ]);
+            }
         }
 
         return $data;

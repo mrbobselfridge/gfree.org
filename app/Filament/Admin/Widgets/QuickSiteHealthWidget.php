@@ -139,10 +139,10 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
         $rows = [];
         $missingContact = collect([
             'church name' => $settings->church_name,
-            'address' => $settings->address,
+            'address variable' => $settings->siteVariableValue('address'),
             'phone' => $settings->phone,
             'email' => $settings->email,
-            'service times' => $settings->sunday_service_times,
+            'service times variable' => $settings->siteVariableValue('service-times'),
         ])
             ->filter(fn (mixed $value): bool => blank(strip_tags((string) $value)))
             ->keys()

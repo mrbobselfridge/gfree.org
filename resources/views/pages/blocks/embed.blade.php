@@ -15,7 +15,7 @@
 >
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
         @if (filled($data['heading'] ?? null))
-            <h2>{{ $data['heading'] }}</h2>
+            <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
         @endif
 
         @if (filled($data['embed_code'] ?? null))

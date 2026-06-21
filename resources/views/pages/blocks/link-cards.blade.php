@@ -16,11 +16,11 @@
 >
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
         @if (filled($data['eyebrow'] ?? null))
-            <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>
+            <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
         @endif
 
         @if (filled($data['heading'] ?? null))
-            <h2>{{ $data['heading'] }}</h2>
+            <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
         @endif
 
         <div class="page-link-cards">
@@ -39,18 +39,18 @@
 
                 @if ($type === \App\Support\LinkCard::TYPE_LINK_SAME && \App\Support\LinkCard::isSafeHref($url))
                     <a class="page-link-card" href="{{ $url }}">
-                        <h3>{{ $card['title'] ?? '' }}</h3>
+                        <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{{ $card['summary'] }}</p>
+                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
                         @endif
                     </a>
                 @elseif ($type === \App\Support\LinkCard::TYPE_LINK_NEW && \App\Support\LinkCard::isSafeHref($url))
                     <a class="page-link-card" href="{{ $url }}" target="_blank" rel="noopener noreferrer">
-                        <h3>{{ $card['title'] ?? '' }}</h3>
+                        <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{{ $card['summary'] }}</p>
+                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
                         @endif
                     </a>
                 @elseif ($type === \App\Support\LinkCard::TYPE_FLIP_HTML)
@@ -63,15 +63,15 @@
                     >
                         <span class="page-link-card__flip-inner">
                             <span class="page-link-card__face page-link-card__face--front">
-                                <h3>{{ $card['title'] ?? '' }}</h3>
+                                <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                                 @if (filled($card['summary'] ?? null))
-                                    <p>{{ $card['summary'] }}</p>
+                                    <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
                                 @endif
                             </span>
 
                             <span class="page-link-card__face page-link-card__face--back">
-                                {!! $card['html'] ?? '' !!}
+                                {!! \App\Support\SiteVariables::renderHtml($card['html'] ?? '', $settings ?? null) !!}
                             </span>
                         </span>
                     </button>
@@ -85,10 +85,10 @@
                     >
                         <span class="page-link-card__flip-inner">
                             <span class="page-link-card__face page-link-card__face--front">
-                                <h3>{{ $card['title'] ?? '' }}</h3>
+                                <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                                 @if (filled($card['summary'] ?? null))
-                                    <p>{{ $card['summary'] }}</p>
+                                    <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
                                 @endif
                             </span>
 
@@ -104,10 +104,10 @@
                     </button>
                 @elseif ($type === \App\Support\LinkCard::TYPE_JAVASCRIPT_WIDGET)
                     <div class="page-link-card page-link-card--widget">
-                        <h3>{{ $card['title'] ?? '' }}</h3>
+                        <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{{ $card['summary'] }}</p>
+                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
                         @endif
 
                         <div id="{{ $widgetId }}" class="page-link-card__widget"></div>
@@ -120,10 +120,10 @@
                     </div>
                 @else
                     <div class="page-link-card">
-                        <h3>{{ $card['title'] ?? '' }}</h3>
+                        <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{{ $card['summary'] }}</p>
+                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
                         @endif
                     </div>
                 @endif

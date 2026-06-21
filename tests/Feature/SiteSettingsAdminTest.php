@@ -9,6 +9,8 @@ use App\Support\AdminAccess;
 use App\Support\SiteDesignPalette;
 use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -26,6 +28,10 @@ class SiteSettingsAdminTest extends TestCase
             ->get("/admin/site-settings/{$settings->getKey()}/edit")
             ->assertOk()
             ->assertSee('Organizational Information')
+            ->assertSee('Site Variables')
+            ->assertSee('Variable')
+            ->assertDontSee('Sunday service times')
+            ->assertDontSee('Office hours')
             ->assertSee('Site logo')
             ->assertSee('Default page header image')
             ->assertSee('Site Design elements')
@@ -84,6 +90,12 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->shouldPersistCollapsed(),
             )
             ->assertSchemaComponentExists(
+                'site-settings-site-variables',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && $component->isCollapsed()
+                    && $component->shouldPersistCollapsed(),
+            )
+            ->assertSchemaComponentExists(
                 'site-settings-site-design-elements',
                 checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
                     && $component->isCollapsed()
@@ -102,6 +114,172 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->shouldPersistCollapsed(),
             )
             ->assertSchemaComponentDoesNotExist('site-settings-ministries-settings');
+    }
+
+    public function test_site_variables_can_be_saved_with_html_values(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.site_variables', [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>305 Keystone <strong>Hill</strong></p>',
+                ],
+                [
+                    'name' => 'Service Times',
+                    'variable' => 'service-times',
+                    'value' => '<p>9:15 &amp; 11 AM</p>',
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame([
+            [
+                'name' => 'Address',
+                'variable' => 'address',
+                'value' => '<p>305 Keystone <strong>Hill</strong></p>',
+            ],
+            [
+                'name' => 'Service Times',
+                'variable' => 'service-times',
+                'value' => '<p>9:15 &amp; 11 AM</p>',
+            ],
+        ], $settings->refresh()->site_variables);
+    }
+
+    public function test_site_variables_reject_invalid_or_duplicate_variable_names(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.site_variables', [
+                [
+                    'name' => 'Bad Variable',
+                    'variable' => 'Bad Variable!',
+                    'value' => 'Bad',
+                ],
+            ])
+            ->call('save')
+            ->assertHasFormErrors(['site_variables.0.variable']);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.site_variables', [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => 'First',
+                ],
+                [
+                    'name' => 'Address Again',
+                    'variable' => 'address',
+                    'value' => 'Second',
+                ],
+            ])
+            ->call('save')
+            ->assertHasFormErrors(['site_variables']);
+    }
+
+    public function test_site_settings_editor_without_code_access_can_view_but_not_change_site_variables(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>Existing address</p>',
+                ],
+            ],
+        ]);
+
+        $editor = User::factory()->create([
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::SITE_SETTINGS],
+                'records' => [],
+            ],
+        ]);
+
+        $this->actingAs($editor)
+            ->get("/admin/site-settings/{$settings->getKey()}/edit")
+            ->assertOk()
+            ->assertSee('Site Variables')
+            ->assertSee('Existing address')
+            ->assertDontSee('Custom CSS');
+
+        Livewire::actingAs($editor)
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.site_variables', [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>Changed address</p>',
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame('<p>Existing address</p>', $settings->refresh()->site_variables[0]['value']);
+    }
+
+    public function test_site_variables_migration_backfills_address_and_service_times(): void
+    {
+        Schema::table('site_settings', function ($table): void {
+            if (! Schema::hasColumn('site_settings', 'address')) {
+                $table->text('address')->nullable();
+            }
+
+            if (! Schema::hasColumn('site_settings', 'sunday_service_times')) {
+                $table->text('sunday_service_times')->nullable();
+            }
+
+            if (! Schema::hasColumn('site_settings', 'office_hours')) {
+                $table->text('office_hours')->nullable();
+            }
+        });
+
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'site_variables' => null,
+        ]);
+
+        DB::table('site_settings')
+            ->where('id', $settings->getKey())
+            ->update([
+                'address' => '<p>305 Keystone Hill Road</p>',
+                'sunday_service_times' => '<p>9:15 &amp; 11 AM</p>',
+                'office_hours' => '<p>Not backfilled</p>',
+            ]);
+
+        $migration = require database_path('migrations/2026_06_20_000004_add_site_variables_to_site_settings_table.php');
+        $migration->up();
+
+        $this->assertSame([
+            [
+                'name' => 'Address',
+                'variable' => 'address',
+                'value' => '<p>305 Keystone Hill Road</p>',
+            ],
+            [
+                'name' => 'Service Times',
+                'variable' => 'service-times',
+                'value' => '<p>9:15 &amp; 11 AM</p>',
+            ],
+        ], SiteSetting::query()->findOrFail($settings->getKey())->site_variables);
+
+        $this->assertFalse(Schema::hasColumn('site_settings', 'address'));
+        $this->assertFalse(Schema::hasColumn('site_settings', 'sunday_service_times'));
+        $this->assertFalse(Schema::hasColumn('site_settings', 'office_hours'));
     }
 
     public function test_site_settings_dashboard_notes_can_be_saved(): void

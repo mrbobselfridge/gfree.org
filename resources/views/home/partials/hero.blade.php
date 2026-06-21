@@ -18,9 +18,9 @@
     <div class="concept-hero__image" data-hero-image style="background-image: url('{{ $hero['image_url'] }}')"></div>
 
     <div class="concept-hero__content">
-        <p class="concept-eyebrow" data-hero-eyebrow>{{ $hero['eyebrow'] }}</p>
-        <h1 data-hero-title>{{ $hero['title'] }}</h1>
-        <p data-hero-subtitle @if (blank($hero['subtitle'])) hidden @endif>{{ $hero['subtitle'] }}</p>
+        <p class="concept-eyebrow" data-hero-eyebrow>{!! $hero['eyebrow_html'] ?? \App\Support\SiteVariables::renderText($hero['eyebrow'] ?? '', $settings ?? null) !!}</p>
+        <h1 data-hero-title>{!! $hero['title_html'] ?? \App\Support\SiteVariables::renderText($hero['title'] ?? '', $settings ?? null) !!}</h1>
+        <p data-hero-subtitle @if (blank($hero['subtitle'])) hidden @endif>{!! $hero['subtitle_html'] ?? \App\Support\SiteVariables::renderText($hero['subtitle'] ?? '', $settings ?? null) !!}</p>
 
         <div class="concept-actions">
             <a
@@ -30,7 +30,7 @@
                 @if (\App\Support\LinkAttributes::isExternal($hero['primary_url'] ?? null)) target="_blank" rel="noopener noreferrer" @endif
                 @if (blank($primaryLabel)) hidden @endif
             >
-                {{ $primaryLabel }}
+                {!! $hero['primary_label_html'] ?? \App\Support\SiteVariables::renderText($primaryLabel, $settings ?? null) !!}
             </a>
 
             <a
@@ -40,7 +40,7 @@
                 @if (\App\Support\LinkAttributes::isExternal($hero['secondary_url'] ?? null)) target="_blank" rel="noopener noreferrer" @endif
                 @if (blank($secondaryLabel)) hidden @endif
             >
-                {{ $secondaryLabel }}
+                {!! $hero['secondary_label_html'] ?? \App\Support\SiteVariables::renderText($secondaryLabel, $settings ?? null) !!}
             </a>
         </div>
 

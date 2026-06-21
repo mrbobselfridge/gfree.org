@@ -10,8 +10,10 @@ use App\Support\AiContentPrompt;
 use App\Support\CodeBlockAccess;
 use App\Support\RichContent;
 use App\Support\SiteDesignPalette;
+use App\Support\SiteVariables;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -19,6 +21,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -27,6 +30,7 @@ class SiteSettingForm
 {
     private const SECTION_IDS = [
         'site-settings-organizational-information',
+        'site-settings-site-variables',
         'site-settings-site-design-elements',
         'site-settings-dashboard-notes',
         'site-settings-ai-settings',
@@ -60,12 +64,66 @@ class SiteSettingForm
                             ->maxLength(255),
                         TextInput::make('tagline')
                             ->maxLength(255),
-                        RichEditorDefaults::configure(RichEditor::make('sunday_service_times')),
-                        RichEditorDefaults::configure(RichEditor::make('address')),
-
-                        RichEditorDefaults::configure(RichEditor::make('office_hours')),
                     ])
                     ->columns(2)
+                    ->columnSpanFull(),
+                self::section('Site Variables', 'site-settings-site-variables')
+                    ->schema([
+                        Repeater::make('site_variables')
+                            ->label('Site Variables')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Name')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(120)
+                                    ->afterStateUpdated(fn (Set $set, Get $get, ?string $state): mixed => blank($get('variable'))
+                                        ? $set('variable', SiteVariables::normalizeKey($state))
+                                        : null),
+                                TextInput::make('variable')
+                                    ->label('Variable')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(120)
+                                    ->dehydrateStateUsing(fn (mixed $state): string => SiteVariables::normalizeKey($state))
+                                    ->rule('regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                                    ->validationMessages([
+                                        'regex' => 'Use lowercase letters and numbers separated by dashes, such as service-times.',
+                                    ])
+                                    ->hintIcon(
+                                        Heroicon::OutlinedInformationCircle,
+                                        'Use this in content as [[variable-name]]. Do not include the brackets in this field.',
+                                    )
+                                    ->hintColor('gray'),
+                                Placeholder::make('token')
+                                    ->label('Token')
+                                    ->content(fn (Get $get): string => SiteVariables::tokenFor($get('variable') ?: $get('name')) ?? 'Add a variable name')
+                                    ->columnSpan(1),
+                                Textarea::make('value')
+                                    ->label('Value')
+                                    ->rows(4)
+                                    ->required()
+                                    ->hintIcon(
+                                        Heroicon::OutlinedInformationCircle,
+                                        'Trusted HTML is allowed here because only admins and Code Blocks users can edit site variables.',
+                                    )
+                                    ->hintColor('gray')
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(3)
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->addActionLabel('Add site variable')
+                            ->reorderable()
+                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn (mixed $state): array => SiteVariables::normalizeRows($state))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Reusable sitewide content. Type tokens like [[address]] or [[service-times]] in public content fields.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1)
                     ->columnSpanFull(),
                 self::section('Social and Additional Links', 'site-settings-social-and-additional-links')
                     ->schema([

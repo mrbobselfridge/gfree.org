@@ -37,6 +37,67 @@ class PublicPageTest extends TestCase
             ->assertDontSee('<p class="concept-eyebrow">TwyxtCo Church</p>', false);
     }
 
+    public function test_site_variables_render_in_visible_content_but_not_meta_or_urls(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo',
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<strong>305 Keystone Hill Road</strong>',
+                ],
+                [
+                    'name' => 'Service Times',
+                    'variable' => 'service-times',
+                    'value' => '9:15 &amp; 11 AM',
+                ],
+            ],
+        ]);
+
+        Page::query()->create([
+            'title' => 'Visit [[service-times]]',
+            'slug' => 'visit-variables',
+            'seo_title' => 'SEO [[service-times]]',
+            'seo_description' => 'Meta [[address]]',
+            'hero_label' => 'Plan [[address]]',
+            'intro' => 'Intro [[service-times]]',
+            'message' => '<p>Message [[address]]</p>',
+            'content_blocks' => [
+                [
+                    'type' => 'text',
+                    'data' => [
+                        'eyebrow' => 'Small [[service-times]]',
+                        'heading' => 'Heading [[address]]',
+                        'body' => '<p>Rich [[service-times]]</p>',
+                    ],
+                ],
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'button_label' => 'Button [[address]]',
+                        'button_url' => '/go/[[address]]',
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/visit-variables')
+            ->assertOk()
+            ->assertSee('<title>SEO [[service-times]] | TwyxtCo</title>', false)
+            ->assertSee('<meta name="description" content="Meta [[address]]">', false)
+            ->assertSee('Visit 9:15 &amp; 11 AM', false)
+            ->assertSee('Plan <strong>305 Keystone Hill Road</strong>', false)
+            ->assertSee('Intro 9:15 &amp; 11 AM', false)
+            ->assertSee('Message <strong>305 Keystone Hill Road</strong>', false)
+            ->assertSee('Small 9:15 &amp; 11 AM', false)
+            ->assertSee('Heading <strong>305 Keystone Hill Road</strong>', false)
+            ->assertSee('Rich 9:15 &amp; 11 AM', false)
+            ->assertSee('Button <strong>305 Keystone Hill Road</strong>', false)
+            ->assertSee('href="/go/[[address]]"', false);
+    }
+
     public function test_sermons_slug_can_be_used_by_a_normal_page(): void
     {
         Page::query()->create([
@@ -124,7 +185,13 @@ class PublicPageTest extends TestCase
             'church_name' => 'TwyxtCo Church',
             'site_logo_path' => 'site-settings/logo/custom-logo.png',
             'tagline' => 'This tagline should not be in the footer.',
-            'address' => '<p>305 Keystone Hill Road</p>',
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>305 Keystone Hill Road</p>',
+                ],
+            ],
             'email' => 'hello@example.com',
             'phone' => '(814) 555-1212',
             'facebook_url' => 'https://facebook.example/twyxtco',
@@ -967,11 +1034,22 @@ class PublicPageTest extends TestCase
             ->assertSee('Child Resource');
     }
 
-    public function test_page_info_strip_can_pull_office_hours_from_site_settings(): void
+    public function test_page_info_strip_legacy_sources_render_through_site_variables(): void
     {
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
-            'office_hours' => '<p>Monday-Thursday <strong>9 AM-4 PM</strong></p>',
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>305 Keystone Hill Road</p>',
+                ],
+                [
+                    'name' => 'Service Times',
+                    'variable' => 'service-times',
+                    'value' => '<p>9:15 &amp; <strong>11 AM</strong></p>',
+                ],
+            ],
         ]);
 
         Page::query()->create([
@@ -982,6 +1060,8 @@ class PublicPageTest extends TestCase
                     'type' => 'info_strip',
                     'data' => [
                         'items' => [
+                            ['label' => 'Sunday', 'source' => 'sunday_service_times', 'value' => 'Fallback Times'],
+                            ['label' => 'Visit', 'source' => 'address', 'value' => 'Fallback Address'],
                             ['label' => 'Office', 'source' => 'office_hours', 'value' => 'Fallback Hours'],
                         ],
                     ],
@@ -993,8 +1073,11 @@ class PublicPageTest extends TestCase
         $this->get('/visit')
             ->assertOk()
             ->assertSee('concept-service-strip', false)
-            ->assertSee('<strong>9 AM-4 PM</strong>', false)
-            ->assertDontSee('Fallback Hours');
+            ->assertSee('<strong>11 AM</strong>', false)
+            ->assertSee('305 Keystone Hill Road')
+            ->assertSee('Fallback Hours')
+            ->assertDontSee('Fallback Times')
+            ->assertDontSee('Fallback Address');
     }
 
     public function test_child_cards_block_renders_limited_parent_pages_and_public_files(): void

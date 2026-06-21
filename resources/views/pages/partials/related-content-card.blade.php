@@ -32,17 +32,17 @@
     @endif
 
     <div class="concept-updates__card-body">
-        <p>{{ data_get($item, 'type') }}</p>
+        <p>{!! \App\Support\SiteVariables::renderText(data_get($item, 'type'), $settings ?? null) !!}</p>
         <h3>
             @if (! $isFile && $url)
-                <a href="{{ $url }}" aria-label="Open {{ $title }}"{!! \App\Support\LinkAttributes::externalAttributes($url) !!}>{{ $title }}</a>
+                <a href="{{ $url }}" aria-label="Open {{ $title }}"{!! \App\Support\LinkAttributes::externalAttributes($url) !!}>{!! \App\Support\SiteVariables::renderText($title, $settings ?? null) !!}</a>
             @else
-                {{ $title }}
+                {!! \App\Support\SiteVariables::renderText($title, $settings ?? null) !!}
             @endif
         </h3>
 
         @if (filled(data_get($item, 'summary')))
-            <span>{{ data_get($item, 'summary') }}</span>
+            <span>{!! \App\Support\SiteVariables::renderText(data_get($item, 'summary'), $settings ?? null) !!}</span>
         @endif
 
         @php($message = \App\Support\RichContent::nullable(data_get($item, 'message')))
@@ -53,7 +53,7 @@
                     {!! \App\Support\RichContent::render($message) !!}
                 @else
                     @foreach (preg_split('/\R{2,}/', $message) as $paragraph)
-                        <p>{!! nl2br(e($paragraph)) !!}</p>
+                        <p>{!! \App\Support\SiteVariables::renderTextWithLineBreaks($paragraph, $settings ?? null) !!}</p>
                     @endforeach
                 @endif
             </div>
@@ -69,15 +69,15 @@
             <div class="concept-updates__modal-panel">
                 <div class="concept-updates__modal-header">
                     <div>
-                        <p>{{ data_get($item, 'type') }}</p>
-                        <h2>{{ $title }}</h2>
+                        <p>{!! \App\Support\SiteVariables::renderText(data_get($item, 'type'), $settings ?? null) !!}</p>
+                        <h2>{!! \App\Support\SiteVariables::renderText($title, $settings ?? null) !!}</h2>
                     </div>
                     <button class="concept-updates__modal-close" type="button" data-related-modal-close aria-label="Close {{ $title }} content">Close</button>
                 </div>
 
                 <div class="concept-updates__modal-body">
                     <div class="concept-updates__rich-text">
-                        {!! data_get($item, 'optional_content_html') !!}
+                        {!! \App\Support\SiteVariables::renderHtml(data_get($item, 'optional_content_html'), $settings ?? null) !!}
                     </div>
                 </div>
             </div>

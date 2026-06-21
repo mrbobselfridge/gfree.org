@@ -7,6 +7,7 @@ use App\Models\HomepageContent;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
+use App\Support\SiteVariables;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +31,7 @@ class HomeController extends Controller
 
         $navigationLinks = NavigationLink::topLevelHeaderLinks();
 
-        $hero = $this->hero($defaults['hero'], $heroBanners->first());
+        $hero = $this->renderHeroSlide($this->hero($defaults['hero'], $heroBanners->first()), $settings);
 
         return view('home', [
             'settings' => $settings,
@@ -39,7 +40,7 @@ class HomeController extends Controller
             'pageTitle' => $this->pageTitle($settings, $homepageContent),
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
             'hero' => $hero,
-            'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners),
+            'heroSlides' => $this->heroSlides($defaults['hero'], $heroBanners, $settings),
             'heroBannersAutoRotate' => (bool) ($homepageContent?->hero_banners_auto_rotate ?? false),
             'heroBannersRotationDelayMilliseconds' => ($homepageContent?->heroBannersRotationDelaySeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_ROTATION_DELAY_SECONDS) * 1000,
             'heroBannersFadeDurationMilliseconds' => ($homepageContent?->heroBannersFadeDurationSeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_FADE_DURATION_SECONDS) * 1000,
@@ -62,13 +63,15 @@ class HomeController extends Controller
             ?: ($hero['subtitle'] ?? null);
     }
 
-    private function heroSlides(array $defaults, $banners)
+    private function heroSlides(array $defaults, $banners, ?SiteSetting $settings)
     {
         if ($banners->isEmpty()) {
-            return collect([$defaults]);
+            return collect([$this->renderHeroSlide($defaults, $settings)]);
         }
 
-        return $banners->map(fn (HomepageBanner $banner): array => $this->hero($defaults, $banner))->values();
+        return $banners
+            ->map(fn (HomepageBanner $banner): array => $this->renderHeroSlide($this->hero($defaults, $banner), $settings))
+            ->values();
     }
 
     private function hero(array $defaults, ?HomepageBanner $banner): array
@@ -86,6 +89,18 @@ class HomeController extends Controller
             'primary_url' => $banner->button_url ?: $defaults['primary_url'],
             'secondary_label' => $banner->secondary_button_label,
             'secondary_url' => $banner->secondary_button_url ?: $defaults['secondary_url'],
+        ];
+    }
+
+    private function renderHeroSlide(array $slide, ?SiteSetting $settings): array
+    {
+        return [
+            ...$slide,
+            'eyebrow_html' => SiteVariables::renderText($slide['eyebrow'] ?? '', $settings),
+            'title_html' => SiteVariables::renderText($slide['title'] ?? '', $settings),
+            'subtitle_html' => SiteVariables::renderText($slide['subtitle'] ?? '', $settings),
+            'primary_label_html' => SiteVariables::renderText($slide['primary_label'] ?? '', $settings),
+            'secondary_label_html' => SiteVariables::renderText($slide['secondary_label'] ?? '', $settings),
         ];
     }
 
@@ -107,7 +122,7 @@ class HomeController extends Controller
         $blocks = $content?->content_blocks;
 
         if (blank($blocks)) {
-            $blocks = $this->defaultHomepageBlocks($defaults);
+            $blocks = $this->defaultHomepageBlocks($defaults, $settings);
         }
 
         $blocks = collect($blocks)
@@ -149,17 +164,17 @@ class HomeController extends Controller
         }
     }
 
-    private function defaultHomepageBlocks(array $defaults): array
+    private function defaultHomepageBlocks(array $defaults, ?SiteSetting $settings): array
     {
         $nextSteps = $defaults['next_steps'] ?? [];
         $feature = $this->feature($defaults['feature'], null);
 
         return [
             [
-                'type' => 'info_strip',
-                'data' => [
-                    'spacing' => 'bottom',
-                    'items' => $this->defaultInfoStripItems($defaults['service_details'] ?? []),
+                    'type' => 'info_strip',
+                    'data' => [
+                        'spacing' => 'bottom',
+                        'items' => $this->defaultInfoStripItems($defaults['service_details'] ?? [], $settings),
                 ],
             ],
             [
@@ -208,18 +223,17 @@ class HomeController extends Controller
         ];
     }
 
-    private function defaultInfoStripItems(array $serviceDetails): array
+    private function defaultInfoStripItems(array $serviceDetails, ?SiteSetting $settings): array
     {
         return collect($serviceDetails)
-            ->map(function (array $detail, int $index): array {
+            ->map(function (array $detail, int $index) use ($settings): array {
                 return [
                     'label' => $detail['label'] ?? null,
-                    'source' => match ($index) {
-                        0 => 'sunday_service_times',
-                        1 => 'address',
-                        default => 'custom',
+                    'value' => match ($index) {
+                        0 => SiteVariables::variableValue('service-times', $settings) !== null ? '[[service-times]]' : ($detail['value'] ?? null),
+                        1 => SiteVariables::variableValue('address', $settings) !== null ? '[[address]]' : ($detail['value'] ?? null),
+                        default => $detail['value'] ?? null,
                     },
-                    'value' => $detail['value'] ?? null,
                 ];
             })
             ->all();

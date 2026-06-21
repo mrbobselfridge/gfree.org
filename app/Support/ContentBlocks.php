@@ -604,15 +604,15 @@ class ContentBlocks
                 $value = $item['value'] ?? null;
 
                 if ($source === 'sunday_service_times') {
-                    $value = $settings?->sunday_service_times ?: $value;
-                }
-
-                if ($source === 'office_hours') {
-                    $value = $settings?->office_hours ?: $value;
+                    $value = SiteVariables::variableValue('service-times', $settings) !== null
+                        ? '[[service-times]]'
+                        : $value;
                 }
 
                 if ($source === 'address') {
-                    $value = $settings?->address ?: $value;
+                    $value = SiteVariables::variableValue('address', $settings) !== null
+                        ? '[[address]]'
+                        : $value;
                 }
 
                 return [

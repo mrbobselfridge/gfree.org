@@ -24,8 +24,18 @@ class DatabaseSeeder extends Seeder
             'church_name' => 'TwyxtCo Church',
         ], [
             'tagline' => 'Somewhere you can belong',
-            'sunday_service_times' => '9:15 & 11 AM',
-            'address' => '305 Keystone Hill Road',
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '305 Keystone Hill Road',
+                ],
+                [
+                    'name' => 'Service Times',
+                    'variable' => 'service-times',
+                    'value' => '9:15 & 11 AM',
+                ],
+            ],
             'email' => 'office@twyxtco.org',
             'design_background_colors' => SiteDesignPalette::defaultBackgroundColors(),
         ]);

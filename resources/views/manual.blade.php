@@ -778,8 +778,8 @@
                     </tr>
                     <tr>
                         <td>Info Strip</td>
-                        <td>Service times, address, office hours, or short facts.</td>
-                        <td>Can pull values from Site Settings or use custom values.</td>
+                        <td>Service times, address, links, or short facts.</td>
+                        <td>Use custom values directly. Site Variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Value field.</td>
                     </tr>
                     <tr>
                         <td>Embed</td>
@@ -940,7 +940,8 @@
             <ul>
                 <li>Site name.</li>
                 <li>Default page header image used on pages that show a header but do not have their own Header Image selected.</li>
-                <li>Address, email, phone, office hours, and Sunday service times.</li>
+                <li>Email, phone, and reusable Site Variables for sitewide text such as address and service times.</li>
+                <li>Site Variables use a pretty name, a lowercase variable key, and an HTML-capable value. Type them in content as <code>[[variable-name]]</code>.</li>
                 <li>Site Design elements, including managed background colors for content blocks.</li>
                 <li>Dashboard Notes shown to users and admins on the admin dashboard.</li>
                 <li>Social and additional footer links, including optional custom link icons.</li>

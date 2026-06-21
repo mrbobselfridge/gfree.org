@@ -17,7 +17,7 @@
             </div>
 
             @if ($channelUrl)
-                <a href="{{ $channelUrl }}" class="sermon-index__channel-link" target="_blank" rel="noopener noreferrer">{{ $linkLabel }}</a>
+                <a href="{{ $channelUrl }}" class="sermon-index__channel-link" target="_blank" rel="noopener noreferrer">{!! \App\Support\SiteVariables::renderText($linkLabel, $settings ?? null) !!}</a>
             @endif
         </div>
 
@@ -35,15 +35,15 @@
 
                         <div class="sermon-card__content">
                             <h2>
-                                <a href="{{ $video['url'] }}">{{ $video['title'] }}</a>
+                                <a href="{{ $video['url'] }}">{!! \App\Support\SiteVariables::renderText($video['title'], $settings ?? null) !!}</a>
                             </h2>
 
                             @if ($video['published_label'])
-                                <p>{{ $video['published_label'] }}</p>
+                                <p>{!! \App\Support\SiteVariables::renderText($video['published_label'], $settings ?? null) !!}</p>
                             @endif
 
                             @if ($video['description'])
-                                <div>{{ $video['description'] }}</div>
+                                <div>{!! \App\Support\SiteVariables::renderText($video['description'], $settings ?? null) !!}</div>
                             @endif
                         </div>
                     </article>
@@ -52,7 +52,7 @@
         @elseif ($channelUrl)
             <div class="page-rich-text">
                 <p>Videos are currently available on YouTube.</p>
-                <p><a href="{{ $channelUrl }}" target="_blank" rel="noopener noreferrer">{{ $linkLabel }}</a></p>
+                <p><a href="{{ $channelUrl }}" target="_blank" rel="noopener noreferrer">{!! \App\Support\SiteVariables::renderText($linkLabel, $settings ?? null) !!}</a></p>
             </div>
         @endif
     </div>

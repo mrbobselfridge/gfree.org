@@ -9,8 +9,10 @@ use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\HomepageContent as HomepageContentModel;
+use App\Models\SiteSetting;
 use App\Models\WorkflowNotificationRule;
 use App\Support\CodeBlockAccess;
+use App\Support\SiteVariables;
 use App\Support\WorkflowNotificationService;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -228,6 +230,7 @@ class HomepageContent extends Page
     {
         $defaults = config('twyxtco.homepage');
         $featureUrl = $defaults['feature']['url'] ?? null;
+        $settings = SiteSetting::query()->first();
 
         return [
             'seo_title' => $record?->seo_title,
@@ -243,12 +246,11 @@ class HomepageContent extends Page
                         'items' => collect($defaults['service_details'] ?? [])
                             ->map(fn (array $detail, int $index): array => [
                                 'label' => $detail['label'] ?? null,
-                                'source' => match ($index) {
-                                    0 => 'sunday_service_times',
-                                    1 => 'address',
-                                    default => 'custom',
+                                'value' => match ($index) {
+                                    0 => SiteVariables::variableValue('service-times', $settings) !== null ? '[[service-times]]' : ($detail['value'] ?? null),
+                                    1 => SiteVariables::variableValue('address', $settings) !== null ? '[[address]]' : ($detail['value'] ?? null),
+                                    default => $detail['value'] ?? null,
                                 },
-                                'value' => $detail['value'] ?? null,
                             ])
                             ->all(),
                     ],

@@ -47,13 +47,13 @@
                 <div class="page-hero__content">
                     <div class="page-hero__text">
                         @if ($page->hero_label)
-                            <p class="concept-eyebrow">{{ $page->hero_label }}</p>
+                            <p class="concept-eyebrow">{!! \App\Support\SiteVariables::renderText($page->hero_label, $settings) !!}</p>
                         @endif
 
-                        <h1>{{ $page->title }}</h1>
+                        <h1>{!! \App\Support\SiteVariables::renderText($page->title, $settings) !!}</h1>
 
                         @if ($page->intro)
-                            <p>{{ $page->intro }}</p>
+                            <p>{!! \App\Support\SiteVariables::renderText($page->intro, $settings) !!}</p>
                         @endif
                     </div>
 
@@ -64,7 +64,7 @@
                                     {!! \App\Support\RichContent::render($pageMessage) !!}
                                 @else
                                     @foreach (preg_split('/\R{2,}/', $pageMessage) as $paragraph)
-                                        <p>{!! nl2br(e($paragraph)) !!}</p>
+                                        <p>{!! \App\Support\SiteVariables::renderTextWithLineBreaks($paragraph, $settings) !!}</p>
                                     @endforeach
                                 @endif
                             </div>
@@ -78,7 +78,7 @@
             <nav class="page-context-nav" aria-label="Child page navigation">
                 @if (filled($childPageNavigation['parent_url'] ?? null))
                     <a class="page-context-nav__more" href="{{ $childPageNavigation['parent_url'] }}">
-                        {{ $childPageNavigation['parent_label'] ?? 'View parent page' }}
+                        {!! \App\Support\SiteVariables::renderText($childPageNavigation['parent_label'] ?? 'View parent page', $settings) !!}
                     </a>
                 @endif
             </nav>
@@ -90,7 +90,7 @@
             <section class="page-content">
                 @if ($page->body)
                 @foreach (preg_split('/\R{2,}/', trim($page->body)) as $paragraph)
-                    <p>{!! nl2br(e($paragraph)) !!}</p>
+                    <p>{!! \App\Support\SiteVariables::renderTextWithLineBreaks($paragraph, $settings) !!}</p>
                 @endforeach
                 @else
                     <p>This page is ready for content.</p>

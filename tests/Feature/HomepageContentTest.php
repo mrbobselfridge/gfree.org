@@ -298,13 +298,22 @@ class HomepageContentTest extends TestCase
             ->assertDontSee('href="#"', false);
     }
 
-    public function test_homepage_info_strip_can_pull_values_from_site_settings(): void
+    public function test_homepage_info_strip_can_render_site_variables_in_values(): void
     {
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
-            'sunday_service_times' => '<p>8:00, 9:15, &amp; <strong>11:00</strong></p>',
-            'office_hours' => '<p>Mon-Thu <strong>9-4</strong></p>',
-            'address' => '<p>TwyxtCo Church 305 Keystone Hill Road <strong>Philipsburg</strong>, PA 16866</p>',
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>TwyxtCo 305 Keystone Hill Road <strong>Philipsburg</strong>, PA 16866</p>',
+                ],
+                [
+                    'name' => 'Service Times',
+                    'variable' => 'service-times',
+                    'value' => '<p>8:00, 9:15, &amp; <strong>11:00</strong></p>',
+                ],
+            ],
         ]);
 
         HomepageContent::query()->create([
@@ -313,10 +322,9 @@ class HomepageContentTest extends TestCase
                     'type' => 'info_strip',
                     'data' => [
                         'items' => [
-                            ['label' => 'Sunday', 'source' => 'sunday_service_times', 'value' => 'Fallback Times'],
-                            ['label' => 'Office', 'source' => 'office_hours', 'value' => 'Fallback Office'],
-                            ['label' => 'Visit', 'source' => 'address', 'value' => 'Fallback Address'],
-                            ['label' => 'Next Step', 'source' => 'custom', 'value' => '<p>Connect Card &amp; <strong>Prayer</strong></p>'],
+                            ['label' => 'Sunday', 'value' => '[[service-times]]'],
+                            ['label' => 'Visit', 'value' => '[[address]]'],
+                            ['label' => 'Next Step', 'value' => '<p>Connect Card &amp; <strong>Prayer</strong></p>'],
                         ],
                     ],
                 ],
@@ -326,15 +334,13 @@ class HomepageContentTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('concept-service-strip', false)
-            ->assertSee('--info-strip-count: 4', false)
+            ->assertSee('--info-strip-count: 3', false)
             ->assertSee('<strong>11:00</strong>', false)
-            ->assertSee('<strong>9-4</strong>', false)
             ->assertSee('<strong>Philipsburg</strong>', false)
             ->assertSee('<strong>Prayer</strong>', false)
             ->assertDontSee('&lt;strong&gt;11:00&lt;/strong&gt;', false)
-            ->assertDontSee('Fallback Times')
-            ->assertDontSee('Fallback Office')
-            ->assertDontSee('Fallback Address');
+            ->assertDontSee('[[service-times]]')
+            ->assertDontSee('[[address]]');
     }
 
     public function test_homepage_info_strip_is_hidden_when_no_items_have_content(): void

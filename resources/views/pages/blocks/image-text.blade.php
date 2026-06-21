@@ -46,11 +46,11 @@
         @if ($hasContent)
         <div class="page-image-text__content">
             @if (filled($data['eyebrow'] ?? null))
-                <p class="page-block__eyebrow">{{ $data['eyebrow'] }}</p>
+                <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
             @endif
 
             @if (filled($data['heading'] ?? null))
-                <h2>{{ $data['heading'] }}</h2>
+                <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
             @endif
 
             @if (filled($data['body'] ?? null))
@@ -60,7 +60,7 @@
             @endif
 
             @if (filled($data['button_label'] ?? null) && filled($data['button_url'] ?? null))
-                <a class="page-block__button" href="{{ $data['button_url'] }}"{!! \App\Support\LinkAttributes::externalAttributes($data['button_url']) !!}>{{ $data['button_label'] }}</a>
+                <a class="page-block__button" href="{{ $data['button_url'] }}"{!! \App\Support\LinkAttributes::externalAttributes($data['button_url']) !!}>{!! \App\Support\SiteVariables::renderText($data['button_label'], $settings ?? null) !!}</a>
             @endif
         </div>
         @endif

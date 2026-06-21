@@ -23,6 +23,20 @@ const setLinkTarget = (link, url) => {
     link.removeAttribute('rel');
 };
 
+const setRenderedContent = (element, html, text) => {
+    if (! element) {
+        return;
+    }
+
+    if (typeof html === 'string') {
+        element.innerHTML = html;
+
+        return;
+    }
+
+    element.textContent = text || '';
+};
+
 document.querySelectorAll('[data-site-header]').forEach((header) => {
     const navToggle = header.querySelector('[data-nav-toggle]');
     const navMenu = header.querySelector('[data-nav-menu]');
@@ -93,11 +107,11 @@ document.querySelectorAll('[data-site-header]').forEach((header) => {
 
 const applyHeroSlide = (carousel, slide) => {
     carousel.querySelector('[data-hero-image]').style.backgroundImage = `url("${slide.image_url}")`;
-    carousel.querySelector('[data-hero-eyebrow]').textContent = slide.eyebrow;
-    carousel.querySelector('[data-hero-title]').textContent = slide.title;
+    setRenderedContent(carousel.querySelector('[data-hero-eyebrow]'), slide.eyebrow_html, slide.eyebrow);
+    setRenderedContent(carousel.querySelector('[data-hero-title]'), slide.title_html, slide.title);
 
     const subtitle = carousel.querySelector('[data-hero-subtitle]');
-    subtitle.textContent = slide.subtitle || '';
+    setRenderedContent(subtitle, slide.subtitle_html, slide.subtitle);
     subtitle.hidden = ! slide.subtitle;
 
     const primary = carousel.querySelector('[data-hero-primary]');
@@ -105,12 +119,12 @@ const applyHeroSlide = (carousel, slide) => {
     const primaryLabel = slide.primary_label || '';
     const secondaryLabel = slide.secondary_label || '';
 
-    primary.textContent = primaryLabel;
+    setRenderedContent(primary, slide.primary_label_html, primaryLabel);
     primary.href = slide.primary_url;
     setLinkTarget(primary, slide.primary_url);
     primary.hidden = ! primaryLabel;
 
-    secondary.textContent = secondaryLabel;
+    setRenderedContent(secondary, slide.secondary_label_html, secondaryLabel);
     secondary.href = slide.secondary_url;
     setLinkTarget(secondary, slide.secondary_url);
     secondary.hidden = ! secondaryLabel;

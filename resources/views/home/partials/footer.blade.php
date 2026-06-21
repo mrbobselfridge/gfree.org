@@ -1,4 +1,6 @@
 <footer class="concept-footer site-footer">
+    @php($footerAddress = $settings?->siteVariableValue('address'))
+
     <div class="site-footer__brand">
         <a href="{{ url('/') }}" aria-label="{{ $settings?->church_name ?? 'TwyxtCo Church' }} home">
             <img class="concept-logo-img site-footer__logo" src="{{ $settings?->logoUrl() ?? asset('images/twyxtco-logo.png') }}" alt="{{ $settings?->church_name ?? 'TwyxtCo Church' }}">
@@ -6,10 +8,10 @@
     </div>
 
     <div class="site-footer__block site-footer__address">
-        @if (filled($settings?->address))
+        @if (\App\Support\RichContent::hasRenderableContent($footerAddress))
             <span class="site-footer__label">Address</span>
             <div class="site-footer__value">
-                {!! \App\Support\RichContent::render($settings->address) !!}
+                {!! \App\Support\RichContent::render($footerAddress) !!}
             </div>
         @endif
     </div>
@@ -103,7 +105,7 @@
                         <span aria-hidden="true">{{ strtoupper(substr($link['label'], 0, 1)) }}</span>
                     @endswitch
                 @endif
-                <span class="site-footer__social-label">{{ $link['label'] }}</span>
+                <span class="site-footer__social-label">{!! \App\Support\SiteVariables::renderText($link['label'], $settings ?? null) !!}</span>
             </a>
         @endforeach
     </div>

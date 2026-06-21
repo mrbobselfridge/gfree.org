@@ -48,13 +48,15 @@ class RichContent
         $content = (string) $content;
 
         if (! str_contains($content, 'data-type="customBlock"')) {
-            return $content;
+            return SiteVariables::renderHtml($content);
         }
 
-        return RichContentRenderer::make($content)
+        $html = RichContentRenderer::make($content)
             ->customBlocks([
                 EmbedBlock::class,
             ])
             ->toUnsafeHtml();
+
+        return SiteVariables::renderHtml($html);
     }
 }

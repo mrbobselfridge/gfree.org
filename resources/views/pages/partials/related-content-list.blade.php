@@ -50,19 +50,19 @@
 
             <div class="concept-updates__bullet-body">
                 @if ($url)
-                    <a class="concept-updates__bullet-title" href="{{ $url }}" aria-label="{{ $isFile ? 'Download ' : 'Open ' }}{{ $title }}"{!! \App\Support\LinkAttributes::externalAttributes($url) !!}>{{ $title }}</a>
+                    <a class="concept-updates__bullet-title" href="{{ $url }}" aria-label="{{ $isFile ? 'Download ' : 'Open ' }}{{ $title }}"{!! \App\Support\LinkAttributes::externalAttributes($url) !!}>{!! \App\Support\SiteVariables::renderText($title, $settings ?? null) !!}</a>
                 @else
-                    <strong class="concept-updates__bullet-title">{{ $title }}</strong>
+                    <strong class="concept-updates__bullet-title">{!! \App\Support\SiteVariables::renderText($title, $settings ?? null) !!}</strong>
                 @endif
 
                 @if (filled($summary))
-                    <span class="concept-updates__bullet-summary">{{ $summary }}</span>
+                    <span class="concept-updates__bullet-summary">{!! \App\Support\SiteVariables::renderText($summary, $settings ?? null) !!}</span>
                 @endif
 
                 @if (filled(data_get($item, 'type')) || filled($message))
                     <div class="concept-updates__bullet-meta">
                         @if (filled(data_get($item, 'type')))
-                            <span class="concept-updates__bullet-label">{{ data_get($item, 'type') }}</span>
+                            <span class="concept-updates__bullet-label">{!! \App\Support\SiteVariables::renderText(data_get($item, 'type'), $settings ?? null) !!}</span>
                         @endif
 
                         @if (filled(data_get($item, 'type')) && filled($message))
@@ -70,7 +70,7 @@
                         @endif
 
                         @if (filled($message))
-                            <span class="concept-updates__bullet-message">{{ $message }}</span>
+                            <span class="concept-updates__bullet-message">{!! \App\Support\SiteVariables::renderText($message, $settings ?? null) !!}</span>
                         @endif
                     </div>
                 @endif
