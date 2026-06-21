@@ -28,6 +28,14 @@ class HomepageBannerForm
                         'Internal banner title used in the admin list and to identify this homepage slide.'
                     )
                     ->hintColor('gray'),
+                TextInput::make('eyebrow')
+                    ->label('Small label')
+                    ->maxLength(255)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional short text shown above the main homepage banner message.'
+                    )
+                    ->hintColor('gray'),
                 ToggleButtons::make('is_published')
                     ->label('Banner is live')
                     ->boolean()
@@ -39,37 +47,28 @@ class HomepageBannerForm
                     )
                     ->hintColor('gray')
                     ->required(),
-                TextInput::make('eyebrow')
-                    ->label('Small label')
-                    ->maxLength(255)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional short text shown above the main homepage banner message.'
-                    )
-                    ->hintColor('gray'),
+                ...ImageUpload::make(
+                    'image_path',
+                    'homepage-banners',
+                    'Banner image',
+                    fn (ViewField $upload): ViewField => $upload
+                        ->hintIcon(
+                            Heroicon::OutlinedInformationCircle,
+                            'Primary homepage banner image. Use a wide, high-quality image that still works when cropped on mobile.'
+                        )
+                    ->columnSpan(1)
+                        ->hintColor('gray'),
+                ),
+
                 Textarea::make('subtitle')
                     ->label('Banner message')
-                    ->rows(1)
+                    ->rows(3)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Main supporting banner message. Keep this short so it fits well on mobile.'
                     )
-                    ->hintColor('gray'),
-                DateTimePicker::make('starts_at')
-                    ->label('Publish at')
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional. Leave empty to allow the banner to appear immediately once Banner is live is enabled.'
-                    )
-                    ->hintColor('gray'),
-                DateTimePicker::make('ends_at')
-                    ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('starts_at'))
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional. Use when a seasonal or event banner should stop appearing automatically.'
-                    )
-                    ->hintColor('gray'),
+                    ->hintColor('gray')
+                    ->columnSpan(2),
                 TextInput::make('button_label')
                     ->label('Primary button text')
                     ->maxLength(255)
@@ -85,7 +84,8 @@ class HomepageBannerForm
                         Heroicon::OutlinedInformationCircle,
                         'Optional destination for the main button. Use a local path like /new-here or a full https:// URL.'
                     )
-                    ->hintColor('gray'),
+                    ->hintColor('gray')
+                    ->columnSpan(2),
                 TextInput::make('secondary_button_label')
                     ->label('Secondary button text')
                     ->maxLength(255)
@@ -101,18 +101,23 @@ class HomepageBannerForm
                         Heroicon::OutlinedInformationCircle,
                         'Optional destination for the second button. Use a local path or a full https:// URL.'
                     )
+                    ->hintColor('gray')
+                    ->columnSpan(2),
+                DateTimePicker::make('starts_at')
+                    ->label('Publish at')
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional. Leave empty to allow the banner to appear immediately once Banner is live is enabled.'
+                    )
                     ->hintColor('gray'),
-                ...ImageUpload::make(
-                    'image_path',
-                    'homepage-banners',
-                    'Banner image',
-                    fn (ViewField $upload): ViewField => $upload
-                        ->hintIcon(
-                            Heroicon::OutlinedInformationCircle,
-                            'Primary homepage banner image. Use a wide, high-quality image that still works when cropped on mobile.'
-                        )
-                        ->hintColor('gray'),
-                ),
+                DateTimePicker::make('ends_at')
+                    ->label('Expires at')
+                    ->afterOrEqual(fn (Get $get): ?string => $get('starts_at'))
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional. Use when a seasonal or event banner should stop appearing automatically.'
+                    )
+                    ->hintColor('gray'),
 
             ]);
     }
