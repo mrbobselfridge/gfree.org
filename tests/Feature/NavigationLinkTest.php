@@ -3,11 +3,18 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
+use App\Filament\Admin\Resources\NavigationLinks\Pages\CreateNavigationLink;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\ListNavigationLinks;
+use App\Models\FileDocument;
+use App\Models\FileDocumentVersion;
+use App\Models\MediaImageMetadata;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\User;
+use App\Support\NavigationDestinationSuggestions;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -276,6 +283,61 @@ class NavigationLinkTest extends TestCase
             ->assertSee('No Page record uses /announcements');
     }
 
+    public function test_navigation_destination_suggestions_include_live_pages_files_and_media(): void
+    {
+        Storage::fake('public');
+
+        Page::query()->create([
+            'title' => 'New Here',
+            'slug' => 'new-here',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'title' => 'Draft Page',
+            'slug' => 'draft-page',
+            'is_published' => false,
+        ]);
+
+        $this->documentWithVersion('Bulletin Guide', 'bulletin-guide', FileDocument::VISIBILITY_PUBLIC);
+        $this->documentWithVersion('Internal Guide', 'internal-guide', FileDocument::VISIBILITY_PRIVATE);
+
+        Storage::disk('public')->put('media-library/worship-banner.jpg', 'image');
+        MediaImageMetadata::query()->create([
+            'path' => 'media-library/worship-banner.jpg',
+            'title' => 'Worship Banner',
+            'tags' => ['Worship'],
+        ]);
+
+        $allSuggestions = NavigationDestinationSuggestions::optionValues();
+
+        $this->assertContains('/new-here', $allSuggestions);
+        $this->assertContains('/files/bulletin-guide', $allSuggestions);
+        $this->assertContains('/storage/media-library/worship-banner.jpg', $allSuggestions);
+        $this->assertNotContains('/draft-page', $allSuggestions);
+        $this->assertNotContains('/files/internal-guide', $allSuggestions);
+
+        $this->assertSame(['/storage/media-library/worship-banner.jpg'], NavigationDestinationSuggestions::optionValues('/worship'));
+        $this->assertSame(['/files/bulletin-guide'], NavigationDestinationSuggestions::optionValues('/bulletin'));
+    }
+
+    public function test_navigation_destination_field_uses_destination_suggestions(): void
+    {
+        Page::query()->create([
+            'title' => 'New Here',
+            'slug' => 'new-here',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreateNavigationLink::class)
+            ->assertFormFieldExists('url', fn (TextInput $field): bool => in_array(
+                '/new-here',
+                $field->getDatalistOptions() ?? [],
+                true,
+            ));
+    }
+
     public function test_header_navigation_does_not_render_default_give_link(): void
     {
         $this->get('/')
@@ -511,5 +573,30 @@ class NavigationLinkTest extends TestCase
         $this->assertStringStartsWith('Resources (copy @ ', $copy->label);
         $this->assertSame(['Kids', 'Students'], $copy->children()->orderBy('sort_order')->pluck('label')->all());
         $this->assertSame(['/resources/kids', '/resources/students'], $copy->children()->orderBy('sort_order')->pluck('url')->all());
+    }
+
+    private function documentWithVersion(string $title, string $fileName, string $visibility): FileDocument
+    {
+        $document = FileDocument::query()->create([
+            'title' => $title,
+            'file_name' => $fileName,
+            'category' => 'Other',
+            'is_published' => true,
+            'visibility' => $visibility,
+        ]);
+
+        $version = FileDocumentVersion::query()->create([
+            'file_document_id' => $document->getKey(),
+            'disk' => 'public',
+            'path' => "file-library/documents/{$fileName}.pdf",
+            'original_name' => "{$fileName}.pdf",
+            'extension' => 'pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 1000,
+        ]);
+
+        $document->update(['current_version_id' => $version->getKey()]);
+
+        return $document->refresh();
     }
 }

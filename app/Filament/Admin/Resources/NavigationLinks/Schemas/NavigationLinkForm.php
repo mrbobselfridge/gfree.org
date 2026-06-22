@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\NavigationLinks\Schemas;
 
+use App\Support\NavigationDestinationSuggestions;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -67,9 +68,10 @@ class NavigationLinkForm
                     ->label('Destination')
                     ->required()
                     ->maxLength(255)
+                    ->datalist(fn (): array => NavigationDestinationSuggestions::optionValues())
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Use a local path like /new-here, a file link like /files/bulletin-guide, or a full https:// URL.'
+                        'Use a local path like /new-here, choose a suggested page, file, or media path after typing /, or enter a full https:// URL.'
                     )
                     ->hintColor('gray'),
                 TextInput::make('sort_order')

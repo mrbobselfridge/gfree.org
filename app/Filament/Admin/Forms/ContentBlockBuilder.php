@@ -769,7 +769,14 @@ class ContentBlockBuilder
                         ->minValue(5)
                         ->maxValue(180)
                         ->default(ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS)
-                        ->required()
+                        ->formatStateUsing(fn (mixed $state): int => is_numeric($state)
+                            ? (int) $state
+                            : ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS)
+                        ->dehydrateStateUsing(fn (mixed $state): int => is_numeric($state)
+                            ? max(1, (int) $state)
+                            : ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS)
+                        ->nullable()
+                        ->dehydrated()
                         ->disabled(fn (Get $get): bool => !($get('layout') === ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_CAROUSEL_AUTO))
                         ->columnSpan(1), 'Seconds to wait before moving to the next card when Layout is Card Carousel Auto.'),
 

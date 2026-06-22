@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Models\Page;
 use App\Models\User;
+use App\Support\ContentBlocks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -52,6 +53,57 @@ class ContentBlockStarterTest extends TestCase
             ])
             ->set('data.content_blocks.0.data.youtube_channel_url', 'https://www.youtube.com/channel/UCPageBlockChannelId/videos')
             ->assertSet('data.content_blocks.0.data.youtube_feed_url', 'https://www.youtube.com/feeds/videos.xml?channel_id=UCPageBlockChannelId');
+    }
+
+    public function test_related_content_auto_rotate_delay_defaults_when_empty_on_non_auto_layout(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Child Resource',
+            'slug' => 'resources/child-resource',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.title', 'Links')
+            ->set('data.slug', 'links')
+            ->set('data.content_blocks', [
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'enable_search' => true,
+                        'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
+                        'is_visible' => true,
+                        'background' => 'white',
+                        'content_width' => 'wide',
+                        'layout' => ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID,
+                        'associated_parent_page_id' => $parent->getKey(),
+                        'item_limit' => ContentBlocks::RELATED_CONTENT_DEFAULT_LIMIT,
+                        'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
+                        'content_type' => ContentBlocks::RELATED_CONTENT_TYPE_PAGES,
+                        'carousel_auto_delay_seconds' => null,
+                    ],
+                ],
+            ])
+            ->call('create')
+            ->assertHasNoErrors();
+
+        $block = Page::query()
+            ->where('slug', 'links')
+            ->firstOrFail()
+            ->content_blocks[0]['data'];
+
+        $this->assertSame(
+            ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS,
+            $block['carousel_auto_delay_seconds'] ?? null,
+        );
     }
 
     public function test_page_content_block_name_is_editor_only_and_used_in_builder_label(): void
