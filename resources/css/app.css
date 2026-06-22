@@ -2555,42 +2555,6 @@
     line-height: 1.55;
 }
 
-.concept-updates__card-message {
-    margin-top: auto;
-    padding-top: 18px;
-    color: var(--concept-updates-card-fg, var(--twyxtco-ink));
-    font-size: 0.95rem;
-    font-weight: 650;
-    line-height: 1.5;
-    border-top: 1px solid var(--twyxtco-line);
-}
-
-.concept-updates__card-message> :first-child {
-    margin-top: 0;
-}
-
-.concept-updates__card-message> :last-child {
-    margin-bottom: 0;
-}
-
-.concept-updates__card-message ul,
-.concept-updates__card-message ol {
-    padding-left: 1.2rem;
-}
-
-.concept-updates__card-message ul {
-    list-style: disc;
-}
-
-.concept-updates__card-message ol {
-    list-style: decimal;
-}
-
-.concept-updates__card-message a {
-    color: var(--concept-updates-link, var(--twyxtco-teal-dark));
-    font-weight: 800;
-}
-
 .concept-updates__more-button {
     align-self: flex-end;
     margin-top: auto;

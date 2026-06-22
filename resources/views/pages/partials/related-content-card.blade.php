@@ -45,20 +45,6 @@
             <span>{!! \App\Support\SiteVariables::renderText(data_get($item, 'summary'), $settings ?? null) !!}</span>
         @endif
 
-        @php($message = \App\Support\RichContent::nullable(data_get($item, 'message')))
-
-        @if (! $isFile && filled($message))
-            <div class="concept-updates__card-message">
-                @if ($message !== strip_tags($message))
-                    {!! \App\Support\RichContent::render($message) !!}
-                @else
-                    @foreach (preg_split('/\R{2,}/', $message) as $paragraph)
-                        <p>{!! \App\Support\SiteVariables::renderTextWithLineBreaks($paragraph, $settings ?? null) !!}</p>
-                    @endforeach
-                @endif
-            </div>
-        @endif
-
         @if ($hasMoreContent)
             <button class="concept-updates__more-button" type="button" data-related-modal-open aria-controls="{{ $modalId }}">More</button>
         @endif

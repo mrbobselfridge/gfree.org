@@ -1752,6 +1752,7 @@ class PublicPageTest extends TestCase
     public function test_related_content_without_layout_defaults_to_card_grid(): void
     {
         $parent = $this->createRelatedContentParent([
+            'enable_search' => false,
             'item_limit' => 1,
             'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_TITLE_ASC,
         ]);
@@ -1760,6 +1761,7 @@ class PublicPageTest extends TestCase
             'parent_page_id' => $parent->getKey(),
             'title' => 'Alpha Child',
             'slug' => 'resources/alpha-child',
+            'message' => 'Alpha Child message.',
             'is_published' => true,
         ]);
 
@@ -1775,7 +1777,9 @@ class PublicPageTest extends TestCase
             ->assertSee('concept-updates--layout-card_grid', false)
             ->assertSee('class="concept-updates__grid"', false)
             ->assertSee('data-related-load-more', false)
+            ->assertDontSee('class="concept-updates__card-message"', false)
             ->assertSee('Alpha Child')
+            ->assertDontSee('Alpha Child message.')
             ->assertSee('Beta Child');
     }
 
