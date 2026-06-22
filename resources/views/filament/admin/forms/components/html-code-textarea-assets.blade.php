@@ -13,10 +13,7 @@
 
     .twyxtco-code-textarea-highlight,
     textarea.twyxtco-code-textarea-input {
-        position: absolute;
-        inset: 0;
         width: 100%;
-        height: 100%;
         margin: 0;
         overflow: auto;
         white-space: pre-wrap;
@@ -28,13 +25,17 @@
     }
 
     .twyxtco-code-textarea-highlight {
+        position: absolute;
+        inset: 0;
         pointer-events: none;
         padding: 0.625rem 0.75rem;
         color: rgb(55 65 81);
     }
 
     textarea.twyxtco-code-textarea-input {
+        position: relative;
         z-index: 1;
+        display: block;
         background: transparent !important;
         color: transparent !important;
         caret-color: rgb(17 24 39);
