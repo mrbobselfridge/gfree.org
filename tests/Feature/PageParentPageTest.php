@@ -84,7 +84,13 @@ class PageParentPageTest extends TestCase
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreatePage::class)
-            ->assertFormFieldExists('message', fn (Textarea $field): bool => $field->getRows() === 6);
+            ->assertFormFieldExists('message', function (Textarea $field): bool {
+                $attributes = $field->getExtraInputAttributeBag()->getAttributes();
+
+                return $field->getRows() === 2
+                    && ($attributes['data-twyxtco-code-textarea'] ?? null) === 'true'
+                    && ($attributes['data-twyxtco-code-language'] ?? null) === 'html';
+            });
     }
 
     public function test_page_message_editor_saves_empty_rich_text_markup_as_null(): void

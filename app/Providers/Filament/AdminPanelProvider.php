@@ -1043,6 +1043,10 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): HtmlString => new HtmlString(view('filament.admin.forms.components.html-code-textarea-assets')->render()),
+            )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
                 function (): HtmlString {
                     $descriptions = Js::from(AdminNavigationHelp::descriptions());
                     $manualUrls = [];

@@ -372,14 +372,14 @@ class ContentBlockBuilder
                                     ->maxLength(255)
                                     ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                     ->columnSpan(1),
-                                self::hint(Textarea::make('html')
+                                self::hint(HtmlCodeTextarea::html(Textarea::make('html'))
                                     ->label('Card back HTML'), 'Trusted raw HTML shown on the back of the flip card.')
                                     ->rows(7)
                                     ->helperText('Trusted raw HTML shown on the back of the flip card.')
                                     ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
                                     ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
                                     ->columnSpanFull(),
-                                self::hint(Textarea::make('javascript')
+                                self::hint(HtmlCodeTextarea::javascript(Textarea::make('javascript'))
                                     ->label('JavaScript widget'), 'Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
                                     ->rows(4)
                                     ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
@@ -488,7 +488,7 @@ class ContentBlockBuilder
                             ->content(new HtmlString('&nbsp;'))
                             ->columnSpan(1),
 
-                        self::hint(Textarea::make('embed_code')
+                        self::hint(HtmlCodeTextarea::html(Textarea::make('embed_code'))
                             ->label('Embed code'), 'Paste trusted embed code, including script tags when the provider requires them.')
                             ->rows(3)
                             ->required()
@@ -537,7 +537,7 @@ class ContentBlockBuilder
                             ->hiddenLabel()
                             ->content(new HtmlString('&nbsp;'))
                             ->columnSpan(1),
-                        self::hint(Textarea::make('code')
+                        self::hint(HtmlCodeTextarea::mixed(Textarea::make('code'))
                             ->label('Custom code'), 'Trusted raw HTML, CSS, or JavaScript. It is rendered directly on the public page.')
                             ->rows(3)
                             ->required()

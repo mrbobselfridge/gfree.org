@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Pages\Schemas;
 
 use App\Filament\Admin\Forms\ContentBlockBuilder;
+use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
@@ -110,7 +111,7 @@ class PageForm
                     ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
                     ->hintColor('gray'),
 
-                Textarea::make('message')
+                HtmlCodeTextarea::html(Textarea::make('message'))
                     ->label('Message')
                     ->rows(2)
                     ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))

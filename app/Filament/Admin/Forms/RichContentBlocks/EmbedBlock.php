@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Forms\RichContentBlocks;
 
+use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor\RichContentCustomBlock;
 use Filament\Forms\Components\Textarea;
@@ -57,7 +58,7 @@ class EmbedBlock extends RichContentCustomBlock
                     ->label('Label')
                     ->helperText('Only used as the editor preview label.')
                     ->maxLength(120),
-                Textarea::make('embed_code')
+                HtmlCodeTextarea::html(Textarea::make('embed_code'))
                     ->label('Embed code')
                     ->required()
                     ->rows(8)

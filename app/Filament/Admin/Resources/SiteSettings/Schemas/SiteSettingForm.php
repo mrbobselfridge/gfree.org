@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
+use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Filament\Admin\Forms\ImageUpload;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\SiteSetting;
@@ -187,7 +188,7 @@ class SiteSettingForm
                                     ->label('Token')
                                     ->content(fn (Get $get): string => SiteVariables::tokenFor($get('variable') ?: $get('name')) ?? 'Add a variable name')
                                     ->columnSpan(1),
-                                Textarea::make('value')
+                                HtmlCodeTextarea::html(Textarea::make('value'))
                                     ->label('Value')
                                     ->rows(4)
                                     ->required()
@@ -315,7 +316,7 @@ class SiteSettingForm
                             )
                             ->hintColor('gray')
                             ->columnSpanFull(),
-                        Textarea::make('custom_css')
+                        HtmlCodeTextarea::css(Textarea::make('custom_css'))
                             ->label('Custom CSS')
                             ->rows(5)
                             ->visible(fn (): bool => CodeBlockAccess::canManage())
