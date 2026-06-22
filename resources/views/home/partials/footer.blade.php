@@ -29,7 +29,7 @@
 
     <div class="site-footer__block site-footer__social" aria-label="Social media links">
         @if ($socialLinks->isNotEmpty())
-            <span class="site-footer__label">Social & Links</span>
+            <span class="site-footer__label">Social Media & Links</span>
         @endif
         @foreach ($socialLinks as $link)
             @php($icon = $link['icon'] ?? str($link['label'])->lower()->slug()->toString())
