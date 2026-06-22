@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\HomepageBanners\Schemas;
 
+use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Filament\Admin\Forms\ImageUpload;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
@@ -60,7 +61,7 @@ class HomepageBannerForm
                         ->hintColor('gray'),
                 ),
 
-                Textarea::make('subtitle')
+                HtmlCodeTextarea::html(Textarea::make('subtitle'))
                     ->label('Banner message')
                     ->rows(3)
                     ->hintIcon(

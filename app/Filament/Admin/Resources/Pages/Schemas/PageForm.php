@@ -101,7 +101,7 @@ class PageForm
                     ->columnSpan(1),
 
 
-                Textarea::make('intro')
+                HtmlCodeTextarea::html(Textarea::make('intro'))
                     ->label('Intro text')
                     ->rows(2)
                     ->hintIcon(

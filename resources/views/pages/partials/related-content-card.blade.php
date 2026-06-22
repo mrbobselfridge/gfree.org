@@ -42,7 +42,7 @@
         </h3>
 
         @if (filled(data_get($item, 'summary')))
-            <span>{!! \App\Support\SiteVariables::renderText(data_get($item, 'summary'), $settings ?? null) !!}</span>
+            <div class="concept-updates__card-summary">{!! \App\Support\RichContent::renderTextarea(data_get($item, 'summary'), $settings ?? null) !!}</div>
         @endif
 
         @if ($hasMoreContent)

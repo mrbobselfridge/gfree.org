@@ -61,7 +61,7 @@
                         <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
+                            <div class="page-link-card__summary">{!! \App\Support\RichContent::renderTextarea($card['summary'], $settings ?? null) !!}</div>
                         @endif
                     </a>
                 @elseif ($type === \App\Support\LinkCard::TYPE_LINK_NEW && \App\Support\LinkCard::isSafeHref($url))
@@ -69,64 +69,66 @@
                         <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
+                            <div class="page-link-card__summary">{!! \App\Support\RichContent::renderTextarea($card['summary'], $settings ?? null) !!}</div>
                         @endif
                     </a>
                 @elseif ($type === \App\Support\LinkCard::TYPE_FLIP_HTML)
-                    <button
-                        type="button"
+                    <div
+                        role="button"
+                        tabindex="0"
                         id="{{ $flipId }}"
                         class="page-link-card page-link-card--flip"
                         aria-pressed="false"
                         data-card-flip
                     >
-                        <span class="page-link-card__flip-inner">
-                            <span class="page-link-card__face page-link-card__face--front">
+                        <div class="page-link-card__flip-inner">
+                            <div class="page-link-card__face page-link-card__face--front">
                                 <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                                 @if (filled($card['summary'] ?? null))
-                                    <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
+                                    <div class="page-link-card__summary">{!! \App\Support\RichContent::renderTextarea($card['summary'], $settings ?? null) !!}</div>
                                 @endif
-                            </span>
+                            </div>
 
-                            <span class="page-link-card__face page-link-card__face--back">
+                            <div class="page-link-card__face page-link-card__face--back">
                                 {!! \App\Support\SiteVariables::renderHtml($card['html'] ?? '', $settings ?? null) !!}
-                            </span>
-                        </span>
-                    </button>
+                            </div>
+                        </div>
+                    </div>
                 @elseif ($type === \App\Support\LinkCard::TYPE_FLIP_IMAGE && filled($imageUrl))
-                    <button
-                        type="button"
+                    <div
+                        role="button"
+                        tabindex="0"
                         id="{{ $flipId }}"
                         class="page-link-card page-link-card--flip"
                         aria-pressed="false"
                         data-card-flip
                     >
-                        <span class="page-link-card__flip-inner">
-                            <span class="page-link-card__face page-link-card__face--front">
+                        <div class="page-link-card__flip-inner">
+                            <div class="page-link-card__face page-link-card__face--front">
                                 <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                                 @if (filled($card['summary'] ?? null))
-                                    <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
+                                    <div class="page-link-card__summary">{!! \App\Support\RichContent::renderTextarea($card['summary'], $settings ?? null) !!}</div>
                                 @endif
-                            </span>
+                            </div>
 
-                            <span class="page-link-card__face page-link-card__face--back page-link-card__face--image">
+                            <div class="page-link-card__face page-link-card__face--back page-link-card__face--image">
                                 <img
                                     src="{{ $imageUrl }}"
                                     alt="{{ $card['image_alt'] ?? ($card['title'] ?? '') }}"
                                     class="page-link-card__flip-image page-link-card__flip-image--{{ $imageFit }}"
                                     style="object-position: {{ $imageFocus }}; transform: scale({{ $imageZoom / 100 }}); transform-origin: {{ $imageFocus }};"
                                 >
-                            </span>
-                        </span>
-                    </button>
+                            </div>
+                        </div>
+                    </div>
                 @elseif ($type === \App\Support\LinkCard::TYPE_JAVASCRIPT_WIDGET)
                     <div class="page-link-card page-link-card--widget">
                         <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
+                            <div class="page-link-card__summary">{!! \App\Support\RichContent::renderTextarea($card['summary'], $settings ?? null) !!}</div>
                         @endif
 
                         <div id="{{ $widgetId }}" class="page-link-card__widget"></div>
@@ -142,7 +144,7 @@
                         <h3>{!! \App\Support\SiteVariables::renderText($card['title'] ?? '', $settings ?? null) !!}</h3>
 
                         @if (filled($card['summary'] ?? null))
-                            <p>{!! \App\Support\SiteVariables::renderText($card['summary'], $settings ?? null) !!}</p>
+                            <div class="page-link-card__summary">{!! \App\Support\RichContent::renderTextarea($card['summary'], $settings ?? null) !!}</div>
                         @endif
                     </div>
                 @endif
@@ -162,6 +164,21 @@
 
             const isFlipped = card.classList.toggle('is-flipped');
             card.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+                return;
+            }
+
+            const card = event.target.closest('[data-card-flip]');
+
+            if (!card) {
+                return;
+            }
+
+            event.preventDefault();
+            card.click();
         });
     </script>
 @endonce

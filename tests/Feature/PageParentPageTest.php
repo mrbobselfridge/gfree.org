@@ -80,10 +80,17 @@ class PageParentPageTest extends TestCase
             ->assertSee('Expand all');
     }
 
-    public function test_page_message_uses_plain_textarea(): void
+    public function test_page_intro_and_message_use_html_code_textareas(): void
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreatePage::class)
+            ->assertFormFieldExists('intro', function (Textarea $field): bool {
+                $attributes = $field->getExtraInputAttributeBag()->getAttributes();
+
+                return $field->getRows() === 2
+                    && ($attributes['data-twyxtco-code-textarea'] ?? null) === 'true'
+                    && ($attributes['data-twyxtco-code-language'] ?? null) === 'html';
+            })
             ->assertFormFieldExists('message', function (Textarea $field): bool {
                 $attributes = $field->getExtraInputAttributeBag()->getAttributes();
 

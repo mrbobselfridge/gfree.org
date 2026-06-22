@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Models\Page;
 use App\Models\User;
 use App\Support\ContentBlocks;
+use Filament\Forms\Components\Textarea;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -104,6 +105,48 @@ class ContentBlockStarterTest extends TestCase
             ContentBlocks::RELATED_CONTENT_DEFAULT_AUTO_DELAY_SECONDS,
             $block['carousel_auto_delay_seconds'] ?? null,
         );
+    }
+
+    public function test_public_content_block_textareas_use_html_code_highlighting(): void
+    {
+        $isHtmlCodeTextarea = function (Textarea $field): bool {
+            $attributes = $field->getExtraInputAttributeBag()->getAttributes();
+
+            return ($attributes['data-twyxtco-code-textarea'] ?? null) === 'true'
+                && ($attributes['data-twyxtco-code-language'] ?? null) === 'html';
+        };
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreatePage::class)
+            ->set('data.content_blocks', [
+                [
+                    'type' => 'process_steps',
+                    'data' => [
+                        'steps' => [
+                            ['title' => 'Arrive', 'summary' => 'Meet us here.'],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'link_cards',
+                    'data' => [
+                        'cards' => [
+                            ['title' => 'Serve', 'summary' => 'Find a team.'],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'items' => [
+                            ['label' => 'When', 'value' => 'Sundays at 10:30 AM'],
+                        ],
+                    ],
+                ],
+            ])
+            ->assertFormFieldExists('content_blocks.0.data.steps.0.summary', $isHtmlCodeTextarea)
+            ->assertFormFieldExists('content_blocks.1.data.cards.0.summary', $isHtmlCodeTextarea)
+            ->assertFormFieldExists('content_blocks.2.data.items.0.value', $isHtmlCodeTextarea);
     }
 
     public function test_page_content_block_name_is_editor_only_and_used_in_builder_label(): void

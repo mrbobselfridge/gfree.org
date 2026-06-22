@@ -198,7 +198,7 @@ class ContentBlockBuilder
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
-                                self::hint(Textarea::make('summary')
+                                self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
                                     ->label('Step text'), 'One or two sentences explaining this step.')
                                     ->rows(2)
                                     ->required()
@@ -322,7 +322,7 @@ class ContentBlockBuilder
                                     ->required()
                                     ->live()
                                     ->columnSpan(1),
-                                self::hint(Textarea::make('summary')
+                                self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
                                     ->label('Card text'), 'Short supporting text for the card.')
                                     ->rows(2)
                                     ->columnSpanFull(),
@@ -448,7 +448,7 @@ class ContentBlockBuilder
                                     ->live(onBlur: true)
                                     ->maxLength(80)
                                     ->columnSpan(1),
-                                self::hint(Textarea::make('value')
+                                self::hint(HtmlCodeTextarea::html(Textarea::make('value'))
                                     ->label('Strip text'), 'Text shown with the label. Site variables like [[address]] are allowed.')
                                     ->rows(2)
                                     ->maxLength(500)

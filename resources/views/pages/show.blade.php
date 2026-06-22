@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.analytics-head')
+    @php($pageDescription = $page->seo_description ?: \App\Support\RichContent::plainText($page->intro) ?: $settings?->tagline)
     <title>{{ $page->seo_title ?: $page->title }} | {{ $settings?->church_name ?? config('app.name', 'TwyxtCo Church') }}</title>
-    <meta name="description" content="{{ $page->seo_description ?: $page->intro ?: $settings?->tagline }}">
+    <meta name="description" content="{{ $pageDescription }}">
     @if ($page->noindex_nofollow)
         <meta name="robots" content="noindex, nofollow">
     @endif
@@ -53,7 +54,7 @@
                         <h1>{!! \App\Support\SiteVariables::renderText($page->title, $settings) !!}</h1>
 
                         @if ($page->intro)
-                            <p>{!! \App\Support\SiteVariables::renderText($page->intro, $settings) !!}</p>
+                            <div class="page-hero__intro">{!! \App\Support\RichContent::renderTextarea($page->intro, $settings) !!}</div>
                         @endif
                     </div>
 
@@ -61,7 +62,7 @@
                         <div class="ministry-hero-contact page-hero-message" aria-label="Page message">
                             <div class="page-hero-message__body">
                                 @if ($pageMessage !== strip_tags($pageMessage))
-                                    {!! \App\Support\RichContent::render($pageMessage) !!}
+                                    {!! \App\Support\RichContent::render($pageMessage, $settings) !!}
                                 @else
                                     @foreach (preg_split('/\R{2,}/', $pageMessage) as $paragraph)
                                         <p>{!! \App\Support\SiteVariables::renderTextWithLineBreaks($paragraph, $settings) !!}</p>

@@ -20,7 +20,7 @@
     <div class="concept-hero__content">
         <p class="concept-eyebrow" data-hero-eyebrow>{!! $hero['eyebrow_html'] ?? \App\Support\SiteVariables::renderText($hero['eyebrow'] ?? '', $settings ?? null) !!}</p>
         <h1 data-hero-title>{!! $hero['title_html'] ?? \App\Support\SiteVariables::renderText($hero['title'] ?? '', $settings ?? null) !!}</h1>
-        <p data-hero-subtitle @if (blank($hero['subtitle'])) hidden @endif>{!! $hero['subtitle_html'] ?? \App\Support\SiteVariables::renderText($hero['subtitle'] ?? '', $settings ?? null) !!}</p>
+        <div class="concept-hero__subtitle" data-hero-subtitle @if (blank($hero['subtitle'])) hidden @endif>{!! $hero['subtitle_html'] ?? \App\Support\RichContent::renderTextarea($hero['subtitle'] ?? '', $settings ?? null) !!}</div>
 
         <div class="concept-actions">
             <a

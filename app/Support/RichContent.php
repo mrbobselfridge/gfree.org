@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Filament\Admin\Forms\RichContentBlocks\EmbedBlock;
+use App\Models\SiteSetting;
 use Filament\Forms\Components\RichEditor\RichContentRenderer;
 
 class RichContent
@@ -39,7 +40,7 @@ class RichContent
         return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
     }
 
-    public static function render(mixed $content): string
+    public static function render(mixed $content, ?SiteSetting $settings = null): string
     {
         if (! self::hasRenderableContent($content)) {
             return '';
@@ -48,7 +49,7 @@ class RichContent
         $content = (string) $content;
 
         if (! str_contains($content, 'data-type="customBlock"')) {
-            return SiteVariables::renderHtml($content);
+            return SiteVariables::renderHtml($content, $settings);
         }
 
         $html = RichContentRenderer::make($content)
@@ -57,6 +58,21 @@ class RichContent
             ])
             ->toUnsafeHtml();
 
-        return SiteVariables::renderHtml($html);
+        return SiteVariables::renderHtml($html, $settings);
+    }
+
+    public static function renderTextarea(mixed $content, ?SiteSetting $settings = null): string
+    {
+        if (! self::hasRenderableContent($content)) {
+            return '';
+        }
+
+        $content = trim((string) $content);
+
+        if ($content !== strip_tags($content) || str_contains($content, 'data-type="customBlock"')) {
+            return self::render($content, $settings);
+        }
+
+        return SiteVariables::renderTextWithLineBreaks($content, $settings);
     }
 }

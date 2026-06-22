@@ -52,7 +52,7 @@
                     <strong>{!! \App\Support\SiteVariables::renderText($step['title'] ?? '', $settings ?? null) !!}</strong>
 
                     @if (filled($step['summary'] ?? null))
-                        <span>{!! \App\Support\SiteVariables::renderText($step['summary'], $settings ?? null) !!}</span>
+                        <div class="page-process__step-summary">{!! \App\Support\RichContent::renderTextarea($step['summary'], $settings ?? null) !!}</div>
                     @endif
                 </article>
             @endforeach

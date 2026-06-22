@@ -426,6 +426,65 @@ class PublicPageTest extends TestCase
             ->assertDontSee('&lt;strong&gt;', false);
     }
 
+    public function test_public_content_textareas_can_render_html(): void
+    {
+        Page::query()->create([
+            'title' => 'Families',
+            'slug' => 'families',
+            'intro' => 'Welcome <strong>families</strong><br><a href="/visit">Plan a visit</a>',
+            'content_blocks' => [
+                [
+                    'type' => 'process_steps',
+                    'data' => [
+                        'heading' => 'Getting Started',
+                        'steps' => [
+                            [
+                                'title' => 'Check in',
+                                'summary' => 'Stop by <strong>the desk</strong><br>We will help.',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'link_cards',
+                    'data' => [
+                        'heading' => 'Next Steps',
+                        'cards' => [
+                            [
+                                'title' => 'Serve',
+                                'summary' => 'Serve <em>together</em> this month.',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'info_strip',
+                    'data' => [
+                        'items' => [
+                            [
+                                'label' => 'Where',
+                                'value' => 'Room <strong>102</strong>',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $this->get('/families')
+            ->assertOk()
+            ->assertSee('class="page-hero__intro"', false)
+            ->assertSee('Welcome <strong>families</strong><br><a href="/visit">Plan a visit</a>', false)
+            ->assertSee('class="page-process__step-summary"', false)
+            ->assertSee('Stop by <strong>the desk</strong><br>We will help.', false)
+            ->assertSee('class="page-link-card__summary"', false)
+            ->assertSee('Serve <em>together</em> this month.', false)
+            ->assertSee('Room <strong>102</strong>', false)
+            ->assertDontSee('&lt;strong&gt;families&lt;/strong&gt;', false)
+            ->assertDontSee('&lt;em&gt;together&lt;/em&gt;', false);
+    }
+
     public function test_unpublished_pages_are_not_public(): void
     {
         Page::query()->create([
@@ -1179,7 +1238,7 @@ class PublicPageTest extends TestCase
             ->assertSee('page-block page-block--bg-gold page-block--info-strip-page page-block--info-strip-spacing-both', false)
             ->assertSee('concept-service-strip page-block--info-strip page-block--info-strip-target-page page-block--info-strip-width-medium', false)
             ->assertSee('--info-strip-count: 2', false)
-            ->assertSee('9:00 & 10:45 AM', false)
+            ->assertSee('9:00 &amp; 10:45 AM', false)
             ->assertSee('305 Keystone Hill Road')
             ->assertDontSee('page-block--info-strip-target-item', false);
     }

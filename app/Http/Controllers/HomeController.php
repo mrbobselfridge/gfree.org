@@ -7,6 +7,7 @@ use App\Models\HomepageContent;
 use App\Models\NavigationLink;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
+use App\Support\RichContent;
 use App\Support\SiteVariables;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
@@ -58,9 +59,11 @@ class HomeController extends Controller
 
     private function pageDescription(?SiteSetting $settings, ?HomepageContent $content, array $hero): ?string
     {
-        return $content?->seo_description
+        $description = $content?->seo_description
             ?: $settings?->tagline
             ?: ($hero['subtitle'] ?? null);
+
+        return filled($description) ? RichContent::plainText($description) : null;
     }
 
     private function heroSlides(array $defaults, $banners, ?SiteSetting $settings)
@@ -98,7 +101,7 @@ class HomeController extends Controller
             ...$slide,
             'eyebrow_html' => SiteVariables::renderText($slide['eyebrow'] ?? '', $settings),
             'title_html' => SiteVariables::renderText($slide['title'] ?? '', $settings),
-            'subtitle_html' => SiteVariables::renderText($slide['subtitle'] ?? '', $settings),
+            'subtitle_html' => RichContent::renderTextarea($slide['subtitle'] ?? '', $settings),
             'primary_label_html' => SiteVariables::renderText($slide['primary_label'] ?? '', $settings),
             'secondary_label_html' => SiteVariables::renderText($slide['secondary_label'] ?? '', $settings),
         ];

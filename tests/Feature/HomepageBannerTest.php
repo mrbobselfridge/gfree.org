@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\User;
+use Filament\Forms\Components\Textarea;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -28,6 +29,19 @@ class HomepageBannerTest extends TestCase
             ->assertSee('Secondary button text')
             ->assertSee('Secondary button destination')
             ->assertSee('Banner image');
+    }
+
+    public function test_homepage_banner_message_uses_html_code_textarea(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->test(CreateHomepageBanner::class)
+            ->assertFormFieldExists('subtitle', function (Textarea $field): bool {
+                $attributes = $field->getExtraInputAttributeBag()->getAttributes();
+
+                return $field->getRows() === 3
+                    && ($attributes['data-twyxtco-code-textarea'] ?? null) === 'true'
+                    && ($attributes['data-twyxtco-code-language'] ?? null) === 'html';
+            });
     }
 
     public function test_homepage_banner_title_links_to_edit_page_from_listing(): void
@@ -68,6 +82,22 @@ class HomepageBannerTest extends TestCase
             ->assertSee('/invite')
             ->assertDontSee('data-hero-previous', false)
             ->assertDontSee('data-hero-count', false);
+    }
+
+    public function test_homepage_banner_message_can_render_html(): void
+    {
+        HomepageBanner::query()->create([
+            'title' => 'Mission Sunday',
+            'subtitle' => 'Join us for <strong>Mission Sunday</strong><br><a href="/missions">Meet the team</a>',
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('class="concept-hero__subtitle"', false)
+            ->assertSee('<strong>Mission Sunday</strong>', false)
+            ->assertSee('<a href="/missions">Meet the team</a>', false)
+            ->assertDontSee('&lt;strong&gt;Mission Sunday&lt;/strong&gt;', false);
     }
 
     public function test_homepage_banner_blank_optional_fields_hide_buttons(): void

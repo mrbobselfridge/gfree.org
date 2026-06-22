@@ -282,6 +282,7 @@
 
 .page-hero__content>p:not(.concept-eyebrow),
 .page-hero__text>p:not(.concept-eyebrow),
+.page-hero__intro,
 .page-hero__subtitle {
     max-width: 720px;
     margin: 24px 0 0;
@@ -290,11 +291,13 @@
     line-height: 1.6;
 }
 
+.page-hero__intro>*,
 .page-hero__subtitle>* {
     margin-top: 0;
     margin-bottom: 1em;
 }
 
+.page-hero__intro> :last-child,
 .page-hero__subtitle> :last-child {
     margin-bottom: 0;
 }
@@ -1126,11 +1129,20 @@
     line-height: 1.15;
 }
 
-.page-link-cards p {
+.page-link-card__summary {
     margin: 20px 0 0;
     color: var(--page-block-card-muted);
     font-size: 1.04rem;
     line-height: 1.6;
+}
+
+.page-link-card__summary>* {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.page-link-card__summary> :last-child {
+    margin-bottom: 0;
 }
 
 .page-link-cards--target-item {
@@ -1145,6 +1157,11 @@
     border: 0;
     perspective: 1000px;
     cursor: pointer;
+}
+
+.page-link-card--flip:focus-visible {
+    outline: 3px solid var(--twyxtco-teal);
+    outline-offset: 4px;
 }
 
 .page-link-card__flip-inner {
@@ -1237,10 +1254,19 @@
     line-height: 1.25;
 }
 
-.page-process__steps span {
+.page-process__step-summary {
     color: var(--page-block-card-muted);
     font-size: 1.02rem;
     line-height: 1.6;
+}
+
+.page-process__step-summary>* {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.page-process__step-summary> :last-child {
+    margin-bottom: 0;
 }
 
 .page-process__steps--target-item {
@@ -2251,11 +2277,21 @@
     line-height: 0.96;
 }
 
-.concept-hero__content p:not(.concept-eyebrow) {
+.concept-hero__content p:not(.concept-eyebrow),
+.concept-hero__subtitle {
     max-width: 620px;
     margin: 24px 0 0;
     font-size: clamp(1.05rem, 2vw, 1.28rem);
     line-height: 1.65;
+}
+
+.concept-hero__subtitle>* {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.concept-hero__subtitle> :last-child {
+    margin-bottom: 0;
 }
 
 .concept-eyebrow {
@@ -2548,7 +2584,8 @@
 }
 
 .concept-card-row p,
-.concept-updates span {
+.concept-updates span,
+.concept-updates__card-summary {
     display: block;
     margin: 0;
     color: var(--concept-updates-card-muted, var(--twyxtco-muted));
@@ -3288,10 +3325,12 @@
 }
 
 .concept-page--editorial .concept-hero__content p:not(.concept-eyebrow),
+.concept-page--editorial .concept-hero__subtitle,
 .concept-page--editorial .concept-section>p,
 .concept-page--editorial .concept-feature p,
 .concept-page--editorial .concept-card-row p,
-.concept-page--editorial .concept-updates span {
+.concept-page--editorial .concept-updates span,
+.concept-page--editorial .concept-updates__card-summary {
     color: rgba(255, 255, 255, 0.72);
 }
 
@@ -3549,7 +3588,8 @@
     grid-column: 1;
 }
 
-.concept-page--editorial .concept-hero__content p:not(.concept-eyebrow) {
+.concept-page--editorial .concept-hero__content p:not(.concept-eyebrow),
+.concept-page--editorial .concept-hero__subtitle {
     grid-column: 2;
     grid-row: 1 / span 3;
     align-self: end;
@@ -3651,7 +3691,8 @@
     color: white;
 }
 
-.concept-page--editorial .concept-updates span {
+.concept-page--editorial .concept-updates span,
+.concept-page--editorial .concept-updates__card-summary {
     color: rgba(255, 255, 255, 0.68);
 }
 
@@ -3677,7 +3718,8 @@
     border-color: var(--twyxtco-line);
 }
 
-.concept-page--hub .concept-hero__content p:not(.concept-eyebrow) {
+.concept-page--hub .concept-hero__content p:not(.concept-eyebrow),
+.concept-page--hub .concept-hero__subtitle {
     color: var(--twyxtco-muted);
 }
 
@@ -3738,7 +3780,8 @@
 
 .concept-page--hub .concept-feature p,
 .concept-page--hub .concept-card-row p,
-.concept-page--hub .concept-updates span {
+.concept-page--hub .concept-updates span,
+.concept-page--hub .concept-updates__card-summary {
     color: var(--twyxtco-muted);
 }
 
@@ -3797,7 +3840,8 @@
     background: white;
 }
 
-.concept-page--accent-mono .concept-hero__content p:not(.concept-eyebrow) {
+.concept-page--accent-mono .concept-hero__content p:not(.concept-eyebrow),
+.concept-page--accent-mono .concept-hero__subtitle {
     border-top-color: var(--twyxtco-ink);
 }
 
@@ -3815,7 +3859,8 @@
     box-shadow: 0 18px 50px rgba(23, 184, 173, 0.18);
 }
 
-.concept-page--accent-teal-rule .concept-hero__content p:not(.concept-eyebrow) {
+.concept-page--accent-teal-rule .concept-hero__content p:not(.concept-eyebrow),
+.concept-page--accent-teal-rule .concept-hero__subtitle {
     border-top-width: 12px;
 }
 
@@ -4037,7 +4082,8 @@
     border-top: 8px solid var(--twyxtco-teal);
 }
 
-.concept-page--sections-bands-color .concept-process__steps span {
+.concept-page--sections-bands-color .concept-process__steps span,
+.concept-page--sections-bands-color .page-process__step-summary {
     color: var(--twyxtco-muted);
 }
 
@@ -4361,7 +4407,10 @@
 
 .concept-page--accent-gold .concept-hero__content p:not(.concept-eyebrow),
 .concept-page--accent-clay .concept-hero__content p:not(.concept-eyebrow),
-.concept-page--accent-forest .concept-hero__content p:not(.concept-eyebrow) {
+.concept-page--accent-forest .concept-hero__content p:not(.concept-eyebrow),
+.concept-page--accent-gold .concept-hero__subtitle,
+.concept-page--accent-clay .concept-hero__subtitle,
+.concept-page--accent-forest .concept-hero__subtitle {
     border-top-color: var(--concept-accent);
 }
 
@@ -4501,7 +4550,10 @@
 
 .concept-page--sections-bands-color.concept-page--accent-gold .concept-updates span,
 .concept-page--sections-bands-color.concept-page--accent-clay .concept-updates span,
-.concept-page--sections-bands-color.concept-page--accent-forest .concept-updates span {
+.concept-page--sections-bands-color.concept-page--accent-forest .concept-updates span,
+.concept-page--sections-bands-color.concept-page--accent-gold .concept-updates__card-summary,
+.concept-page--sections-bands-color.concept-page--accent-clay .concept-updates__card-summary,
+.concept-page--sections-bands-color.concept-page--accent-forest .concept-updates__card-summary {
     color: var(--twyxtco-muted);
 }
 
@@ -4896,6 +4948,7 @@
     }
 
     .concept-page--editorial .concept-hero__content p:not(.concept-eyebrow),
+    .concept-page--editorial .concept-hero__subtitle,
     .concept-page--editorial .concept-actions {
         grid-column: auto;
         grid-row: auto;
