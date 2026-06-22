@@ -98,7 +98,7 @@ class WorkflowNotificationRuleForm
                     ->columns(2)
                     ->columnSpanFull(),
                 Section::make('Email')
-                    ->description('Supports template items such as {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, and {updater_email}.')
+                    ->description('Supports template items such as {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, and {updater_email}.')
                     ->schema([
                         TextInput::make('subject')
                             ->required()
