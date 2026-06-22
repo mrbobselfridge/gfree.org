@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Admin\Forms\RichContentPlugins\HtmlSourcePlugin;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
@@ -13,7 +12,7 @@ use App\Models\FileDocumentVersion;
 use App\Models\Page;
 use App\Models\User;
 use App\Support\AdminAccess;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -63,7 +62,7 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('show_page_header')
             ->assertFormFieldVisible('hero_label')
             ->assertFormFieldVisible('intro')
-            ->assertFormFieldExists('message', fn (RichEditor $field): bool => $field->getName() === 'message')
+            ->assertFormFieldExists('message', fn (Textarea $field): bool => $field->getName() === 'message')
             ->assertFormFieldVisible('hero_image_path')
             ->assertFormFieldVisible('card_image_path')
             ->assertFormFieldVisible('slug')
@@ -81,38 +80,11 @@ class PageParentPageTest extends TestCase
             ->assertSee('Expand all');
     }
 
-    public function test_page_message_editor_shows_source_tool_for_admins(): void
+    public function test_page_message_uses_plain_textarea(): void
     {
         Livewire::actingAs(User::factory()->create())
             ->test(CreatePage::class)
-            ->assertFormFieldExists('message', function (RichEditor $field): bool {
-                $plugins = $field->getPlugins();
-                $toolbarButtons = collect($field->getToolbarButtons())->flatten()->all();
-
-                return collect($plugins)->contains(fn (object $plugin): bool => $plugin instanceof HtmlSourcePlugin)
-                    && in_array(HtmlSourcePlugin::TOOL, $toolbarButtons, true);
-            });
-    }
-
-    public function test_page_message_editor_hides_source_tool_without_code_access(): void
-    {
-        $pageEditor = User::factory()->create([
-            'role' => User::ROLE_EDITOR,
-            'admin_permissions' => [
-                'tools' => [AdminAccess::PAGES],
-                'records' => [],
-            ],
-        ]);
-
-        Livewire::actingAs($pageEditor)
-            ->test(CreatePage::class)
-            ->assertFormFieldExists('message', function (RichEditor $field): bool {
-                $plugins = $field->getPlugins();
-                $toolbarButtons = collect($field->getToolbarButtons())->flatten()->all();
-
-                return collect($plugins)->doesntContain(fn (object $plugin): bool => $plugin instanceof HtmlSourcePlugin)
-                    && ! in_array(HtmlSourcePlugin::TOOL, $toolbarButtons, true);
-            });
+            ->assertFormFieldExists('message', fn (Textarea $field): bool => $field->getRows() === 6);
     }
 
     public function test_page_message_editor_saves_empty_rich_text_markup_as_null(): void
