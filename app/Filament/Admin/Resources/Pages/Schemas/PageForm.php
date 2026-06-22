@@ -102,7 +102,7 @@ class PageForm
 
                 Textarea::make('intro')
                     ->label('Intro text')
-                    ->rows(4)
+                    ->rows(2)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Optional intro text shown near the top of the page when the page header is visible.'
@@ -112,7 +112,7 @@ class PageForm
 
                 Textarea::make('message')
                     ->label('Message')
-                    ->rows(6)
+                    ->rows(2)
                     ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
