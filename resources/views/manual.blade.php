@@ -797,6 +797,10 @@
                 <li>Dashboard cards may be collapsed, reordered, or used as shortcuts into content areas.</li>
                 <li>Dashboard notes can show sitewide links or notes from Site Settings. This card can be moved but is not collapsible.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/dashboard-overview.jpg') }}" alt="Admin dashboard with status cards, analytics summaries, recent updates, and shortcut cards.">
+                <figcaption>Use the Dashboard as the starting point for recent activity, quick checks, collapsible cards, and shortcuts into the tools you use most.</figcaption>
+            </figure>
         </section>
 
         <section class="manual-section" id="homepage">
@@ -809,6 +813,10 @@
                 <li>Update text, links, images, backgrounds, and block-specific settings.</li>
                 <li>Save and review the homepage.</li>
             </ol>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/homepage-admin-overview.jpg') }}" alt="Homepage admin screen with homepage links, event blocks, and page content blocks.">
+                <figcaption>The Homepage editor combines quick homepage fields with reorderable content blocks. Collapse sections while working so long pages stay manageable.</figcaption>
+            </figure>
             <h3>What To Watch</h3>
             <ul>
                 <li>The homepage also uses <strong>Banners</strong> for the top hero/banner area.</li>
@@ -833,6 +841,10 @@
                 <strong>Image tip</strong>
                 <p>Use a real ministry, worship, building, or event photo when possible. Avoid tiny graphics, flyers with lots of text, or images where important content sits at the edge.</p>
             </div>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/banner-editor.jpg') }}" alt="Banner editor with selected banner image, title, dates, and button fields.">
+                <figcaption>The Banner editor controls the large homepage hero area. Check image crop, title length, button text, and schedule dates before saving.</figcaption>
+            </figure>
         </section>
 
         <section class="manual-section" id="content-blocks">
@@ -895,6 +907,10 @@
                 <li>Use local paths such as <code>/give</code> for pages on this site, or full <code>https://</code> links for external sites.</li>
             </ul>
             <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/content-block-editor.jpg') }}" alt="Content block editor with background color, affected background, heading, layout, and item fields.">
+                <figcaption>Most content blocks share the same editing pattern: choose the block type, fill the main content, set layout/background options, then add rows or items as needed.</figcaption>
+            </figure>
+            <figure class="manual-screenshot">
                 <img src="{{ asset('images/manual/content-block-cards-preview.jpg') }}" alt="Public page showing a cards content block with teal card styling.">
                 <figcaption>Content blocks should read as complete public sections after saving. Use preview checks to confirm spacing, background choices, card colors, and button links.</figcaption>
             </figure>
@@ -911,6 +927,10 @@
                 <li>Review image usage before deleting media.</li>
                 <li>Use descriptive filenames when possible.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/media-library-picker.jpg') }}" alt="Media Library image picker showing reusable image thumbnails and search controls.">
+                <figcaption>The image picker lets editors choose existing media instead of uploading duplicates. Search by title, path, tag, or other tracked details when available.</figcaption>
+            </figure>
             <h3>Image Details</h3>
             <ul>
                 <li>Upload image starts with the image field, then shows image title, image path, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
@@ -993,6 +1013,10 @@
                 <li><strong>SEO title, SEO description, and Hide from search engines:</strong> Optional search metadata shown only to admins and editors with Code Blocks access. Hide from search engines asks search engines not to index the page or follow links on it.</li>
                 <li><strong>Page is live:</strong> Must be enabled for public display or for a redirect to work.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/pages-list.jpg') }}" alt="Pages list with status icons, titles, paths, and page actions.">
+                <figcaption>The Pages list is where admins scan page status, open existing pages, create new pages, and confirm paths before editing public content.</figcaption>
+            </figure>
             <h3>Path Rules</h3>
             <ul>
                 <li>Use lowercase words separated by hyphens. Use slashes only when intentionally creating a nested URL path.</li>
@@ -1037,6 +1061,10 @@
                 <li>Use Open in new tab mostly for external websites or downloadable files.</li>
                 <li>When linking to a Page record, make sure both the navigation link and the page itself are live for visitors.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/navigation-header-preview.jpg') }}" alt="Public header navigation with top-level links above the homepage banner.">
+                <figcaption>Navigation changes should be checked on the public site. Keep the header short, readable, and easy to scan.</figcaption>
+            </figure>
         </section>
 
         <section class="manual-section" id="settings">
@@ -1054,6 +1082,10 @@
                 <li>OpenAI API key used by rewrite, page review, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
                 <li>Google Tag Manager and Google Analytics tracking IDs.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/site-settings-overview.jpg') }}" alt="Site Settings form with logo and site design fields.">
+                <figcaption>Site Settings affects shared values across the website, including contact details, default images, reusable variables, footer links, design colors, analytics, and AI settings.</figcaption>
+            </figure>
             <div class="manual-note">
                 <strong>Sitewide caution</strong>
                 <p>Changes here can affect many public pages at once. Review the homepage, listings, footer, and contact information after saving major setting changes.</p>
@@ -1069,6 +1101,10 @@
                 <li>Review referrers to see where traffic comes from.</li>
                 <li>Use device/browser information to understand how visitors are browsing.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/analytics-overview.jpg') }}" alt="Analytics dashboard with traffic totals, top pages, referrers, and timeline chart.">
+                <figcaption>Analytics helps editors understand which public pages are being used and whether recent content is receiving visitor attention.</figcaption>
+            </figure>
             <p>Analytics is useful for decisions, but it should not replace pastoral or ministry judgment. Use it as one signal.</p>
         </section>
 
@@ -1111,6 +1147,10 @@
                 <li>Use <strong>Download latest</strong> when a trusted admin needs a local copy.</li>
                 <li>Use <strong>Check health</strong> to confirm backup destinations have recent backups.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/backups-overview.jpg') }}" alt="Backups screen with database, full-site, and archive backup profile cards.">
+                <figcaption>The Backups screen groups recovery profiles, latest backup status, run actions, download actions, and health checks in one place.</figcaption>
+            </figure>
 
             <div class="manual-note">
                 <strong>Restore caution</strong>
@@ -1136,6 +1176,10 @@
                 <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Navigation, Homepage, or Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/notifications-overview.jpg') }}" alt="Workflow Notifications list with enabled rules, triggers, recipients, and actions.">
+                <figcaption>Notification rules show which content area, trigger, recipient group, and delay are active. Disable old rules when they should stop sending.</figcaption>
+            </figure>
 
             <h3>Triggers</h3>
             <table class="manual-table">
@@ -1223,6 +1267,10 @@
                 <li>Users can also be selected as recipients in Workflow Notification Rules.</li>
                 <li>Remove or reduce access when someone no longer needs it.</li>
             </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/users-editor.jpg') }}" alt="User editor with name, email, role, and access controls.">
+                <figcaption>The User editor controls login identity and access. Review permissions carefully before giving someone sitewide admin tools.</figcaption>
+            </figure>
             <div class="manual-note">
                 <strong>Password resets</strong>
                 <p>Users can use password reset if configured. Site admins can also help by confirming the user's email and access level.</p>
