@@ -1405,7 +1405,7 @@
     display: grid;
     grid-template-columns: minmax(16px, 1fr) minmax(0, 520px) minmax(0, 660px) minmax(16px, 1fr);
     gap: 64px;
-    padding: 20px 0;
+    padding: 92px 0;
     color: var(--site-ink);
     background: var(--site-accent);
 }
@@ -3906,7 +3906,7 @@
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: 92px max(16px, calc((100vw - 1180px) / 2));
+    padding: 20px max(16px, calc((100vw - 1180px) / 2));
     border-radius: 0;
 }
 
