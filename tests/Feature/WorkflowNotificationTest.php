@@ -507,6 +507,16 @@ class WorkflowNotificationTest extends TestCase
         Mail::fake();
         $this->mockVisualSnapshots(['page-visual-snapshots/manual-current.png']);
 
+        SiteSetting::query()->create([
+            'site_variables' => [
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>305 <strong>Keystone Hill Road</strong></p>',
+                ],
+            ],
+        ]);
+
         $recipient = User::factory()->create([
             'email' => 'page-review@example.com',
         ]);
@@ -541,7 +551,7 @@ class WorkflowNotificationTest extends TestCase
             record: $page,
             ruleIds: [$rule->getKey()],
             manualRecipientEmails: "reviewer@example.com; invalid\nPAGE-REVIEW@example.com",
-            manualMessage: "Can you look at this before Sunday?\nThanks.",
+            manualMessage: "Can you look at this before Sunday?\nMeet at [[address]].",
         );
 
         $event = WorkflowNotificationEvent::query()->firstOrFail();
@@ -551,7 +561,7 @@ class WorkflowNotificationTest extends TestCase
         $this->assertNull($event->pre_snapshot_path);
         $this->assertSame('page-visual-snapshots/manual-current.png', $event->post_snapshot_path);
         $this->assertSame(['page-review@example.com', 'reviewer@example.com'], $event->recipient_emails);
-        $this->assertSame("Can you look at this before Sunday?\nThanks.", $event->manual_message);
+        $this->assertSame("Can you look at this before Sunday?\nMeet at [[address]].", $event->manual_message);
         $this->assertSame(
             'page-visual-snapshots/manual-current.png',
             WorkflowVisualSnapshot::query()->whereMorphedTo('snapshotable', $page)->firstOrFail()->snapshot_path,
@@ -574,6 +584,8 @@ class WorkflowNotificationTest extends TestCase
 
         $this->assertStringContainsString('Please review the page.', $html);
         $this->assertStringContainsString('Can you look at this before Sunday?', $html);
+        $this->assertStringContainsString('Meet at 305 Keystone Hill Road.', $html);
+        $this->assertStringNotContainsString('[[address]]', $html);
         $this->assertStringContainsString('View', $html);
         $this->assertStringContainsString('Open in admin', $html);
         $this->assertStringContainsString('<strong>Full URL:</strong>', $html);
@@ -733,6 +745,18 @@ class WorkflowNotificationTest extends TestCase
 
         SiteSetting::query()->create([
             'church_name' => 'gFree Church',
+            'site_variables' => [
+                [
+                    'name' => 'Service Times',
+                    'variable' => 'service-times',
+                    'value' => '<strong>9:15 &amp; 11 AM</strong>',
+                ],
+                [
+                    'name' => 'Address',
+                    'variable' => 'address',
+                    'value' => '<p>305 <strong>Keystone Hill Road</strong></p>',
+                ],
+            ],
         ]);
 
         $actor = User::factory()->create([
@@ -745,8 +769,8 @@ class WorkflowNotificationTest extends TestCase
             'content_area' => AdminAccess::PAGES,
             'triggers' => [WorkflowNotificationRule::TRIGGER_UPDATED],
             'extra_emails' => 'page-review@example.com',
-            'subject' => '{church_name}: {page_title} {action_status} by {updater_name}',
-            'message' => 'Site {site_name} saw {page_title} get {action_status} on {current_date} at {current_time}. Contact {updater_email}. Full: {current_datetime}.',
+            'subject' => '{church_name}: {page_title} {action_status} by {updater_name} - [[service-times]]',
+            'message' => 'Site {site_name} saw {page_title} get {action_status} on {current_date} at {current_time}. Contact {updater_email}. Full: {current_datetime}. Meet at [[address]].',
             'delay_minutes' => 15,
             'is_enabled' => true,
         ]);
@@ -767,9 +791,12 @@ class WorkflowNotificationTest extends TestCase
         $mail = new WorkflowNotificationMail($event);
         $html = $mail->render();
 
-        $this->assertSame('gFree Church: About Us Updated by Editor Person', $mail->envelope()->subject);
+        $this->assertSame('gFree Church: About Us Updated by Editor Person - 9:15 & 11 AM', $mail->envelope()->subject);
         $this->assertStringContainsString('Site gFree Church saw About Us get Updated on Jun 15, 2026 at 2:35 PM.', $html);
         $this->assertStringContainsString('Contact editor@example.com. Full: Jun 15, 2026 2:35 PM.', $html);
+        $this->assertStringContainsString('Meet at 305 Keystone Hill Road.', $html);
+        $this->assertStringNotContainsString('&lt;strong&gt;9:15', $html);
+        $this->assertStringNotContainsString('[[address]]', $html);
 
         Carbon::setTestNow();
     }

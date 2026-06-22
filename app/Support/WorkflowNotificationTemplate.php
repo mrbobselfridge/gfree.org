@@ -38,12 +38,14 @@ class WorkflowNotificationTemplate
             return '';
         }
 
-        return strtr(
+        $rendered = strtr(
             $template,
             collect(self::variables($event))
                 ->mapWithKeys(fn (string $value, string $key): array => ['{'.$key.'}' => $value])
                 ->all(),
         );
+
+        return SiteVariables::renderPlainText($rendered);
     }
 
     public static function actionStatus(?string $trigger): string

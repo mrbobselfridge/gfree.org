@@ -106,6 +106,17 @@ class SiteVariables
         return nl2br(self::renderText($content, $settings));
     }
 
+    public static function renderPlainText(mixed $content, ?SiteSetting $settings = null): string
+    {
+        $content = (string) $content;
+
+        if ($content === '') {
+            return '';
+        }
+
+        return self::replaceTokens($content, $settings, plainTextValues: true);
+    }
+
     public static function variableValue(string $variable, ?SiteSetting $settings = null): ?string
     {
         $variable = self::normalizeKey($variable);
@@ -142,7 +153,7 @@ class SiteVariables
         return self::$tokenMap;
     }
 
-    private static function replaceTokens(string $content, ?SiteSetting $settings = null): string
+    private static function replaceTokens(string $content, ?SiteSetting $settings = null, bool $plainTextValues = false): string
     {
         $tokens = self::tokenMap($settings);
 
@@ -150,10 +161,22 @@ class SiteVariables
             return $content;
         }
 
-        return preg_replace_callback(self::TOKEN_PATTERN, function (array $match) use ($tokens): string {
+        return preg_replace_callback(self::TOKEN_PATTERN, function (array $match) use ($tokens, $plainTextValues): string {
             $variable = self::normalizeKey($match[1]);
 
-            return $tokens[$variable] ?? $match[0];
+            if (! array_key_exists($variable, $tokens)) {
+                return $match[0];
+            }
+
+            return $plainTextValues ? self::plainTextValue($tokens[$variable]) : $tokens[$variable];
         }, $content) ?? $content;
+    }
+
+    private static function plainTextValue(mixed $value): string
+    {
+        $text = html_entity_decode(strip_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = str_replace(["\u{00A0}", "\u{200B}", "\u{200C}", "\u{200D}", "\u{FEFF}"], ' ', $text);
+
+        return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
     }
 }

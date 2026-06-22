@@ -7,6 +7,7 @@
     $isDeleteTrigger = $event->trigger === \App\Models\WorkflowNotificationRule::TRIGGER_DELETED;
     $isManualTrigger = $event->trigger === \App\Models\WorkflowNotificationRule::TRIGGER_MANUAL;
     $message = \App\Support\WorkflowNotificationTemplate::render($rule->message, $event);
+    $manualMessage = \App\Support\WorkflowNotificationTemplate::render($event->manual_message, $event);
 
     $preSnapshotUrl = (! $isCreateTrigger && ! $isDeleteTrigger && ! $isManualTrigger && $event->pre_snapshot_path) ? $snapshotService->imageUrl($event->pre_snapshot_path) : null;
     $postSnapshotUrl = (! $isDeleteTrigger && $event->post_snapshot_path) ? $snapshotService->imageUrl($event->post_snapshot_path) : null;
@@ -20,8 +21,8 @@
 
 <p>{!! nl2br(e($message)) !!}</p>
 
-@if ($isManualTrigger && filled($event->manual_message))
-    <p>{!! nl2br(e($event->manual_message)) !!}</p>
+@if ($isManualTrigger && filled($manualMessage))
+    <p>{!! nl2br(e($manualMessage)) !!}</p>
 @endif
 
 @unless ($isManualTrigger)
