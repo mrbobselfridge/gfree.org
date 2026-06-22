@@ -9,6 +9,8 @@
     };
     $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
     $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
+    $hasEyebrow = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null);
+    $hasHeading = \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null);
 @endphp
 
 @if (filled($code))
@@ -26,11 +28,11 @@
                 'page-block__inner--full' => $contentWidth === 'full',
                 'page-code-block',
             ])>
-                @if (filled($data['eyebrow'] ?? null))
+                @if ($hasEyebrow)
                     <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
                 @endif
 
-                @if (filled($data['heading'] ?? null))
+                @if ($hasHeading)
                     <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
                 @endif
 

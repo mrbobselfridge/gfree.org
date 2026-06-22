@@ -10,9 +10,11 @@
         'medium', 'normal' => 'medium',
         default => 'wide',
     };
+    $hasEyebrow = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null);
+    $hasHeading = \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null);
 
-    $hasContent = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null)
-        || \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null)
+    $hasContent = $hasEyebrow
+        || $hasHeading
         || \App\Support\RichContent::hasRenderableContent($data['body'] ?? null)
         || (filled($data['button_label'] ?? null) && filled($data['button_url'] ?? null));
 @endphp
@@ -45,11 +47,11 @@
 
         @if ($hasContent)
         <div class="page-image-text__content">
-            @if (filled($data['eyebrow'] ?? null))
+            @if ($hasEyebrow)
                 <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
             @endif
 
-            @if (filled($data['heading'] ?? null))
+            @if ($hasHeading)
                 <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
             @endif
 

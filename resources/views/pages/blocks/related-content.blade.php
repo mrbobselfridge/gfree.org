@@ -3,7 +3,10 @@
     $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
     $backgroundStyle = \App\Support\SiteDesignPalette::relatedContentStyle($background);
     $layout = $data['layout'] ?? \App\Support\ContentBlocks::RELATED_CONTENT_LAYOUT_CARD_GRID;
-    $hasHeaderText = filled($data['eyebrow'] ?? null) || filled($data['heading'] ?? null) || filled($data['intro'] ?? null);
+    $hasEyebrow = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null);
+    $hasHeading = \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null);
+    $hasIntro = \App\Support\RichContent::hasRenderableContent($data['intro'] ?? null);
+    $hasHeaderText = $hasEyebrow || $hasHeading || $hasIntro;
     $searchEnabled = (bool) ($data['enable_search'] ?? true);
     $contentWidth = match ($data['content_width'] ?? 'wide') {
         'small' => 'small',
@@ -17,7 +20,7 @@
         'concept-updates',
         'concept-updates--bar',
         'concept-updates--child-info-cards',
-        'concept-updates--child-info-cards-has-heading' => filled($data['eyebrow'] ?? null) || filled($data['heading'] ?? null),
+        'concept-updates--child-info-cards-has-heading' => $hasEyebrow || $hasHeading,
         'concept-updates--layout-' . $layout,
         'concept-updates--width-' . $contentWidth,
         'concept-updates--bg-' . $background,
@@ -33,15 +36,15 @@
             @if ($hasHeaderText)
                 <div class="concept-updates__header">
                     <div>
-                        @if (filled($data['eyebrow'] ?? null))
+                        @if ($hasEyebrow)
                             <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
                         @endif
 
-                        @if (filled($data['heading'] ?? null))
+                        @if ($hasHeading)
                             <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
                         @endif
 
-                        @if (filled($data['intro'] ?? null))
+                        @if ($hasIntro)
                             <span>{!! \App\Support\SiteVariables::renderText($data['intro'], $settings ?? null) !!}</span>
                         @endif
                     </div>

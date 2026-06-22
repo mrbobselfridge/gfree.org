@@ -9,6 +9,8 @@
         default => 'wide',
     };
     $cards = $data['cards'] ?? [];
+    $hasEyebrow = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null);
+    $hasHeading = \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null);
 @endphp
 
 <section
@@ -23,11 +25,11 @@
     @endif
 >
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
-        @if (filled($data['eyebrow'] ?? null))
+        @if ($hasEyebrow)
             <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
         @endif
 
-        @if (filled($data['heading'] ?? null))
+        @if ($hasHeading)
             <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
         @endif
 

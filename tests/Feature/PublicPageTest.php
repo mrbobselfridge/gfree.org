@@ -765,19 +765,50 @@ class PublicPageTest extends TestCase
                     'type' => 'text',
                     'data' => [
                         'admin_label' => 'Admin only name',
+                        'eyebrow' => ' ',
+                        'heading' => '&nbsp;',
                         'body' => '<p>Student ministry details.</p>',
                         'background' => 'white',
+                    ],
+                ],
+                [
+                    'type' => 'process_steps',
+                    'data' => [
+                        'eyebrow' => ' ',
+                        'heading' => '&nbsp;',
+                        'steps' => [
+                            ['title' => 'Show up', 'summary' => 'Join the weekly gathering.'],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'cta',
+                    'data' => [
+                        'eyebrow' => ' ',
+                        'heading' => '&nbsp;',
+                        'button_label' => 'Register',
+                        'button_url' => '/register',
                     ],
                 ],
             ],
             'is_published' => true,
         ]);
 
-        $this->get('/students')
+        $response = $this->get('/students')
             ->assertOk()
             ->assertSee('page-block__inner--text-medium', false)
             ->assertSee('Student ministry details.')
-            ->assertDontSee('Admin only name');
+            ->assertSee('Show up')
+            ->assertSee('Register')
+            ->assertDontSee('Admin only name')
+            ->assertDontSee('page-block__eyebrow', false)
+            ->assertDontSee('&nbsp;', false)
+            ->assertDontSee('page-process__intro', false);
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/class="[^"]*page-cta[^"]*"[^>]*>\s*<div>\s*<\/div>/',
+            $response->getContent()
+        );
     }
 
     public function test_code_blocks_render_raw_code_with_and_without_page_block_wrapper(): void

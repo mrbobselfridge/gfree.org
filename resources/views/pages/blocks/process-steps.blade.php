@@ -8,6 +8,8 @@
         'medium', 'normal' => 'medium',
         default => 'wide',
     };
+    $hasEyebrow = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null);
+    $hasHeading = \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null);
 @endphp
 
 <section
@@ -17,21 +19,23 @@
         'page-block--process-steps-target-' . $backgroundTarget,
         'page-block--bg-' . $sectionBackground,
     ])
-    aria-label="{{ $data['heading'] ?? 'Process steps' }}"
+    aria-label="{{ $hasHeading ? \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) : 'Process steps' }}"
     @if ($backgroundTarget === 'page' && $backgroundStyle)
         style="{{ $backgroundStyle }}"
     @endif
 >
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth, 'page-process'])>
-        <div class="page-process__intro">
-            @if (filled($data['eyebrow'] ?? null))
-                <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
-            @endif
+        @if ($hasEyebrow || $hasHeading)
+            <div class="page-process__intro">
+                @if ($hasEyebrow)
+                    <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
+                @endif
 
-            @if (filled($data['heading'] ?? null))
-                <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
-            @endif
-        </div>
+                @if ($hasHeading)
+                    <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
+                @endif
+            </div>
+        @endif
 
         <div
             @class([

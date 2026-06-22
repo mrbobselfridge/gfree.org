@@ -9,6 +9,8 @@
     };
     $background = \App\Support\SiteDesignPalette::backgroundKey($data['background'] ?? 'white');
     $backgroundStyle = \App\Support\SiteDesignPalette::pageBlockStyle($background);
+    $hasEyebrow = \App\Support\RichContent::hasRenderableContent($data['eyebrow'] ?? null);
+    $hasHeading = \App\Support\RichContent::hasRenderableContent($data['heading'] ?? null);
 @endphp
 
 <section @class(['sermon-index', 'page-block', 'page-block--bg-' . $background])
@@ -17,13 +19,13 @@
     @endif
 >
     <div @class(['page-block__inner', 'page-block__inner--text-' . $contentWidth])>
-        @if (filled($data['eyebrow'] ?? null) || filled($data['heading'] ?? null))
+        @if ($hasEyebrow || $hasHeading)
             <div class="sermon-index__title">
-                @if (filled($data['eyebrow'] ?? null))
+                @if ($hasEyebrow)
                     <p class="page-block__eyebrow">{!! \App\Support\SiteVariables::renderText($data['eyebrow'], $settings ?? null) !!}</p>
                 @endif
 
-                @if (filled($data['heading'] ?? null))
+                @if ($hasHeading)
                     <h2>{!! \App\Support\SiteVariables::renderText($data['heading'], $settings ?? null) !!}</h2>
                 @endif
             </div>
