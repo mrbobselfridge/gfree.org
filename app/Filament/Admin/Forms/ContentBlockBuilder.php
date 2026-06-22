@@ -696,7 +696,7 @@ class ContentBlockBuilder
                         ->required()
                         ->columnSpan(1),
                     self::hint(Select::make('associated_parent_page_id')
-                        ->label('Parent page'), 'Choose the parent page whose direct child pages and files should feed this card block.')
+                        ->label('Associated parent page'), 'Choose the page whose direct child pages and files should feed this card block.')
                         ->options(fn (mixed $record): array => self::associatedParentPageOptions($record instanceof Page ? $record : null))
                         ->afterStateHydrated(function (Select $component, mixed $record, mixed $state): void {
                             $page = $record instanceof Page ? $record : null;
