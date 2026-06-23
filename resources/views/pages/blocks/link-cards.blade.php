@@ -52,7 +52,11 @@
                     $widgetId = \App\Support\LinkCard::widgetId($cardKey);
                     $imageUrl = \App\Support\ContentBlocks::imageUrl($card['image_path'] ?? null);
                     $imageFit = \App\Support\LinkCard::normalizeImageFit($card['image_fit'] ?? null);
-                    $imageFocus = \App\Support\LinkCard::imageFocusPosition($card['image_focus'] ?? null);
+                    $imageFocus = \App\Support\LinkCard::imageFocusPosition(
+                        $card['image_focus'] ?? null,
+                        $card['image_focus_x'] ?? null,
+                        $card['image_focus_y'] ?? null,
+                    );
                     $imageZoom = \App\Support\LinkCard::normalizeImageZoom($card['image_zoom'] ?? null);
                 @endphp
 

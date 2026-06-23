@@ -715,8 +715,10 @@ class PublicPageTest extends TestCase
                                 'type' => 'flip_image',
                                 'image_path' => 'pages/content-images/serve.jpg',
                                 'image_alt' => 'Serving team photo',
-                                'image_fit' => 'contain',
+                                'image_fit' => 'cover',
                                 'image_focus' => 'top',
+                                'image_focus_x' => 35,
+                                'image_focus_y' => 70,
                                 'image_zoom' => 125,
                             ],
                             [
@@ -761,8 +763,8 @@ class PublicPageTest extends TestCase
             ->assertSee('id="content-card-flip-flipimage123"', false)
             ->assertSee('/storage/pages/content-images/serve.jpg')
             ->assertSee('alt="Serving team photo"', false)
-            ->assertSee('page-link-card__flip-image--contain', false)
-            ->assertSee('object-position: center top; transform: scale(1.25); transform-origin: center top;', false)
+            ->assertSee('page-link-card__flip-image--cover', false)
+            ->assertSee('object-position: 35% 70%; transform: scale(1.25); transform-origin: 35% 70%;', false)
             ->assertSee('id="content-card-widget-widget123"', false)
             ->assertSee("document.getElementById('content-card-widget-widget123').textContent = 'Loaded widget';", false)
             ->assertSee('<div class="page-link-card">', false)

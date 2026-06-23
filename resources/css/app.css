@@ -1112,7 +1112,9 @@
 }
 
 .page-link-card {
+    display: flex;
     flex: 0 1 calc((100% - 32px) / 3);
+    flex-direction: column;
     min-height: 220px;
     padding: 28px;
     font: inherit;
@@ -1121,6 +1123,7 @@
     text-decoration: none;
     background: var(--page-block-card-bg);
     border: 1px solid var(--page-block-border);
+    border-radius: 8px;
 }
 
 .page-link-cards h3 {
@@ -1167,6 +1170,8 @@
 .page-link-card__flip-inner {
     position: relative;
     display: block;
+    width: 100%;
+    flex: 1;
     min-height: 220px;
     transition: transform 240ms ease;
     transform-style: preserve-3d;
@@ -1185,6 +1190,7 @@
     color: var(--page-block-card-fg);
     background: var(--page-block-card-bg);
     border: 1px solid var(--page-block-border);
+    border-radius: 8px;
     backface-visibility: hidden;
 }
 
@@ -1247,6 +1253,7 @@
     color: var(--page-block-card-fg);
     background: var(--page-block-card-bg);
     border: 1px solid var(--page-block-border);
+    border-radius: 8px;
 }
 
 .page-process__steps strong {
@@ -4687,6 +4694,15 @@
 .concept-page--hub.concept-page--accent-forest .concept-process {
     color: var(--twyxtco-ink);
     background: var(--concept-accent-soft);
+}
+
+.concept-page .page-link-card,
+.concept-page .page-link-card__face,
+.concept-page .page-process__steps article,
+.concept-page .concept-updates article,
+.concept-page .concept-service-strip,
+.concept-page .concept-service-strip__item {
+    border-radius: 8px;
 }
 
 @media (max-width: 860px) {

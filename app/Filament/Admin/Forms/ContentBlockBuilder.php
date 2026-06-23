@@ -338,10 +338,34 @@ class ContentBlockBuilder
                                     ->default('cover')
                                     ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                     ->columnSpan(1),
-                                self::hint(Select::make('image_focus')
-                                    ->label('Image focus'), 'Controls which part of the image stays in view when cropped.')
-                                    ->options(LinkCard::imageFocusOptions())
-                                    ->default('center')
+                                self::hint(TextInput::make('image_focus_x')
+                                    ->label('Image horizontal position'), 'Slide the cropped image left or right. 0% keeps the left edge in view; 100% keeps the right edge in view.')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->step(5)
+                                    ->suffix('%')
+                                    ->default(50)
+                                    ->afterStateHydrated(function (TextInput $component, mixed $state, Get $get): void {
+                                        if (blank($state)) {
+                                            $component->state(LinkCard::legacyImageFocusPercent($get('image_focus'), 'x'));
+                                        }
+                                    })
+                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                    ->columnSpan(1),
+                                self::hint(TextInput::make('image_focus_y')
+                                    ->label('Image vertical position'), 'Slide the cropped image up or down. 0% keeps the top edge in view; 100% keeps the bottom edge in view.')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->step(5)
+                                    ->suffix('%')
+                                    ->default(50)
+                                    ->afterStateHydrated(function (TextInput $component, mixed $state, Get $get): void {
+                                        if (blank($state)) {
+                                            $component->state(LinkCard::legacyImageFocusPercent($get('image_focus'), 'y'));
+                                        }
+                                    })
                                     ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                     ->columnSpan(1),
                                 self::hint(TextInput::make('image_zoom')

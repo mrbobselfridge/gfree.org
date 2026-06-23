@@ -73,7 +73,16 @@ class LinkCard
         ];
     }
 
-    public static function imageFocusPosition(?string $focus): string
+    public static function imageFocusPosition(?string $focus, mixed $x = null, mixed $y = null): string
+    {
+        if (is_numeric($x) || is_numeric($y)) {
+            return self::normalizeImageFocusPercent($x).' '.self::normalizeImageFocusPercent($y);
+        }
+
+        return self::legacyImageFocusPosition($focus);
+    }
+
+    public static function legacyImageFocusPosition(?string $focus): string
     {
         return match ($focus) {
             'top' => 'center top',
@@ -81,6 +90,32 @@ class LinkCard
             'left' => 'left center',
             'right' => 'right center',
             default => 'center center',
+        };
+    }
+
+    public static function normalizeImageFocusPercent(mixed $value): string
+    {
+        if (! is_numeric($value)) {
+            return '50%';
+        }
+
+        return max(0, min(100, (int) $value)).'%';
+    }
+
+    public static function legacyImageFocusPercent(?string $focus, string $axis): int
+    {
+        return match ($axis) {
+            'x' => match ($focus) {
+                'left' => 0,
+                'right' => 100,
+                default => 50,
+            },
+            'y' => match ($focus) {
+                'top' => 0,
+                'bottom' => 100,
+                default => 50,
+            },
+            default => 50,
         };
     }
 
