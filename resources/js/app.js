@@ -37,6 +37,8 @@ const setRenderedContent = (element, html, text) => {
     element.textContent = text || '';
 };
 
+const heroBackgroundImage = (url) => `url(${JSON.stringify(url || '')})`;
+
 document.querySelectorAll('[data-site-header]').forEach((header) => {
     const navToggle = header.querySelector('[data-nav-toggle]');
     const navMenu = header.querySelector('[data-nav-menu]');
@@ -105,8 +107,11 @@ document.querySelectorAll('[data-site-header]').forEach((header) => {
     });
 });
 
-const applyHeroSlide = (carousel, slide) => {
-    carousel.querySelector('[data-hero-image]').style.backgroundImage = `url("${slide.image_url}")`;
+const applyHeroImage = (carousel, slide) => {
+    carousel.querySelector('[data-hero-image]').style.backgroundImage = heroBackgroundImage(slide.image_url);
+};
+
+const applyHeroContent = (carousel, slide) => {
     setRenderedContent(carousel.querySelector('[data-hero-eyebrow]'), slide.eyebrow_html, slide.eyebrow);
     setRenderedContent(carousel.querySelector('[data-hero-title]'), slide.title_html, slide.title);
 
@@ -130,6 +135,11 @@ const applyHeroSlide = (carousel, slide) => {
     secondary.hidden = ! secondaryLabel;
 };
 
+const applyHeroSlide = (carousel, slide) => {
+    applyHeroImage(carousel, slide);
+    applyHeroContent(carousel, slide);
+};
+
 const updateHeroSlide = (carousel, slides, index, shouldFade = false) => {
     const slide = slides[index];
 
@@ -148,20 +158,47 @@ const updateHeroSlide = (carousel, slides, index, shouldFade = false) => {
     const duration = Number.parseInt(carousel.dataset.heroFadeDuration || '3000', 10);
     const totalDuration = Number.isNaN(duration) || duration < 1 ? 3000 : duration;
     const phaseDuration = Math.round(totalDuration / 2);
+    const image = carousel.querySelector('[data-hero-image]');
+    const overlay = image?.cloneNode(false);
 
-    carousel.style.setProperty('--hero-fade-duration', `${phaseDuration}ms`);
-    carousel.classList.add('is-hero-fading');
+    if (! image || ! overlay) {
+        applyHeroSlide(carousel, slide);
+
+        return Promise.resolve();
+    }
+
+    carousel.querySelectorAll('[data-hero-image-transition]').forEach((element) => element.remove());
+
+    const targetOpacity = window.getComputedStyle(image).opacity || '1';
+
+    overlay.removeAttribute('data-hero-image');
+    overlay.setAttribute('data-hero-image-transition', '');
+    overlay.style.backgroundImage = heroBackgroundImage(slide.image_url);
+    overlay.style.opacity = '0';
+    overlay.style.transitionDuration = `${totalDuration}ms`;
+    image.after(overlay);
+
+    carousel.style.setProperty('--hero-content-fade-duration', `${phaseDuration}ms`);
+    carousel.classList.add('is-hero-content-fading');
 
     return new Promise((resolve) => {
+        window.requestAnimationFrame(() => {
+            overlay.style.opacity = targetOpacity;
+        });
+
         window.setTimeout(() => {
-            applyHeroSlide(carousel, slide);
+            applyHeroContent(carousel, slide);
 
             window.requestAnimationFrame(() => {
-                carousel.classList.remove('is-hero-fading');
-
-                window.setTimeout(resolve, phaseDuration);
+                carousel.classList.remove('is-hero-content-fading');
             });
         }, phaseDuration);
+
+        window.setTimeout(() => {
+            applyHeroImage(carousel, slide);
+            overlay.remove();
+            resolve();
+        }, totalDuration);
     });
 };
 

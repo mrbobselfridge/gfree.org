@@ -2251,15 +2251,24 @@
     background-color: #ddd;
     background-position: center;
     background-size: cover;
-    transition: opacity var(--hero-fade-duration, 1500ms) ease;
+    z-index: 0;
+}
+
+.concept-hero__image[data-hero-image-transition] {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity var(--hero-fade-duration, 3000ms) ease;
 }
 
 .concept-hero__content {
-    transition: opacity var(--hero-fade-duration, 1500ms) ease;
+    position: relative;
+    z-index: 2;
+    transition: opacity var(--hero-content-fade-duration, 1500ms) ease;
 }
 
-.concept-hero.is-hero-fading .concept-hero__image,
-.concept-hero.is-hero-fading .concept-hero__content {
+.concept-hero.is-hero-content-fading .concept-hero__content {
     opacity: 0;
 }
 
