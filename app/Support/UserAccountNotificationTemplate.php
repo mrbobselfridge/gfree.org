@@ -16,7 +16,6 @@ class UserAccountNotificationTemplate
         $siteName = SiteSetting::query()->value('church_name') ?: config('app.name', 'TwyxtCo');
 
         return [
-            'church_name' => $siteName,
             'site_name' => $siteName,
             'current_date' => $now->format('M j, Y'),
             'current_time' => $now->format('g:i A'),
@@ -61,6 +60,6 @@ class UserAccountNotificationTemplate
 
     public static function supportedTokenHelp(): string
     {
-        return 'Supports {church_name}, {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, {updater_email}, {user_name}, {user_email}, {admin_url}, {admin_manual_url}, {reset_password_url}, and site variables like [[variable-name]].';
+        return 'Supports {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, {updater_email}, {user_name}, {user_email}, {admin_url}, {admin_manual_url}, {reset_password_url}, and site variables like [[variable-name]].';
     }
 }

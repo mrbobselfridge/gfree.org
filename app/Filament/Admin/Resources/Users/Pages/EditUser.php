@@ -89,7 +89,7 @@ class EditUser extends EditRecord
 
     private function defaultNotificationSubject(): string
     {
-        return 'Your {church_name} admin account';
+        return 'Your {site_name} admin account';
     }
 
     private function defaultNotificationMessage(): string
@@ -97,7 +97,7 @@ class EditUser extends EditRecord
         return <<<'TEXT'
 Hello {user_name},
 
-You have an account in the {church_name} admin system.
+You have an account in the {site_name} admin system.
 
 Admin URL:
 {admin_url}

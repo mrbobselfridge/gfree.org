@@ -60,7 +60,7 @@ class UserAccountNotificationTest extends TestCase
                 'message' => <<<'TEXT'
 Hello {user_name},
 
-You have an account at {church_name}.
+You have an account at {site_name}.
 
 Admin URL: {admin_url}
 Manual: {admin_manual_url}
