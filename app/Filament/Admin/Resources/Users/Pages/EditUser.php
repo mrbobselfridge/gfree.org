@@ -44,7 +44,7 @@ class EditUser extends EditRecord
                 ->color('gray')
                 ->modalHeading('Notify user')
                 ->modalSubmitActionLabel('Send email')
-                ->fillForm(fn (): array => [
+                ->fillForm(fn(): array => [
                     'recipient_email' => $this->getRecord()->email,
                     'subject' => $this->defaultNotificationSubject(),
                     'message' => $this->defaultNotificationMessage(),
@@ -151,7 +151,7 @@ TEXT;
         $permissions = $data['admin_permissions'] ?? [];
 
         return collect($permissions['tool_groups'] ?? [])
-            ->flatMap(fn (array $tools): array => $tools)
+            ->flatMap(fn(array $tools): array => $tools)
             ->merge($permissions['tools'] ?? [])
             ->filter()
             ->unique()
