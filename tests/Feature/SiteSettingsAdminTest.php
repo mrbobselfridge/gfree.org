@@ -28,6 +28,10 @@ class SiteSettingsAdminTest extends TestCase
             ->get("/admin/site-settings/{$settings->getKey()}/edit")
             ->assertOk()
             ->assertSee('Organizational Information')
+            ->assertSee('Contact Name')
+            ->assertSee('Contact Email')
+            ->assertSee('Contact Phone')
+            ->assertSee('Contact Notes')
             ->assertSee('Site variables')
             ->assertSee('Variable')
             ->assertDontSee('Sunday service times')
@@ -114,6 +118,30 @@ class SiteSettingsAdminTest extends TestCase
                     && $component->shouldPersistCollapsed(),
             )
             ->assertSchemaComponentDoesNotExist('site-settings-ministries-settings');
+    }
+
+    public function test_site_settings_contact_fields_can_be_saved(): void
+    {
+        $settings = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
+            ->set('data.contact_name', 'Jane Admin')
+            ->set('data.contact_email', 'jane@example.com')
+            ->set('data.contact_phone', '555-0100')
+            ->set('data.contact_notes', 'Primary internal contact for user questions.')
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas(SiteSetting::class, [
+            'id' => $settings->getKey(),
+            'contact_name' => 'Jane Admin',
+            'contact_email' => 'jane@example.com',
+            'contact_phone' => '555-0100',
+            'contact_notes' => 'Primary internal contact for user questions.',
+        ]);
     }
 
     public function test_site_variables_can_be_saved_with_html_values(): void

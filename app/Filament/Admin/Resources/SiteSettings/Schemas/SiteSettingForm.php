@@ -63,6 +63,21 @@ class SiteSettingForm
                             ->label('Email address')
                             ->email()
                             ->maxLength(255),
+                        TextInput::make('contact_name')
+                            ->label('Contact Name')
+                            ->maxLength(255),
+                        TextInput::make('contact_email')
+                            ->label('Contact Email')
+                            ->email()
+                            ->maxLength(255),
+                        TextInput::make('contact_phone')
+                            ->label('Contact Phone')
+                            ->tel()
+                            ->maxLength(255),
+                        Textarea::make('contact_notes')
+                            ->label('Contact Notes')
+                            ->rows(4)
+                            ->columnSpanFull(),
                         TextInput::make('tagline')
                             ->maxLength(255),
                     ])
