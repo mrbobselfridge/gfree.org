@@ -117,7 +117,7 @@ TEXT,
             'email' => 'notified@example.com',
             'role' => User::ROLE_EDITOR,
             'admin_permissions' => [
-                'tools' => [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS],
+                'tools' => [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::PAGES, AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS],
                 'records' => [
                     AdminAccess::PAGES => [(string) $visitPage->getKey(), (string) $givingPage->getKey()],
                 ],
@@ -136,7 +136,7 @@ TEXT,
             $html = $mail->render();
 
             return $mail->hasTo($target->email)
-                && str_contains($html, 'Content: Homepage, Media Library')
+                && str_contains($html, 'Content: Homepage, Pages, Media Library')
                 && str_contains($html, 'Site Tools: Site Settings')
                 && str_contains($html, 'Individual Page Entries: Giving, Visit');
         });

@@ -358,10 +358,6 @@ class AdminAccess
             ->values();
 
         foreach (self::recordLimitedTools() as $toolKey => $definition) {
-            if (in_array($toolKey, $toolKeys, true)) {
-                continue;
-            }
-
             $labels = self::recordLabels($user, $toolKey);
 
             if ($labels === []) {
