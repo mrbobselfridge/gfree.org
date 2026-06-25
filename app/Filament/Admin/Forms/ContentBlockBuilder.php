@@ -325,7 +325,7 @@ class ContentBlockBuilder
                                 self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
                                     ->label('Card text'), 'Short supporting text for the card.')
                                     ->rows(2)
-                                    ->columnSpanFull(),
+                                    ->columnSpan(2),
                                 self::hint(Textarea::make('url')
                                     ->label('Destination'), 'Destination for link cards. Use a site path like /give or a full https:// URL.')
                                     ->rows(1)
@@ -350,6 +350,7 @@ class ContentBlockBuilder
                                     ->maxLength(255)
                                     ->visible(fn(Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                     ->columnSpan(1),
+
                                 self::hint(Select::make('image_fit')
                                     ->label('Image sizing'), 'Controls how the image fills the front of the card.')
                                     ->options(LinkCard::imageFitOptions())
