@@ -149,7 +149,7 @@ class AdminAccess
     {
         return [
             self::PAGES => [
-                'label' => 'Individual Page Entries',
+                'label' => ' - Individual Page Entries',
                 'model' => Page::class,
                 'title' => 'title',
             ],
