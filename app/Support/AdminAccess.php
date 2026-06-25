@@ -134,8 +134,8 @@ class AdminAccess
     {
         return collect(self::toolDefinitions())
             ->groupBy('group', preserveKeys: true)
-            ->map(fn ($definitions) => $definitions->mapWithKeys(
-                fn (array $definition, string $key): array => [$key => $definition['label']]
+            ->map(fn($definitions) => $definitions->mapWithKeys(
+                fn(array $definition, string $key): array => [$key => $definition['label']]
             )->all())
             ->all();
     }
@@ -159,14 +159,14 @@ class AdminAccess
     public static function additionalToolOptions(): array
     {
         return collect(self::additionalToolDefinitions())
-            ->mapWithKeys(fn (array $definition, string $key): array => [$key => $definition['label']])
+            ->mapWithKeys(fn(array $definition, string $key): array => [$key => $definition['label']])
             ->all();
     }
 
     public static function additionalToolDefinitions(): array
     {
         $knownResourceClasses = collect(self::toolDefinitions())
-            ->flatMap(fn (array $definition): array => array_filter([
+            ->flatMap(fn(array $definition): array => array_filter([
                 $definition['resource'] ?? null,
                 ...($definition['resources'] ?? []),
             ]))
@@ -179,9 +179,9 @@ class AdminAccess
             ->all();
 
         $resources = collect(self::classesIn(app_path('Filament/Admin/Resources'), 'App\\Filament\\Admin\\Resources'))
-            ->filter(fn (string $class): bool => is_subclass_of($class, Resource::class))
-            ->reject(fn (string $class): bool => in_array($class, $knownResourceClasses, true))
-            ->mapWithKeys(fn (string $class): array => [
+            ->filter(fn(string $class): bool => is_subclass_of($class, Resource::class))
+            ->reject(fn(string $class): bool => in_array($class, $knownResourceClasses, true))
+            ->mapWithKeys(fn(string $class): array => [
                 self::classPermissionKey($class) => [
                     'label' => method_exists($class, 'getNavigationLabel') ? $class::getNavigationLabel() : Str::headline(class_basename($class)),
                     'group' => method_exists($class, 'getNavigationGroup') ? (string) $class::getNavigationGroup() : 'Additional Tools',
@@ -191,9 +191,9 @@ class AdminAccess
             ]);
 
         $pages = collect(self::classesIn(app_path('Filament/Admin/Pages'), 'App\\Filament\\Admin\\Pages'))
-            ->filter(fn (string $class): bool => is_subclass_of($class, FilamentPage::class))
-            ->reject(fn (string $class): bool => in_array($class, $knownPageClasses, true))
-            ->mapWithKeys(fn (string $class): array => [
+            ->filter(fn(string $class): bool => is_subclass_of($class, FilamentPage::class))
+            ->reject(fn(string $class): bool => in_array($class, $knownPageClasses, true))
+            ->mapWithKeys(fn(string $class): array => [
                 self::classPermissionKey($class) => [
                     'label' => method_exists($class, 'getNavigationLabel') ? $class::getNavigationLabel() : Str::headline(class_basename($class)),
                     'group' => method_exists($class, 'getNavigationGroup') ? (string) $class::getNavigationGroup() : 'Additional Tools',
@@ -206,7 +206,7 @@ class AdminAccess
 
     public static function canAccessTool(?User $user, string $toolKey): bool
     {
-        if (! $user) {
+        if (!$user) {
             return false;
         }
 
@@ -246,13 +246,13 @@ class AdminAccess
     {
         $modelClass = self::modelClass($subject);
 
-        if (! $modelClass) {
+        if (!$modelClass) {
             return null;
         }
 
         $toolKey = self::toolKeyForModel($modelClass);
 
-        if (! $toolKey) {
+        if (!$toolKey) {
             return null;
         }
 
@@ -281,11 +281,11 @@ class AdminAccess
     {
         $toolKey = self::toolKeyForModel($modelClass);
 
-        if (! $toolKey || self::canAccessTool($user, $toolKey)) {
+        if (!$toolKey || self::canAccessTool($user, $toolKey)) {
             return $query;
         }
 
-        if (! array_key_exists($toolKey, self::recordLimitedTools())) {
+        if (!array_key_exists($toolKey, self::recordLimitedTools())) {
             return $query->whereRaw('1 = 0');
         }
 
@@ -299,8 +299,10 @@ class AdminAccess
     public static function toolKeyForModel(string $modelClass): ?string
     {
         foreach ([...self::toolDefinitions(), ...self::additionalToolDefinitions()] as $key => $definition) {
-            if (($definition['model'] ?? null) === $modelClass
-                || in_array($modelClass, $definition['models'] ?? [], true)) {
+            if (
+                ($definition['model'] ?? null) === $modelClass
+                || in_array($modelClass, $definition['models'] ?? [], true)
+            ) {
                 return $key;
             }
         }
@@ -323,14 +325,14 @@ class AdminAccess
     {
         $definition = self::recordLimitedTools()[$toolKey] ?? null;
 
-        if (! $definition) {
+        if (!$definition) {
             return [];
         }
 
         return $definition['model']::query()
             ->orderBy($definition['title'])
             ->pluck($definition['title'], 'id')
-            ->mapWithKeys(fn (string $label, int|string $id): array => [(string) $id => $label])
+            ->mapWithKeys(fn(string $label, int|string $id): array => [(string) $id => $label])
             ->all();
     }
 
@@ -344,16 +346,16 @@ class AdminAccess
         $toolKeys = self::toolKeys($user);
 
         $lines = collect($toolKeys)
-            ->filter(fn (string $toolKey): bool => array_key_exists($toolKey, $definitions))
-            ->groupBy(fn (string $toolKey): string => (string) ($definitions[$toolKey]['group'] ?? 'Additional Tools'))
+            ->filter(fn(string $toolKey): bool => array_key_exists($toolKey, $definitions))
+            ->groupBy(fn(string $toolKey): string => (string) ($definitions[$toolKey]['group'] ?? 'Additional Tools'))
             ->map(function ($groupToolKeys, string $group) use ($definitions): string {
                 $labels = $groupToolKeys
-                    ->map(fn (string $toolKey): string => (string) $definitions[$toolKey]['label'])
+                    ->map(fn(string $toolKey): string => (string) $definitions[$toolKey]['label'])
                     ->unique()
                     ->values()
                     ->all();
 
-                return $group.': '.implode(', ', $labels);
+                return " - " . $group . ': ' . implode(', ', $labels);
             })
             ->values();
 
@@ -364,7 +366,7 @@ class AdminAccess
                 continue;
             }
 
-            $lines->push($definition['label'].': '.implode(', ', $labels));
+            $lines->push($definition['label'] . ': ' . implode(', ', $labels));
         }
 
         if ($lines->isEmpty()) {
@@ -378,20 +380,20 @@ class AdminAccess
     {
         return collect(data_get($user->adminPermissionData(), 'tools', []))
             ->filter()
-            ->map(fn (mixed $value): string => (string) $value)
+            ->map(fn(mixed $value): string => (string) $value)
             ->values()
             ->all();
     }
 
     private static function recordIds(?User $user, string $toolKey): array
     {
-        if (! $user) {
+        if (!$user) {
             return [];
         }
 
         return collect(data_get($user->adminPermissionData(), "records.{$toolKey}", []))
             ->filter()
-            ->map(fn (mixed $value): string => (string) $value)
+            ->map(fn(mixed $value): string => (string) $value)
             ->values()
             ->all();
     }
@@ -425,26 +427,26 @@ class AdminAccess
 
     private static function classPermissionKey(string $class): string
     {
-        return 'class:'.str_replace('\\', '.', $class);
+        return 'class:' . str_replace('\\', '.', $class);
     }
 
     private static function classesIn(string $path, string $namespace): array
     {
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             return [];
         }
 
         return collect(File::allFiles($path))
-            ->filter(fn ($file): bool => $file->getExtension() === 'php')
+            ->filter(fn($file): bool => $file->getExtension() === 'php')
             ->map(function ($file) use ($path, $namespace): string {
                 $relative = Str::of($file->getPathname())
-                    ->after(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR)
+                    ->after(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR)
                     ->beforeLast('.php')
                     ->replace(DIRECTORY_SEPARATOR, '\\');
 
                 return "{$namespace}\\{$relative}";
             })
-            ->filter(fn (string $class): bool => class_exists($class) && ! (new ReflectionClass($class))->isAbstract())
+            ->filter(fn(string $class): bool => class_exists($class) && !(new ReflectionClass($class))->isAbstract())
             ->values()
             ->all();
     }
