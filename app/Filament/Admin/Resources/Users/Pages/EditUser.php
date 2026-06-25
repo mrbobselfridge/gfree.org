@@ -44,7 +44,7 @@ class EditUser extends EditRecord
                 ->color('gray')
                 ->modalHeading('Notify user')
                 ->modalSubmitActionLabel('Send email')
-                ->fillForm(fn (): array => [
+                ->fillForm(fn(): array => [
                     'recipient_email' => $this->getRecord()->email,
                     'subject' => $this->defaultNotificationSubject(),
                     'message' => $this->defaultNotificationMessage(),
@@ -97,16 +97,19 @@ class EditUser extends EditRecord
         return <<<'TEXT'
 Hello {user_name},
 
-You have an account in the {site_name} admin system.
+You have an account to manage portions of "{site_name}" site.
 
-Admin URL:
+Admin URL (after resetting your password below):
 {admin_url}
-
-Use this link to set or reset your password:
-{reset_password_url}
 
 You can review the admin user manual here:
 {admin_manual_url}
+
+Current Application Access:
+{user_access}
+
+Use this link to set or reset your password:
+{reset_password_url}
 TEXT;
     }
 
@@ -151,7 +154,7 @@ TEXT;
         $permissions = $data['admin_permissions'] ?? [];
 
         return collect($permissions['tool_groups'] ?? [])
-            ->flatMap(fn (array $tools): array => $tools)
+            ->flatMap(fn(array $tools): array => $tools)
             ->merge($permissions['tools'] ?? [])
             ->filter()
             ->unique()
