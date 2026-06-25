@@ -51,7 +51,7 @@
                 </button>
                 @if ($heroAutoRotate)
                     <button type="button" data-hero-pause aria-label="Pause homepage banner rotation" aria-pressed="false">
-                        <span data-hero-pause-label>Pause</span>
+                        <span data-hero-pause-label> || </span>
                     </button>
                 @endif
                 <button type="button" data-hero-next aria-label="Next homepage banner">
