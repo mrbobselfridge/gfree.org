@@ -26,6 +26,7 @@ class UserAccountNotificationTemplate
             'updater_email' => (string) ($actor?->email ?? ''),
             'user_name' => (string) $recipient->name,
             'user_email' => (string) $recipient->email,
+            'user_access' => AdminAccess::accessSummary($recipient),
             'admin_url' => url('/admin'),
             'admin_manual_url' => route('manual'),
             'reset_password_url' => $resetPasswordUrl,
@@ -60,6 +61,6 @@ class UserAccountNotificationTemplate
 
     public static function supportedTokenHelp(): string
     {
-        return 'Supports {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, {updater_email}, {user_name}, {user_email}, {admin_url}, {admin_manual_url}, {reset_password_url}, and site variables like [[variable-name]].';
+        return 'Supports {site_name}, {current_date}, {current_time}, {current_datetime}, {page_title}, {action_status}, {updater_name}, {updater_email}, {user_name}, {user_email}, {user_access}, {admin_url}, {admin_manual_url}, {reset_password_url}, and site variables like [[variable-name]].';
     }
 }

@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\Users\Pages\EditUser;
 use App\Mail\UserAccountNotificationMail;
+use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\AdminAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
@@ -89,6 +91,54 @@ TEXT,
                 && str_contains($html, 'sender@example.com')
                 && str_contains($html, 'Legacy title: Content Editor')
                 && str_contains($html, 'Site variable: GFC');
+        });
+    }
+
+    public function test_notify_action_can_render_user_access_summary(): void
+    {
+        Mail::fake();
+
+        $visitPage = Page::query()->create([
+            'title' => 'Visit',
+            'slug' => 'visit',
+        ]);
+
+        $givingPage = Page::query()->create([
+            'title' => 'Giving',
+            'slug' => 'giving',
+        ]);
+
+        $actor = User::factory()->create([
+            'name' => 'Admin Sender',
+        ]);
+
+        $target = User::factory()->create([
+            'name' => 'Content Editor',
+            'email' => 'notified@example.com',
+            'role' => User::ROLE_EDITOR,
+            'admin_permissions' => [
+                'tools' => [AdminAccess::HOMEPAGE_CONTENT, AdminAccess::MEDIA_LIBRARY, AdminAccess::SITE_SETTINGS],
+                'records' => [
+                    AdminAccess::PAGES => [(string) $visitPage->getKey(), (string) $givingPage->getKey()],
+                ],
+            ],
+        ]);
+
+        Livewire::actingAs($actor)
+            ->test(EditUser::class, ['record' => $target->getKey()])
+            ->callAction('notifyUserAccount', [
+                'subject' => 'Access for {user_name}',
+                'message' => "Access:\n{user_access}",
+            ])
+            ->assertHasNoActionErrors();
+
+        Mail::assertSent(UserAccountNotificationMail::class, function (UserAccountNotificationMail $mail) use ($target): bool {
+            $html = $mail->render();
+
+            return $mail->hasTo($target->email)
+                && str_contains($html, 'Content: Homepage, Media Library')
+                && str_contains($html, 'Site Tools: Site Settings')
+                && str_contains($html, 'Individual Page Entries: Giving, Visit');
         });
     }
 

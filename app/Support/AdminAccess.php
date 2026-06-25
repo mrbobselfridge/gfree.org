@@ -334,6 +334,50 @@ class AdminAccess
             ->all();
     }
 
+    public static function accessSummary(User $user): string
+    {
+        if ($user->isAdmin()) {
+            return 'Full admin access.';
+        }
+
+        $definitions = [...self::toolDefinitions(), ...self::additionalToolDefinitions()];
+        $toolKeys = self::toolKeys($user);
+
+        $lines = collect($toolKeys)
+            ->filter(fn (string $toolKey): bool => array_key_exists($toolKey, $definitions))
+            ->groupBy(fn (string $toolKey): string => (string) ($definitions[$toolKey]['group'] ?? 'Additional Tools'))
+            ->map(function ($groupToolKeys, string $group) use ($definitions): string {
+                $labels = $groupToolKeys
+                    ->map(fn (string $toolKey): string => (string) $definitions[$toolKey]['label'])
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                return $group.': '.implode(', ', $labels);
+            })
+            ->values();
+
+        foreach (self::recordLimitedTools() as $toolKey => $definition) {
+            if (in_array($toolKey, $toolKeys, true)) {
+                continue;
+            }
+
+            $labels = self::recordLabels($user, $toolKey);
+
+            if ($labels === []) {
+                continue;
+            }
+
+            $lines->push($definition['label'].': '.implode(', ', $labels));
+        }
+
+        if ($lines->isEmpty()) {
+            return 'No admin access has been assigned.';
+        }
+
+        return $lines->implode("\n");
+    }
+
     private static function toolKeys(User $user): array
     {
         return collect(data_get($user->adminPermissionData(), 'tools', []))
@@ -352,6 +396,20 @@ class AdminAccess
         return collect(data_get($user->adminPermissionData(), "records.{$toolKey}", []))
             ->filter()
             ->map(fn (mixed $value): string => (string) $value)
+            ->values()
+            ->all();
+    }
+
+    private static function recordLabels(User $user, string $toolKey): array
+    {
+        $ids = self::recordIds($user, $toolKey);
+
+        if ($ids === []) {
+            return [];
+        }
+
+        return collect(self::recordOptions($toolKey))
+            ->only($ids)
             ->values()
             ->all();
     }
