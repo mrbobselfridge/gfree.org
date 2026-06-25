@@ -332,6 +332,24 @@ class ContentBlockBuilder
                                     ->helperText('Use a site path like /give or a full https:// URL.')
                                     ->visible(fn(Get $get): bool => in_array($get('type'), [LinkCard::TYPE_LINK_SAME, LinkCard::TYPE_LINK_NEW], true))
                                     ->columnSpanFull(),
+                                ...ImageUpload::make(
+                                    'image_path',
+                                    $imageDirectory,
+                                    'Card back image',
+                                    fn(ViewField $upload): ViewField => $upload
+                                        ->hintIcon(
+                                            Heroicon::OutlinedInformationCircle,
+                                            'Image shown on the back of a flip card.'
+                                        )
+                                        ->hintColor('gray')
+                                        ->visible(fn(Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpan(2),
+                                ),
+                                self::hint(TextInput::make('image_alt')
+                                    ->label('Alt text'), 'Briefly describe the card back image for accessibility when it adds meaning.')
+                                    ->maxLength(255)
+                                    ->visible(fn(Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                    ->columnSpan(1),
                                 self::hint(Select::make('image_fit')
                                     ->label('Image sizing'), 'Controls how the image fills the front of the card.')
                                     ->options(LinkCard::imageFitOptions())
@@ -376,24 +394,6 @@ class ContentBlockBuilder
                                     ->step(5)
                                     ->suffix('%')
                                     ->default(100)
-                                    ->visible(fn(Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpan(1),
-                                ...ImageUpload::make(
-                                    'image_path',
-                                    $imageDirectory,
-                                    'Card back image',
-                                    fn(ViewField $upload): ViewField => $upload
-                                        ->hintIcon(
-                                            Heroicon::OutlinedInformationCircle,
-                                            'Image shown on the back of a flip card.'
-                                        )
-                                        ->hintColor('gray')
-                                        ->visible(fn(Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                        ->columnSpan(2),
-                                ),
-                                self::hint(TextInput::make('image_alt')
-                                    ->label('Alt text'), 'Briefly describe the card back image for accessibility when it adds meaning.')
-                                    ->maxLength(255)
                                     ->visible(fn(Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
                                     ->columnSpan(1),
                                 self::hint(HtmlCodeTextarea::html(Textarea::make('html'))
