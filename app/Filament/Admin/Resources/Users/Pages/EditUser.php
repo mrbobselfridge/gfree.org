@@ -11,6 +11,7 @@ use App\Support\AdminAccess;
 use App\Support\UserAccountNotificationTemplate;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -44,8 +45,9 @@ class EditUser extends EditRecord
                 ->color('gray')
                 ->modalHeading('Notify user')
                 ->modalSubmitActionLabel('Send email')
-                ->fillForm(fn(): array => [
+                ->fillForm(fn (): array => [
                     'recipient_email' => $this->getRecord()->email,
+                    'cc_sender' => false,
                     'subject' => $this->defaultNotificationSubject(),
                     'message' => $this->defaultNotificationMessage(),
                 ])
@@ -54,6 +56,14 @@ class EditUser extends EditRecord
                         ->label('Recipient')
                         ->disabled()
                         ->dehydrated(false),
+                    Checkbox::make('cc_sender')
+                        ->label(fn (): string => sprintf(
+                            'Cc me%s',
+                            auth()->user() instanceof User && filled(auth()->user()->email)
+                                ? ' ('.auth()->user()->email.')'
+                                : '',
+                        ))
+                        ->helperText('Send a copy to your signed-in admin email.'),
                     TextInput::make('subject')
                         ->required()
                         ->maxLength(255)
@@ -73,7 +83,13 @@ class EditUser extends EditRecord
                         $record,
                     );
 
-                    Mail::to($record->email)->send(new UserAccountNotificationMail(
+                    $mail = Mail::to($record->email);
+
+                    if (($data['cc_sender'] ?? false) && $actor?->email && $actor->email !== $record->email) {
+                        $mail->cc($actor->email);
+                    }
+
+                    $mail->send(new UserAccountNotificationMail(
                         subjectLine: UserAccountNotificationTemplate::renderSubject($data['subject'] ?? '', $record, $actor, $resetPasswordUrl),
                         bodyText: UserAccountNotificationTemplate::render($data['message'] ?? '', $record, $actor, $resetPasswordUrl),
                     ));
@@ -154,7 +170,7 @@ TEXT;
         $permissions = $data['admin_permissions'] ?? [];
 
         return collect($permissions['tool_groups'] ?? [])
-            ->flatMap(fn(array $tools): array => $tools)
+            ->flatMap(fn (array $tools): array => $tools)
             ->merge($permissions['tools'] ?? [])
             ->filter()
             ->unique()

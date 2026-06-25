@@ -163,4 +163,31 @@ TEXT,
             && $mail->subjectLine === 'Custom account subject for Site Admin'
             && str_contains($mail->render(), 'Custom editable message for site-admin@example.com.'));
     }
+
+    public function test_notify_action_can_cc_current_admin_user(): void
+    {
+        Mail::fake();
+
+        $actor = User::factory()->create([
+            'name' => 'Admin Sender',
+            'email' => 'sender@example.com',
+        ]);
+
+        $target = User::factory()->create([
+            'name' => 'Content Editor',
+            'email' => 'notified@example.com',
+        ]);
+
+        Livewire::actingAs($actor)
+            ->test(EditUser::class, ['record' => $target->getKey()])
+            ->callAction('notifyUserAccount', [
+                'cc_sender' => true,
+                'subject' => 'Access for {user_name}',
+                'message' => 'Your account is ready.',
+            ])
+            ->assertHasNoActionErrors();
+
+        Mail::assertSent(UserAccountNotificationMail::class, fn (UserAccountNotificationMail $mail): bool => $mail->hasTo('notified@example.com')
+            && $mail->hasCc('sender@example.com'));
+    }
 }
