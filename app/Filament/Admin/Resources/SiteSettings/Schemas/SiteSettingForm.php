@@ -63,6 +63,8 @@ class SiteSettingForm
                             ->label('Email address')
                             ->email()
                             ->maxLength(255),
+                        TextInput::make('tagline')
+                            ->maxLength(255),
                         TextInput::make('contact_name')
                             ->label('Contact Name')
                             ->maxLength(255),
@@ -76,10 +78,7 @@ class SiteSettingForm
                             ->maxLength(255),
                         Textarea::make('contact_notes')
                             ->label('Contact Notes')
-                            ->rows(4)
-                            ->columnSpanFull(),
-                        TextInput::make('tagline')
-                            ->maxLength(255),
+                            ->rows(2),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -87,7 +86,7 @@ class SiteSettingForm
                     ->schema([
                         RichEditorDefaults::configure(RichEditor::make('dashboard_notes'), withAiRewrite: false)
                             ->label('Dashboard notes')
-                            ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
+                            ->dehydrateStateUsing(fn(mixed $state): ?string => RichContent::nullable($state))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Shown in a movable Dashboard notes widget on the admin dashboard for users and admins. Leave blank to hide the widget.',
@@ -151,17 +150,17 @@ class SiteSettingForm
                                     'image_path',
                                     'site-settings/additional-links',
                                     'Image',
-                                    fn (ViewField $upload): ViewField => $upload
+                                    fn(ViewField $upload): ViewField => $upload
                                         ->required()
                                         ->helperText('Icon shown in the public footer for this link.')
                                         ->columnSpanFull(),
                                 ),
                             ])
                             ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                            ->itemLabel(fn(array $state): ?string => $state['label'] ?? null)
                             ->addActionLabel('Add additional link')
                             ->reorderable()
-                            ->dehydrateStateUsing(fn (mixed $state): array => self::normalizeAdditionalSocialLinks($state))
+                            ->dehydrateStateUsing(fn(mixed $state): array => self::normalizeAdditionalSocialLinks($state))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional footer links with custom icons. The label is used for hover and screen-reader text.',
@@ -181,7 +180,7 @@ class SiteSettingForm
                                     ->required()
                                     ->live(onBlur: true)
                                     ->maxLength(120)
-                                    ->afterStateUpdated(fn (Set $set, Get $get, ?string $state): mixed => blank($get('variable'))
+                                    ->afterStateUpdated(fn(Set $set, Get $get, ?string $state): mixed => blank($get('variable'))
                                         ? $set('variable', SiteVariables::normalizeKey($state))
                                         : null),
                                 TextInput::make('variable')
@@ -189,7 +188,7 @@ class SiteSettingForm
                                     ->required()
                                     ->live(onBlur: true)
                                     ->maxLength(120)
-                                    ->dehydrateStateUsing(fn (mixed $state): string => SiteVariables::normalizeKey($state))
+                                    ->dehydrateStateUsing(fn(mixed $state): string => SiteVariables::normalizeKey($state))
                                     ->rule('regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                                     ->validationMessages([
                                         'regex' => 'Use lowercase letters and numbers separated by dashes, such as service-times.',
@@ -201,7 +200,7 @@ class SiteSettingForm
                                     ->hintColor('gray'),
                                 Placeholder::make('token')
                                     ->label('Token')
-                                    ->content(fn (Get $get): string => SiteVariables::tokenFor($get('variable') ?: $get('name')) ?? 'Add a variable name')
+                                    ->content(fn(Get $get): string => SiteVariables::tokenFor($get('variable') ?: $get('name')) ?? 'Add a variable name')
                                     ->columnSpan(1),
                                 HtmlCodeTextarea::html(Textarea::make('value'))
                                     ->label('Value')
@@ -215,11 +214,11 @@ class SiteSettingForm
                                     ->columnSpanFull(),
                             ])
                             ->columns(3)
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->itemLabel(fn(array $state): ?string => $state['name'] ?? null)
                             ->addActionLabel('Add site variable')
                             ->reorderable()
-                            ->disabled(fn (): bool => ! CodeBlockAccess::canManage())
-                            ->dehydrateStateUsing(fn (mixed $state): array => SiteVariables::normalizeRows($state))
+                            ->disabled(fn(): bool => !CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn(mixed $state): array => SiteVariables::normalizeRows($state))
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Reusable sitewide content. Type tokens like [[address]] or [[service-times]] in public content fields.',
@@ -236,14 +235,14 @@ class SiteSettingForm
                             'site_logo_path',
                             'site-settings/logo',
                             'Site logo',
-                            fn (ViewField $upload): ViewField => $upload
+                            fn(ViewField $upload): ViewField => $upload
                                 ->helperText('Used in the public header and footer. Leave blank to use the default logo.'),
                         ),
                         ...ImageUpload::make(
                             'default_page_header_image_path',
                             'site-settings/page-header-images',
                             'Default page header image',
-                            fn (ViewField $upload): ViewField => $upload
+                            fn(ViewField $upload): ViewField => $upload
                                 ->helperText('Used on public pages when Show page header is on but that page has no Header Image selected.')
                                 ->columnSpan(2),
                         ),
@@ -251,9 +250,9 @@ class SiteSettingForm
                             ->label('Site accent color')
                             ->hex()
                             ->default(SiteSetting::DEFAULT_DESIGN_ACCENT_COLOR)
-                            ->formatStateUsing(fn (mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_COLOR)
+                            ->formatStateUsing(fn(mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_COLOR)
                             ->required()
-                            ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                            ->dehydrateStateUsing(fn(mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
                             ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
                             ->validationMessages([
                                 'regex' => 'Enter a valid hex color, such as #17b8ad.',
@@ -267,9 +266,9 @@ class SiteSettingForm
                             ->label('Accent text color')
                             ->hex()
                             ->default(SiteSetting::DEFAULT_DESIGN_ACCENT_TEXT_COLOR)
-                            ->formatStateUsing(fn (mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_TEXT_COLOR)
+                            ->formatStateUsing(fn(mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_TEXT_COLOR)
                             ->required()
-                            ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                            ->dehydrateStateUsing(fn(mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
                             ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
                             ->validationMessages([
                                 'regex' => 'Enter a valid hex color, such as #05756f.',
@@ -283,9 +282,9 @@ class SiteSettingForm
                             ->label('Soft accent color')
                             ->hex()
                             ->default(SiteSetting::DEFAULT_DESIGN_ACCENT_SOFT_COLOR)
-                            ->formatStateUsing(fn (mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_SOFT_COLOR)
+                            ->formatStateUsing(fn(mixed $state): string => SiteDesignPalette::normalizeHex($state) ?? SiteSetting::DEFAULT_DESIGN_ACCENT_SOFT_COLOR)
                             ->required()
-                            ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                            ->dehydrateStateUsing(fn(mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
                             ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
                             ->validationMessages([
                                 'regex' => 'Enter a valid hex color, such as #ddf8f5.',
@@ -312,19 +311,19 @@ class SiteSettingForm
                                     ->hex()
                                     ->placeholder('#17b8ad')
                                     ->required()
-                                    ->dehydrateStateUsing(fn (mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
+                                    ->dehydrateStateUsing(fn(mixed $state): ?string => SiteDesignPalette::normalizeHex($state))
                                     ->rule('regex:/^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/')
                                     ->validationMessages([
                                         'regex' => 'Enter a valid hex color, such as #17b8ad.',
                                     ]),
                                 Hidden::make('key')
-                                    ->dehydrateStateUsing(fn (mixed $state, Get $get): string => SiteDesignPalette::normalizeKey($state) ?? SiteDesignPalette::normalizeKey($get('name')) ?? 'background'),
+                                    ->dehydrateStateUsing(fn(mixed $state, Get $get): string => SiteDesignPalette::normalizeKey($state) ?? SiteDesignPalette::normalizeKey($get('name')) ?? 'background'),
                             ])
                             ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->itemLabel(fn(array $state): ?string => $state['name'] ?? null)
                             ->addActionLabel('Add background color')
                             ->reorderable()
-                            ->dehydrateStateUsing(fn (mixed $state): array => SiteDesignPalette::normalizeBackgroundColors($state) ?: SiteDesignPalette::defaultBackgroundColors())
+                            ->dehydrateStateUsing(fn(mixed $state): array => SiteDesignPalette::normalizeBackgroundColors($state) ?: SiteDesignPalette::defaultBackgroundColors())
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'These colors populate the Background color options in page and homepage content blocks.',
@@ -334,8 +333,8 @@ class SiteSettingForm
                         HtmlCodeTextarea::css(Textarea::make('custom_css'))
                             ->label('Custom CSS')
                             ->rows(5)
-                            ->visible(fn (): bool => CodeBlockAccess::canManage())
-                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? trim($state) : null)
+                            ->visible(fn(): bool => CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional public-site CSS override for admins and editors with Code Blocks access. Leave blank to use the standard stylesheet.',
@@ -351,7 +350,7 @@ class SiteSettingForm
                         TextInput::make('google_tag_manager_id')
                             ->label('Google Tag Manager container ID')
                             ->helperText('Example: GTM-XXXXXXX. This renders the GTM head script and body noscript on public pages.')
-                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? strtoupper(trim($state)) : null)
+                            ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? strtoupper(trim($state)) : null)
                             ->rule('nullable')
                             ->rule('regex:/^GTM-[A-Z0-9]+$/i')
                             ->validationMessages([
@@ -361,7 +360,7 @@ class SiteSettingForm
                         TextInput::make('google_analytics_measurement_id')
                             ->label('Google Analytics measurement ID')
                             ->helperText('Example: G-XXXXXXXXXX. Used only when no Google Tag Manager ID is set.')
-                            ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? strtoupper(trim($state)) : null)
+                            ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? strtoupper(trim($state)) : null)
                             ->rule('nullable')
                             ->rule('regex:/^G-[A-Z0-9]+$/i')
                             ->validationMessages([
@@ -404,7 +403,7 @@ class SiteSettingForm
     private static function normalizeAdditionalSocialLinks(mixed $links): array
     {
         return collect(is_array($links) ? $links : [])
-            ->filter(fn (mixed $link): bool => is_array($link))
+            ->filter(fn(mixed $link): bool => is_array($link))
             ->map(function (array $link): ?array {
                 $label = trim((string) ($link['label'] ?? ''));
                 $url = trim((string) ($link['url'] ?? ''));
