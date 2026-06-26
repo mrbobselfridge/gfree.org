@@ -48,7 +48,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName(fn (): string => $this->brandName())
+            ->brandName(fn(): string => $this->brandName())
             ->login()
             ->passwordReset()
             ->sidebarCollapsibleOnDesktop()
@@ -64,11 +64,11 @@ class AdminPanelProvider extends PanelProvider
                     ->group('Website')
                     ->icon(Heroicon::OutlinedBookOpen)
                     ->sort(940)
-                    ->url(fn (): string => route('manual'), true),
+                    ->url(fn(): string => route('manual'), true),
             ])
             ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
-                fn (): HtmlString => new HtmlString(<<<'HTML'
+                fn(): HtmlString => new HtmlString(<<<'HTML'
                     <style>
                         .twyxtco-content-block-builder-field {
                             position: relative;
@@ -1057,7 +1057,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
-                fn (): HtmlString => new HtmlString(view('filament.admin.forms.components.html-code-textarea-assets')->render()),
+                fn(): HtmlString => new HtmlString(view('filament.admin.forms.components.html-code-textarea-assets')->render()),
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
@@ -1066,7 +1066,7 @@ class AdminPanelProvider extends PanelProvider
                     $manualUrls = [];
 
                     foreach (AdminNavigationHelp::manualAnchors() as $label => $anchor) {
-                        $manualUrls[$label] = route('manual').'#'.$anchor;
+                        $manualUrls[$label] = route('manual') . '#' . $anchor;
                     }
 
                     $manualUrls = Js::from($manualUrls);
@@ -1201,7 +1201,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
-                fn (): HtmlString => new HtmlString(<<<'HTML'
+                fn(): HtmlString => new HtmlString(<<<'HTML'
                     <script>
                         document.addEventListener('twyxtco-focus-first-form-field', () => {
                             window.setTimeout(() => {
@@ -1215,7 +1215,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
-                fn (): HtmlString => new HtmlString(<<<'HTML'
+                fn(): HtmlString => new HtmlString(<<<'HTML'
                     <script>
                         (() => {
                             const storageKey = 'twyxtco.admin.dashboard.widgets.v1';
@@ -1613,15 +1613,15 @@ class AdminPanelProvider extends PanelProvider
                 'icon' => Heroicon::OutlinedTag,
                 'sort' => 920,
             ],
-            SiteSettingResource::class => [
-                'label' => 'Site Settings',
-                'icon' => Heroicon::OutlinedCog6Tooth,
-                'sort' => 930,
-            ],
             Analytics::class => [
                 'label' => 'Analytics',
                 'icon' => Heroicon::OutlinedChartBarSquare,
                 'sort' => 950,
+            ],
+            UserResource::class => [
+                'label' => 'Users',
+                'icon' => Heroicon::OutlinedUsers,
+                'sort' => 980,
             ],
             Backups::class => [
                 'label' => 'Backups',
@@ -1633,10 +1633,10 @@ class AdminPanelProvider extends PanelProvider
                 'icon' => Heroicon::OutlinedBell,
                 'sort' => 970,
             ],
-            UserResource::class => [
-                'label' => 'Users',
-                'icon' => Heroicon::OutlinedUsers,
-                'sort' => 980,
+            SiteSettingResource::class => [
+                'label' => 'Site Settings',
+                'icon' => Heroicon::OutlinedCog6Tooth,
+                'sort' => 930,
             ],
         ];
 
@@ -1650,10 +1650,10 @@ class AdminPanelProvider extends PanelProvider
 
     private function brandName(): string
     {
-        if (! Schema::hasTable('site_settings')) {
+        if (!Schema::hasTable('site_settings')) {
             return 'TwyxtCo Church Dashboard';
         }
 
-        return (SiteSetting::query()->value('church_name') ?: 'TwyxtCo Church').' Dashboard';
+        return (SiteSetting::query()->value('church_name') ?: 'TwyxtCo Church') . ' Dashboard';
     }
 }
