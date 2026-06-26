@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\FileCategories;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\FileCategories\Pages\CreateFileCategory;
 use App\Filament\Admin\Resources\FileCategories\Pages\EditFileCategory;
@@ -9,27 +10,18 @@ use App\Filament\Admin\Resources\FileCategories\Pages\ListFileCategories;
 use App\Filament\Admin\Resources\FileCategories\Schemas\FileCategoryForm;
 use App\Filament\Admin\Resources\FileCategories\Tables\FileCategoriesTable;
 use App\Models\FileCategory;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class FileCategoryResource extends Resource
 {
     use AppliesAdminAccess;
+    use HasCentralizedAdminNavigation;
 
     protected static ?string $model = FileCategory::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
-
     protected static bool $shouldRegisterNavigation = false;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 920;
-
-    protected static ?string $navigationLabel = 'File Categories';
 
     protected static ?string $modelLabel = 'file category';
 

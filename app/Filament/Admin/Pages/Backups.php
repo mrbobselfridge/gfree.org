@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Support\BackupProfiles;
-use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -14,15 +14,8 @@ use Illuminate\Support\Facades\Artisan;
 
 class Backups extends Page
 {
+    use HasCentralizedAdminNavigation;
     use RequiresAdminPageAccess;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 960;
-
-    protected static ?string $navigationLabel = 'Backups';
 
     protected static ?string $title = 'Backups';
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\FileDocuments;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\FileDocuments\Pages\CreateFileDocument;
 use App\Filament\Admin\Resources\FileDocuments\Pages\EditFileDocument;
@@ -12,25 +13,16 @@ use App\Filament\Admin\Resources\FileDocuments\Schemas\FileDocumentForm;
 use App\Filament\Admin\Resources\FileDocuments\Schemas\FileDocumentInfolist;
 use App\Filament\Admin\Resources\FileDocuments\Tables\FileDocumentsTable;
 use App\Models\FileDocument;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class FileDocumentResource extends Resource
 {
     use AppliesAdminAccess;
+    use HasCentralizedAdminNavigation;
 
     protected static ?string $model = FileDocument::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 910;
-
-    protected static ?string $navigationLabel = 'File Library';
 
     protected static ?string $modelLabel = 'file';
 

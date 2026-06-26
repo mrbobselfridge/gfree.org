@@ -8,70 +8,60 @@ return [
         ],
 
         'navigation' => [
-            ['label' => 'New Here', 'url' => '/new-here'],
-            ['label' => 'Sundays', 'url' => '/sundays'],
-            ['label' => 'Messages', 'url' => '/messages'],
+            ['label' => 'Home', 'url' => '/'],
+            ['label' => 'Contact', 'url' => '/contact'],
         ],
 
         'hero' => [
-            'eyebrow' => 'Welcome home',
-            'title' => 'Grace for real life.',
-            'subtitle' => 'A church family in central Pennsylvania learning to follow Jesus together with clarity, care, and room for real questions.',
+            'eyebrow' => 'Welcome',
+            'title' => 'Welcome to our site.',
+            'subtitle' => 'We\'re glad you made it!',
             'image_url' => 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=1800&q=85',
             'primary_label' => 'Plan a Visit',
-            'primary_url' => '/new-here',
-            'secondary_label' => 'Watch Live',
-            'secondary_url' => '/live',
+            'primary_url' => '/',
+            'secondary_label' => 'Shop our Store',
+            'secondary_url' => '/store',
         ],
 
         'service_details' => [
-            ['label' => 'Sunday', 'value' => '9:00 & 10:45 AM'],
-            ['label' => 'Visit', 'value' => '305 Keystone Hill Road'],
-            ['label' => 'Next Step', 'value' => 'Connect Card & Prayer'],
+            ['label' => 'Hours', 'value' => '9:00 AM - 5:00 PM'],
+            ['label' => 'Visit', 'value' => '123 Pine St, Town, ST 12345'],
         ],
 
         'intro' => [
             'eyebrow' => 'Start here',
-            'title' => 'Everything a guest needs without digging.',
-            'body' => 'Find service details, kids check-in, ways to connect, and a direct path to the next step before you ever walk through the doors.',
+            'title' => 'Everything a customer needs without digging.',
+            'body' => 'Find store details, ways to connect, and sales information.',
         ],
 
         'next_steps' => [
             [
                 'number' => '01',
-                'title' => 'Visit Sunday',
-                'summary' => 'Service times, what to expect, kids check-in, and where to go.',
-                'url' => '/new-here',
+                'title' => 'Visit Us',
+                'summary' => 'Store Hours, Sales, and ways to reach out to us.',
+                'url' => '/store',
             ],
             [
                 'number' => '02',
-                'title' => 'Find Community',
-                'summary' => 'Groups, kids, students, and ways to belong beyond Sunday.',
-                'url' => '/new-here',
-            ],
-            [
-                'number' => '03',
-                'title' => 'Start Serving',
-                'summary' => 'A direct path into teams, prayer, events, giving, and One Church.',
-                'url' => '/serve',
+                'title' => 'Buy Stuff',
+                'summary' => 'Shop our store and find good stuff to buy!',
+                'url' => '/store',
             ],
         ],
 
         'process' => [
-            'eyebrow' => 'Ready to serve?',
-            'title' => 'Every step matters.',
+            'eyebrow' => 'Looking for Sales?',
+            'title' => 'We have great sales regularly.',
             'steps' => [
-                ['title' => 'Fill out the form', 'summary' => 'Tell us where you are interested.'],
-                ['title' => 'Talk with a leader', 'summary' => 'Find a team that fits your gifts.'],
-                ['title' => 'Begin serving', 'summary' => 'Use what God has given you.'],
+                ['title' => 'Talk with a representative', 'summary' => 'Find the perfect stuff for your place.'],
             ],
         ],
 
         'feature' => [
             'eyebrow' => 'Featured',
-            'title' => 'One Church handles the moving parts.',
-            'body' => 'Forms, event registrations, giving, and team signups can stay in One Church while the website stays focused on welcome, clarity, and direction.',
-            'label' => 'Open One Church',
+            'title' => 'One business, lots of options.',
+            'body' => 'Shope till you drop, supersale coming and here and gone!',
+            'label' => 'Open Information',
             'url' => '#',
         ],
     ],

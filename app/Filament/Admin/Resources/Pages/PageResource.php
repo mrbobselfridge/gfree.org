@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Pages;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
@@ -9,23 +10,16 @@ use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Filament\Admin\Resources\Pages\Tables\PagesTable;
 use App\Models\Page;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class PageResource extends Resource
 {
     use AppliesAdminAccess;
+    use HasCentralizedAdminNavigation;
 
     protected static ?string $model = Page::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 35;
 
     protected static ?string $recordTitleAttribute = 'title';
 

@@ -3,6 +3,18 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Admin\CmsDashboard;
+use App\Filament\Admin\Pages\Analytics;
+use App\Filament\Admin\Pages\Backups;
+use App\Filament\Admin\Pages\HomepageContent;
+use App\Filament\Admin\Pages\MediaLibrary;
+use App\Filament\Admin\Resources\FileCategories\FileCategoryResource;
+use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
+use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
+use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
+use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
+use App\Filament\Admin\Resources\Users\UserResource;
+use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\SiteSetting;
 use App\Support\AdminNavigationHelp;
 use Filament\Http\Middleware\Authenticate;
@@ -30,6 +42,8 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $this->configureAdminNavigation();
+
         return $panel
             ->default()
             ->id('admin')
@@ -1557,6 +1571,81 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+
+    private function configureAdminNavigation(): void
+    {
+        $group = 'Website';
+
+        $items = [
+            HomepageContent::class => [
+                'label' => 'Homepage',
+                'icon' => Heroicon::OutlinedRectangleGroup,
+                'sort' => 0,
+            ],
+            HomepageBannerResource::class => [
+                'label' => 'Banners',
+                'icon' => Heroicon::OutlinedPhoto,
+                'sort' => 1,
+            ],
+            PageResource::class => [
+                'label' => 'Pages',
+                'icon' => Heroicon::OutlinedDocumentText,
+                'sort' => 35,
+            ],
+            NavigationLinkResource::class => [
+                'label' => 'Navigation',
+                'icon' => Heroicon::OutlinedLink,
+                'sort' => 36,
+            ],
+            MediaLibrary::class => [
+                'label' => 'Media Library',
+                'icon' => Heroicon::OutlinedPhoto,
+                'sort' => 900,
+            ],
+            FileDocumentResource::class => [
+                'label' => 'File Library',
+                'icon' => Heroicon::OutlinedDocumentText,
+                'sort' => 910,
+            ],
+            FileCategoryResource::class => [
+                'label' => 'File Categories',
+                'icon' => Heroicon::OutlinedTag,
+                'sort' => 920,
+            ],
+            SiteSettingResource::class => [
+                'label' => 'Site Settings',
+                'icon' => Heroicon::OutlinedCog6Tooth,
+                'sort' => 930,
+            ],
+            Analytics::class => [
+                'label' => 'Analytics',
+                'icon' => Heroicon::OutlinedChartBarSquare,
+                'sort' => 950,
+            ],
+            Backups::class => [
+                'label' => 'Backups',
+                'icon' => Heroicon::OutlinedCircleStack,
+                'sort' => 960,
+            ],
+            WorkflowNotificationRuleResource::class => [
+                'label' => 'Notifications',
+                'icon' => Heroicon::OutlinedBell,
+                'sort' => 970,
+            ],
+            UserResource::class => [
+                'label' => 'Users',
+                'icon' => Heroicon::OutlinedUsers,
+                'sort' => 980,
+            ],
+        ];
+
+        foreach ($items as $item => $navigation) {
+            $item::navigationGroup($group);
+            $item::navigationLabel($navigation['label']);
+            $item::navigationIcon($navigation['icon']);
+            $item::navigationSort($navigation['sort']);
+        }
     }
 
     private function brandName(): string

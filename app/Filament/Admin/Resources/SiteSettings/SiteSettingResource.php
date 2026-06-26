@@ -2,30 +2,24 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Filament\Admin\Resources\SiteSettings\Pages\ListSiteSettings;
 use App\Filament\Admin\Resources\SiteSettings\Schemas\SiteSettingForm;
 use App\Filament\Admin\Resources\SiteSettings\Tables\SiteSettingsTable;
 use App\Models\SiteSetting;
-use BackedEnum;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class SiteSettingResource extends Resource
 {
     use AppliesAdminAccess;
+    use HasCentralizedAdminNavigation;
 
     protected static ?string $model = SiteSetting::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 930;
 
     protected static ?string $modelLabel = 'site settings';
 

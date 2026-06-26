@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Users;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\Users\Pages\CreateUser;
 use App\Filament\Admin\Resources\Users\Pages\EditUser;
@@ -11,7 +12,6 @@ use App\Models\User;
 use App\Models\WorkflowNotificationRule;
 use App\Support\AdminAccess;
 use App\Support\WorkflowNotificationService;
-use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -32,6 +32,7 @@ use Filament\Tables\Table;
 class UserResource extends Resource
 {
     use AppliesAdminAccess;
+    use HasCentralizedAdminNavigation;
 
     private const SECTION_IDS = [
         'users-content-tools',
@@ -41,12 +42,6 @@ class UserResource extends Resource
     ];
 
     protected static ?string $model = User::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 980;
 
     protected static ?string $modelLabel = 'user';
 

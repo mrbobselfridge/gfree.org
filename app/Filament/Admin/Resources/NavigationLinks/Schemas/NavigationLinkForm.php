@@ -21,15 +21,6 @@ class NavigationLinkForm
         return $schema
             ->columns(3)
             ->components([
-                // Placeholder::make('text_spacer')
-                //         ->hiddenLabel()
-                //         ->content(new HtmlString('&nbsp;'))
-                //         ->columnSpan(2),
-                        
-
-
-
-
 
                 TextInput::make('label')
                     ->label('Link text')
@@ -68,7 +59,7 @@ class NavigationLinkForm
                     ->label('Destination')
                     ->required()
                     ->maxLength(255)
-                    ->datalist(fn (): array => NavigationDestinationSuggestions::optionValues())
+                    ->datalist(fn(): array => NavigationDestinationSuggestions::optionValues())
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Use a local path like /new-here, choose a suggested page, file, or media path after typing /, or enter a full https:// URL.'
@@ -84,7 +75,7 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray'),
 
-                    ToggleButtons::make('opens_in_new_tab')
+                ToggleButtons::make('opens_in_new_tab')
                     ->label('Open in new tab')
                     ->boolean()
                     ->inline()
@@ -98,7 +89,7 @@ class NavigationLinkForm
 
                 Hidden::make('location')
                     ->default('header')
-                    ->dehydrateStateUsing(fn (): string => 'header'),
+                    ->dehydrateStateUsing(fn(): string => 'header'),
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
                     ->hintIcon(
@@ -108,7 +99,7 @@ class NavigationLinkForm
                     ->hintColor('gray'),
                 DateTimePicker::make('expires_at')
                     ->label('Expires at')
-                    ->afterOrEqual(fn (Get $get): ?string => $get('publish_at'))
+                    ->afterOrEqual(fn(Get $get): ?string => $get('publish_at'))
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Optional. Use for seasonal links that should disappear automatically.'

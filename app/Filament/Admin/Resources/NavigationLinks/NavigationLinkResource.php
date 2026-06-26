@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\NavigationLinks;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\CreateNavigationLink;
 use App\Filament\Admin\Resources\NavigationLinks\Pages\EditNavigationLink;
@@ -9,26 +10,17 @@ use App\Filament\Admin\Resources\NavigationLinks\Pages\ListNavigationLinks;
 use App\Filament\Admin\Resources\NavigationLinks\Schemas\NavigationLinkForm;
 use App\Filament\Admin\Resources\NavigationLinks\Tables\NavigationLinksTable;
 use App\Models\NavigationLink;
-use BackedEnum;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class NavigationLinkResource extends Resource
 {
     use AppliesAdminAccess;
+    use HasCentralizedAdminNavigation;
 
     protected static ?string $model = NavigationLink::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 36;
-
-    protected static ?string $navigationLabel = 'Navigation';
 
     protected static ?string $modelLabel = 'navigation link';
 

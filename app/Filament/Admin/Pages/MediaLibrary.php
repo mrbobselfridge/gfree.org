@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\MediaImageMetadata;
@@ -12,7 +13,6 @@ use App\Support\MediaTagOptions;
 use App\Support\MediaUsage;
 use App\Support\UploadedFilenameTitle;
 use App\Support\WorkflowNotificationService;
-use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
@@ -31,19 +31,12 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class MediaLibrary extends Page
 {
+    use HasCentralizedAdminNavigation;
     use RequiresAdminPageAccess;
 
     private const IMAGE_DIRECTORY = 'media-library';
 
     private const IMAGE_BATCH_SIZE = 100000;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 900;
-
-    protected static ?string $navigationLabel = 'Media Library';
 
     protected static ?string $title = 'Media Library';
 

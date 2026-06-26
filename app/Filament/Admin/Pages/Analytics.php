@@ -2,26 +2,18 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Models\AnalyticsPageView;
-use BackedEnum;
 use Filament\Pages\Page;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class Analytics extends Page
 {
+    use HasCentralizedAdminNavigation;
     use RequiresAdminPageAccess;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 950;
-
-    protected static ?string $navigationLabel = 'Analytics';
 
     protected static ?string $title = 'Analytics';
 

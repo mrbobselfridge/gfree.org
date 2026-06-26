@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\AiPageReviewActions;
@@ -14,7 +15,6 @@ use App\Models\WorkflowNotificationRule;
 use App\Support\CodeBlockAccess;
 use App\Support\SiteVariables;
 use App\Support\WorkflowNotificationService;
-use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -32,15 +32,8 @@ use Filament\Support\Icons\Heroicon;
 
 class HomepageContent extends Page
 {
+    use HasCentralizedAdminNavigation;
     use RequiresAdminPageAccess;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
-
-    protected static ?int $navigationSort = 0;
-
-    protected static ?string $navigationLabel = 'Homepage';
 
     protected static ?string $title = 'Homepage Content';
 
