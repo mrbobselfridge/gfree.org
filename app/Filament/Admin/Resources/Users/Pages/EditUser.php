@@ -105,7 +105,7 @@ class EditUser extends EditRecord
 
     private function defaultNotificationSubject(): string
     {
-        return 'Your {site_name} admin account';
+        return '{site_name} site access';
     }
 
     private function defaultNotificationMessage(): string
@@ -113,7 +113,7 @@ class EditUser extends EditRecord
         return <<<'TEXT'
 Hello {user_name},
 
-You have an account to manage portions of "{site_name}" site.
+Here is account information to access the "{site_name}" site tools.
 
 Admin URL (after resetting your password below):
 {admin_url}
