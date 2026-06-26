@@ -17,7 +17,7 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('Grace for real life.');
+        $response->assertSee('Welcome to our site.');
         $response->assertSee('site-home--editorial-color');
     }
 }

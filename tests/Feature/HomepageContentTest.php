@@ -125,17 +125,15 @@ class HomepageContentTest extends TestCase
             ->assertOk()
             ->assertSee('concept-service-strip', false)
             ->assertSee('page-block--info-strip-spacing-bottom', false)
-            ->assertSee('--info-strip-count: 3', false)
-            ->assertSee('Sunday')
-            ->assertSee('9:00 &amp; 10:45 AM', false)
+            ->assertSee('--info-strip-count: 2', false)
+            ->assertSee('Hours')
+            ->assertSee('9:00 AM - 5:00 PM')
             ->assertSee('Visit')
-            ->assertSee('305 Keystone Hill Road')
-            ->assertSee('Next Step')
-            ->assertSee('Connect Card &amp; Prayer', false)
-            ->assertSee('Everything a guest needs without digging.')
-            ->assertSee('Visit Sunday')
-            ->assertSee('Every step matters.')
-            ->assertSee('One Church handles the moving parts.')
+            ->assertSee('123 Pine St, Town, ST 12345')
+            ->assertSee('Everything a customer needs without digging.')
+            ->assertSee('Visit Us')
+            ->assertSee('We have great sales regularly.')
+            ->assertSee('One business, lots of options.')
             ->assertSee('page-block--process-steps', false);
     }
 
@@ -321,7 +319,7 @@ class HomepageContentTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('One Church handles the moving parts.')
+            ->assertSee('One business, lots of options.')
             ->assertDontSee('href="#"', false);
     }
 

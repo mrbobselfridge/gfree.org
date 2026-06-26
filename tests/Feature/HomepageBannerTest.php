@@ -109,14 +109,14 @@ class HomepageBannerTest extends TestCase
 
         $content = $this->get('/')
             ->assertOk()
-            ->assertSee('Welcome home')
+            ->assertSee('Welcome')
             ->assertSee('Special Sunday')
-            ->assertDontSee('A church family in central Pennsylvania')
+            ->assertDontSee('We&#039;re glad you made it!', false)
             ->assertSee('data-hero-subtitle', false)
             ->assertSee('hidden', false)
             ->assertSee('images.unsplash.com')
             ->assertDontSee('Plan a Visit')
-            ->assertDontSee('Watch Live')
+            ->assertDontSee('Shop our Store')
             ->content();
 
         $this->assertMatchesRegularExpression('/data-hero-primary\s+hidden/s', $content);
@@ -158,7 +158,7 @@ class HomepageBannerTest extends TestCase
             ->assertOk()
             ->assertSee('Plan Your Visit')
             ->assertSee('Plan a Visit')
-            ->assertDontSee('Watch Live')
+            ->assertDontSee('Shop our Store')
             ->content();
 
         $this->assertMatchesRegularExpression(
