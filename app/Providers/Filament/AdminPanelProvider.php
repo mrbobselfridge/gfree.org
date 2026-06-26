@@ -63,7 +63,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationItem::make('User Manual')
                     ->group('Website')
                     ->icon(Heroicon::OutlinedBookOpen)
-                    ->sort(1000)
+                    ->sort(940)
                     ->url(fn(): string => route('manual'), true),
             ])
             ->renderHook(
@@ -1613,30 +1613,30 @@ class AdminPanelProvider extends PanelProvider
                 'icon' => Heroicon::OutlinedTag,
                 'sort' => 920,
             ],
+            SiteSettingResource::class => [
+                'label' => 'Site Settings',
+                'icon' => Heroicon::OutlinedCog6Tooth,
+                'sort' => 930,
+            ],
             Analytics::class => [
                 'label' => 'Analytics',
                 'icon' => Heroicon::OutlinedChartBarSquare,
-                'sort' => 1010,
-            ],
-            UserResource::class => [
-                'label' => 'Users',
-                'icon' => Heroicon::OutlinedUsers,
-                'sort' => 1020,
+                'sort' => 950,
             ],
             Backups::class => [
                 'label' => 'Backups',
                 'icon' => Heroicon::OutlinedCircleStack,
-                'sort' => 1030,
+                'sort' => 960,
             ],
             WorkflowNotificationRuleResource::class => [
                 'label' => 'Notifications',
                 'icon' => Heroicon::OutlinedBell,
-                'sort' => 1040,
+                'sort' => 970,
             ],
-            SiteSettingResource::class => [
-                'label' => 'Site Settings',
-                'icon' => Heroicon::OutlinedCog6Tooth,
-                'sort' => 1050,
+            UserResource::class => [
+                'label' => 'Users',
+                'icon' => Heroicon::OutlinedUsers,
+                'sort' => 980,
             ],
         ];
 
