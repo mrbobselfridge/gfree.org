@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
+use App\Filament\Admin\Forms\Components\UnsplashImagePicker;
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
@@ -1263,6 +1264,11 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertStringContainsString('.twyxtco-image-picker-results', $view);
         $this->assertStringContainsString('overflow: auto;', $view);
         $this->assertStringContainsString('max-height: min(58vh, 680px);', $view);
+    }
+
+    public function test_unsplash_image_picker_requests_twenty_five_search_results(): void
+    {
+        $this->assertSame(25, UnsplashImagePicker::DEFAULT_PER_PAGE);
     }
 
     public function test_existing_image_picker_modal_uses_two_column_controls_with_full_width_images(): void

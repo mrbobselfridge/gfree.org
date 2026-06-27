@@ -7,7 +7,7 @@ use Filament\Forms\Components\Field;
 
 class UnsplashImagePicker extends Field
 {
-    public const DEFAULT_PER_PAGE = 12;
+    public const DEFAULT_PER_PAGE = 25;
 
     protected string $view = 'filament.admin.forms.components.unsplash-image-picker';
 
