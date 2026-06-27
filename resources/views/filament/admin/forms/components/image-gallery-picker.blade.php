@@ -69,8 +69,8 @@
 
         .twyxtco-image-picker {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 1rem;
         }
 
         .twyxtco-image-picker-option {
@@ -91,10 +91,12 @@
 
         .twyxtco-image-picker-card {
             display: block;
+            min-height: 15.75rem;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
             background: white;
             overflow: hidden;
+            perspective: 1000px;
             transition: border-color 120ms ease, box-shadow 120ms ease;
         }
 
@@ -108,10 +110,44 @@
             box-shadow: 0 0 0 3px rgb(217 119 6 / 0.35);
         }
 
+        .twyxtco-image-picker-card__inner {
+            position: relative;
+            display: grid;
+            min-height: 15.75rem;
+            transform-style: preserve-3d;
+            transition: transform 180ms ease;
+        }
+
+        .twyxtco-image-picker-option:hover .twyxtco-image-picker-card__inner,
+        .twyxtco-image-picker-option:focus-within .twyxtco-image-picker-card__inner {
+            transform: rotateY(180deg);
+        }
+
+        .twyxtco-image-picker-card__front,
+        .twyxtco-image-picker-card__back {
+            grid-area: 1 / 1;
+            min-height: 15.75rem;
+            backface-visibility: hidden;
+        }
+
+        .twyxtco-image-picker-card__front {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .twyxtco-image-picker-card__back {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            overflow: auto;
+            transform: rotateY(180deg);
+            padding: 0.875rem;
+        }
+
         .twyxtco-image-picker-card__image {
             display: block;
             width: 100%;
-            height: 4.75rem;
+            height: 8.35rem;
             object-fit: contain;
             background: rgb(243 244 246);
         }
@@ -122,11 +158,10 @@
 
         .twyxtco-image-picker-card__body {
             display: block;
-            padding: 0.5rem;
+            padding: 0.75rem;
         }
 
         .twyxtco-image-picker-card__title,
-        .twyxtco-image-picker-card__path,
         .twyxtco-image-picker-card__meta {
             display: block;
             overflow: hidden;
@@ -136,7 +171,7 @@
 
         .twyxtco-image-picker-card__title {
             color: rgb(17 24 39);
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             font-weight: 700;
         }
 
@@ -144,10 +179,38 @@
             color: white;
         }
 
-        .twyxtco-image-picker-card__path,
         .twyxtco-image-picker-card__meta {
             color: rgb(107 114 128);
+            font-size: 0.75rem;
+        }
+
+        .twyxtco-image-picker-card__detail {
+            display: block;
+            min-width: 0;
+            color: rgb(55 65 81);
+            font-size: 0.75rem;
+            line-height: 1.25rem;
+        }
+
+        .dark .twyxtco-image-picker-card__detail {
+            color: rgb(209 213 219);
+        }
+
+        .twyxtco-image-picker-card__detail-label {
+            display: block;
+            color: rgb(107 114 128);
             font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .dark .twyxtco-image-picker-card__detail-label {
+            color: rgb(156 163 175);
+        }
+
+        .twyxtco-image-picker-card__detail-value {
+            display: block;
+            overflow-wrap: anywhere;
         }
 
         .twyxtco-image-picker-load-more {
@@ -179,13 +242,24 @@
 
         @media (min-width: 1280px) {
             .twyxtco-image-picker {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             }
         }
 
         @media (max-width: 640px) {
             .twyxtco-image-picker {
-                grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+                grid-template-columns: 1fr;
+            }
+
+            .twyxtco-image-picker-card,
+            .twyxtco-image-picker-card__inner,
+            .twyxtco-image-picker-card__front,
+            .twyxtco-image-picker-card__back {
+                min-height: 16.5rem;
+            }
+
+            .twyxtco-image-picker-card__image {
+                height: 9rem;
             }
         }
     </style>
@@ -261,6 +335,20 @@
                         @foreach ($images as $image)
                             @php
                                 $optionId = $id.'-'.Str::slug($image['path']).'-'.$loop->index;
+                                $details = collect([
+                                    'Path' => $image['path'] ?? null,
+                                    'Directory' => $image['directory'] ?: null,
+                                    'Title' => $image['title'] ?? null,
+                                    'Slug' => $image['slug'] ?? null,
+                                    'Tags' => collect($image['tags'] ?? [])->filter()->implode(', '),
+                                    'Size' => $image['size_for_humans'] ?? null,
+                                    'Created' => $image['created_at_for_humans'] ?? null,
+                                    'Updated' => $image['updated_at_for_humans'] ?? null,
+                                    'Uploaded by' => $image['created_by_name'] ?? $image['created_by_email'] ?? null,
+                                    'Source' => ($image['source'] ?? null) === 'unsplash'
+                                        ? 'Unsplash'.(filled($image['source_author_name'] ?? null) ? ' / '.$image['source_author_name'] : '')
+                                        : ($image['source'] ?? null),
+                                ])->filter(fn ($value) => filled($value));
                             @endphp
 
                             <label
@@ -278,28 +366,38 @@
                                     class="twyxtco-image-picker-input"
                                 >
 
-                                <span class="twyxtco-image-picker-card">
-                                    <img
-                                        src="{{ $image['url'] }}"
-                                        alt=""
-                                        class="twyxtco-image-picker-card__image"
-                                        loading="lazy"
-                                    >
+                                <span class="twyxtco-image-picker-card" title="Hover to view details">
+                                    <span class="twyxtco-image-picker-card__inner">
+                                        <span class="twyxtco-image-picker-card__front">
+                                            <img
+                                                src="{{ $image['url'] }}"
+                                                alt=""
+                                                class="twyxtco-image-picker-card__image"
+                                                loading="lazy"
+                                            >
 
-                                    <span class="twyxtco-image-picker-card__body">
-                                        <span class="twyxtco-image-picker-card__title" title="{{ $image['name'] }}">
-                                            {{ $image['name'] }}
+                                            <span class="twyxtco-image-picker-card__body">
+                                                <span class="twyxtco-image-picker-card__title" title="{{ $image['display_title'] ?? $image['name'] }}">
+                                                    {{ $image['display_title'] ?? $image['name'] }}
+                                                </span>
+                                                <span class="twyxtco-image-picker-card__meta">
+                                                    {{ collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])->filter()->implode(' | ') }}
+                                                </span>
+                                                <span @class([
+                                                    'twyxtco-image-picker-card__meta',
+                                                ])>
+                                                    {{ $image['usage_summary'] ?? 'Unused' }}
+                                                </span>
+                                            </span>
                                         </span>
-                                        <span class="twyxtco-image-picker-card__path" title="{{ $image['path'] }}">
-                                            {{ $image['path'] }}
-                                        </span>
-                                        <span class="twyxtco-image-picker-card__meta">
-                                            {{ collect([$image['dimensions_for_humans'] ?? null, $image['size_for_humans'] ?? null])->filter()->implode(' | ') }}
-                                        </span>
-                                        <span @class([
-                                            'twyxtco-image-picker-card__meta',
-                                        ])>
-                                            {{ $image['usage_summary'] ?? 'Unused' }}
+
+                                        <span class="twyxtco-image-picker-card__back" aria-hidden="true">
+                                            @foreach ($details as $label => $value)
+                                                <span class="twyxtco-image-picker-card__detail">
+                                                    <span class="twyxtco-image-picker-card__detail-label">{{ $label }}</span>
+                                                    <span class="twyxtco-image-picker-card__detail-value">{{ $value }}</span>
+                                                </span>
+                                            @endforeach
                                         </span>
                                     </span>
                                 </span>
