@@ -39,6 +39,11 @@ return [
         'sermons_channel_id' => env('YOUTUBE_SERMONS_CHANNEL_ID', 'UCDDrEtN3XPxVE9-oY008IYA'),
     ],
 
+    'unsplash' => [
+        'access_key' => env('UNSPLASH_ACCESS_KEY'),
+        'api_url' => env('UNSPLASH_API_URL', 'https://api.unsplash.com'),
+    ],
+
     'openai' => [
         'api_key' => null,
         'content_model' => env('OPENAI_CONTENT_MODEL', 'gpt-5-nano'),

@@ -19,8 +19,10 @@ use App\Support\MediaLibrary;
 use App\Support\MediaUsage;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -63,8 +65,10 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('unused.jpg')
             ->assertSee('Unused')
             ->assertSee("mountAction('uploadImages')", false)
+            ->assertSee("mountAction('importUnsplashImage')", false)
             ->assertDontSee("mountAction('createFile')", false)
             ->assertSee('title="Add"', false)
+            ->assertSee('title="Import from Unsplash"', false)
             ->assertSee('wire:partial="action-modals"', false)
             ->assertSee('title="Open"', false)
             ->assertSee('title="Download"', false)
@@ -648,6 +652,84 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee('Created: Jun 14, 2026 10:30 AM')
             ->assertSee('Updated: Jun 14, 2026 10:30 AM')
             ->assertSee('By: Noel Meyers');
+    }
+
+    public function test_media_library_can_import_unsplash_image_from_header_action(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.unsplash.access_key' => 'test-unsplash-key',
+            'services.unsplash.api_url' => 'https://api.unsplash.test',
+        ]);
+        $user = User::factory()->create([
+            'name' => 'Avery Photographer',
+        ]);
+
+        Http::fake([
+            'https://api.unsplash.test/photos/photo-123' => Http::response([
+                'id' => 'photo-123',
+                'description' => 'Sunday worship gathering',
+                'alt_description' => 'people gathered in a church',
+                'width' => 2400,
+                'height' => 1600,
+                'urls' => [
+                    'raw' => 'https://images.unsplash.test/photo-123',
+                    'regular' => 'https://images.unsplash.test/photo-123-regular',
+                    'thumb' => 'https://images.unsplash.test/photo-123-thumb',
+                ],
+                'links' => [
+                    'html' => 'https://unsplash.com/photos/photo-123',
+                    'download_location' => 'https://api.unsplash.test/photos/photo-123/download',
+                ],
+                'user' => [
+                    'name' => 'Sam Sample',
+                    'username' => 'sam',
+                    'links' => [
+                        'html' => 'https://unsplash.com/@sam',
+                    ],
+                ],
+            ]),
+            'https://images.unsplash.test/photo-123*' => Http::response('fake jpg contents', 200, [
+                'Content-Type' => 'image/jpeg',
+            ]),
+            'https://api.unsplash.test/photos/photo-123/download' => Http::response([
+                'url' => 'https://images.unsplash.test/photo-123',
+            ]),
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(MediaLibraryPage::class)
+            ->callAction('importUnsplashImage', [
+                'unsplash_photo_id' => 'photo-123',
+            ])
+            ->assertHasNoActionErrors();
+
+        $path = Storage::disk('public')->allFiles('media-library')[0] ?? null;
+
+        $this->assertNotNull($path);
+        $this->assertNewMediaLibraryImagePath($path, 'sunday-worship-gathering');
+        Storage::disk('public')->assertExists($path);
+
+        $metadata = MediaImageMetadata::query()->firstWhere('path', $path);
+
+        $this->assertNotNull($metadata);
+        $this->assertSame('Sunday Worship Gathering', $metadata->title);
+        $this->assertSame('sunday-worship-gathering', $metadata->slug);
+        $this->assertSame(['unsplash', 'worship'], $metadata->tags);
+        $this->assertSame($user->id, $metadata->created_by_user_id);
+        $this->assertSame('unsplash', $metadata->source);
+        $this->assertSame('photo-123', $metadata->source_id);
+        $this->assertSame('https://unsplash.com/photos/photo-123', $metadata->source_url);
+        $this->assertSame('Sam Sample', $metadata->source_author_name);
+        $this->assertSame('https://unsplash.com/@sam', $metadata->source_author_url);
+
+        $image = MediaLibrary::images()->firstWhere('path', $path);
+
+        $this->assertSame('unsplash', $image['source']);
+        $this->assertSame('photo-123', $image['source_id']);
+        $this->assertSame('Sam Sample', $image['source_author_name']);
+
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.unsplash.test/photos/photo-123/download');
     }
 
     public function test_page_image_add_action_updates_title_slug_and_tags_as_soon_as_image_uploads(): void

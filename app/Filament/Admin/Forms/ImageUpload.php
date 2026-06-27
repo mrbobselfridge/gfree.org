@@ -3,10 +3,12 @@
 namespace App\Filament\Admin\Forms;
 
 use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
+use App\Filament\Admin\Forms\Components\UnsplashImagePicker;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\MediaImageMetadata;
 use App\Support\MediaLibrary as MediaLibrarySupport;
 use App\Support\MediaTagOptions;
+use App\Support\UnsplashImageImporter;
 use App\Support\UploadedFilenameTitle;
 use Closure;
 use Filament\Actions\Action;
@@ -43,6 +45,7 @@ class ImageUpload
                 self::chooseExistingImageAction(),
                 self::openImageAction(),
                 self::detachImageAction(),
+                self::importUnsplashImageAction($directory),
                 self::addImageAction($directory),
                 self::editImageAction($directory),
             ])
@@ -144,6 +147,73 @@ class ImageUpload
                 ->action(function (ViewField $component): void {
                     $component->state(null);
                     $component->callAfterStateUpdated();
+                }),
+        );
+    }
+
+    private static function importUnsplashImageAction(string $directory): Action
+    {
+        return self::selectorIconAction(
+            Action::make('importUnsplashImage')
+                ->label('Import from Unsplash')
+                ->icon(Heroicon::OutlinedMagnifyingGlass)
+                ->modalHeading('Import from Unsplash')
+                ->modalSubmitAction(false)
+                ->modalWidth(Width::Screen)
+                ->stickyModalHeader()
+                ->stickyModalFooter()
+                ->visible(fn (ViewField $component): bool => blank(self::selectedImagePath($component->getState())))
+                ->schema([
+                    TextInput::make('unsplash_search')
+                        ->label('Search Unsplash')
+                        ->placeholder('Search for worship, family, community, kids...')
+                        ->live(debounce: 400)
+                        ->dehydrated(false)
+                        ->columnSpanFull(),
+                    UnsplashImagePicker::make('unsplash_photo_id')
+                        ->label('Unsplash photos')
+                        ->required()
+                        ->columnSpanFull(),
+                ])
+                ->fillForm([
+                    'unsplash_search' => null,
+                    'unsplash_photo_id' => null,
+                ])
+                ->action(function (array $data, ViewField $component) use ($directory): void {
+                    $photoId = filled($data['unsplash_photo_id'] ?? null) ? (string) $data['unsplash_photo_id'] : null;
+
+                    if ($photoId === null) {
+                        Notification::make()
+                            ->title('Choose an Unsplash photo first')
+                            ->warning()
+                            ->send();
+
+                        return;
+                    }
+
+                    try {
+                        /** @var UnsplashImageImporter $importer */
+                        $importer = app(UnsplashImageImporter::class);
+                        $import = $importer->import($photoId, $directory, self::currentUserId());
+                    } catch (\Throwable $exception) {
+                        report($exception);
+
+                        Notification::make()
+                            ->title('Unsplash import failed')
+                            ->body('Check the Unsplash API key and try again.')
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    $component->state($import['path']);
+                    $component->callAfterStateUpdated();
+
+                    Notification::make()
+                        ->title('Unsplash photo imported')
+                        ->success()
+                        ->send();
                 }),
         );
     }

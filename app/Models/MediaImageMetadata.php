@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -13,6 +13,11 @@ use Illuminate\Support\Str;
     'slug',
     'tags',
     'created_by_user_id',
+    'source',
+    'source_id',
+    'source_url',
+    'source_author_name',
+    'source_author_url',
 ])]
 class MediaImageMetadata extends Model
 {
@@ -198,7 +203,6 @@ class MediaImageMetadata extends Model
     }
 
     /**
-     * @param  mixed  $value
      * @return array<int, string>
      */
     public static function normalizeTags(mixed $value): array
@@ -247,7 +251,6 @@ class MediaImageMetadata extends Model
     }
 
     /**
-     * @param  mixed  $tags
      * @return array<int, string>
      */
     public static function mergeAutoTags(mixed $tags, ?string $title): array

@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
+use App\Filament\Admin\Forms\Components\UnsplashImagePicker;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\MediaImageMetadata;
@@ -11,6 +12,7 @@ use App\Support\AdminAccess;
 use App\Support\MediaLibrary as MediaLibrarySupport;
 use App\Support\MediaTagOptions;
 use App\Support\MediaUsage;
+use App\Support\UnsplashImageImporter;
 use App\Support\UploadedFilenameTitle;
 use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
@@ -22,6 +24,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -199,6 +202,73 @@ class MediaLibrary extends Page
 
                 Notification::make()
                     ->title('Image uploaded')
+                    ->success()
+                    ->send();
+            });
+    }
+
+    protected function importUnsplashImageAction(): Action
+    {
+        return Action::make('importUnsplashImage')
+            ->label('Import from Unsplash')
+            ->icon(Heroicon::OutlinedMagnifyingGlass)
+            ->modalHeading('Import from Unsplash')
+            ->modalSubmitAction(false)
+            ->modalWidth(Width::Screen)
+            ->stickyModalHeader()
+            ->stickyModalFooter()
+            ->schema([
+                TextInput::make('unsplash_search')
+                    ->label('Search Unsplash')
+                    ->placeholder('Search for worship, family, community, kids...')
+                    ->live(debounce: 400)
+                    ->dehydrated(false)
+                    ->columnSpanFull(),
+                UnsplashImagePicker::make('unsplash_photo_id')
+                    ->label('Unsplash photos')
+                    ->required()
+                    ->columnSpanFull(),
+            ])
+            ->fillForm([
+                'unsplash_search' => null,
+                'unsplash_photo_id' => null,
+            ])
+            ->action(function (array $data): void {
+                $photoId = filled($data['unsplash_photo_id'] ?? null) ? (string) $data['unsplash_photo_id'] : null;
+
+                if ($photoId === null) {
+                    Notification::make()
+                        ->title('Choose an Unsplash photo first')
+                        ->warning()
+                        ->send();
+
+                    return;
+                }
+
+                try {
+                    /** @var UnsplashImageImporter $importer */
+                    $importer = app(UnsplashImageImporter::class);
+                    $import = $importer->import($photoId, self::IMAGE_DIRECTORY, $this->currentUserId());
+                } catch (\Throwable $exception) {
+                    report($exception);
+
+                    Notification::make()
+                        ->title('Unsplash import failed')
+                        ->body('Check the Unsplash API key and try again.')
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                $this->resetImageLimit();
+                $this->notifyMediaLibraryWorkflow(
+                    trigger: WorkflowNotificationRule::TRIGGER_CREATED,
+                    path: $import['path'],
+                );
+
+                Notification::make()
+                    ->title('Unsplash photo imported')
                     ->success()
                     ->send();
             });

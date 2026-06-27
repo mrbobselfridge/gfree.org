@@ -98,8 +98,14 @@
         }
 
         .twyxtco-media-toolbar__add {
-            margin-left: auto;
             background: rgb(217 119 6);
+        }
+
+        .twyxtco-media-toolbar__actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: auto;
         }
 
         .twyxtco-media-toolbar__delete {
@@ -473,17 +479,30 @@
             @endif
 
             @if ($addAction)
-                <button
-                    type="button"
-                    class="twyxtco-media-toolbar__add"
-                    wire:click="mountAction('{{ $addAction }}')"
-                    title="Add"
-                    aria-label="Add"
-                >
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
-                    </svg>
-                </button>
+                <div class="twyxtco-media-toolbar__actions">
+                    <button
+                        type="button"
+                        class="twyxtco-media-toolbar__add"
+                        wire:click="mountAction('importUnsplashImage')"
+                        title="Import from Unsplash"
+                        aria-label="Import from Unsplash"
+                    >
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        class="twyxtco-media-toolbar__add"
+                        wire:click="mountAction('{{ $addAction }}')"
+                        title="Add"
+                        aria-label="Add"
+                    >
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+                        </svg>
+                    </button>
+                </div>
             @endif
         </div>
 
@@ -578,6 +597,11 @@
                                 <span title="{{ $image['created_by_email'] ?? $image['created_by_name'] ?? 'Not tracked' }}">
                                     By: {{ $image['created_by_name'] ?? 'Not tracked' }}
                                 </span>
+                                @if (($image['source'] ?? null) === 'unsplash')
+                                    <span title="{{ $image['source_url'] ?? 'Unsplash' }}">
+                                        Source: Unsplash{{ filled($image['source_author_name'] ?? null) ? ' / '.$image['source_author_name'] : '' }}
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="twyxtco-media-card__usage">
