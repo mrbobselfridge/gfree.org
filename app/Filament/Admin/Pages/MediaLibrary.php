@@ -18,6 +18,7 @@ use App\Support\WorkflowNotificationService;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -222,8 +223,12 @@ class MediaLibrary extends Page
                     ->label('Search Unsplash')
                     ->placeholder('Search for worship, family, community, kids...')
                     ->live(debounce: 400)
+                    ->afterStateUpdated(fn (Set $set): mixed => $set('unsplash_page', 1))
                     ->dehydrated(false)
                     ->columnSpanFull(),
+                Hidden::make('unsplash_page')
+                    ->default(1)
+                    ->dehydrated(false),
                 UnsplashImagePicker::make('unsplash_photo_id')
                     ->label('Unsplash photos')
                     ->required()
@@ -231,6 +236,7 @@ class MediaLibrary extends Page
             ])
             ->fillForm([
                 'unsplash_search' => null,
+                'unsplash_page' => 1,
                 'unsplash_photo_id' => null,
             ])
             ->action(function (array $data): void {

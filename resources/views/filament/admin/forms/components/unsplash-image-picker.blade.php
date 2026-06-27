@@ -4,9 +4,12 @@
     $fieldWrapperView = $getFieldWrapperView();
     $id = $getId();
     $statePath = $getStatePath();
+    $pageStatePath = $getPageStatePath();
+    $nextPage = $getNextPage();
     $selectedPhotoId = $getState();
     $results = $getSearchResults();
     $photos = collect($results['results']);
+    $hasMorePhotos = $results['has_more'];
 @endphp
 
 <x-dynamic-component :component="$fieldWrapperView" :field="$field">
@@ -147,6 +150,12 @@
             font-size: 0.75rem;
         }
 
+        .twyxtco-unsplash-picker-load-more {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
         @media (max-width: 640px) {
             .twyxtco-unsplash-picker-grid {
                 grid-template-columns: 1fr;
@@ -278,6 +287,19 @@
                             </label>
                         @endforeach
                     </div>
+
+                    @if ($hasMorePhotos)
+                        <div class="twyxtco-unsplash-picker-load-more">
+                            <button
+                                type="button"
+                                class="twyxtco-unsplash-picker-submit"
+                                x-data
+                                x-on:click="$wire.set(@js($pageStatePath), @js($nextPage))"
+                            >
+                                Load more
+                            </button>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
