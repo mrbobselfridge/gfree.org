@@ -233,6 +233,8 @@ class MediaLibrary extends Page
                         return;
                     }
 
+                    $clearedRecords = MediaUsage::clearImagePath($path);
+
                     Storage::disk('public')->delete($path);
                     MediaImageMetadata::query()->where('path', $path)->delete();
                     MediaLibrarySupport::clearImageIndexCache();
@@ -247,7 +249,7 @@ class MediaLibrary extends Page
                     );
 
                     Notification::make()
-                        ->title('Image deleted')
+                        ->title($clearedRecords > 0 ? 'Image deleted and removed from content' : 'Image deleted')
                         ->success()
                         ->send();
                 }),
@@ -639,7 +641,7 @@ class MediaLibrary extends Page
             ->map(fn (array $item): string => "{$item['label']} ({$item['detail']})")
             ->implode(', ');
 
-        return "Warning: this image is currently used in {$usedIn}. Deleting it will leave those places without this file.";
+        return "Warning: this image is currently used in {$usedIn}. Deleting it will clear this image from those places so their defaults or blank image states can apply.";
     }
 
     private function resetImageLimit(): void

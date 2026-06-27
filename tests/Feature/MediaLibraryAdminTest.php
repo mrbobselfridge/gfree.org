@@ -6,7 +6,10 @@ use App\Filament\Admin\Forms\Components\ImageGalleryPicker;
 use App\Filament\Admin\Pages\MediaLibrary as MediaLibraryPage;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
+use App\Models\FileCategory;
 use App\Models\FileDocument;
+use App\Models\HomepageBanner;
+use App\Models\HomepageContent;
 use App\Models\MediaImageMetadata;
 use App\Models\Page;
 use App\Models\SiteSetting;
@@ -266,6 +269,105 @@ class MediaLibraryAdminTest extends TestCase
             'path' => 'pages/header-images/unused.jpg',
         ]);
         $this->assertSame([], MediaLibrary::tagOptions());
+    }
+
+    public function test_media_library_delete_clears_tracked_image_references(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('licensed.jpg', 800, 600)
+            ->storeAs('pages/header-images', 'licensed.jpg', 'public');
+
+        $path = 'pages/header-images/licensed.jpg';
+
+        $page = Page::query()->create([
+            'title' => 'Church Picnic',
+            'slug' => 'church-picnic',
+            'hero_image_path' => $path,
+            'card_image_path' => $path,
+            'content_blocks' => [
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => $path,
+                        'heading' => 'Picnic',
+                    ],
+                ],
+                [
+                    'type' => 'link_cards',
+                    'data' => [
+                        'cards' => [
+                            [
+                                'title' => 'Details',
+                                'image_path' => $path,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $homepageContent = HomepageContent::query()->create([
+            'intro_title' => 'Welcome',
+            'content_blocks' => [
+                [
+                    'type' => 'image_text',
+                    'data' => [
+                        'image_path' => $path,
+                        'heading' => 'Welcome',
+                    ],
+                ],
+            ],
+        ]);
+
+        $banner = HomepageBanner::query()->create([
+            'title' => 'Summer Sundays',
+            'image_path' => $path,
+            'is_published' => true,
+        ]);
+
+        $fileCategory = FileCategory::query()->create([
+            'name' => 'Bulletins',
+            'default_card_image_path' => $path,
+        ]);
+
+        $fileDocument = FileDocument::query()->create([
+            'title' => 'Weekly Bulletin',
+            'file_name' => 'weekly-bulletin.pdf',
+            'category' => 'Bulletins',
+            'card_image_path' => $path,
+        ]);
+
+        $siteSetting = SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'default_page_header_image_path' => $path,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->callAction('deleteImage', arguments: ['path' => $path])
+            ->assertHasNoActionErrors();
+
+        $page->refresh();
+        $homepageContent->refresh();
+        $banner->refresh();
+        $fileCategory->refresh();
+        $fileDocument->refresh();
+        $siteSetting->refresh();
+
+        $this->assertNull($page->hero_image_path);
+        $this->assertNull($page->card_image_path);
+        $this->assertNull($page->content_blocks[0]['data']['image_path']);
+        $this->assertNull($page->content_blocks[1]['data']['cards'][0]['image_path']);
+        $this->assertNull($homepageContent->content_blocks[0]['data']['image_path']);
+        $this->assertNull($banner->image_path);
+        $this->assertNull($fileCategory->default_card_image_path);
+        $this->assertNull($fileDocument->card_image_path);
+        $this->assertNull($siteSetting->default_page_header_image_path);
+        $this->assertSame([], MediaUsage::forImages([$path])[$path]);
+        Storage::disk('public')->assertMissing($path);
     }
 
     public function test_media_library_replaces_image_everywhere_it_is_tracked(): void
