@@ -18,6 +18,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\MediaLibrary;
 use App\Support\MediaUsage;
+use App\Support\UnsplashClient;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -1269,6 +1270,43 @@ class MediaLibraryAdminTest extends TestCase
     public function test_unsplash_image_picker_requests_twenty_five_search_results(): void
     {
         $this->assertSame(25, UnsplashImagePicker::DEFAULT_PER_PAGE);
+    }
+
+    public function test_unsplash_search_results_include_inferred_image_formats(): void
+    {
+        config([
+            'services.unsplash.access_key' => 'test-unsplash-key',
+            'services.unsplash.api_url' => 'https://api.unsplash.test',
+        ]);
+
+        Http::fake([
+            'https://api.unsplash.test/search/photos*' => Http::response([
+                'total' => 4,
+                'total_pages' => 1,
+                'results' => [
+                    ['id' => 'banner', 'width' => 2400, 'height' => 1000, 'urls' => [], 'links' => []],
+                    ['id' => 'horizontal', 'width' => 1600, 'height' => 1200, 'urls' => [], 'links' => []],
+                    ['id' => 'square', 'width' => 1200, 'height' => 1200, 'urls' => [], 'links' => []],
+                    ['id' => 'vertical', 'width' => 1000, 'height' => 1600, 'urls' => [], 'links' => []],
+                ],
+            ]),
+        ]);
+
+        $results = app(UnsplashClient::class)->searchPhotos(
+            query: 'church',
+            perPage: UnsplashImagePicker::DEFAULT_PER_PAGE,
+        );
+
+        $this->assertSame(['Banner', 'Horizontal', 'Square', 'Vertical'], collect($results['results'])->pluck('format')->all());
+
+        Http::assertSent(function (Request $request): bool {
+            parse_str((string) parse_url($request->url(), PHP_URL_QUERY), $query);
+
+            return $request->url() !== ''
+                && str_starts_with($request->url(), 'https://api.unsplash.test/search/photos?')
+                && ($query['query'] ?? null) === 'church'
+                && ($query['per_page'] ?? null) === '25';
+        });
     }
 
     public function test_existing_image_picker_modal_uses_two_column_controls_with_full_width_images(): void

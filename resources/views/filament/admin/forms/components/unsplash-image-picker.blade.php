@@ -68,8 +68,8 @@
 
         .twyxtco-unsplash-picker-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 1rem;
         }
 
         .twyxtco-unsplash-picker-option {
@@ -110,7 +110,7 @@
         .twyxtco-unsplash-picker-card__image {
             display: block;
             width: 100%;
-            height: 7rem;
+            height: 12.25rem;
             object-fit: cover;
             background: rgb(243 244 246);
         }
@@ -121,7 +121,7 @@
 
         .twyxtco-unsplash-picker-card__body {
             display: block;
-            padding: 0.5rem;
+            padding: 0.75rem;
         }
 
         .twyxtco-unsplash-picker-card__title,
@@ -134,7 +134,7 @@
 
         .twyxtco-unsplash-picker-card__title {
             color: rgb(17 24 39);
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             font-weight: 700;
         }
 
@@ -144,12 +144,16 @@
 
         .twyxtco-unsplash-picker-card__meta {
             color: rgb(107 114 128);
-            font-size: 0.6875rem;
+            font-size: 0.75rem;
         }
 
         @media (max-width: 640px) {
             .twyxtco-unsplash-picker-grid {
-                grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+                grid-template-columns: 1fr;
+            }
+
+            .twyxtco-unsplash-picker-card__image {
+                height: 13rem;
             }
         }
     </style>
@@ -228,6 +232,10 @@
                                 $dimensions = filled($photo['width'] ?? null) && filled($photo['height'] ?? null)
                                     ? "{$photo['width']} x {$photo['height']}"
                                     : null;
+                                $format = $photo['format'] ?? null;
+                                $formatAndDimensions = collect([$format, $dimensions])
+                                    ->filter(fn ($value) => filled($value))
+                                    ->join(' / ');
                             @endphp
 
                             <label
@@ -260,9 +268,11 @@
                                         <span class="twyxtco-unsplash-picker-card__meta" title="{{ $photo['author_name'] ?? 'Unknown photographer' }}">
                                             Photo by {{ $photo['author_name'] ?? 'Unknown photographer' }}
                                         </span>
-                                        <span class="twyxtco-unsplash-picker-card__meta">
-                                            {{ $dimensions }}
-                                        </span>
+                                        @if (filled($formatAndDimensions))
+                                            <span class="twyxtco-unsplash-picker-card__meta">
+                                                {{ $formatAndDimensions }}
+                                            </span>
+                                        @endif
                                     </span>
                                 </span>
                             </label>

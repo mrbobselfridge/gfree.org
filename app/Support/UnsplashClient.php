@@ -138,6 +138,7 @@ class UnsplashClient
             'alt_description' => $photo['alt_description'] ?? null,
             'width' => $photo['width'] ?? null,
             'height' => $photo['height'] ?? null,
+            'format' => $this->formatForDimensions($photo['width'] ?? null, $photo['height'] ?? null),
             'color' => $photo['color'] ?? null,
             'urls' => is_array($photo['urls'] ?? null) ? $photo['urls'] : [],
             'links' => is_array($photo['links'] ?? null) ? $photo['links'] : [],
@@ -147,5 +148,24 @@ class UnsplashClient
             'thumb_url' => $photo['urls']['thumb'] ?? $photo['urls']['small'] ?? null,
             'preview_url' => $photo['urls']['regular'] ?? $photo['urls']['small'] ?? null,
         ];
+    }
+
+    private function formatForDimensions(mixed $width, mixed $height): ?string
+    {
+        $width = (int) $width;
+        $height = (int) $height;
+
+        if ($width <= 0 || $height <= 0) {
+            return null;
+        }
+
+        $ratio = $width / $height;
+
+        return match (true) {
+            $ratio >= 1.75 => 'Banner',
+            $ratio > 1.08 => 'Horizontal',
+            $ratio >= 0.92 => 'Square',
+            default => 'Vertical',
+        };
     }
 }
