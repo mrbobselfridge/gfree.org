@@ -28,7 +28,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertOk()
             ->assertSee('Custom Church Name Dashboard');
 
-        $this->assertFalse(CmsDashboard::shouldRegisterNavigation());
+        $this->assertTrue(CmsDashboard::shouldRegisterNavigation());
     }
 
     public function test_admin_dashboard_shows_cms_widgets_with_relevant_content(): void

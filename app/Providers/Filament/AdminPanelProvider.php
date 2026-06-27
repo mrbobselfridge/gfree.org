@@ -60,12 +60,6 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsible(false),
             ])
             ->navigationItems([
-                NavigationItem::make('Dashboard')
-                    ->group('Website')
-                    ->icon(Heroicon::OutlinedHome)
-                    ->sort(-10)
-                    ->url(fn(): string => CmsDashboard::getUrl())
-                    ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.cms-dashboard')),
                 NavigationItem::make('User Manual')
                     ->group('Website')
                     ->icon(Heroicon::OutlinedBookOpen)
@@ -1584,6 +1578,11 @@ class AdminPanelProvider extends PanelProvider
         $group = 'Website';
 
         $items = [
+            CmsDashboard::class => [
+                'label' => 'Dashboard',
+                'icon' => Heroicon::OutlinedHome,
+                'sort' => -10,
+            ],
             HomepageContent::class => [
                 'label' => 'Homepage',
                 'icon' => Heroicon::OutlinedRectangleGroup,

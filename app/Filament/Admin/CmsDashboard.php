@@ -8,8 +8,6 @@ use Filament\Schemas\Components\Grid;
 
 class CmsDashboard extends Dashboard
 {
-    protected static bool $shouldRegisterNavigation = false;
-
     public function getColumns(): int|array
     {
         return [
