@@ -107,6 +107,8 @@
                                     <a
                                         href="{{ $url }}"
                                         class="page-link-card__cta"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         aria-label="More about {{ $destinationLabel }}"
                                     >
                                         More
@@ -145,6 +147,8 @@
                                     <a
                                         href="{{ $url }}"
                                         class="page-link-card__cta"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         aria-label="More about {{ $destinationLabel }}"
                                     >
                                         More

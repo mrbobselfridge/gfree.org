@@ -763,6 +763,7 @@ class PublicPageTest extends TestCase
             ->assertSee('id="content-card-flip-flip123"', false)
             ->assertSee('<strong>Back details</strong>', false)
             ->assertSee('href="/flip-more"', false)
+            ->assertSee('target="_blank" rel="noopener noreferrer"', false)
             ->assertSee('class="page-link-card__cta"', false)
             ->assertSee('aria-label="More about Flip"', false)
             ->assertSee('id="content-card-flip-flipimage123"', false)

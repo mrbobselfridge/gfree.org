@@ -219,6 +219,14 @@
             word-break: normal;
         }
 
+        .twyxtco-image-picker-card__detail-value--title {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow-wrap: break-word;
+        }
+
         .twyxtco-image-picker-load-more {
             display: flex;
             justify-content: center;
@@ -346,6 +354,10 @@
                                     'Tags' => collect($image['tags'] ?? [])->filter()->implode(', '),
                                     'Size' => $image['size_for_humans'] ?? null,
                                     'Created' => $image['created_at_for_humans'] ?? null,
+                                    'Uploaded by' => $image['created_by_name'] ?? $image['created_by_email'] ?? null,
+                                    'Source' => ($image['source'] ?? null) === 'unsplash'
+                                        ? 'Unsplash'.(filled($image['source_author_name'] ?? null) ? ' / '.$image['source_author_name'] : '')
+                                        : ($image['source'] ?? null),
                                 ])->filter(fn ($value) => filled($value));
                             @endphp
 
@@ -364,7 +376,7 @@
                                     class="twyxtco-image-picker-input"
                                 >
 
-                                <span class="twyxtco-image-picker-card" title="Hover to view details">
+                                <span class="twyxtco-image-picker-card">
                                     <span class="twyxtco-image-picker-card__inner">
                                         <span class="twyxtco-image-picker-card__front">
                                             <img
@@ -396,7 +408,15 @@
                                                     'twyxtco-image-picker-card__detail--wide' => $label === 'Title',
                                                 ])>
                                                     <span class="twyxtco-image-picker-card__detail-label">{{ $label }}</span>
-                                                    <span class="twyxtco-image-picker-card__detail-value">{{ $value }}</span>
+                                                    <span
+                                                        @class([
+                                                            'twyxtco-image-picker-card__detail-value',
+                                                            'twyxtco-image-picker-card__detail-value--title' => $label === 'Title',
+                                                        ])
+                                                        title="{{ $label === 'Title' ? $value : '' }}"
+                                                    >
+                                                        {{ $value }}
+                                                    </span>
                                                 </span>
                                             @endforeach
                                         </span>
