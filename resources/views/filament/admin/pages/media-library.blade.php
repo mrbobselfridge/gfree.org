@@ -101,6 +101,14 @@
             background: rgb(217 119 6);
         }
 
+        .twyxtco-media-toolbar__unsplash {
+            width: auto;
+            gap: 0.375rem;
+            padding: 0 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
         .twyxtco-media-toolbar__actions {
             display: inline-flex;
             align-items: center;
@@ -482,24 +490,25 @@
                 <div class="twyxtco-media-toolbar__actions">
                     <button
                         type="button"
-                        class="twyxtco-media-toolbar__add"
+                        class="twyxtco-media-toolbar__add twyxtco-media-toolbar__unsplash"
                         wire:click="mountAction('importUnsplashImage')"
-                        title="Import from Unsplash"
-                        aria-label="Import from Unsplash"
+                        title="Copyright free images"
+                        aria-label="Copyright free images"
                     >
                         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
                         </svg>
+                        <span>Unsplash</span>
                     </button>
                     <button
                         type="button"
                         class="twyxtco-media-toolbar__add"
                         wire:click="mountAction('{{ $addAction }}')"
-                        title="Add"
-                        aria-label="Add"
+                        title="Upload File"
+                        aria-label="Upload File"
                     >
                         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 7.5 12 3m0 0 4.5 4.5M12 3v13.5" />
                         </svg>
                     </button>
                 </div>
