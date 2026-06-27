@@ -91,7 +91,7 @@
 
         .twyxtco-image-picker-card {
             display: block;
-            min-height: 15.75rem;
+            min-height: 14.25rem;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
             background: white;
@@ -113,7 +113,7 @@
         .twyxtco-image-picker-card__inner {
             position: relative;
             display: grid;
-            min-height: 15.75rem;
+            min-height: 14.25rem;
             transform-style: preserve-3d;
             transition: transform 180ms ease;
         }
@@ -126,7 +126,7 @@
         .twyxtco-image-picker-card__front,
         .twyxtco-image-picker-card__back {
             grid-area: 1 / 1;
-            min-height: 15.75rem;
+            min-height: 14.25rem;
             backface-visibility: hidden;
         }
 
@@ -255,7 +255,7 @@
             .twyxtco-image-picker-card__inner,
             .twyxtco-image-picker-card__front,
             .twyxtco-image-picker-card__back {
-                min-height: 16.5rem;
+                min-height: 15rem;
             }
 
             .twyxtco-image-picker-card__image {
@@ -336,14 +336,10 @@
                             @php
                                 $optionId = $id.'-'.Str::slug($image['path']).'-'.$loop->index;
                                 $details = collect([
-                                    'Path' => $image['path'] ?? null,
-                                    'Directory' => $image['directory'] ?: null,
                                     'Title' => $image['title'] ?? null,
-                                    'Slug' => $image['slug'] ?? null,
                                     'Tags' => collect($image['tags'] ?? [])->filter()->implode(', '),
                                     'Size' => $image['size_for_humans'] ?? null,
                                     'Created' => $image['created_at_for_humans'] ?? null,
-                                    'Updated' => $image['updated_at_for_humans'] ?? null,
                                     'Uploaded by' => $image['created_by_name'] ?? $image['created_by_email'] ?? null,
                                     'Source' => ($image['source'] ?? null) === 'unsplash'
                                         ? 'Unsplash'.(filled($image['source_author_name'] ?? null) ? ' / '.$image['source_author_name'] : '')
