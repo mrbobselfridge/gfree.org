@@ -216,7 +216,7 @@ class MediaUsage
                 }
 
                 if ($changed) {
-                    $record->save();
+                    $record->saveQuietly();
                     $updated++;
                 }
             });
@@ -254,7 +254,7 @@ class MediaUsage
                 }
 
                 if ($changed) {
-                    $record->save();
+                    $record->saveQuietly();
                     $updated++;
                 }
             });
@@ -325,7 +325,7 @@ class MediaUsage
                 }
 
                 $record->setAttribute($field, $blocks);
-                $record->save();
+                $record->saveQuietly();
                 $updated++;
             });
 
@@ -364,7 +364,7 @@ class MediaUsage
                 }
 
                 $record->setAttribute($field, $blocks);
-                $record->save();
+                $record->saveQuietly();
                 $updated++;
             });
 

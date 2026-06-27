@@ -11,6 +11,7 @@ use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\MediaImageMetadata;
+use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -346,6 +347,13 @@ class MediaLibraryAdminTest extends TestCase
             'is_published' => true,
         ]);
 
+        NavigationLink::query()->create([
+            'label' => 'Church Picnic',
+            'url' => '/church-picnic',
+            'location' => 'header',
+            'is_published' => true,
+        ]);
+
         $homepageContent = HomepageContent::query()->create([
             'intro_title' => 'Welcome',
             'content_blocks' => [
@@ -396,6 +404,8 @@ class MediaLibraryAdminTest extends TestCase
 
         $this->assertNull($page->hero_image_path);
         $this->assertNull($page->card_image_path);
+        $this->assertSame('church-picnic', $page->slug);
+        $this->assertTrue($page->isActive());
         $this->assertNull($page->content_blocks[0]['data']['image_path']);
         $this->assertNull($page->content_blocks[1]['data']['cards'][0]['image_path']);
         $this->assertNull($homepageContent->content_blocks[0]['data']['image_path']);
@@ -403,6 +413,8 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertNull($fileCategory->default_card_image_path);
         $this->assertNull($fileDocument->card_image_path);
         $this->assertNull($siteSetting->default_page_header_image_path);
+        $this->get('/church-picnic')->assertOk();
+        $this->assertTrue(NavigationLink::topLevelHeaderLinks()->contains('url', '/church-picnic'));
         $this->assertSame([], MediaUsage::forImages([$path])[$path]);
         Storage::disk('public')->assertMissing($path);
     }
