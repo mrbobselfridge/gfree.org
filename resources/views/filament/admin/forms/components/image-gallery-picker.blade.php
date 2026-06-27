@@ -91,7 +91,7 @@
 
         .twyxtco-image-picker-card {
             display: block;
-            min-height: 14.25rem;
+            min-height: 13rem;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
             background: white;
@@ -113,7 +113,7 @@
         .twyxtco-image-picker-card__inner {
             position: relative;
             display: grid;
-            min-height: 14.25rem;
+            min-height: 13rem;
             transform-style: preserve-3d;
             transition: transform 180ms ease;
         }
@@ -126,7 +126,7 @@
         .twyxtco-image-picker-card__front,
         .twyxtco-image-picker-card__back {
             grid-area: 1 / 1;
-            min-height: 14.25rem;
+            min-height: 13rem;
             backface-visibility: hidden;
         }
 
@@ -136,9 +136,10 @@
         }
 
         .twyxtco-image-picker-card__back {
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-content: start;
+            gap: 0.55rem 0.75rem;
             overflow: auto;
             transform: rotateY(180deg);
             padding: 0.875rem;
@@ -192,6 +193,10 @@
             line-height: 1.25rem;
         }
 
+        .twyxtco-image-picker-card__detail--wide {
+            grid-column: 1 / -1;
+        }
+
         .dark .twyxtco-image-picker-card__detail {
             color: rgb(209 213 219);
         }
@@ -211,6 +216,7 @@
         .twyxtco-image-picker-card__detail-value {
             display: block;
             overflow-wrap: anywhere;
+            word-break: normal;
         }
 
         .twyxtco-image-picker-load-more {
@@ -255,7 +261,7 @@
             .twyxtco-image-picker-card__inner,
             .twyxtco-image-picker-card__front,
             .twyxtco-image-picker-card__back {
-                min-height: 15rem;
+                min-height: 13.75rem;
             }
 
             .twyxtco-image-picker-card__image {
@@ -340,10 +346,6 @@
                                     'Tags' => collect($image['tags'] ?? [])->filter()->implode(', '),
                                     'Size' => $image['size_for_humans'] ?? null,
                                     'Created' => $image['created_at_for_humans'] ?? null,
-                                    'Uploaded by' => $image['created_by_name'] ?? $image['created_by_email'] ?? null,
-                                    'Source' => ($image['source'] ?? null) === 'unsplash'
-                                        ? 'Unsplash'.(filled($image['source_author_name'] ?? null) ? ' / '.$image['source_author_name'] : '')
-                                        : ($image['source'] ?? null),
                                 ])->filter(fn ($value) => filled($value));
                             @endphp
 
@@ -389,7 +391,10 @@
 
                                         <span class="twyxtco-image-picker-card__back" aria-hidden="true">
                                             @foreach ($details as $label => $value)
-                                                <span class="twyxtco-image-picker-card__detail">
+                                                <span @class([
+                                                    'twyxtco-image-picker-card__detail',
+                                                    'twyxtco-image-picker-card__detail--wide' => $label === 'Title',
+                                                ])>
                                                     <span class="twyxtco-image-picker-card__detail-label">{{ $label }}</span>
                                                     <span class="twyxtco-image-picker-card__detail-value">{{ $value }}</span>
                                                 </span>
