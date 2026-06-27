@@ -17,6 +17,7 @@ use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\SiteSetting;
 use App\Support\AdminNavigationHelp;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -65,6 +66,13 @@ class AdminPanelProvider extends PanelProvider
                     ->icon(Heroicon::OutlinedBookOpen)
                     ->sort(940)
                     ->url(fn(): string => route('manual'), true),
+            ])
+            ->userMenuItems([
+                Action::make('changePassword')
+                    ->label('Change Password')
+                    ->icon(Heroicon::OutlinedKey)
+                    ->url(fn(): string => route('admin.change-password'))
+                    ->sort(0),
             ])
             ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BackupDownloadController;
+use App\Http\Controllers\Admin\ChangePasswordController;
 use App\Http\Controllers\Admin\MediaImageDownloadController;
 use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
@@ -18,6 +19,9 @@ Route::get('/files/{fileName}', [FileDocumentController::class, 'show'])
     ->name('files.show');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/change-password', ChangePasswordController::class)
+        ->name('admin.change-password');
+
     Route::get('/admin/backups/{profile}/{disk}/{path}/download', BackupDownloadController::class)
         ->where('path', '[A-Za-z0-9_-]+')
         ->name('admin.backups.download');

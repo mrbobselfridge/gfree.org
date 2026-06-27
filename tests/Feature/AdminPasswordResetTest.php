@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Notifications\AdminResetPassword;
+use Filament\Facades\Filament;
 use Filament\Auth\Pages\PasswordReset\RequestPasswordReset;
 use Filament\Auth\Pages\PasswordReset\ResetPassword;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -68,6 +69,54 @@ class AdminPasswordResetTest extends TestCase
         Livewire::test(ResetPassword::class, [
             'email' => $user->email,
             'token' => $token,
+        ])
+            ->set('password', 'new-password')
+            ->set('passwordConfirmation', 'new-password')
+            ->call('resetPassword')
+            ->assertHasNoErrors();
+
+        $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+    }
+
+    public function test_user_menu_includes_change_password_link(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]));
+
+        Filament::setCurrentPanel('admin');
+
+        $items = Filament::getUserMenuItems();
+
+        $this->assertArrayHasKey('changePassword', $items);
+        $this->assertSame('Change Password', $items['changePassword']->getLabel());
+        $this->assertSame(route('admin.change-password'), $items['changePassword']->getUrl());
+    }
+
+    public function test_change_password_link_redirects_to_current_user_password_reset(): void
+    {
+        $user = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+            'email' => 'admin@example.com',
+            'password' => 'old-password',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('admin.change-password'));
+
+        $response
+            ->assertRedirect()
+            ->assertRedirectContains('/admin/password-reset/reset')
+            ->assertRedirectContains('email=admin%40example.com');
+
+        $redirectUrl = $response->headers->get('Location');
+        parse_str((string) parse_url((string) $redirectUrl, PHP_URL_QUERY), $query);
+
+        $this->assertGuest();
+
+        Livewire::test(ResetPassword::class, [
+            'email' => $query['email'],
+            'token' => $query['token'],
         ])
             ->set('password', 'new-password')
             ->set('passwordConfirmation', 'new-password')
