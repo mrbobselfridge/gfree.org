@@ -75,6 +75,7 @@
 
         .twyxtco-image-picker-option {
             display: block;
+            position: relative;
             cursor: pointer;
         }
 
@@ -91,6 +92,7 @@
 
         .twyxtco-image-picker-card {
             display: block;
+            position: relative;
             min-height: 13rem;
             contain: paint;
             border: 1px solid rgb(209 213 219);
@@ -118,8 +120,7 @@
             transition: transform 180ms ease;
         }
 
-        .twyxtco-image-picker-option:hover .twyxtco-image-picker-card__inner,
-        .twyxtco-image-picker-option:focus-within .twyxtco-image-picker-card__inner {
+        .twyxtco-image-picker-card__inner.is-flipped {
             transform: rotateY(180deg);
         }
 
@@ -234,6 +235,41 @@
             max-width: 100%;
             overflow-wrap: break-word;
             white-space: normal;
+        }
+
+        .twyxtco-image-picker-card__flip-button {
+            position: absolute;
+            right: 0.625rem;
+            bottom: 0.625rem;
+            z-index: 3;
+            display: inline-flex;
+            width: 1.75rem;
+            height: 1.75rem;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgb(209 213 219);
+            border-radius: 999px;
+            background: color-mix(in srgb, white 88%, transparent);
+            color: rgb(55 65 81);
+            box-shadow: 0 0.5rem 1.25rem rgb(15 23 42 / 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .twyxtco-image-picker-card__flip-button:hover,
+        .twyxtco-image-picker-card__flip-button:focus-visible {
+            border-color: rgb(217 119 6);
+            color: rgb(180 83 9);
+        }
+
+        .dark .twyxtco-image-picker-card__flip-button {
+            border-color: rgb(75 85 99);
+            background: color-mix(in srgb, rgb(17 24 39) 88%, transparent);
+            color: rgb(229 231 235);
+        }
+
+        .twyxtco-image-picker-card__flip-button svg {
+            width: 1rem;
+            height: 1rem;
         }
 
         .twyxtco-image-picker-load-more {
@@ -370,9 +406,9 @@
                                 ])->filter(fn ($value) => filled($value));
                             @endphp
 
-                            <label
-                                for="{{ $optionId }}"
+                            <div
                                 class="twyxtco-image-picker-option"
+                                x-data="{ flipped: false }"
                                 x-on:dblclick.prevent="selectImage(@js($image['path']), true)"
                             >
                                 <input
@@ -385,8 +421,11 @@
                                     class="twyxtco-image-picker-input"
                                 >
 
-                                <span class="twyxtco-image-picker-card">
-                                    <span class="twyxtco-image-picker-card__inner">
+                                <label for="{{ $optionId }}" class="twyxtco-image-picker-card">
+                                    <span
+                                        class="twyxtco-image-picker-card__inner"
+                                        x-bind:class="{ 'is-flipped': flipped }"
+                                    >
                                         <span class="twyxtco-image-picker-card__front">
                                             <img
                                                 src="{{ $image['url'] }}"
@@ -430,8 +469,20 @@
                                             @endforeach
                                         </span>
                                     </span>
-                                </span>
-                            </label>
+                                </label>
+
+                                <button
+                                    type="button"
+                                    class="twyxtco-image-picker-card__flip-button"
+                                    title="Flip card"
+                                    aria-label="Flip card"
+                                    x-on:click.prevent.stop="flipped = ! flipped"
+                                >
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 7.5h-9m0 0 3-3m-3 3 3 3M7.5 16.5h9m0 0-3-3m3 3-3 3" />
+                                    </svg>
+                                </button>
+                            </div>
                         @endforeach
                     </div>
 
