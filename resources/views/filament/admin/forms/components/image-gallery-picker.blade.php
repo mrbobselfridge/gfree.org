@@ -92,6 +92,7 @@
         .twyxtco-image-picker-card {
             display: block;
             min-height: 13rem;
+            contain: paint;
             border: 1px solid rgb(209 213 219);
             border-radius: 0.5rem;
             background: white;
@@ -112,7 +113,6 @@
 
         .twyxtco-image-picker-card__inner {
             position: relative;
-            display: grid;
             min-height: 13rem;
             transform-style: preserve-3d;
             transition: transform 180ms ease;
@@ -125,8 +125,13 @@
 
         .twyxtco-image-picker-card__front,
         .twyxtco-image-picker-card__back {
-            grid-area: 1 / 1;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            max-width: 100%;
             min-height: 13rem;
+            box-sizing: border-box;
+            overflow: hidden;
             backface-visibility: hidden;
         }
 
@@ -143,6 +148,7 @@
             overflow: auto;
             transform: rotateY(180deg);
             padding: 0.875rem;
+            word-break: normal;
         }
 
         .twyxtco-image-picker-card__image {
@@ -195,6 +201,7 @@
 
         .twyxtco-image-picker-card__detail--wide {
             grid-column: 1 / -1;
+            max-width: 100%;
         }
 
         .dark .twyxtco-image-picker-card__detail {
@@ -224,7 +231,9 @@
             overflow: hidden;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
+            max-width: 100%;
             overflow-wrap: break-word;
+            white-space: normal;
         }
 
         .twyxtco-image-picker-load-more {
