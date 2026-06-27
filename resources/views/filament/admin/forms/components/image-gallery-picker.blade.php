@@ -115,6 +115,7 @@
 
         .twyxtco-image-picker-card__inner {
             position: relative;
+            display: block;
             min-height: 13rem;
             transform-style: preserve-3d;
             transition: transform 180ms ease;
@@ -124,29 +125,31 @@
             transform: rotateY(180deg);
         }
 
-        .twyxtco-image-picker-card__front,
-        .twyxtco-image-picker-card__back {
-            position: absolute;
-            inset: 0;
+        .twyxtco-image-picker-card__front {
+            position: relative;
             width: 100%;
             max-width: 100%;
             min-height: 13rem;
             box-sizing: border-box;
             overflow: hidden;
             backface-visibility: hidden;
-        }
-
-        .twyxtco-image-picker-card__front {
             display: flex;
             flex-direction: column;
         }
 
         .twyxtco-image-picker-card__back {
+            position: absolute;
+            inset: 0;
             display: grid;
+            width: 100%;
+            max-width: 100%;
+            min-height: 13rem;
+            box-sizing: border-box;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             align-content: start;
             gap: 0.55rem 0.75rem;
             overflow: auto;
+            backface-visibility: hidden;
             transform: rotateY(180deg);
             padding: 0.875rem;
             word-break: normal;
