@@ -73,6 +73,10 @@ class MediaLibraryAdminTest extends TestCase
             ->assertDontSee('title="Edit details"', false)
             ->assertDontSee('title="Replace"', false)
             ->assertSee('title="Delete"', false)
+            ->assertSee('Select all shown')
+            ->assertSee('0 selected')
+            ->assertSee('title="Delete selected"', false)
+            ->assertSee('type="checkbox"', false)
             ->assertDontSee('>Open<', false)
             ->assertDontSee('>Download<', false)
             ->assertDontSee('>Copy link<', false)
@@ -271,6 +275,39 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertSame([], MediaLibrary::tagOptions());
     }
 
+    public function test_media_library_can_select_all_shown_images(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('hero.jpg', 800, 600)
+            ->storeAs('pages/header-images', 'hero.jpg', 'public');
+
+        UploadedFile::fake()
+            ->image('card.jpg', 800, 600)
+            ->storeAs('pages/card-images', 'card.jpg', 'public');
+
+        $component = Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class);
+
+        $component
+            ->set('search', 'hero')
+            ->call('selectShownImages');
+
+        $this->assertSame(['pages/header-images/hero.jpg'], $component->instance()->selectedImages);
+        $this->assertTrue($component->instance()->allShownImagesSelected());
+
+        $component->call('toggleShownImages');
+
+        $this->assertSame([], $component->instance()->selectedImages);
+
+        $component
+            ->set('selectedImages', ['pages/card-images/card.jpg'])
+            ->set('search', 'card');
+
+        $this->assertSame([], $component->instance()->selectedImages);
+    }
+
     public function test_media_library_delete_clears_tracked_image_references(): void
     {
         Storage::fake('public');
@@ -368,6 +405,74 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertNull($siteSetting->default_page_header_image_path);
         $this->assertSame([], MediaUsage::forImages([$path])[$path]);
         Storage::disk('public')->assertMissing($path);
+    }
+
+    public function test_media_library_bulk_delete_clears_tracked_image_references(): void
+    {
+        Storage::fake('public');
+
+        UploadedFile::fake()
+            ->image('licensed-one.jpg', 800, 600)
+            ->storeAs('pages/header-images', 'licensed-one.jpg', 'public');
+
+        UploadedFile::fake()
+            ->image('licensed-two.jpg', 800, 600)
+            ->storeAs('homepage/banners', 'licensed-two.jpg', 'public');
+
+        UploadedFile::fake()
+            ->image('keep.jpg', 800, 600)
+            ->storeAs('pages/header-images', 'keep.jpg', 'public');
+
+        $pagePath = 'pages/header-images/licensed-one.jpg';
+        $bannerPath = 'homepage/banners/licensed-two.jpg';
+        $keepPath = 'pages/header-images/keep.jpg';
+
+        $page = Page::query()->create([
+            'title' => 'Church Picnic',
+            'slug' => 'church-picnic',
+            'hero_image_path' => $pagePath,
+            'is_published' => true,
+        ]);
+
+        $banner = HomepageBanner::query()->create([
+            'title' => 'Summer Sundays',
+            'image_path' => $bannerPath,
+            'is_published' => true,
+        ]);
+
+        MediaImageMetadata::query()->create([
+            'path' => $pagePath,
+            'title' => 'Licensed One',
+        ]);
+
+        MediaImageMetadata::query()->create([
+            'path' => $bannerPath,
+            'title' => 'Licensed Two',
+        ]);
+
+        MediaImageMetadata::query()->create([
+            'path' => $keepPath,
+            'title' => 'Keep',
+        ]);
+
+        $component = Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->set('selectedImages', [$pagePath, $bannerPath])
+            ->callAction('deleteSelectedImages')
+            ->assertHasNoActionErrors();
+
+        $page->refresh();
+        $banner->refresh();
+
+        $this->assertNull($page->hero_image_path);
+        $this->assertNull($banner->image_path);
+        $this->assertSame([], $component->instance()->selectedImages);
+        Storage::disk('public')->assertMissing($pagePath);
+        Storage::disk('public')->assertMissing($bannerPath);
+        Storage::disk('public')->assertExists($keepPath);
+        $this->assertDatabaseMissing(MediaImageMetadata::class, ['path' => $pagePath]);
+        $this->assertDatabaseMissing(MediaImageMetadata::class, ['path' => $bannerPath]);
+        $this->assertDatabaseHas(MediaImageMetadata::class, ['path' => $keepPath]);
     }
 
     public function test_media_library_replaces_image_everywhere_it_is_tracked(): void

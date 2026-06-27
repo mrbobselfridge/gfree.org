@@ -50,15 +50,22 @@ class MediaLibrary extends Page
 
     public int $imageLimit = self::IMAGE_BATCH_SIZE;
 
+    /**
+     * @var array<int, string>
+     */
+    public array $selectedImages = [];
+
     public function updatedSearch(): void
     {
         $this->search = trim($this->search);
         $this->resetImageLimit();
+        $this->clearSelectedImages();
     }
 
     public function updatedSort(): void
     {
         $this->resetImageLimit();
+        $this->clearSelectedImages();
     }
 
     public function loadMoreImages(): void
@@ -116,6 +123,43 @@ class MediaLibrary extends Page
     public function deleteImageClickHandler(string $path): ?string
     {
         return $this->deleteImageAction()(['path' => $path])->getLivewireClickHandler();
+    }
+
+    public function getSelectedImageCount(): int
+    {
+        return count($this->selectedImagePaths());
+    }
+
+    public function allShownImagesSelected(): bool
+    {
+        $shownPaths = $this->shownImagePaths();
+
+        if ($shownPaths === []) {
+            return false;
+        }
+
+        return empty(array_diff($shownPaths, $this->selectedImagePaths()));
+    }
+
+    public function selectShownImages(): void
+    {
+        $this->selectedImages = $this->shownImagePaths();
+    }
+
+    public function clearSelectedImages(): void
+    {
+        $this->selectedImages = [];
+    }
+
+    public function toggleShownImages(): void
+    {
+        if ($this->allShownImagesSelected()) {
+            $this->clearSelectedImages();
+
+            return;
+        }
+
+        $this->selectShownImages();
     }
 
     protected function getHeaderActions(): array
@@ -233,20 +277,8 @@ class MediaLibrary extends Page
                         return;
                     }
 
-                    $clearedRecords = MediaUsage::clearImagePath($path);
-
-                    Storage::disk('public')->delete($path);
-                    MediaImageMetadata::query()->where('path', $path)->delete();
-                    MediaLibrarySupport::clearImageIndexCache();
-                    $this->resetImageLimit();
-
-                    app(WorkflowNotificationService::class)->automatic(
-                        area: AdminAccess::MEDIA_LIBRARY,
-                        trigger: WorkflowNotificationRule::TRIGGER_DELETED,
-                        recordKey: 'media-library:'.$path,
-                        recordLabel: basename($path),
-                        adminUrl: static::getUrl(),
-                    );
+                    $result = $this->deleteStoredImages([$path]);
+                    $clearedRecords = $result['cleared_records'];
 
                     Notification::make()
                         ->title($clearedRecords > 0 ? 'Image deleted and removed from content' : 'Image deleted')
@@ -255,6 +287,40 @@ class MediaLibrary extends Page
                 }),
             Heroicon::OutlinedTrash,
         );
+    }
+
+    protected function deleteSelectedImagesAction(): Action
+    {
+        return Action::make('deleteSelectedImages')
+            ->label('Delete selected images')
+            ->color('danger')
+            ->disabled(fn (): bool => $this->getSelectedImageCount() === 0)
+            ->requiresConfirmation()
+            ->modalHeading('Delete selected images')
+            ->modalDescription(fn (): string => $this->deleteSelectedImagesDescription())
+            ->modalSubmitActionLabel('Delete selected')
+            ->action(function (): void {
+                $paths = $this->selectedImagePaths();
+
+                if ($paths === []) {
+                    Notification::make()
+                        ->title('No images selected')
+                        ->warning()
+                        ->send();
+
+                    return;
+                }
+
+                $result = $this->deleteStoredImages($paths);
+                $deleted = $result['deleted_images'];
+                $clearedRecords = $result['cleared_records'];
+
+                Notification::make()
+                    ->title($deleted === 1 ? 'Image deleted' : "{$deleted} images deleted")
+                    ->body($clearedRecords > 0 ? "Removed from {$clearedRecords} tracked ".str('record')->plural($clearedRecords).'.' : null)
+                    ->success()
+                    ->send();
+            });
     }
 
     private function imageMetadataFormData(string $path): array
@@ -642,6 +708,89 @@ class MediaLibrary extends Page
             ->implode(', ');
 
         return "Warning: this image is currently used in {$usedIn}. Deleting it will clear this image from those places so their defaults or blank image states can apply.";
+    }
+
+    private function deleteSelectedImagesDescription(): string
+    {
+        $count = $this->getSelectedImageCount();
+
+        if ($count === 0) {
+            return 'Select one or more images before using bulk delete.';
+        }
+
+        return "Delete {$count} selected ".str('image')->plural($count).'? Any tracked page, banner, card, or content block image selections using them will be cleared first.';
+    }
+
+    /**
+     * @param  array<int, string>  $paths
+     * @return array{deleted_images: int, cleared_records: int}
+     */
+    private function deleteStoredImages(array $paths): array
+    {
+        $paths = collect($paths)
+            ->map(fn (mixed $path): string => trim((string) $path))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($paths->isEmpty()) {
+            return [
+                'deleted_images' => 0,
+                'cleared_records' => 0,
+            ];
+        }
+
+        $clearedRecords = 0;
+
+        $paths->each(function (string $path) use (&$clearedRecords): void {
+            $clearedRecords += MediaUsage::clearImagePath($path);
+
+            Storage::disk('public')->delete($path);
+            MediaImageMetadata::query()->where('path', $path)->delete();
+
+            app(WorkflowNotificationService::class)->automatic(
+                area: AdminAccess::MEDIA_LIBRARY,
+                trigger: WorkflowNotificationRule::TRIGGER_DELETED,
+                recordKey: 'media-library:'.$path,
+                recordLabel: basename($path),
+                adminUrl: static::getUrl(),
+            );
+        });
+
+        MediaLibrarySupport::clearImageIndexCache();
+        $this->resetImageLimit();
+        $this->clearSelectedImages();
+
+        return [
+            'deleted_images' => $paths->count(),
+            'cleared_records' => $clearedRecords,
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function selectedImagePaths(): array
+    {
+        return collect($this->selectedImages)
+            ->map(fn (mixed $path): string => trim((string) $path))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function shownImagePaths(): array
+    {
+        return $this->getImages()
+            ->pluck('path')
+            ->map(fn (mixed $path): string => (string) $path)
+            ->filter()
+            ->values()
+            ->all();
     }
 
     private function resetImageLimit(): void

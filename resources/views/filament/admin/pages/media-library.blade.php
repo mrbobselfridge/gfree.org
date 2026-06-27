@@ -12,6 +12,8 @@
         $hasMoreImages = $imageResults['has_more'];
         $sortOptions = $this->getSortOptions();
         $addAction = $this->canAccessImages() ? 'uploadImages' : null;
+        $selectedImageCount = $this->getSelectedImageCount();
+        $allShownImagesSelected = $this->allShownImagesSelected();
     @endphp
 
     <style>
@@ -42,16 +44,72 @@
             color: rgb(209 213 219);
         }
 
-        .twyxtco-media-toolbar__add {
+        .twyxtco-media-toolbar__bulk {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .twyxtco-media-toolbar__select,
+        .twyxtco-media-toolbar__count {
+            display: inline-flex;
+            align-items: center;
+            min-height: 2rem;
+            border-radius: 0.5rem;
+            padding: 0 0.625rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .twyxtco-media-toolbar__select {
+            border: 1px solid rgb(209 213 219);
+            color: rgb(55 65 81);
+        }
+
+        .twyxtco-media-toolbar__select:hover,
+        .twyxtco-media-toolbar__select:focus {
+            border-color: rgb(217 119 6);
+            color: rgb(180 83 9);
+        }
+
+        .dark .twyxtco-media-toolbar__select {
+            border-color: rgb(55 65 81);
+            color: rgb(209 213 219);
+        }
+
+        .twyxtco-media-toolbar__count {
+            color: rgb(107 114 128);
+        }
+
+        .dark .twyxtco-media-toolbar__count {
+            color: rgb(156 163 175);
+        }
+
+        .twyxtco-media-toolbar__add,
+        .twyxtco-media-toolbar__delete {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 2rem;
             height: 2rem;
-            margin-left: auto;
             border-radius: 0.5rem;
-            background: rgb(217 119 6);
             color: white;
+        }
+
+        .twyxtco-media-toolbar__add {
+            margin-left: auto;
+            background: rgb(217 119 6);
+        }
+
+        .twyxtco-media-toolbar__delete {
+            background: rgb(220 38 38);
+        }
+
+        .twyxtco-media-toolbar__delete:disabled {
+            cursor: not-allowed;
+            background: rgb(209 213 219);
+            color: rgb(107 114 128);
         }
 
         .twyxtco-media-toolbar__add:hover,
@@ -59,7 +117,13 @@
             background: rgb(180 83 9);
         }
 
-        .twyxtco-media-toolbar__add svg {
+        .twyxtco-media-toolbar__delete:not(:disabled):hover,
+        .twyxtco-media-toolbar__delete:not(:disabled):focus {
+            background: rgb(185 28 28);
+        }
+
+        .twyxtco-media-toolbar__add svg,
+        .twyxtco-media-toolbar__delete svg {
             width: 1rem;
             height: 1rem;
         }
@@ -144,15 +208,51 @@
         }
 
         .twyxtco-media-card {
+            position: relative;
             overflow: hidden;
             border: 1px solid rgb(229 231 235);
             border-radius: 0.75rem;
             background: white;
         }
 
+        .twyxtco-media-card--selected {
+            border-color: rgb(217 119 6);
+            box-shadow: 0 0 0 1px rgb(217 119 6);
+        }
+
         .dark .twyxtco-media-card {
             border-color: rgb(31 41 55);
             background: rgb(17 24 39);
+        }
+
+        .dark .twyxtco-media-card--selected {
+            border-color: rgb(245 158 11);
+            box-shadow: 0 0 0 1px rgb(245 158 11);
+        }
+
+        .twyxtco-media-card__select {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.45rem;
+            background: rgb(255 255 255 / 0.92);
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.18);
+        }
+
+        .dark .twyxtco-media-card__select {
+            background: rgb(17 24 39 / 0.9);
+        }
+
+        .twyxtco-media-card__select input {
+            width: 1rem;
+            height: 1rem;
+            accent-color: rgb(217 119 6);
         }
 
         .twyxtco-media-card__image {
@@ -343,6 +443,35 @@
         <div class="twyxtco-media-toolbar" aria-label="Media Library actions">
             <span class="twyxtco-media-toolbar__label">Images</span>
 
+            @if ($images->isNotEmpty())
+                <div class="twyxtco-media-toolbar__bulk" aria-label="Bulk image actions">
+                    <button
+                        type="button"
+                        class="twyxtco-media-toolbar__select"
+                        wire:click="toggleShownImages"
+                    >
+                        {{ $allShownImagesSelected ? 'Clear shown' : 'Select all shown' }}
+                    </button>
+
+                    <span class="twyxtco-media-toolbar__count">
+                        {{ $selectedImageCount }} selected
+                    </span>
+
+                    <button
+                        type="button"
+                        class="twyxtco-media-toolbar__delete"
+                        wire:click="mountAction('deleteSelectedImages')"
+                        @disabled($selectedImageCount === 0)
+                        title="Delete selected"
+                        aria-label="Delete selected"
+                    >
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7m2 0-.7 12.2A1.5 1.5 0 0 1 14.8 20H9.2a1.5 1.5 0 0 1-1.5-1.4L7 7m3 3v7m4-7v7" />
+                        </svg>
+                    </button>
+                </div>
+            @endif
+
             @if ($addAction)
                 <button
                     type="button"
@@ -402,7 +531,17 @@
             @else
                 <div class="twyxtco-media-grid">
                     @foreach ($images as $image)
-                        <article class="twyxtco-media-card" title="{{ $image['path'] }}">
+                        @php($isSelected = in_array($image['path'], $this->selectedImages, true))
+                        <article @class(['twyxtco-media-card', 'twyxtco-media-card--selected' => $isSelected]) title="{{ $image['path'] }}">
+                        <label class="twyxtco-media-card__select" title="Select image">
+                            <input
+                                type="checkbox"
+                                wire:model.live="selectedImages"
+                                value="{{ $image['path'] }}"
+                                aria-label="Select {{ $image['display_title'] }}"
+                            >
+                        </label>
+
                         <a href="{{ $image['url'] }}" target="_blank" rel="noreferrer" title="Open">
                             <img
                                 src="{{ $image['url'] }}"
