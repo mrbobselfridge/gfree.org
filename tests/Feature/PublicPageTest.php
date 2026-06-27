@@ -706,6 +706,7 @@ class PublicPageTest extends TestCase
                                 'summary' => 'Click for more.',
                                 'key' => 'flip123',
                                 'type' => 'flip_html',
+                                'url' => '/flip-more',
                                 'html' => '<strong>Back details</strong>',
                             ],
                             [
@@ -713,6 +714,7 @@ class PublicPageTest extends TestCase
                                 'summary' => 'Click for photo.',
                                 'key' => 'flipimage123',
                                 'type' => 'flip_image',
+                                'url' => 'https://example.test/flip-image',
                                 'image_path' => 'pages/content-images/serve.jpg',
                                 'image_alt' => 'Serving team photo',
                                 'image_fit' => 'cover',
@@ -760,9 +762,14 @@ class PublicPageTest extends TestCase
             ->assertSee('<a class="page-link-card" href="/storage/media/serve.pdf" target="_blank" rel="noopener noreferrer">', false)
             ->assertSee('id="content-card-flip-flip123"', false)
             ->assertSee('<strong>Back details</strong>', false)
+            ->assertSee('href="/flip-more"', false)
+            ->assertSee('class="page-link-card__cta"', false)
+            ->assertSee('aria-label="More about Flip"', false)
             ->assertSee('id="content-card-flip-flipimage123"', false)
             ->assertSee('/storage/pages/content-images/serve.jpg')
             ->assertSee('alt="Serving team photo"', false)
+            ->assertSee('href="https://example.test/flip-image"', false)
+            ->assertSee('aria-label="More about Flip Image"', false)
             ->assertSee('page-link-card__flip-image--cover', false)
             ->assertSee('object-position: 35% 70%; transform: scale(1.25); transform-origin: 35% 70%;', false)
             ->assertSee('id="content-card-widget-widget123"', false)

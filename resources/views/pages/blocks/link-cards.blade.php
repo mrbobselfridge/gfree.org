@@ -58,6 +58,8 @@
                         $card['image_focus_y'] ?? null,
                     );
                     $imageZoom = \App\Support\LinkCard::normalizeImageZoom($card['image_zoom'] ?? null);
+                    $hasSafeDestination = \App\Support\LinkCard::isSafeHref($url);
+                    $destinationLabel = trim(strip_tags((string) \App\Support\SiteVariables::renderText($card['title'] ?? 'card', $settings ?? null)));
                 @endphp
 
                 @if ($type === \App\Support\LinkCard::TYPE_LINK_SAME && \App\Support\LinkCard::isSafeHref($url))
@@ -94,8 +96,22 @@
                                 @endif
                             </div>
 
-                            <div class="page-link-card__face page-link-card__face--back">
+                            <div @class([
+                                'page-link-card__face',
+                                'page-link-card__face--back',
+                                'page-link-card__face--has-cta' => $hasSafeDestination,
+                            ])>
                                 {!! \App\Support\SiteVariables::renderHtml($card['html'] ?? '', $settings ?? null) !!}
+
+                                @if ($hasSafeDestination)
+                                    <a
+                                        href="{{ $url }}"
+                                        class="page-link-card__cta"
+                                        aria-label="More about {{ $destinationLabel }}"
+                                    >
+                                        More
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -124,6 +140,16 @@
                                     class="page-link-card__flip-image page-link-card__flip-image--{{ $imageFit }}"
                                     style="object-position: {{ $imageFocus }}; transform: scale({{ $imageZoom / 100 }}); transform-origin: {{ $imageFocus }};"
                                 >
+
+                                @if ($hasSafeDestination)
+                                    <a
+                                        href="{{ $url }}"
+                                        class="page-link-card__cta"
+                                        aria-label="More about {{ $destinationLabel }}"
+                                    >
+                                        More
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -161,6 +187,10 @@
     <script>
         document.addEventListener('click', (event) => {
             const card = event.target.closest('[data-card-flip]');
+
+            if (event.target.closest('a')) {
+                return;
+            }
 
             if (!card) {
                 return;

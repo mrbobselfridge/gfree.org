@@ -1198,6 +1198,10 @@
     transform: rotateY(180deg);
 }
 
+.page-link-card__face--has-cta {
+    padding-bottom: 74px;
+}
+
 .page-link-card__face--image {
     overflow: hidden;
     padding: 0;
@@ -1225,6 +1229,33 @@
 
 .page-link-card__face--back> :last-child {
     margin-bottom: 0;
+}
+
+.page-link-card__cta {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    z-index: 2;
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--page-block-card-fg) 20%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--page-block-card-bg) 88%, transparent);
+    padding: 0 18px;
+    color: var(--page-block-card-fg);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(8px);
+}
+
+.page-link-card__cta:hover,
+.page-link-card__cta:focus-visible {
+    background: var(--twyxtco-teal);
+    color: white;
 }
 
 .page-link-card__widget {
