@@ -329,10 +329,10 @@ class SiteSettingForm
                                 'These colors populate the Background color options in page and homepage content blocks.',
                             )
                             ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
                         HtmlCodeTextarea::css(Textarea::make('custom_css'))
                             ->label('Custom CSS')
-                            ->rows(5)
+                            ->rows(2)
                             ->visible(fn(): bool => CodeBlockAccess::canManage())
                             ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
                             ->hintIcon(
@@ -354,7 +354,7 @@ class SiteSettingForm
                             ->columnSpanFull(),
                         HtmlCodeTextarea::html(Textarea::make('body_top_custom_js'))
                             ->label('Body top custom JS')
-                            ->rows(6)
+                            ->rows(2)
                             ->visible(fn(): bool => CodeBlockAccess::canManage())
                             ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
                             ->hintIcon(
@@ -365,7 +365,7 @@ class SiteSettingForm
                             ->columnSpanFull(),
                         HtmlCodeTextarea::html(Textarea::make('body_bottom_custom_js'))
                             ->label('Body bottom custom JS')
-                            ->rows(6)
+                            ->rows(2)
                             ->visible(fn(): bool => CodeBlockAccess::canManage())
                             ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
                             ->hintIcon(
