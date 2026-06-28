@@ -186,24 +186,28 @@ class ContentBlockBuilder
                             ->content(new HtmlString('&nbsp;'))
                             ->columnSpan(1),
 
-                        self::hint(Repeater::make('steps')
-                            ->label('Step entries'), 'Add each step in the order it should appear.')
-                            ->schema([
-                                self::hint(TextInput::make('title')
-                                    ->label('Step label'), 'Short step label.')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->columnSpan(1),
-                                self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
-                                    ->label('Step text'), 'One or two sentences explaining this step.')
-                                    ->rows(2)
-                                    ->required()
-                                    ->columnSpan(2),
-                            ])
-                            ->addActionLabel('Add step entry')
-                            ->columns(3)
-                            ->minItems(1)
-                            ->columnSpan(2),
+                        self::nestedEntriesRepeater(
+                            self::hint(Repeater::make('steps')
+                                ->label('Step entries'), 'Add each step in the order it should appear.')
+                                ->schema([
+                                    self::hint(TextInput::make('title')
+                                        ->label('Step label'), 'Short step label.')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpan(1),
+                                    self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
+                                        ->label('Step text'), 'One or two sentences explaining this step.')
+                                        ->rows(2)
+                                        ->required()
+                                        ->columnSpan(2),
+                                ])
+                                ->addActionLabel('Add step entry')
+                                ->columns(3)
+                                ->minItems(1)
+                                ->columnSpan(2),
+                            'Step entry',
+                            'title',
+                        ),
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(3),
@@ -290,137 +294,141 @@ class ContentBlockBuilder
                             ->content(new HtmlString('&nbsp;'))
                             ->columnSpan(1),
 
-                        self::hint(Repeater::make('cards')
-                            ->label('Card entries'), 'Add each card in the order it should appear.')
-                            ->schema([
-                                Hidden::make('key')
-                                    ->default(fn (): string => LinkCard::newKey())
-                                    ->afterStateHydrated(function (Hidden $component, ?string $state): void {
-                                        if (blank($state)) {
-                                            $component->state(LinkCard::newKey());
-                                        }
-                                    }),
-                                self::hint(TextInput::make('title')
-                                    ->label('Card label'), 'Short visible label for the card.')
-                                    ->required()
-                                    ->maxLength(160)
-                                    ->columnSpan(2),
-                                self::hint(Select::make('type')
-                                    ->label('Layout'), 'Choose how this card behaves or displays.')
-                                    ->options(fn (): array => LinkCard::typeOptions(CodeBlockAccess::canManage()))
-                                    ->default(LinkCard::TYPE_DISPLAY)
-                                    ->afterStateHydrated(function (Select $component, ?string $state, Get $get): void {
-                                        if (blank($state)) {
-                                            $component->state(LinkCard::normalizeType($state, $get('url')));
-                                        }
-                                    })
-                                    ->required()
-                                    ->live()
-                                    ->columnSpan(1),
-                                self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
-                                    ->label('Card text'), 'Short supporting text for the card.')
-                                    ->rows(2)
-                                    ->columnSpan(2),
-                                self::hint(Select::make('image_fit')
-                                    ->label('Image sizing'), 'Controls how the image fills the front of the card.')
-                                    ->options(LinkCard::imageFitOptions())
-                                    ->default('cover')
-                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpan(1),
-                                self::hint(Textarea::make('url')
-                                    ->label('Destination'), 'Destination for link cards. Use a site path like /give or a full https:// URL.')
-                                    ->rows(1)
-                                    ->helperText('Use a site path like /give or a full https:// URL.')
-                                    ->visible(fn (Get $get): bool => in_array($get('type'), [
-                                        LinkCard::TYPE_LINK_SAME,
-                                        LinkCard::TYPE_LINK_NEW,
-                                        LinkCard::TYPE_FLIP_IMAGE,
-                                        LinkCard::TYPE_FLIP_HTML,
-                                    ], true))
-                                    ->columnSpanFull(),
-                                ...ImageUpload::make(
-                                    'image_path',
-                                    $imageDirectory,
-                                    'Card back image',
-                                    fn (ViewField $upload): ViewField => $upload
-                                        ->hintIcon(
-                                            Heroicon::OutlinedInformationCircle,
-                                            'Image shown on the back of a flip card.'
-                                        )
-                                        ->hintColor('gray')
-                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                        self::nestedEntriesRepeater(
+                            self::hint(Repeater::make('cards')
+                                ->label('Card entries'), 'Add each card in the order it should appear.')
+                                ->schema([
+                                    Hidden::make('key')
+                                        ->default(fn (): string => LinkCard::newKey())
+                                        ->afterStateHydrated(function (Hidden $component, ?string $state): void {
+                                            if (blank($state)) {
+                                                $component->state(LinkCard::newKey());
+                                            }
+                                        }),
+                                    self::hint(TextInput::make('title')
+                                        ->label('Card label'), 'Short visible label for the card.')
+                                        ->required()
+                                        ->maxLength(160)
                                         ->columnSpan(2),
-                                ),
-                                self::hint(TextInput::make('image_alt')
-                                    ->label('Alt text'), 'Briefly describe the card back image for accessibility when it adds meaning.')
-                                    ->maxLength(255)
-                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpan(1),
+                                    self::hint(Select::make('type')
+                                        ->label('Layout'), 'Choose how this card behaves or displays.')
+                                        ->options(fn (): array => LinkCard::typeOptions(CodeBlockAccess::canManage()))
+                                        ->default(LinkCard::TYPE_DISPLAY)
+                                        ->afterStateHydrated(function (Select $component, ?string $state, Get $get): void {
+                                            if (blank($state)) {
+                                                $component->state(LinkCard::normalizeType($state, $get('url')));
+                                            }
+                                        })
+                                        ->required()
+                                        ->live()
+                                        ->columnSpan(1),
+                                    self::hint(HtmlCodeTextarea::html(Textarea::make('summary'))
+                                        ->label('Card text'), 'Short supporting text for the card.')
+                                        ->rows(2)
+                                        ->columnSpan(2),
+                                    self::hint(Select::make('image_fit')
+                                        ->label('Image sizing'), 'Controls how the image fills the front of the card.')
+                                        ->options(LinkCard::imageFitOptions())
+                                        ->default('cover')
+                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpan(1),
+                                    self::hint(Textarea::make('url')
+                                        ->label('Destination'), 'Destination for link cards. Use a site path like /give or a full https:// URL.')
+                                        ->rows(1)
+                                        ->helperText('Use a site path like /give or a full https:// URL.')
+                                        ->visible(fn (Get $get): bool => in_array($get('type'), [
+                                            LinkCard::TYPE_LINK_SAME,
+                                            LinkCard::TYPE_LINK_NEW,
+                                            LinkCard::TYPE_FLIP_IMAGE,
+                                            LinkCard::TYPE_FLIP_HTML,
+                                        ], true))
+                                        ->columnSpanFull(),
+                                    ...ImageUpload::make(
+                                        'image_path',
+                                        $imageDirectory,
+                                        'Card back image',
+                                        fn (ViewField $upload): ViewField => $upload
+                                            ->hintIcon(
+                                                Heroicon::OutlinedInformationCircle,
+                                                'Image shown on the back of a flip card.'
+                                            )
+                                            ->hintColor('gray')
+                                            ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                            ->columnSpan(2),
+                                    ),
+                                    self::hint(TextInput::make('image_alt')
+                                        ->label('Alt text'), 'Briefly describe the card back image for accessibility when it adds meaning.')
+                                        ->maxLength(255)
+                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpan(1),
 
-                                self::hint(TextInput::make('image_focus_x')
-                                    ->label('Horizontal position'), 'Slide the cropped image left or right. 0% keeps the left edge in view; 100% keeps the right edge in view.')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100)
-                                    ->step(5)
-                                    ->suffix('%')
-                                    ->default(50)
-                                    ->afterStateHydrated(function (TextInput $component, mixed $state, Get $get): void {
-                                        if (blank($state)) {
-                                            $component->state(LinkCard::legacyImageFocusPercent($get('image_focus'), 'x'));
-                                        }
-                                    })
-                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpan(1),
-                                self::hint(TextInput::make('image_focus_y')
-                                    ->label('Vertical position'), 'Slide the cropped image up or down. 0% keeps the top edge in view; 100% keeps the bottom edge in view.')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100)
-                                    ->step(5)
-                                    ->suffix('%')
-                                    ->default(50)
-                                    ->afterStateHydrated(function (TextInput $component, mixed $state, Get $get): void {
-                                        if (blank($state)) {
-                                            $component->state(LinkCard::legacyImageFocusPercent($get('image_focus'), 'y'));
-                                        }
-                                    })
-                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpan(1),
-                                self::hint(TextInput::make('image_zoom')
-                                    ->label('Zoom'), 'Increase only when the image needs tighter cropping.')
-                                    ->numeric()
-                                    ->minValue(100)
-                                    ->maxValue(200)
-                                    ->step(5)
-                                    ->suffix('%')
-                                    ->default(100)
-                                    ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
-                                    ->columnSpan(1),
-                                self::hint(HtmlCodeTextarea::html(Textarea::make('html'))
-                                    ->label('Card back HTML'), 'Trusted raw HTML shown on the back of the flip card.')
-                                    ->rows(7)
-                                    ->helperText('Trusted raw HTML shown on the back of the flip card.')
-                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
-                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
-                                    ->columnSpanFull(),
-                                self::hint(HtmlCodeTextarea::javascript(Textarea::make('javascript'))
-                                    ->label('JavaScript widget'), 'Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
-                                    ->rows(4)
-                                    ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
-                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
-                                    ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
-                                    ->columnSpan(2),
-                                self::hint(Placeholder::make('widget_id')
-                                    ->label('Widget div ID'), 'Use this ID as the mount target for the JavaScript below.')
-                                    ->content(fn (Get $get): HtmlString => new HtmlString('<code>'.e(LinkCard::widgetId($get('key'))).'</code>'))
-                                    ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
-                                    ->columnSpan(1),
-                            ])
-                            ->addActionLabel('Add card entry')
-                            ->columns(3)
-                            ->minItems(1)
-                            ->columnSpan(2),
+                                    self::hint(TextInput::make('image_focus_x')
+                                        ->label('Horizontal position'), 'Slide the cropped image left or right. 0% keeps the left edge in view; 100% keeps the right edge in view.')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->step(5)
+                                        ->suffix('%')
+                                        ->default(50)
+                                        ->afterStateHydrated(function (TextInput $component, mixed $state, Get $get): void {
+                                            if (blank($state)) {
+                                                $component->state(LinkCard::legacyImageFocusPercent($get('image_focus'), 'x'));
+                                            }
+                                        })
+                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpan(1),
+                                    self::hint(TextInput::make('image_focus_y')
+                                        ->label('Vertical position'), 'Slide the cropped image up or down. 0% keeps the top edge in view; 100% keeps the bottom edge in view.')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->step(5)
+                                        ->suffix('%')
+                                        ->default(50)
+                                        ->afterStateHydrated(function (TextInput $component, mixed $state, Get $get): void {
+                                            if (blank($state)) {
+                                                $component->state(LinkCard::legacyImageFocusPercent($get('image_focus'), 'y'));
+                                            }
+                                        })
+                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpan(1),
+                                    self::hint(TextInput::make('image_zoom')
+                                        ->label('Zoom'), 'Increase only when the image needs tighter cropping.')
+                                        ->numeric()
+                                        ->minValue(100)
+                                        ->maxValue(200)
+                                        ->step(5)
+                                        ->suffix('%')
+                                        ->default(100)
+                                        ->visible(fn (Get $get): bool => $get('type') === LinkCard::TYPE_FLIP_IMAGE)
+                                        ->columnSpan(1),
+                                    self::hint(HtmlCodeTextarea::html(Textarea::make('html'))
+                                        ->label('Card back HTML'), 'Trusted raw HTML shown on the back of the flip card.')
+                                        ->rows(7)
+                                        ->helperText('Trusted raw HTML shown on the back of the flip card.')
+                                        ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_FLIP_HTML)
+                                        ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
+                                        ->columnSpanFull(),
+                                    self::hint(HtmlCodeTextarea::javascript(Textarea::make('javascript'))
+                                        ->label('JavaScript widget'), 'Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
+                                        ->rows(4)
+                                        ->helperText('Trusted JavaScript rendered after the widget div. Mount into the Widget div ID above.')
+                                        ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
+                                        ->dehydrated(fn (): bool => CodeBlockAccess::canManage())
+                                        ->columnSpan(2),
+                                    self::hint(Placeholder::make('widget_id')
+                                        ->label('Widget div ID'), 'Use this ID as the mount target for the JavaScript below.')
+                                        ->content(fn (Get $get): HtmlString => new HtmlString('<code>'.e(LinkCard::widgetId($get('key'))).'</code>'))
+                                        ->visible(fn (Get $get): bool => CodeBlockAccess::canManage() && $get('type') === LinkCard::TYPE_JAVASCRIPT_WIDGET)
+                                        ->columnSpan(1),
+                                ])
+                                ->addActionLabel('Add card entry')
+                                ->columns(3)
+                                ->minItems(1)
+                                ->columnSpan(2),
+                            'Card entry',
+                            'title',
+                        ),
                         ...self::scheduleFields($withScheduleFields),
                     ])
                     ->columns(3),
@@ -464,25 +472,29 @@ class ContentBlockBuilder
                             ->content(new HtmlString('&nbsp;'))
                             ->columnSpan(1),
 
-                        self::hint(Repeater::make('items')
-                            ->label('Strip entries'), 'Add up to five compact facts, links, or contact details.')
-                            ->schema([
-                                self::hint(TextInput::make('label')
-                                    ->label('Strip label'), 'Short label for this strip entry.')
-                                    ->live(onBlur: true)
-                                    ->maxLength(80)
-                                    ->columnSpan(1),
-                                self::hint(HtmlCodeTextarea::html(Textarea::make('value'))
-                                    ->label('Strip text'), 'Text shown with the label. Site variables like [[address]] are allowed.')
-                                    ->rows(2)
-                                    ->maxLength(500)
-                                    ->columnSpan(2),
-                            ])
-                            ->addActionLabel('Add strip entry')
-                            ->columns(3)
-                            ->minItems(1)
-                            ->maxItems(5)
-                            ->columnSpan(2),
+                        self::nestedEntriesRepeater(
+                            self::hint(Repeater::make('items')
+                                ->label('Strip entries'), 'Add up to five compact facts, links, or contact details.')
+                                ->schema([
+                                    self::hint(TextInput::make('label')
+                                        ->label('Strip label'), 'Short label for this strip entry.')
+                                        ->live(onBlur: true)
+                                        ->maxLength(80)
+                                        ->columnSpan(1),
+                                    self::hint(HtmlCodeTextarea::html(Textarea::make('value'))
+                                        ->label('Strip text'), 'Text shown with the label. Site variables like [[address]] are allowed.')
+                                        ->rows(2)
+                                        ->maxLength(500)
+                                        ->columnSpan(2),
+                                ])
+                                ->addActionLabel('Add strip entry')
+                                ->columns(3)
+                                ->minItems(1)
+                                ->maxItems(5)
+                                ->columnSpan(2),
+                            'Strip entry',
+                            'label',
+                        ),
 
                         ...self::scheduleFields($withScheduleFields),
                     ])
@@ -899,6 +911,24 @@ class ContentBlockBuilder
         return $component
             ->hintIcon(Heroicon::OutlinedInformationCircle, $tooltip)
             ->hintColor('gray');
+    }
+
+    private static function nestedEntriesRepeater(Repeater $repeater, string $fallbackLabel, string $labelField): Repeater
+    {
+        return $repeater
+            ->collapsible()
+            ->collapsed()
+            ->truncateItemLabel()
+            ->itemLabel(fn (array $state): string => self::entryLabel($fallbackLabel, $state[$labelField] ?? null))
+            ->expandAllAction(fn (Action $action): Action => $action->label('Expand all entries'))
+            ->collapseAllAction(fn (Action $action): Action => $action->label('Collapse all entries'));
+    }
+
+    private static function entryLabel(string $fallbackLabel, mixed $value): string
+    {
+        $label = trim(strip_tags((string) $value));
+
+        return filled($label) ? $label : $fallbackLabel;
     }
 
     private static function associatedParentPageOptions(?Page $record): array

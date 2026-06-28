@@ -115,6 +115,22 @@ class AdminPanelProvider extends PanelProvider
                             border-inline-start-color: var(--gray-700);
                         }
 
+                        .twyxtco-content-block-builder-field .fi-fo-repeater > .fi-fo-repeater-actions {
+                            justify-content: flex-start;
+                            flex-direction: row-reverse;
+                            gap: 0;
+                        }
+
+                        .twyxtco-content-block-builder-field .fi-fo-repeater > .fi-fo-repeater-actions > span + span {
+                            margin-inline-end: 1.25rem;
+                            padding-inline-end: 1.25rem;
+                            border-inline-end: 1px solid var(--gray-300);
+                        }
+
+                        .dark .twyxtco-content-block-builder-field .fi-fo-repeater > .fi-fo-repeater-actions > span + span {
+                            border-inline-end-color: var(--gray-700);
+                        }
+
                         .twyxtco-admin-icon-action.fi-icon-btn {
                             width: 3rem;
                             height: 3.75rem;
