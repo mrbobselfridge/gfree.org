@@ -340,7 +340,7 @@ class SiteSettingForm
                                 'Optional public-site CSS override for admins and editors with Code Blocks access. Leave blank to use the standard stylesheet.',
                             )
                             ->hintColor('gray')
-                            ->columnSpan(1),
+                            ->columnSpanFull(),
                         HtmlCodeTextarea::html(Textarea::make('header_custom_js'))
                             ->label('Header custom JS')
                             ->rows(2)
@@ -351,7 +351,7 @@ class SiteSettingForm
                                 'Optional full script tags rendered immediately before the closing head tag on public pages.',
                             )
                             ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
                         HtmlCodeTextarea::html(Textarea::make('body_top_custom_js'))
                             ->label('Body top custom JS')
                             ->rows(2)
@@ -362,7 +362,7 @@ class SiteSettingForm
                                 'Optional full script tags rendered immediately after the opening body tag on public pages.',
                             )
                             ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
                         HtmlCodeTextarea::html(Textarea::make('body_bottom_custom_js'))
                             ->label('Body bottom custom JS')
                             ->rows(2)
@@ -373,7 +373,7 @@ class SiteSettingForm
                                 'Optional full script tags rendered immediately before the closing body tag on public pages.',
                             )
                             ->hintColor('gray')
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
