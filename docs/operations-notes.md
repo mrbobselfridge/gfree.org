@@ -7,6 +7,8 @@ The Slide Deck Import tool runs in Laravel queue workers. The server and any loc
 - LibreOffice: `libreoffice` or `soffice`
 - ImageMagick: `magick` or `convert`
 
+LibreOffice runs as the queue worker user. The converter gives each conversion a writable temporary LibreOffice profile under `storage/app/tmp/slide-decks`, because service users such as `www-data` may not have a writable home directory.
+
 Check availability:
 
 ```bash

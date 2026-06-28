@@ -26,14 +26,23 @@ class PowerPointToPdfService
             throw new RuntimeException('Could not create the slide deck conversion workspace.');
         }
 
+        $profile = $this->prepareLibreOfficeProfile($workDirectory);
+
         $process = new Process([
             $binary,
             '--headless',
+            '-env:UserInstallation='.$this->fileUri($profile['user_installation']),
             '--convert-to',
             'pdf',
             '--outdir',
             $workDirectory,
             $source,
+        ]);
+        $process->setEnv([
+            'HOME' => $profile['home'],
+            'XDG_CACHE_HOME' => $profile['cache'],
+            'XDG_CONFIG_HOME' => $profile['config'],
+            'XDG_RUNTIME_DIR' => $profile['runtime'],
         ]);
         $process->setTimeout(180);
         $process->run();
@@ -63,6 +72,36 @@ class PowerPointToPdfService
         }
 
         return null;
+    }
+
+    /**
+     * LibreOffice needs a writable per-user profile even in headless mode.
+     */
+    private function prepareLibreOfficeProfile(string $workDirectory): array
+    {
+        $base = $workDirectory.'/libreoffice';
+        $paths = [
+            'home' => $base.'/home',
+            'cache' => $base.'/cache',
+            'config' => $base.'/config',
+            'runtime' => $base.'/runtime',
+            'user_installation' => $base.'/profile',
+        ];
+
+        foreach ($paths as $path) {
+            if (! is_dir($path) && ! mkdir($path, 0755, true) && ! is_dir($path)) {
+                throw new RuntimeException('Could not create the LibreOffice profile workspace.');
+            }
+        }
+
+        chmod($paths['runtime'], 0700);
+
+        return $paths;
+    }
+
+    private function fileUri(string $path): string
+    {
+        return 'file://'.str_replace('%2F', '/', rawurlencode($path));
     }
 
     private function cleanOutput(Process $process): string
