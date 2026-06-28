@@ -11,6 +11,7 @@ use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Filament\Admin\Resources\SlideDecks\SlideDeckResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
@@ -19,6 +20,7 @@ use App\Models\FileDocument;
 use App\Models\HomepageBanner;
 use App\Models\NavigationLink;
 use App\Models\Page;
+use App\Models\SlideDeck;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Models\WorkflowNotificationRule;
@@ -47,6 +49,8 @@ class AdminAccess
     public const MEDIA_LIBRARY = 'media_library';
 
     public const FILE_LIBRARY = 'file_library';
+
+    public const SLIDE_DECK_IMPORT = 'slide_deck_import';
 
     public const NAVIGATION_LINKS = 'navigation_links';
 
@@ -103,6 +107,12 @@ class AdminAccess
                 'models' => [FileDocument::class, FileCategory::class],
                 'resource' => FileDocumentResource::class,
                 'resources' => [FileDocumentResource::class, FileCategoryResource::class],
+            ],
+            self::SLIDE_DECK_IMPORT => [
+                'label' => 'Slide Deck Import',
+                'group' => 'Content',
+                'model' => SlideDeck::class,
+                'resource' => SlideDeckResource::class,
             ],
             self::NAVIGATION_LINKS => [
                 'label' => 'Navigation',

@@ -12,6 +12,7 @@ use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Filament\Admin\Resources\SlideDecks\SlideDeckResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
@@ -1636,6 +1637,11 @@ class AdminPanelProvider extends PanelProvider
                 'label' => 'File Library',
                 'icon' => Heroicon::OutlinedDocumentText,
                 'sort' => 910,
+            ],
+            SlideDeckResource::class => [
+                'label' => 'Slide Deck Import',
+                'icon' => Heroicon::OutlinedPresentationChartBar,
+                'sort' => 915,
             ],
             FileCategoryResource::class => [
                 'label' => 'File Categories',

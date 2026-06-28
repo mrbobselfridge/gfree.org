@@ -5,6 +5,9 @@ use App\Http\Controllers\Admin\ChangePasswordController;
 use App\Http\Controllers\Admin\MediaImageDownloadController;
 use App\Http\Controllers\Admin\PageVisualSnapshotImageController;
 use App\Http\Controllers\Admin\PageVisualSnapshotPreviewController;
+use App\Http\Controllers\Admin\SlideDeckImageController;
+use App\Http\Controllers\Admin\SlideDeckImagesZipController;
+use App\Http\Controllers\Admin\SlideDeckMetadataExportController;
 use App\Http\Controllers\FileDocumentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -34,6 +37,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/media-images/download', MediaImageDownloadController::class)
         ->name('admin.media-images.download');
+
+    Route::get('/admin/slide-deck-slides/{slideDeckSlide}/image', SlideDeckImageController::class)
+        ->name('admin.slide-decks.image');
+
+    Route::get('/admin/slide-decks/{slideDeck}/images.zip', SlideDeckImagesZipController::class)
+        ->name('admin.slide-decks.download-images');
+
+    Route::get('/admin/slide-decks/{slideDeck}/metadata.{format}', SlideDeckMetadataExportController::class)
+        ->where('format', 'csv|json')
+        ->name('admin.slide-decks.export');
 });
 
 Route::get('/admin/page-visual-snapshots/preview/{type}/{record?}', PageVisualSnapshotPreviewController::class)

@@ -38,6 +38,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('Analytics')
             ->assertSee('Backups')
             ->assertSee('Media Library')
+            ->assertSee('Slide Deck Import')
             ->assertSee('Notifications')
             ->assertSee('Navigation')
             ->assertSee('Users')
@@ -54,6 +55,7 @@ class AdminAccessTest extends TestCase
 
         $this->assertContains(AdminAccess::MEDIA_LIBRARY, $contentTools);
         $this->assertContains(AdminAccess::FILE_LIBRARY, $contentTools);
+        $this->assertContains(AdminAccess::SLIDE_DECK_IMPORT, $contentTools);
         $this->assertContains(AdminAccess::NAVIGATION_LINKS, $contentTools);
         $this->assertArrayNotHasKey(AdminAccess::MEDIA_LIBRARY, AdminAccess::toolOptionsForGroup('Site Tools'));
         $this->assertArrayNotHasKey(AdminAccess::FILE_LIBRARY, AdminAccess::toolOptionsForGroup('Site Tools'));

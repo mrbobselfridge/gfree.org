@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\User;
 use App\Notifications\AdminResetPassword;
 use App\Support\AdminAccess;
+use App\Support\NullSlideAnalyzer;
+use App\Support\SlideAnalyzerInterface;
 use Filament\Auth\Notifications\ResetPassword;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Gate;
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ResetPassword::class, fn ($app, array $parameters): AdminResetPassword => new AdminResetPassword($parameters['token']));
+        $this->app->bind(SlideAnalyzerInterface::class, NullSlideAnalyzer::class);
     }
 
     /**
