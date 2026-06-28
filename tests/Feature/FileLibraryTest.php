@@ -312,6 +312,26 @@ class FileLibraryTest extends TestCase
         $this->assertSame('sunday-bulletin-20260616.pdf', $document->currentVersion->original_name);
     }
 
+    public function test_create_file_document_retries_generated_file_name_and_tags_when_title_changes(): void
+    {
+        Carbon::setTestNow('2026-06-16 12:34:00');
+        Storage::fake(FileLibrary::DISK);
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CreateFileDocument::class)
+            ->set('data.pending_upload', UploadedFile::fake()->create('sunday-bulletin.pdf', 25, 'application/pdf'))
+            ->assertSet('data.title', 'Sunday Bulletin')
+            ->assertSet('data.file_name', 'sunday-bulletin-20260616')
+            ->assertSet('data.tags', ['bulletin'])
+            ->set('data.title', 'Student Worship Guide')
+            ->assertSet('data.file_name', 'student-worship-guide-20260616')
+            ->assertSet('data.tags', ['person', 'youth', 'worship']);
+    }
+
     public function test_file_category_default_parent_page_is_suggested_when_file_category_changes(): void
     {
         $admin = User::factory()->create([

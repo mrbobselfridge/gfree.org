@@ -190,13 +190,21 @@ class FileDocumentForm
                             )
                             ->hintColor('gray')
                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old, ?string $operation, ?FileDocument $record): void {
-                                self::mergeAutoTagsIntoForm($set, $get, $state);
+                                self::refreshAutoTagsInForm($set, $get, $state, $old);
 
-                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record)) {
+                                if ($operation !== 'create' || ! self::shouldUpdateGeneratedFileName($get, $get('category'), $old, $record, allowTitleOnlyGenerated: true)) {
                                     return;
                                 }
 
-                                $set('file_name', FileDocument::makeUniqueFileNameForCategoryTitle($get('category'), $state, $record));
+                                $dateSuffix = self::generatedFileNameDateSuffix($get('file_name'), $old);
+                                $fileName = $dateSuffix === null
+                                    ? FileDocument::makeFileNameSource($get('category'), $state)
+                                    : (string) $state;
+
+                                $set('file_name', FileDocument::makeUniqueFileName(
+                                    $dateSuffix === null ? $fileName : "{$fileName}-{$dateSuffix}",
+                                    $record,
+                                ));
                             }),
                         Select::make('tags')
                             ->label('Tags')
@@ -368,15 +376,29 @@ class FileDocumentForm
             ]);
     }
 
-    private static function shouldUpdateGeneratedFileName(Get $get, ?string $previousCategory, ?string $previousTitle, ?FileDocument $record): bool
-    {
+    private static function shouldUpdateGeneratedFileName(
+        Get $get,
+        ?string $previousCategory,
+        ?string $previousTitle,
+        ?FileDocument $record,
+        bool $allowTitleOnlyGenerated = false,
+    ): bool {
         $current = trim((string) $get('file_name'));
 
         if (blank($current)) {
             return true;
         }
 
-        return $current === FileDocument::makeUniqueFileNameForCategoryTitle($previousCategory, $previousTitle, $record);
+        $previousGenerated = FileDocument::makeUniqueFileNameForCategoryTitle($previousCategory, $previousTitle, $record);
+        $previousTitleGenerated = FileDocument::makeUniqueFileName($previousTitle, $record);
+
+        if ($current === $previousGenerated || (bool) preg_match('/^'.preg_quote($previousGenerated, '/').'-\d{8}$/', $current)) {
+            return true;
+        }
+
+        return $allowTitleOnlyGenerated
+            && ($current === $previousTitleGenerated
+                || (bool) preg_match('/^'.preg_quote($previousTitleGenerated, '/').'-\d{8}$/', $current));
     }
 
     private static function shouldUseUploadedFilenameValue(mixed $currentValue, mixed $existingValue): bool
@@ -390,6 +412,11 @@ class FileDocumentForm
     private static function mergeAutoTagsIntoForm(Set $set, Get $get, ?string $title): void
     {
         $set('tags', FileDocument::mergeAutoTags($get('tags') ?? [], $title));
+    }
+
+    private static function refreshAutoTagsInForm(Set $set, Get $get, ?string $title, ?string $previousTitle): void
+    {
+        $set('tags', FileDocument::refreshAutoTags($get('tags') ?? [], $previousTitle, $title));
     }
 
     private static function titleFromUploadedFilename(mixed $originalName, mixed $path): ?string
@@ -429,6 +456,15 @@ class FileDocumentForm
         $base = preg_replace('/-\d{8}$/', '', $base) ?: '';
 
         return filled($base) ? "{$base}-{$dateSuffix}" : $dateSuffix;
+    }
+
+    private static function generatedFileNameDateSuffix(mixed $fileName, ?string $previousTitle): ?string
+    {
+        if (blank($previousTitle) || ! is_string($fileName)) {
+            return null;
+        }
+
+        return preg_match('/-\d{8}$/', $fileName, $matches) === 1 ? substr($matches[0], 1) : null;
     }
 
     private static function uploadedFilenameStem(mixed $originalName, mixed $path): string

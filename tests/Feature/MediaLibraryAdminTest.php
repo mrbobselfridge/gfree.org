@@ -880,6 +880,31 @@ class MediaLibraryAdminTest extends TestCase
             ]);
     }
 
+    public function test_media_library_retries_generated_slug_and_tags_when_upload_title_changes(): void
+    {
+        Storage::fake('public');
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(MediaLibraryPage::class)
+            ->mountAction('uploadImages')
+            ->setActionData([
+                'image' => UploadedFile::fake()->image('your-work-matters-church-website-banner.jpg', 1920, 650),
+            ])
+            ->assertActionDataSet([
+                'title' => 'Your Work Matters Church Website Banner',
+                'slug' => 'your-work-matters-church-website-banner',
+                'tags' => ['banner'],
+            ])
+            ->setActionData([
+                'title' => 'Student Worship Photo',
+            ])
+            ->assertActionDataSet([
+                'title' => 'Student Worship Photo',
+                'slug' => 'student-worship-photo',
+                'tags' => ['picture', 'person', 'youth', 'worship'],
+            ]);
+    }
+
     public function test_media_library_updates_replacement_title_and_slug_as_soon_as_image_uploads_when_existing_values_are_unchanged(): void
     {
         Storage::fake('public');

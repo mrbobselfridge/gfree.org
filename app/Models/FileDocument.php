@@ -75,6 +75,14 @@ class FileDocument extends Model implements HasPublicUrl
         return MediaImageMetadata::mergeAutoTags($tags, $title);
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public static function refreshAutoTags(mixed $tags, ?string $previousTitle, ?string $title): array
+    {
+        return MediaImageMetadata::refreshAutoTags($tags, $previousTitle, $title);
+    }
+
     public static function makeUniqueFileName(?string $source, ?self $ignore = null): string
     {
         $base = Str::slug(pathinfo((string) $source, PATHINFO_FILENAME) ?: (string) $source);

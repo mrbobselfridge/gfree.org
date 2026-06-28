@@ -261,6 +261,22 @@ class MediaImageMetadata extends Model
         ]);
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public static function refreshAutoTags(mixed $tags, ?string $previousTitle, ?string $title): array
+    {
+        $previousAutoTags = self::normalizeTags(self::autoTagsForTitle($previousTitle));
+
+        return self::mergeAutoTags(
+            collect(self::normalizeTags($tags))
+                ->reject(fn (string $tag): bool => in_array($tag, $previousAutoTags, true))
+                ->values()
+                ->all(),
+            $title,
+        );
+    }
+
     private static function containsAutoTagKeyword(string $normalizedTitle, string $keyword): bool
     {
         $keyword = self::normalizeAutoTagText($keyword);

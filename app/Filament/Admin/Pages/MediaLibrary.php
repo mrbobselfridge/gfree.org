@@ -426,8 +426,9 @@ class MediaLibrary extends Page
                 ->live(onBlur: true)
                 ->visible(fn (Get $get): bool => $this->shouldShowMetadataFields($visibleAfterUploadField, $get))
                 ->maxLength(255)
-                ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
-                    $this->mergeAutoTagsIntoForm($set, $get, $state);
+                ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
+                    $this->refreshGeneratedSlugForTitle($set, $get, $state, $old);
+                    $this->refreshAutoTagsInForm($set, $get, $state, $old);
                 }),
             TextInput::make('existing_title')
                 ->hidden(),
@@ -742,6 +743,32 @@ class MediaLibrary extends Page
     private function mergeAutoTagsIntoForm(Set $set, Get $get, ?string $title): void
     {
         $set('tags', MediaImageMetadata::mergeAutoTags($get('tags') ?? [], $title));
+    }
+
+    private function refreshAutoTagsInForm(Set $set, Get $get, ?string $title, ?string $previousTitle): void
+    {
+        $set('tags', MediaImageMetadata::refreshAutoTags($get('tags') ?? [], $previousTitle, $title));
+    }
+
+    private function refreshGeneratedSlugForTitle(Set $set, Get $get, ?string $title, ?string $previousTitle): void
+    {
+        $slug = MediaImageMetadata::normalizeSlug($title);
+
+        if (blank($slug)) {
+            return;
+        }
+
+        $currentSlug = MediaImageMetadata::normalizeSlug($get('slug'));
+        $previousGeneratedSlug = MediaImageMetadata::normalizeSlug($previousTitle);
+
+        if ($currentSlug !== null && $previousGeneratedSlug !== null && $currentSlug !== $previousGeneratedSlug) {
+            return;
+        }
+
+        $set('slug', $this->uniqueFallbackSlug(
+            slug: $slug,
+            ignorePath: filled($get('existing_path')) ? (string) $get('existing_path') : ($this->firstUploadedImagePath($get('image')) ?: $slug),
+        ));
     }
 
     private function currentUserId(): ?int

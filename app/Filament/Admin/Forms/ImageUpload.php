@@ -349,8 +349,9 @@ class ImageUpload
                 ->live(onBlur: true)
                 ->visible(fn (Get $get): bool => self::shouldShowMetadataFields($visibleAfterUploadField, $get))
                 ->maxLength(255)
-                ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
-                    self::mergeAutoTagsIntoForm($set, $get, $state);
+                ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old): void {
+                    self::refreshGeneratedSlugForTitle($set, $get, $state, $old);
+                    self::refreshAutoTagsInForm($set, $get, $state, $old);
                 }),
             Hidden::make('existing_title'),
             Select::make('tags')
@@ -635,6 +636,32 @@ class ImageUpload
     private static function mergeAutoTagsIntoForm(Set $set, Get $get, ?string $title): void
     {
         $set('tags', MediaImageMetadata::mergeAutoTags($get('tags') ?? [], $title));
+    }
+
+    private static function refreshAutoTagsInForm(Set $set, Get $get, ?string $title, ?string $previousTitle): void
+    {
+        $set('tags', MediaImageMetadata::refreshAutoTags($get('tags') ?? [], $previousTitle, $title));
+    }
+
+    private static function refreshGeneratedSlugForTitle(Set $set, Get $get, ?string $title, ?string $previousTitle): void
+    {
+        $slug = MediaImageMetadata::normalizeSlug($title);
+
+        if (blank($slug)) {
+            return;
+        }
+
+        $currentSlug = MediaImageMetadata::normalizeSlug($get('slug'));
+        $previousGeneratedSlug = MediaImageMetadata::normalizeSlug($previousTitle);
+
+        if ($currentSlug !== null && $previousGeneratedSlug !== null && $currentSlug !== $previousGeneratedSlug) {
+            return;
+        }
+
+        $set('slug', self::uniqueSlug(
+            slug: $slug,
+            ignorePath: filled($get('existing_path')) ? (string) $get('existing_path') : (self::selectedImagePath($get('new_image')) ?: $slug),
+        ));
     }
 
     private static function shouldShowMetadataFields(?string $visibleAfterUploadField, Get $get): bool
