@@ -10,6 +10,7 @@
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('partials.site-design')
+    @include('partials.custom-head-scripts')
 </head>
 <body @class([
     'site-home',
@@ -22,6 +23,7 @@
     'site-home--' . $theme['layout'],
     'site-home--accent-' . $theme['accent'],
 ])>
+    @include('partials.custom-body-top-scripts')
     @include('partials.analytics-body')
 
     @include('home.partials.header')
@@ -32,5 +34,6 @@
     </main>
 
     @include('home.partials.footer')
+    @include('partials.custom-body-bottom-scripts')
 </body>
 </html>

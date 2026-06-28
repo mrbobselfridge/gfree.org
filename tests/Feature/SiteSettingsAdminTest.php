@@ -38,12 +38,16 @@ class SiteSettingsAdminTest extends TestCase
             ->assertDontSee('Office hours')
             ->assertSee('Site logo')
             ->assertSee('Default page header image')
-            ->assertSee('Site design')
+            ->assertSee('Site design and customization')
+            ->assertDontSee('Site design</span>', false)
             ->assertSee('Site accent color')
             ->assertSee('Accent text color')
             ->assertSee('Soft accent color')
             ->assertSee('Background colors')
             ->assertSee('Custom CSS')
+            ->assertSee('Header custom JS')
+            ->assertSee('Body top custom JS')
+            ->assertSee('Body bottom custom JS')
             ->assertSee('Dashboard notes')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
@@ -472,7 +476,7 @@ class SiteSettingsAdminTest extends TestCase
         $this->assertSame('Midnight Blue', SiteDesignPalette::normalizeBackgroundColors($colors)[1]['name']);
     }
 
-    public function test_site_design_public_colors_and_custom_css_can_be_saved(): void
+    public function test_site_design_public_colors_css_and_custom_scripts_can_be_saved(): void
     {
         $settings = SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
@@ -484,6 +488,9 @@ class SiteSettingsAdminTest extends TestCase
             ->set('data.design_accent_text_color', '#223344')
             ->set('data.design_accent_soft_color', '#ddeeff')
             ->set('data.custom_css', ".page-hero h1 {\n    text-transform: uppercase;\n}")
+            ->set('data.header_custom_js', '<script>window.headerCustom = true;</script>')
+            ->set('data.body_top_custom_js', '<script>window.bodyTopCustom = true;</script>')
+            ->set('data.body_bottom_custom_js', '<script>window.bodyBottomCustom = true;</script>')
             ->call('save')
             ->assertHasNoFormErrors();
 
@@ -493,14 +500,20 @@ class SiteSettingsAdminTest extends TestCase
             'design_accent_text_color' => '#223344',
             'design_accent_soft_color' => '#ddeeff',
             'custom_css' => ".page-hero h1 {\n    text-transform: uppercase;\n}",
+            'header_custom_js' => '<script>window.headerCustom = true;</script>',
+            'body_top_custom_js' => '<script>window.bodyTopCustom = true;</script>',
+            'body_bottom_custom_js' => '<script>window.bodyBottomCustom = true;</script>',
         ]);
     }
 
-    public function test_site_settings_editor_without_code_access_cannot_change_custom_css(): void
+    public function test_site_settings_editor_without_code_access_cannot_change_custom_css_or_scripts(): void
     {
         $settings = SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
             'custom_css' => '.site-header { color: red; }',
+            'header_custom_js' => '<script>window.headerCustom = "old";</script>',
+            'body_top_custom_js' => '<script>window.bodyTopCustom = "old";</script>',
+            'body_bottom_custom_js' => '<script>window.bodyBottomCustom = "old";</script>',
         ]);
 
         $editor = User::factory()->create([
@@ -514,15 +527,26 @@ class SiteSettingsAdminTest extends TestCase
         $this->actingAs($editor)
             ->get("/admin/site-settings/{$settings->getKey()}/edit")
             ->assertOk()
-            ->assertDontSee('Custom CSS');
+            ->assertDontSee('Custom CSS')
+            ->assertDontSee('Header custom JS')
+            ->assertDontSee('Body top custom JS')
+            ->assertDontSee('Body bottom custom JS');
 
         Livewire::actingAs($editor)
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
             ->set('data.custom_css', '.site-header { color: blue; }')
+            ->set('data.header_custom_js', '<script>window.headerCustom = "new";</script>')
+            ->set('data.body_top_custom_js', '<script>window.bodyTopCustom = "new";</script>')
+            ->set('data.body_bottom_custom_js', '<script>window.bodyBottomCustom = "new";</script>')
             ->call('save')
             ->assertHasNoFormErrors();
 
-        $this->assertSame('.site-header { color: red; }', $settings->refresh()->custom_css);
+        $settings->refresh();
+
+        $this->assertSame('.site-header { color: red; }', $settings->custom_css);
+        $this->assertSame('<script>window.headerCustom = "old";</script>', $settings->header_custom_js);
+        $this->assertSame('<script>window.bodyTopCustom = "old";</script>', $settings->body_top_custom_js);
+        $this->assertSame('<script>window.bodyBottomCustom = "old";</script>', $settings->body_bottom_custom_js);
     }
 
     public function test_site_settings_url_fields_reject_non_url_text(): void

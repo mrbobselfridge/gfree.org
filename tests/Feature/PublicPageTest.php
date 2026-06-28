@@ -969,6 +969,9 @@ class PublicPageTest extends TestCase
             'design_accent_text_color' => '#223344',
             'design_accent_soft_color' => '#ddeeff',
             'custom_css' => '<style>.page-hero h1 { text-transform: uppercase; }</style>',
+            'header_custom_js' => '<script>window.headerCustom = true;</script>',
+            'body_top_custom_js' => '<script>window.bodyTopCustom = true;</script>',
+            'body_bottom_custom_js' => '<script>window.bodyBottomCustom = true;</script>',
         ]);
 
         Page::query()->create([
@@ -977,14 +980,24 @@ class PublicPageTest extends TestCase
             'is_published' => true,
         ]);
 
-        $this->get('/styled-page')
+        $response = $this->get('/styled-page')
             ->assertOk()
             ->assertSee('--site-accent: #445566;', false)
             ->assertSee('--site-accent-text: #223344;', false)
             ->assertSee('--site-accent-soft: #ddeeff;', false)
             ->assertSee('.page-hero h1 { text-transform: uppercase; }', false)
+            ->assertSee('<script>window.headerCustom = true;</script>', false)
+            ->assertSee('<script>window.bodyTopCustom = true;</script>', false)
+            ->assertSee('<script>window.bodyBottomCustom = true;</script>', false)
             ->assertDontSee('<style>.page-hero h1', false)
             ->assertDontSee('</style></style>', false);
+
+        $html = $response->getContent();
+
+        $this->assertLessThan(strpos($html, '</head>'), strpos($html, '<script>window.headerCustom = true;</script>'));
+        $this->assertGreaterThan(strpos($html, '<body'), strpos($html, '<script>window.bodyTopCustom = true;</script>'));
+        $this->assertLessThan(strpos($html, '<main class="public-page__main">'), strpos($html, '<script>window.bodyTopCustom = true;</script>'));
+        $this->assertLessThan(strpos($html, '</body>'), strpos($html, '<script>window.bodyBottomCustom = true;</script>'));
     }
 
     public function test_image_blocks_do_not_require_body_content(): void

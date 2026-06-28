@@ -12,6 +12,7 @@
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('partials.site-design')
+    @include('partials.custom-head-scripts')
 </head>
 <body @class([
     'site-page',
@@ -25,6 +26,7 @@
     'public-page--with-page-header' => $page->show_page_header,
     'public-page--without-page-header' => ! $page->show_page_header,
 ])>
+    @include('partials.custom-body-top-scripts')
     @include('partials.analytics-body')
 
     @if ($page->show_site_chrome)
@@ -103,5 +105,6 @@
     @if ($page->show_site_chrome)
         @include('home.partials.footer')
     @endif
+    @include('partials.custom-body-bottom-scripts')
 </body>
 </html>

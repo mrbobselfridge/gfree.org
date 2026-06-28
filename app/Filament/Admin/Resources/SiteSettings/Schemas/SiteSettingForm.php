@@ -229,7 +229,7 @@ class SiteSettingForm
                     ->columns(1)
                     ->columnSpanFull(),
 
-                self::section('Site design', 'site-settings-site-design-elements')
+                self::section('Site design and customization', 'site-settings-site-design-elements')
                     ->schema([
                         ...ImageUpload::make(
                             'site_logo_path',
@@ -338,6 +338,39 @@ class SiteSettingForm
                             ->hintIcon(
                                 Heroicon::OutlinedInformationCircle,
                                 'Optional public-site CSS override for admins and editors with Code Blocks access. Leave blank to use the standard stylesheet.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                        HtmlCodeTextarea::html(Textarea::make('header_custom_js'))
+                            ->label('Header custom JS')
+                            ->rows(6)
+                            ->visible(fn(): bool => CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional full script tags rendered immediately before the closing head tag on public pages.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                        HtmlCodeTextarea::html(Textarea::make('body_top_custom_js'))
+                            ->label('Body top custom JS')
+                            ->rows(6)
+                            ->visible(fn(): bool => CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional full script tags rendered immediately after the opening body tag on public pages.',
+                            )
+                            ->hintColor('gray')
+                            ->columnSpanFull(),
+                        HtmlCodeTextarea::html(Textarea::make('body_bottom_custom_js'))
+                            ->label('Body bottom custom JS')
+                            ->rows(6)
+                            ->visible(fn(): bool => CodeBlockAccess::canManage())
+                            ->dehydrateStateUsing(fn(?string $state): ?string => filled($state) ? trim($state) : null)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional full script tags rendered immediately before the closing body tag on public pages.',
                             )
                             ->hintColor('gray')
                             ->columnSpanFull(),

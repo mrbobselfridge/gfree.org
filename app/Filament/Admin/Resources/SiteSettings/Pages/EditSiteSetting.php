@@ -83,6 +83,9 @@ class EditSiteSetting extends EditRecord
     {
         if (! CodeBlockAccess::canManage()) {
             $data['custom_css'] = $this->getRecord()->custom_css;
+            $data['header_custom_js'] = $this->getRecord()->header_custom_js;
+            $data['body_top_custom_js'] = $this->getRecord()->body_top_custom_js;
+            $data['body_bottom_custom_js'] = $this->getRecord()->body_bottom_custom_js;
             $data['site_variables'] = $this->getRecord()->site_variables;
         } else {
             $data['site_variables'] = SiteVariables::normalizeRows($data['site_variables'] ?? []);
