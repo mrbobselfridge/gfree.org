@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Notifications\AdminResetPassword;
 use App\Support\AdminAccess;
 use App\Support\NullSlideAnalyzer;
+use App\Support\OpenAiSiteSettings;
+use App\Support\OpenAiSlideAnalyzer;
 use App\Support\SlideAnalyzerInterface;
 use Filament\Auth\Notifications\ResetPassword;
 use Filament\Tables\Table;
@@ -20,7 +22,9 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ResetPassword::class, fn ($app, array $parameters): AdminResetPassword => new AdminResetPassword($parameters['token']));
-        $this->app->bind(SlideAnalyzerInterface::class, NullSlideAnalyzer::class);
+        $this->app->bind(SlideAnalyzerInterface::class, fn ($app): SlideAnalyzerInterface => filled(OpenAiSiteSettings::apiKey())
+            ? $app->make(OpenAiSlideAnalyzer::class)
+            : $app->make(NullSlideAnalyzer::class));
     }
 
     /**

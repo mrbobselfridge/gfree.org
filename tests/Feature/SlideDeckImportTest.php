@@ -8,13 +8,18 @@ use App\Jobs\ProcessSlideDeckJob;
 use App\Models\FileDocument;
 use App\Models\SlideDeck;
 use App\Models\SlideDeckSlide;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\NullSlideAnalyzer;
+use App\Support\OpenAiSlideAnalyzer;
 use App\Support\PowerPointToPdfService;
 use App\Support\SlideAnalysisService;
+use App\Support\SlideAnalyzerInterface;
 use App\Support\SlideDeckImportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -171,6 +176,88 @@ class SlideDeckImportTest extends TestCase
         $this->assertSame('Slide 3', $slide->suggested_name);
         $this->assertSame('No AI slide analyzer is configured yet.', $slide->summary);
         $this->assertSame('0.0000', $slide->confidence_score);
+    }
+
+    public function test_slide_analyzer_binding_uses_null_analyzer_without_site_settings_key(): void
+    {
+        $this->assertInstanceOf(NullSlideAnalyzer::class, app(SlideAnalyzerInterface::class));
+    }
+
+    public function test_openai_slide_analyzer_sends_slide_image_and_saves_structured_metadata(): void
+    {
+        Storage::fake(SlideDeck::DISK);
+        Storage::disk(SlideDeck::DISK)->put('slide-decks/1/images/slide-001.png', 'fake-png-bytes');
+
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+        ]);
+
+        config([
+            'services.openai.content_model' => 'gpt-5-mini',
+        ]);
+
+        $deck = SlideDeck::query()->create([
+            'name' => 'Announcements',
+            'original_filename' => 'announcements.pptx',
+            'stored_file_path' => 'slide-decks/1/original/announcements.pptx',
+        ]);
+        $slide = $deck->slides()->create([
+            'slide_number' => 1,
+            'image_path' => 'slide-decks/1/images/slide-001.png',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => json_encode([
+                    'slide_type' => 'announcement',
+                    'suggested_name' => 'Family Fire Night - July 19',
+                    'extracted_text' => 'Family Fire Night July 19',
+                    'summary' => 'Announcement for families.',
+                    'scripture_reference' => null,
+                    'scripture_text' => null,
+                    'event_title' => 'Family Fire Night',
+                    'event_date' => 'July 19',
+                    'event_time' => '6:00 PM',
+                    'event_location' => 'Fellowship Hall',
+                    'event_audience' => 'Families',
+                    'contact_person' => 'Sam',
+                    'announcement_details' => 'Dinner and games.',
+                    'confidence_score' => 0.92,
+                ]),
+            ]),
+        ]);
+
+        $this->assertInstanceOf(OpenAiSlideAnalyzer::class, app(SlideAnalyzerInterface::class));
+
+        app(SlideAnalysisService::class)->analyze($slide);
+
+        $slide->refresh();
+
+        $this->assertSame(SlideDeckSlide::TYPE_ANNOUNCEMENT, $slide->slide_type);
+        $this->assertSame('Family Fire Night - July 19', $slide->suggested_name);
+        $this->assertSame('Family Fire Night July 19', $slide->extracted_text);
+        $this->assertSame('Family Fire Night', $slide->event_title);
+        $this->assertSame('July 19', $slide->event_date);
+        $this->assertSame('6:00 PM', $slide->event_time);
+        $this->assertSame('Fellowship Hall', $slide->event_location);
+        $this->assertSame('Families', $slide->event_audience);
+        $this->assertSame('Sam', $slide->contact_person);
+        $this->assertSame('Dinner and games.', $slide->announcement_details);
+        $this->assertSame('0.9200', $slide->confidence_score);
+
+        Http::assertSent(function (Request $request): bool {
+            $content = data_get($request->data(), 'input.0.content');
+            $prompt = (string) data_get($content, '0.text');
+
+            return $request->url() === 'https://api.openai.com/v1/responses'
+                && data_get($request->data(), 'model') === 'gpt-5-mini'
+                && str_contains($prompt, 'Classify the slide into exactly one slide_type')
+                && str_contains($prompt, 'Return only valid JSON')
+                && data_get($content, '1.type') === 'input_image'
+                && data_get($content, '1.detail') === 'high'
+                && data_get($content, '1.image_url') === 'data:image/png;base64,'.base64_encode('fake-png-bytes');
+        });
     }
 
     public function test_processing_job_marks_deck_failed_when_conversion_fails(): void
