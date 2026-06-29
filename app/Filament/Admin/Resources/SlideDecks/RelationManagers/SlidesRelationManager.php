@@ -47,6 +47,13 @@ class SlidesRelationManager extends RelationManager
                     ->label('Suggested name')
                     ->searchable()
                     ->wrap(),
+                TextColumn::make('analysis_status')
+                    ->label('Analysis')
+                    ->badge()
+                    ->state(fn (SlideDeckSlide $record): string => $this->analysisStatus($record))
+                    ->description(fn (SlideDeckSlide $record): ?string => $this->analysisDescription($record))
+                    ->color(fn (SlideDeckSlide $record): string => $this->analysisColor($record))
+                    ->wrap(),
                 TextColumn::make('slide_type')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => SlideDeckSlide::types()[$state] ?? $state)
@@ -97,6 +104,39 @@ class SlidesRelationManager extends RelationManager
                     Heroicon::OutlinedSparkles,
                 ),
             ]);
+    }
+
+    private function analysisStatus(SlideDeckSlide $record): string
+    {
+        if (data_get($record->raw_analysis_json, 'error_type') === 'openai_quota_exceeded') {
+            return 'OpenAI balance issue';
+        }
+
+        if (data_get($record->raw_analysis_json, 'analyzer_failed')) {
+            return 'Analysis failed';
+        }
+
+        if (filled($record->summary) || filled($record->extracted_text) || filled($record->confidence_score)) {
+            return 'Analyzed';
+        }
+
+        return 'Pending';
+    }
+
+    private function analysisDescription(SlideDeckSlide $record): ?string
+    {
+        $error = data_get($record->raw_analysis_json, 'error');
+
+        return filled($error) ? str($error)->limit(160)->toString() : null;
+    }
+
+    private function analysisColor(SlideDeckSlide $record): string
+    {
+        return match ($this->analysisStatus($record)) {
+            'Analyzed' => 'success',
+            'Pending' => 'gray',
+            default => 'danger',
+        };
     }
 
     private function slideFormSchema(): array

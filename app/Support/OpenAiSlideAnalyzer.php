@@ -15,13 +15,16 @@ class OpenAiSlideAnalyzer implements SlideAnalyzerInterface
         $apiKey = OpenAiSiteSettings::apiKey();
 
         if (blank($apiKey)) {
-            throw new RuntimeException('OpenAI API key is not configured. Add it in Site Settings under AI Settings.');
+            throw new SlideAnalysisException(
+                'OpenAI API key is not configured. Add it in Site Settings under AI Settings.',
+                'openai_not_configured',
+            );
         }
 
         $disk = Storage::disk('local');
 
         if (blank($slide->image_path) || ! $disk->exists($slide->image_path)) {
-            throw new RuntimeException('The slide image could not be found.');
+            throw new SlideAnalysisException('The slide image could not be found.', 'slide_image_missing');
         }
 
         $response = Http::withToken($apiKey)
@@ -50,7 +53,19 @@ class OpenAiSlideAnalyzer implements SlideAnalyzerInterface
         try {
             $response->throw();
         } catch (RequestException $exception) {
-            throw new RuntimeException('OpenAI rejected the slide analysis request: '.$this->responseSummary($exception));
+            if ($this->isBalanceOrQuotaError($exception)) {
+                throw new SlideAnalysisException(
+                    'OpenAI API balance or quota issue: the slide analyzer could not run because the configured OpenAI project has no available API credits or has reached its spend limit. Add API credits or raise the project or organization limit, then re-run analysis.',
+                    'openai_quota_exceeded',
+                    $exception,
+                );
+            }
+
+            throw new SlideAnalysisException(
+                'OpenAI rejected the slide analysis request: '.$this->responseSummary($exception),
+                'openai_request_failed',
+                $exception,
+            );
         }
 
         return SlideAnalysisResult::fromArray($this->decodeAnalysisJson($this->extractOutputText($response->json())));
@@ -157,5 +172,25 @@ PROMPT;
         }
 
         return 'HTTP '.$response->status();
+    }
+
+    private function isBalanceOrQuotaError(RequestException $exception): bool
+    {
+        $response = $exception->response;
+
+        if (! $response) {
+            return false;
+        }
+
+        $code = strtolower((string) data_get($response->json(), 'error.code'));
+        $type = strtolower((string) data_get($response->json(), 'error.type'));
+        $message = strtolower((string) data_get($response->json(), 'error.message'));
+
+        return $code === 'insufficient_quota'
+            || str_contains($type, 'quota')
+            || str_contains($message, 'exceeded your current quota')
+            || str_contains($message, 'billing details')
+            || str_contains($message, 'run out of credits')
+            || str_contains($message, 'no balance');
     }
 }

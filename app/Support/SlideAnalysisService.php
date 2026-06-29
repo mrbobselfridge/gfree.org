@@ -17,12 +17,16 @@ class SlideAnalysisService
         } catch (Throwable $exception) {
             report($exception);
 
-            $slide->forceFill([
-                'raw_analysis_json' => [
-                    'error' => $exception->getMessage(),
-                    'analyzer_failed' => true,
-                ],
-            ])->save();
+            $error = [
+                'error' => $exception->getMessage(),
+                'analyzer_failed' => true,
+            ];
+
+            if ($exception instanceof SlideAnalysisException) {
+                $error['error_type'] = $exception->failureType;
+            }
+
+            $slide->forceFill(['raw_analysis_json' => $error])->save();
         }
     }
 }
