@@ -506,13 +506,13 @@ return new HtmlString('<ul style="display: grid; gap: 0.5rem; margin: 0; padding
     private static function childPageListItem(Page $page): string
     {
         return sprintf(
-            '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">Page:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400">%s</span> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+            '<li style="display: flex; align-items: flex-start; gap: 0.5rem;">%s<span style="display: grid; min-width: 0; gap: 0.125rem;"><span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">Page:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span><span class="text-gray-500 dark:text-gray-400" style="font-size: 0.75rem; line-height: 1rem;">%s</span></span></li>',
             self::pageActionLinks($page),
             e(self::pageDetailTooltip($page)),
             e($page->title),
-            e(self::pageExpirationLabel($page)),
             e(self::pageDetailTooltip($page)),
             e(ltrim((string) $page->slug, '/')),
+            e(self::pageExpirationLabel($page)),
         );
     }
 
