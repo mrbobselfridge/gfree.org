@@ -29,6 +29,10 @@ class ContentBlocks
 
     public const RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM = 'featured_published_order_random';
 
+    public const RELATED_CONTENT_SORT_ANNOUNCEMENTS_EVENTS_NEXT_UP = 'announcements_events_next_up';
+
+    public const RELATED_CONTENT_SORT_NEWS_BLOG_RECENT = 'news_blog_recent';
+
     public const RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM = 'published_order_random';
 
     public const RELATED_CONTENT_SORT_TITLE_ASC = 'title_asc';
@@ -101,15 +105,24 @@ class ContentBlocks
     public static function relatedContentSortOptions(): array
     {
         return [
+            self::RELATED_CONTENT_SORT_ANNOUNCEMENTS_EVENTS_NEXT_UP => 'Announcements or events - next up first',
+            self::RELATED_CONTENT_SORT_NEWS_BLOG_RECENT => 'News or blog - most recent first',
             self::RELATED_CONTENT_SORT_ORDER_RANDOM => 'Sort order, then random',
-            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => 'Feature start, publish at, sort order, then random',
             self::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM => 'Publish at, sort order, then random',
             self::RELATED_CONTENT_SORT_TITLE_ASC => 'Title A-Z',
             self::RELATED_CONTENT_SORT_TITLE_DESC => 'Title Z-A',
-            self::RELATED_CONTENT_SORT_UPDATED_DESC => 'Updated date, newest first',
             self::RELATED_CONTENT_SORT_CREATED_DESC => 'Created date, newest first',
             self::RELATED_CONTENT_SORT_CREATED_ASC => 'Created date, oldest first',
         ];
+    }
+
+    public static function normalizeRelatedContentSortPreset(mixed $sortPreset): ?string
+    {
+        return match ($sortPreset) {
+            self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => self::RELATED_CONTENT_SORT_ANNOUNCEMENTS_EVENTS_NEXT_UP,
+            self::RELATED_CONTENT_SORT_UPDATED_DESC => self::RELATED_CONTENT_SORT_NEWS_BLOG_RECENT,
+            default => is_string($sortPreset) ? $sortPreset : null,
+        };
     }
 
     /**
@@ -161,7 +174,8 @@ class ContentBlocks
         $data['display_mode'] = in_array($data['display_mode'] ?? null, self::relatedContentModeOptions(), true)
             ? $data['display_mode']
             : self::RELATED_CONTENT_MODE_FEATURED;
-        $data['sort_preset'] = array_key_exists($data['sort_preset'] ?? null, self::relatedContentSortOptions())
+        $data['sort_preset'] = self::normalizeRelatedContentSortPreset($data['sort_preset'] ?? null);
+        $data['sort_preset'] = array_key_exists($data['sort_preset'], self::relatedContentSortOptions())
             ? $data['sort_preset']
             : self::defaultRelatedContentSortPreset($data);
         $data['item_limit'] = self::relatedContentLimit($data);
@@ -260,6 +274,13 @@ class ContentBlocks
     private static function compareRelatedContentItems(array $first, array $second, string $sortPreset): int
     {
         return match ($sortPreset) {
+            self::RELATED_CONTENT_SORT_ANNOUNCEMENTS_EVENTS_NEXT_UP => self::compareDateAsc($first, $second, 'expires_at')
+                ?: self::compareIntAsc($first, $second, 'sort_order')
+                ?: self::compareDateDesc($first, $second, 'publish_at')
+                ?: self::compareTitleAsc($first, $second),
+            self::RELATED_CONTENT_SORT_NEWS_BLOG_RECENT => self::compareDateDesc($first, $second, 'updated_at')
+                ?: self::compareDateDesc($first, $second, 'created_at')
+                ?: self::compareTitleAsc($first, $second),
             self::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM => self::compareDateDesc($first, $second, 'featured_at')
                 ?: self::compareDateDesc($first, $second, 'publish_at')
                 ?: self::compareIntAsc($first, $second, 'sort_order')
@@ -367,6 +388,7 @@ class ContentBlocks
                 'sort_order' => $child->sort_order ?? 0,
                 'featured_at' => self::sortableDate($child->featured_at),
                 'publish_at' => self::sortableDate($child->publish_at),
+                'expires_at' => self::sortableDate($child->expires_at),
                 'updated_at' => self::sortableDate($child->updated_at),
                 'created_at' => self::sortableDate($child->created_at),
                 'sort_date' => ($child->featured_at ?? $child->publish_at ?? $child->updated_at)?->toDateTimeString(),
@@ -428,6 +450,7 @@ class ContentBlocks
             'sort_order' => $document->sort_order ?? 0,
             'featured_at' => null,
             'publish_at' => self::sortableDate($document->publish_at),
+            'expires_at' => self::sortableDate($document->expires_at),
             'updated_at' => self::sortableDate($document->updated_at),
             'created_at' => self::sortableDate($document->created_at),
             'sort_date' => ($document->publish_at ?? $document->updated_at)?->toDateTimeString(),

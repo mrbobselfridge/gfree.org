@@ -766,6 +766,13 @@ class ContentBlockBuilder
                     self::hint(Select::make('sort_preset')
                         ->label('Sort by'), 'Controls the order of child pages and files before the Load more button reveals additional items.')
                         ->options(fn (): array => ContentBlocks::relatedContentSortOptions())
+                        ->afterStateHydrated(function (Select $component, mixed $state): void {
+                            $normalized = ContentBlocks::normalizeRelatedContentSortPreset($state);
+
+                            if ($normalized !== $state) {
+                                $component->state($normalized);
+                            }
+                        })
                         ->default(ContentBlocks::RELATED_CONTENT_SORT_ORDER_RANDOM)
                         ->native(false)
                         ->required()

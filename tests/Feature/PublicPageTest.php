@@ -1452,67 +1452,60 @@ class PublicPageTest extends TestCase
             ]);
     }
 
-    public function test_child_cards_block_sorts_by_featured_and_published_dates(): void
+    public function test_child_cards_block_sorts_announcements_and_events_next_up_first(): void
     {
         $parent = $this->createRelatedContentParent([
             'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
-            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_FEATURED_PUBLISHED_ORDER_RANDOM,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_ANNOUNCEMENTS_EVENTS_NEXT_UP,
             'item_limit' => 10,
         ]);
 
         Page::query()->create([
             'parent_page_id' => $parent->getKey(),
-            'title' => 'Published Newer No Featured',
-            'slug' => 'resources/published-newer-no-featured',
+            'title' => 'No Event Date',
+            'slug' => 'resources/no-event-date',
             'sort_order' => 1,
-            'publish_at' => '2026-06-05 09:00:00',
+            'publish_at' => now()->subDays(4),
             'is_published' => true,
         ]);
 
         Page::query()->create([
             'parent_page_id' => $parent->getKey(),
-            'title' => 'Featured Older',
-            'slug' => 'resources/featured-older',
+            'title' => 'Sooner Event Lower Priority',
+            'slug' => 'resources/sooner-event-lower-priority',
             'sort_order' => 20,
-            'featured_at' => '2026-06-02 09:00:00',
-            'publish_at' => '2026-06-04 09:00:00',
+            'expires_at' => now()->addDays(2)->setTime(22, 0),
+            'publish_at' => now()->subDays(3),
             'is_published' => true,
         ]);
 
         Page::query()->create([
             'parent_page_id' => $parent->getKey(),
-            'title' => 'Featured Newer',
-            'slug' => 'resources/featured-newer',
-            'sort_order' => 30,
-            'featured_at' => '2026-06-03 09:00:00',
-            'publish_at' => '2026-06-01 09:00:00',
+            'title' => 'Later Event',
+            'slug' => 'resources/later-event',
+            'sort_order' => 1,
+            'expires_at' => now()->addDays(7)->setTime(22, 0),
+            'publish_at' => now()->subDays(6),
+            'is_published' => true,
+        ]);
+
+        Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Sooner Event Higher Priority',
+            'slug' => 'resources/sooner-event-higher-priority',
+            'sort_order' => 10,
+            'expires_at' => now()->addDays(2)->setTime(22, 0),
+            'publish_at' => now()->subDays(2),
             'is_published' => true,
         ]);
 
         $this->get('/resources')
             ->assertOk()
             ->assertSeeInOrder([
-                'Featured Newer',
-                'Featured Older',
-                'Published Newer No Featured',
-            ]);
-
-        $parent->update([
-            'content_blocks' => [
-                $this->relatedContentBlock([
-                    'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
-                    'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_PUBLISHED_ORDER_RANDOM,
-                    'item_limit' => 10,
-                ]),
-            ],
-        ]);
-
-        $this->get('/resources')
-            ->assertOk()
-            ->assertSeeInOrder([
-                'Published Newer No Featured',
-                'Featured Older',
-                'Featured Newer',
+                'Sooner Event Higher Priority',
+                'Sooner Event Lower Priority',
+                'Later Event',
+                'No Event Date',
             ]);
     }
 
@@ -1564,7 +1557,7 @@ class PublicPageTest extends TestCase
     {
         $parent = $this->createRelatedContentParent([
             'display_mode' => ContentBlocks::RELATED_CONTENT_MODE_ALL,
-            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_UPDATED_DESC,
+            'sort_preset' => ContentBlocks::RELATED_CONTENT_SORT_NEWS_BLOG_RECENT,
             'item_limit' => 10,
         ]);
 
@@ -1582,6 +1575,13 @@ class PublicPageTest extends TestCase
             'is_published' => true,
         ]);
 
+        $newerCreatedSameUpdated = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Newer Created Same Updated',
+            'slug' => 'resources/newer-created-same-updated',
+            'is_published' => true,
+        ]);
+
         $newCreatedOldUpdated = Page::query()->create([
             'parent_page_id' => $parent->getKey(),
             'title' => 'New Created Old Updated',
@@ -1589,7 +1589,7 @@ class PublicPageTest extends TestCase
             'is_published' => true,
         ]);
 
-        Page::withoutTimestamps(function () use ($oldCreatedNewUpdated, $middleCreatedMiddleUpdated, $newCreatedOldUpdated): void {
+        Page::withoutTimestamps(function () use ($oldCreatedNewUpdated, $middleCreatedMiddleUpdated, $newerCreatedSameUpdated, $newCreatedOldUpdated): void {
             $oldCreatedNewUpdated->forceFill([
                 'created_at' => '2026-06-01 09:00:00',
                 'updated_at' => '2026-06-05 09:00:00',
@@ -1598,6 +1598,11 @@ class PublicPageTest extends TestCase
             $middleCreatedMiddleUpdated->forceFill([
                 'created_at' => '2026-06-02 09:00:00',
                 'updated_at' => '2026-06-04 09:00:00',
+            ])->save();
+
+            $newerCreatedSameUpdated->forceFill([
+                'created_at' => '2026-06-04 09:00:00',
+                'updated_at' => '2026-06-05 09:00:00',
             ])->save();
 
             $newCreatedOldUpdated->forceFill([
@@ -1609,6 +1614,7 @@ class PublicPageTest extends TestCase
         $this->get('/resources')
             ->assertOk()
             ->assertSeeInOrder([
+                'Newer Created Same Updated',
                 'Old Created New Updated',
                 'Middle Created Middle Updated',
                 'New Created Old Updated',
@@ -1627,6 +1633,7 @@ class PublicPageTest extends TestCase
         $this->get('/resources')
             ->assertOk()
             ->assertSeeInOrder([
+                'Newer Created Same Updated',
                 'New Created Old Updated',
                 'Middle Created Middle Updated',
                 'Old Created New Updated',
@@ -1648,6 +1655,7 @@ class PublicPageTest extends TestCase
                 'Old Created New Updated',
                 'Middle Created Middle Updated',
                 'New Created Old Updated',
+                'Newer Created Same Updated',
             ]);
     }
 

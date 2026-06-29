@@ -387,6 +387,7 @@ class SlideDeckImportTest extends TestCase
         $this->assertSame('announcements/family-fire-night', $defaults['slug']);
         $this->assertSame('pages/hero-images/announcements.jpg', $defaults['hero_image_path']);
         $this->assertSame($parent->getKey(), $defaults['parent_page_id']);
+        $this->assertSame('2026-06-29 00:00:00', $defaults['publish_at']?->format('Y-m-d H:i:s'));
         $this->assertSame('2026-07-20 22:00:00', $defaults['expires_at']?->format('Y-m-d H:i:s'));
         $this->assertSame('image_text', $defaults['content_blocks'][0]['type']);
         $this->assertArrayNotHasKey('eyebrow', $defaults['content_blocks'][0]['data']);

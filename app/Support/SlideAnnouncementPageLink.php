@@ -73,7 +73,7 @@ class SlideAnnouncementPageLink
             'hero_image_path' => $parent?->hero_image_path,
             'card_image_path' => $publicImagePath,
             'parent_page_id' => $parent?->getKey(),
-            'publish_at' => now(),
+            'publish_at' => today(),
             'expires_at' => $this->expiresAt($slide),
             'content_blocks' => [
                 [
