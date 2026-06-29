@@ -6,6 +6,7 @@ use App\Filament\Admin\Support\IconOnlyAction;
 use App\Jobs\AnalyzeSlideDeckSlideJob;
 use App\Models\SlideDeck;
 use App\Models\SlideDeckSlide;
+use App\Support\SlideAnnouncementPageLink;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
@@ -54,6 +55,10 @@ class SlidesRelationManager extends RelationManager
                     ->description(fn (SlideDeckSlide $record): ?string => $this->analysisDescription($record))
                     ->color(fn (SlideDeckSlide $record): string => $this->analysisColor($record))
                     ->wrap(),
+                TextColumn::make('announcement_page')
+                    ->label('Announcement Page')
+                    ->html()
+                    ->state(fn (SlideDeckSlide $record): HtmlString => app(SlideAnnouncementPageLink::class)->statusHtml($record)),
                 TextColumn::make('slide_type')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => SlideDeckSlide::types()[$state] ?? $state)
@@ -84,6 +89,23 @@ class SlidesRelationManager extends RelationManager
             ])
             ->defaultSort('slide_number')
             ->recordActions([
+                IconOnlyAction::make(
+                    Action::make('editAnnouncementPage')
+                        ->label('Edit announcement page')
+                        ->url(fn (SlideDeckSlide $record): ?string => ($page = app(SlideAnnouncementPageLink::class)->matchingPage($record))
+                            ? app(SlideAnnouncementPageLink::class)->editPageUrl($page)
+                            : null, true)
+                        ->visible(fn (SlideDeckSlide $record): bool => app(SlideAnnouncementPageLink::class)->matchingPage($record) !== null),
+                    Heroicon::OutlinedPencilSquare,
+                    'Edit matching page',
+                ),
+                IconOnlyAction::make(
+                    Action::make('createAnnouncementPage')
+                        ->label('Create new announcement page')
+                        ->url(fn (SlideDeckSlide $record): string => app(SlideAnnouncementPageLink::class)->createPageUrl($record), true),
+                    Heroicon::OutlinedPlus,
+                    'Add new page',
+                ),
                 IconOnlyAction::make(
                     EditAction::make()
                         ->label('Edit slide')

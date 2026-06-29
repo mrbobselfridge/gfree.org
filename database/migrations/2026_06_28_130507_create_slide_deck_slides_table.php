@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedInteger('slide_number');
             $table->string('image_path');
             $table->string('thumbnail_path')->nullable();
+            $table->string('public_image_path')->nullable();
             $table->string('slide_type')->default('unknown')->index();
             $table->string('suggested_name')->nullable();
             $table->longText('extracted_text')->nullable();

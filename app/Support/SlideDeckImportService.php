@@ -38,13 +38,15 @@ class SlideDeckImportService
                 Storage::disk(SlideDeck::DISK)->put($image['image_path'], file_get_contents($image['local_image_path']));
                 Storage::disk(SlideDeck::DISK)->put($image['thumbnail_path'], file_get_contents($image['local_thumbnail_path']));
 
-                $deck->slides()->create([
+                $slide = $deck->slides()->create([
                     'slide_number' => $image['slide_number'],
                     'image_path' => $image['image_path'],
                     'thumbnail_path' => $image['thumbnail_path'],
                     'slide_type' => SlideDeckSlide::TYPE_UNKNOWN,
                     'suggested_name' => 'Slide '.$image['slide_number'],
                 ]);
+
+                app(SlideDeckPublicImage::class)->ensure($slide);
             }
 
             $deck->forceFill([

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
     'slide_number',
     'image_path',
     'thumbnail_path',
+    'public_image_path',
     'slide_type',
     'suggested_name',
     'extracted_text',

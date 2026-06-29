@@ -2,12 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Resources\Pages\Pages\CreatePage as CreatePageRecord;
 use App\Filament\Admin\Resources\SlideDecks\Pages\CreateSlideDeck;
 use App\Filament\Admin\Resources\SlideDecks\Pages\EditSlideDeck;
 use App\Filament\Admin\Resources\SlideDecks\RelationManagers\SlidesRelationManager;
 use App\Filament\Admin\Resources\SlideDecks\SlideDeckResource;
 use App\Jobs\ProcessSlideDeckJob;
 use App\Models\FileDocument;
+use App\Models\MediaImageMetadata;
+use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\SlideDeck;
 use App\Models\SlideDeckSlide;
@@ -17,10 +20,12 @@ use App\Support\OpenAiSlideAnalyzer;
 use App\Support\PowerPointToPdfService;
 use App\Support\SlideAnalysisService;
 use App\Support\SlideAnalyzerInterface;
+use App\Support\SlideAnnouncementPageLink;
 use App\Support\SlideDeckImportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -341,6 +346,180 @@ class SlideDeckImportTest extends TestCase
             ->assertTableColumnExists('analysis_status')
             ->assertSee('OpenAI balance issue')
             ->assertSee('add API credits or raise the project or organization limit');
+    }
+
+    public function test_slide_announcement_page_defaults_prefill_page_fields_and_public_media(): void
+    {
+        Carbon::setTestNow('2026-06-29 12:00:00');
+        Storage::fake(SlideDeck::DISK);
+        Storage::fake('public');
+
+        $parent = Page::query()->create([
+            'title' => 'Announcements',
+            'slug' => 'announcements',
+            'hero_image_path' => 'pages/hero-images/announcements.jpg',
+            'is_published' => true,
+        ]);
+        $deck = SlideDeck::query()->create([
+            'name' => 'Weekend Slides',
+            'original_filename' => 'weekend.pptx',
+            'stored_file_path' => 'slide-decks/1/original/weekend.pptx',
+        ]);
+        $slide = $deck->slides()->create([
+            'slide_number' => 1,
+            'image_path' => $deck->directory('images').'/slide-001.png',
+            'slide_type' => SlideDeckSlide::TYPE_ANNOUNCEMENT,
+            'suggested_name' => 'Family Fire Night',
+            'summary' => 'Join families for dinner, games, and connection.',
+            'extracted_text' => "Family Fire Night\nJuly 19 - 20, 2026\nFellowship Hall",
+            'event_title' => 'Family Fire Night',
+            'event_date' => 'July 19 - 20, 2026',
+        ]);
+
+        Storage::disk(SlideDeck::DISK)->put($slide->image_path, 'png image');
+
+        $defaults = app(SlideAnnouncementPageLink::class)->createPageDefaults($slide);
+
+        $this->assertSame('Family Fire Night', $defaults['title']);
+        $this->assertSame('Announcement', $defaults['hero_label']);
+        $this->assertTrue($defaults['is_published']);
+        $this->assertSame('Join families for dinner, games, and connection.', $defaults['intro']);
+        $this->assertSame('announcements/family-fire-night', $defaults['slug']);
+        $this->assertSame('pages/hero-images/announcements.jpg', $defaults['hero_image_path']);
+        $this->assertSame($parent->getKey(), $defaults['parent_page_id']);
+        $this->assertSame('2026-07-20 22:00:00', $defaults['expires_at']?->format('Y-m-d H:i:s'));
+        $this->assertSame('image_text', $defaults['content_blocks'][0]['type']);
+        $this->assertSame('Family Fire Night', $defaults['content_blocks'][0]['data']['eyebrow']);
+        $this->assertSame('white', $defaults['content_blocks'][0]['data']['background']);
+        $this->assertSame('wide', $defaults['content_blocks'][0]['data']['content_width']);
+        $this->assertSame('left', $defaults['content_blocks'][0]['data']['image_position']);
+        $this->assertStringContainsString('<li>Family Fire Night</li>', $defaults['content_blocks'][0]['data']['body']);
+        $this->assertSame($defaults['card_image_path'], $defaults['content_blocks'][0]['data']['image_path']);
+        Storage::disk('public')->assertExists($defaults['card_image_path']);
+        $this->assertDatabaseHas(MediaImageMetadata::class, [
+            'path' => $defaults['card_image_path'],
+            'source' => 'slide_deck',
+            'source_id' => (string) $slide->getKey(),
+        ]);
+    }
+
+    public function test_slide_review_table_shows_announcement_page_status_and_links(): void
+    {
+        Storage::fake(SlideDeck::DISK);
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+        $parent = Page::query()->create([
+            'title' => 'Announcements',
+            'slug' => 'announcements',
+            'is_published' => true,
+        ]);
+        $matchedPage = Page::query()->create([
+            'parent_page_id' => $parent->getKey(),
+            'title' => 'Family Fire Night',
+            'slug' => 'announcements/family-fire-night',
+            'intro' => 'Dinner and games for families.',
+            'is_published' => true,
+        ]);
+        $deck = SlideDeck::query()->create([
+            'name' => 'Announcements',
+            'original_filename' => 'announcements.pptx',
+            'stored_file_path' => 'slide-decks/1/original/announcements.pptx',
+            'status' => SlideDeck::STATUS_COMPLETED,
+        ]);
+        $matchedSlide = $deck->slides()->create([
+            'slide_number' => 1,
+            'image_path' => $deck->directory('images').'/slide-001.png',
+            'thumbnail_path' => $deck->directory('thumbnails').'/slide-001.png',
+            'slide_type' => SlideDeckSlide::TYPE_ANNOUNCEMENT,
+            'suggested_name' => 'Family Fire Night',
+            'summary' => 'Dinner and games for families.',
+            'event_title' => 'Family Fire Night',
+            'extracted_text' => "Family Fire Night\nDinner and games",
+        ]);
+        $missingSlide = $deck->slides()->create([
+            'slide_number' => 2,
+            'image_path' => $deck->directory('images').'/slide-002.png',
+            'thumbnail_path' => $deck->directory('thumbnails').'/slide-002.png',
+            'slide_type' => SlideDeckSlide::TYPE_ANNOUNCEMENT,
+            'suggested_name' => 'New Members Lunch',
+            'summary' => 'Lunch for new members.',
+            'event_title' => 'New Members Lunch',
+            'extracted_text' => "New Members Lunch\nSunday noon",
+        ]);
+
+        foreach ([$matchedSlide, $missingSlide] as $slide) {
+            Storage::disk(SlideDeck::DISK)->put($slide->image_path, 'png image');
+            Storage::disk(SlideDeck::DISK)->put($slide->thumbnail_path, 'png thumbnail');
+        }
+
+        Livewire::actingAs($admin)
+            ->test(SlidesRelationManager::class, [
+                'ownerRecord' => $deck,
+                'pageClass' => EditSlideDeck::class,
+            ])
+            ->assertSee('Exists?')
+            ->assertSee('Missing')
+            ->assertTableActionVisible('editAnnouncementPage', $matchedSlide)
+            ->assertTableActionHidden('editAnnouncementPage', $missingSlide)
+            ->assertTableActionHasUrl('editAnnouncementPage', app(SlideAnnouncementPageLink::class)->editPageUrl($matchedPage), $matchedSlide)
+            ->assertTableActionShouldOpenUrlInNewTab('editAnnouncementPage', $matchedSlide)
+            ->assertTableActionHasUrl('createAnnouncementPage', app(SlideAnnouncementPageLink::class)->createPageUrl($matchedSlide), $matchedSlide)
+            ->assertTableActionHasUrl('createAnnouncementPage', app(SlideAnnouncementPageLink::class)->createPageUrl($missingSlide), $missingSlide)
+            ->assertTableActionShouldOpenUrlInNewTab('createAnnouncementPage', $missingSlide);
+    }
+
+    public function test_page_create_form_prefills_from_slide_query_parameter(): void
+    {
+        Storage::fake(SlideDeck::DISK);
+        Storage::fake('public');
+
+        Page::query()->create([
+            'title' => 'Announcements',
+            'slug' => 'announcements',
+            'hero_image_path' => 'pages/hero-images/announcements.jpg',
+            'is_published' => true,
+        ]);
+        $deck = SlideDeck::query()->create([
+            'name' => 'Announcements',
+            'original_filename' => 'announcements.pptx',
+            'stored_file_path' => 'slide-decks/1/original/announcements.pptx',
+        ]);
+        $slide = $deck->slides()->create([
+            'slide_number' => 1,
+            'image_path' => $deck->directory('images').'/slide-001.png',
+            'slide_type' => SlideDeckSlide::TYPE_ANNOUNCEMENT,
+            'suggested_name' => 'Family Fire Night',
+            'summary' => 'Join families for dinner, games, and connection.',
+            'event_title' => 'Family Fire Night',
+            'event_date' => 'July 19, 2026',
+            'extracted_text' => "Family Fire Night\nJuly 19, 2026",
+        ]);
+
+        Storage::disk(SlideDeck::DISK)->put($slide->image_path, 'png image');
+
+        Livewire::withQueryParams(['slide_deck_slide' => $slide->getKey()])
+            ->actingAs(User::factory()->create())
+            ->test(CreatePageRecord::class)
+            ->assertSet('data.title', 'Family Fire Night')
+            ->assertSet('data.slug', 'announcements/family-fire-night')
+            ->assertSet('data.hero_label', 'Announcement')
+            ->assertSet('data.is_published', true)
+            ->assertSet('data.hero_image_path', 'pages/hero-images/announcements.jpg')
+            ->assertSet('data.content_blocks', function (array $blocks): bool {
+                $block = collect($blocks)->first();
+
+                if (is_array($block) && ! array_key_exists('type', $block)) {
+                    $block = collect($block)->first();
+                }
+
+                return ($block['type'] ?? null) === 'image_text'
+                    && data_get($block, 'data.background') === 'white'
+                    && data_get($block, 'data.content_width') === 'wide'
+                    && data_get($block, 'data.image_position') === 'left';
+            });
     }
 
     public function test_processing_job_marks_deck_failed_when_conversion_fails(): void
