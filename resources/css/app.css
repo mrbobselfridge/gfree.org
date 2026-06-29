@@ -5499,6 +5499,7 @@
     .site-header,
     .concept-header,
     .concept-screens__header,
+    .page-context-nav,
     .site-footer,
     .concept-footer {
         display: none !important;
