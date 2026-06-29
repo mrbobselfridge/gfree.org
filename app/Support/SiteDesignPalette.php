@@ -20,7 +20,7 @@ class SiteDesignPalette
             ['key' => 'teal', 'name' => 'Teal', 'hex' => '#17b8ad'],
             ['key' => 'gold', 'name' => 'Gold', 'hex' => '#f5c84b'],
             ['key' => 'forest', 'name' => 'Forest', 'hex' => '#163f36'],
-            ['key' => 'clay', 'name' => 'Clay', 'hex' => '#c96f5a'],
+            ['key' => 'blue', 'name' => 'Blue', 'hex' => '#3066ff'],
         ];
     }
 
@@ -210,18 +210,25 @@ class SiteDesignPalette
     {
         $dark = self::isDark($hex);
         $fg = $dark ? '#ffffff' : '#141414';
+        $muted = $dark ? 'rgba(255, 255, 255, 0.98)' : 'rgba(20, 20, 20, 0.9)';
         $link = $dark ? '#17b8ad' : '#078780';
         $cardBg = $dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.9)';
+        $cardEvenBg = $dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.72)';
         $cardFg = $dark ? '#ffffff' : '#141414';
         $cardMuted = $dark ? 'rgba(255, 255, 255, 0.72)' : 'rgba(20, 20, 20, 0.72)';
+        $cardBorder = $dark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(20, 20, 20, 0.14)';
 
         return self::variables([
             'background' => $hex,
             'color' => $fg,
+            '--concept-updates-fg' => $fg,
+            '--concept-updates-muted' => $muted,
             '--concept-updates-link' => $link,
             '--concept-updates-card-bg' => $cardBg,
+            '--concept-updates-card-even-bg' => $cardEvenBg,
             '--concept-updates-card-fg' => $cardFg,
             '--concept-updates-card-muted' => $cardMuted,
+            '--concept-updates-card-border' => $cardBorder,
         ]);
     }
 
