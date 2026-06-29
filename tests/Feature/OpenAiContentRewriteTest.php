@@ -56,6 +56,32 @@ class OpenAiContentRewriteTest extends TestCase
         });
     }
 
+    public function test_openai_content_rewriter_uses_site_settings_model_preference(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key' => 'test-key',
+            'openai_content_model' => 'gpt-5.4-mini',
+        ]);
+
+        config([
+            'services.openai.content_model' => 'gpt-5-mini',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/responses' => Http::response([
+                'output_text' => '<p>Updated.</p>',
+            ]),
+        ]);
+
+        app(OpenAiContentRewriter::class)->rewrite(
+            html: '<p>Old.</p>',
+            prompt: 'Rewrite.',
+        );
+
+        Http::assertSent(fn (Request $request): bool => data_get($request->data(), 'model') === 'gpt-5.4-mini');
+    }
+
     public function test_rich_editor_defaults_include_ai_rewrite_tool(): void
     {
         $editor = RichEditorDefaults::configure(RichEditor::make('body'));

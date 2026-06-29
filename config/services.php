@@ -46,6 +46,7 @@ return [
 
     'openai' => [
         'api_key' => null,
+        'admin_api_key' => env('OPENAI_ADMIN_API_KEY'),
         'content_model' => env('OPENAI_CONTENT_MODEL', 'gpt-5-nano'),
         'file_extraction_model' => env('OPENAI_FILE_EXTRACTION_MODEL', 'gpt-5.4-mini'),
         'file_extraction_reasoning_effort' => env('OPENAI_FILE_EXTRACTION_REASONING_EFFORT', 'low'),

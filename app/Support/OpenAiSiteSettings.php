@@ -56,9 +56,27 @@ class OpenAiSiteSettings
         return filled($apiKey) ? $apiKey : config('services.openai.api_key');
     }
 
+    public static function apiKeyId(): ?string
+    {
+        return SiteSetting::query()->value('openai_api_key_id');
+    }
+
     public static function contentModel(): string
     {
+        $model = SiteSetting::query()->value('openai_content_model');
+
+        if (filled($model) && array_key_exists($model, self::modelOptions())) {
+            return $model;
+        }
+
         return config('services.openai.content_model') ?: self::DEFAULT_MODEL;
+    }
+
+    public static function adminApiKey(): ?string
+    {
+        $apiKey = SiteSetting::query()->value('openai_admin_api_key');
+
+        return filled($apiKey) ? $apiKey : config('services.openai.admin_api_key');
     }
 
     public static function fileExtractionModel(): string

@@ -6,10 +6,12 @@ use App\Filament\Admin\Resources\SiteSettings\Pages\EditSiteSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AdminAccess;
+use App\Support\OpenAiUsageSummary;
 use App\Support\SiteDesignPalette;
 use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -51,6 +53,10 @@ class SiteSettingsAdminTest extends TestCase
             ->assertSee('Dashboard notes')
             ->assertSee('AI Settings')
             ->assertSee('OpenAI API key')
+            ->assertSee('OpenAI API key ID')
+            ->assertSee('Preferred AI model')
+            ->assertSee('OpenAI Admin API key')
+            ->assertSee('OpenAI usage spend')
             ->assertSee('AI content prompt')
             ->assertSee('Social and Additional Links')
             ->assertSee('TikTok URL')
@@ -377,13 +383,74 @@ class SiteSettingsAdminTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteSetting::class, ['record' => $settings->getKey()])
             ->set('data.openai_api_key', 'test-openai-key')
+            ->set('data.openai_api_key_id', 'key_app_123')
+            ->set('data.openai_content_model', 'gpt-5-mini')
+            ->set('data.openai_admin_api_key', 'test-admin-key')
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas(SiteSetting::class, [
             'id' => $settings->getKey(),
             'openai_api_key' => 'test-openai-key',
+            'openai_api_key_id' => 'key_app_123',
+            'openai_content_model' => 'gpt-5-mini',
+            'openai_admin_api_key' => 'test-admin-key',
         ]);
+    }
+
+    public function test_openai_usage_summary_uses_admin_costs_api(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key_id' => 'key_app_123',
+            'openai_admin_api_key' => 'test-admin-key',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/organization/costs*' => Http::response([
+                'data' => [
+                    [
+                        'results' => [
+                            [
+                                'api_key_id' => 'key_app_123',
+                                'amount' => [
+                                    'value' => 4.25,
+                                    'currency' => 'usd',
+                                ],
+                            ],
+                            [
+                                'api_key_id' => 'key_other_456',
+                                'amount' => [
+                                    'value' => 20.00,
+                                    'currency' => 'usd',
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'results' => [
+                            [
+                                'api_key_id' => 'key_app_123',
+                                'amount' => [
+                                    'value' => 1.75,
+                                    'currency' => 'usd',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $summary = app(OpenAiUsageSummary::class)->currentMonth();
+
+        $this->assertSame('ok', $summary['status']);
+        $this->assertStringContainsString('$6.00', $summary['body']);
+
+        Http::assertSent(fn ($request): bool => str_starts_with($request->url(), 'https://api.openai.com/v1/organization/costs')
+            && $request->hasHeader('Authorization', 'Bearer test-admin-key')
+            && str_contains($request->url(), 'bucket_width=1d')
+            && str_contains($request->url(), 'group_by%5B0%5D=api_key_id'));
     }
 
     public function test_site_settings_url_fields_accept_external_urls_and_local_paths(): void
