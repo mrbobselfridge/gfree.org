@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
 class PageForm
 {
     private const SECTION_IDS = [
+        'pages-basics',
         'pages-redirect',
         'pages-content-blocks',
         'pages-settings',
@@ -59,124 +60,128 @@ class PageForm
                 //     ->content(new HtmlString('&nbsp;'))
                 //     ->columnSpan(1),
 
-                TextInput::make('title')
-                    ->label('Page title')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->maxLength(255)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Main page name shown in the admin and public header area. New pages use this to build the first path.'
-                    )
-                    ->hintColor('gray')
-                    ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
-                        ? $set('slug', Str::slug($state))
-                        : null),
+                self::section('Page Basics', 'pages-basics')
+                    ->description('Set the page name, public path, intro copy, live status, display order, and redirect mode.')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->schema([
+                        TextInput::make('title')
+                            ->label('Page title')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->maxLength(255)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Main page name shown in the admin and public header area. New pages use this to build the first path.'
+                            )
+                            ->hintColor('gray')
+                            ->afterStateUpdated(fn (Set $set, ?string $state, ?string $operation) => $operation === 'create'
+                                ? $set('slug', Str::slug($state))
+                                : null),
 
-                TextInput::make('hero_label')
-                    ->label('Small label')
-                    ->maxLength(255)
-                    ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional short label shown above the page title, such as New Here or Resources.'
-                    )
-                    ->hintColor('gray'),
+                        TextInput::make('hero_label')
+                            ->label('Small label')
+                            ->maxLength(255)
+                            ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional short label shown above the page title, such as New Here or Resources.'
+                            )
+                            ->hintColor('gray'),
 
-                ToggleButtons::make('is_published')
-                    ->label('Page is live')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->live()
-                    ->required()
-                    ->extraFieldWrapperAttributes([
-                            'style' => 'text-align:right;',
-                        ])
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Controls whether visitors can view this page or redirect, subject to publish and expiration dates.'
-                    )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
-
-
-                HtmlCodeTextarea::html(Textarea::make('intro'))
-                    ->label('Intro text')
-                    ->rows(2)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional intro text shown near the top of the page when the page header is visible.'
-                    )
-                    ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
-                    ->hintColor('gray'),
-
-                HtmlCodeTextarea::html(Textarea::make('message'))
-                    ->label('Message')
-                    ->rows(2)
-                    ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional message shown in the page header. Plain text is shown as paragraphs; pasted HTML is preserved.'
-                    )
-                    ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
-                    ->hintColor('gray')
-                    ->columnSpan(2),
+                        ToggleButtons::make('is_published')
+                            ->label('Page is live')
+                            ->boolean()
+                            ->inline()
+                            ->default(false)
+                            ->live()
+                            ->required()
+                            ->extraFieldWrapperAttributes([
+                                'style' => 'text-align:right;',
+                            ])
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Controls whether visitors can view this page or redirect, subject to publish and expiration dates.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(1),
 
 
-                    TextInput::make('slug')
-                    ->label('Page path')
-                    ->prefix('/')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->rule(new PageSlugPath)
-                    ->suffixAction(SlugRebuildAction::make('title'))
-                    ->maxLength(255)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
-                    )
-                    ->hintColor('gray'),
+                        HtmlCodeTextarea::html(Textarea::make('intro'))
+                            ->label('Intro text')
+                            ->rows(2)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional intro text shown near the top of the page when the page header is visible.'
+                            )
+                            ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
+                            ->hintColor('gray'),
 
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
-                    )
-                    ->hintColor('gray')
-                    ->columnSpan(1),
+                        HtmlCodeTextarea::html(Textarea::make('message'))
+                            ->label('Message')
+                            ->rows(2)
+                            ->dehydrateStateUsing(fn (mixed $state): ?string => RichContent::nullable($state))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Optional message shown in the page header. Plain text is shown as paragraphs; pasted HTML is preserved.'
+                            )
+                            ->disabled(fn (Get $get): bool => (bool) $get('is_redirect'))
+                            ->hintColor('gray')
+                            ->columnSpan(2),
 
 
-                    ViewField::make('qr_code')
-                    ->label('QR Code')
-                    ->hiddenLabel()
-                    ->view('filament.admin.forms.components.page-qr-code')
-                    ->viewData(fn (?Page $record): array => [
-                        'qrCode' => $record?->qrCode()->first(),
+                        TextInput::make('slug')
+                            ->label('Page path')
+                            ->prefix('/')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->rule(new PageSlugPath)
+                            ->suffixAction(SlugRebuildAction::make('title'))
+                            ->maxLength(255)
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Public URL path for this page. Use lowercase words separated by dashes, such as new-here or resources/forms.'
+                            )
+                            ->hintColor('gray'),
+
+                        TextInput::make('sort_order')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Lower numbers appear earlier in manual page lists and parent-child page groupings.'
+                            )
+                            ->hintColor('gray')
+                            ->columnSpan(1),
+
+                        ViewField::make('qr_code')
+                            ->label('QR Code')
+                            ->hiddenLabel()
+                            ->view('filament.admin.forms.components.page-qr-code')
+                            ->viewData(fn (?Page $record): array => [
+                                'qrCode' => $record?->qrCode()->first(),
+                            ])
+                            ->disabled(fn (?string $operation): bool => $operation === 'edit')
+                            ->dehydrated(false)
+                            ->columnSpan(1),
+
+                        ToggleButtons::make('is_redirect')
+                            ->label('Redirect this page')
+                            ->boolean()
+                            ->inline()
+                            ->live()
+                            ->default(false)
+                            ->required()
+                            ->hintIcon(
+                                Heroicon::OutlinedInformationCircle,
+                                'Use this when this path should forward visitors somewhere else instead of rendering page content.'
+                            )
+                            ->columnSpan(1)
+                            ->hintColor('gray'),
                     ])
-                    ->disabled(fn (?string $operation): bool => $operation === 'edit')
-                    ->dehydrated(false)
-                    ->columnSpan(1),
-
-
-
-                    ToggleButtons::make('is_redirect')
-                    ->label('Redirect this page')
-                    ->boolean()
-                    ->inline()
-                    ->live()
-                    ->default(false)
-                    ->required()
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Use this when this path should forward visitors somewhere else instead of rendering page content.'
-                    )
-                    ->columnSpan(1)
-                    ->hintColor('gray'),
+                    ->columns(3)
+                    ->columnSpanFull(),
 
                      
                 ViewField::make('section_controls')
@@ -188,10 +193,10 @@ class PageForm
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
                     ->dehydrated(false)
                     ->key('pages-section-controls')
-                    ->columnSpan(2),
+                    ->columnSpanFull(),
 
-                self::section('Page details', 'pages-settings', collapsedOnEdit: true)
-                    ->description('Controls the order, publish window, header/card graphics, SEO content, page structure, and hierarchy.')
+                self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
+                    ->description('Control the publish window, header/card graphics, SEO content, page structure, and hierarchy.')
                     ->icon(Heroicon::OutlinedCog6Tooth)
                     ->schema([
 

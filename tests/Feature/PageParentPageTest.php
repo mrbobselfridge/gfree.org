@@ -51,6 +51,10 @@ class PageParentPageTest extends TestCase
             ->assertSchemaComponentExists('pages-section-controls')
             ->assertSchemaComponentHidden('pages-redirect')
             ->assertSchemaComponentExists(
+                'pages-basics',
+                checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
+            )
+            ->assertSchemaComponentExists(
                 'pages-content-blocks',
                 checkComponentUsing: fn (Section $component): bool => $this->isOpenCreatePageSection($component),
             )
@@ -75,6 +79,8 @@ class PageParentPageTest extends TestCase
             ->assertFormFieldVisible('noindex_nofollow')
             ->assertFormFieldVisible('seo_description')
             ->assertFormFieldVisible('parent_page_id')
+            ->assertSee('Page Basics')
+            ->assertSee('Page Settings')
             ->assertSee('Path')
             ->assertSee('Collapse all')
             ->assertSee('Expand all');
@@ -128,6 +134,11 @@ class PageParentPageTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditPage::class, ['record' => $page->getKey()])
             ->assertSchemaComponentExists(
+                'pages-basics',
+                checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
+                    && ! $component->isCollapsed(),
+            )
+            ->assertSchemaComponentExists(
                 'pages-settings',
                 checkComponentUsing: fn (Section $component): bool => $this->isPersistedEditPageSection($component)
                     && $component->isCollapsed(),
@@ -153,6 +164,11 @@ class PageParentPageTest extends TestCase
             )
             ->assertSchemaComponentHidden('pages-content-blocks')
             ->assertSchemaComponentHidden('pages-settings')
+            ->assertSchemaComponentExists(
+                'pages-basics',
+                checkComponentUsing: fn (Section $component): bool => $component->isCollapsible()
+                    && ! $component->isCollapsed(),
+            )
             ->assertFormFieldVisible('redirect_url')
             ->assertFormFieldVisible('redirect_status_code')
             ->assertFormFieldVisible('slug')
