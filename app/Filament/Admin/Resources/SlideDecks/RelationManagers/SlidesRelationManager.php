@@ -16,6 +16,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
@@ -56,7 +57,7 @@ class SlidesRelationManager extends RelationManager
                     ->color(fn (SlideDeckSlide $record): string => $this->analysisColor($record))
                     ->wrap(),
                 TextColumn::make('announcement_page')
-                    ->label('Announcement Page')
+                    ->label('Page?')
                     ->html()
                     ->state(fn (SlideDeckSlide $record): HtmlString => app(SlideAnnouncementPageLink::class)->statusHtml($record)),
                 TextColumn::make('slide_type')
@@ -96,7 +97,7 @@ class SlidesRelationManager extends RelationManager
                             ? app(SlideAnnouncementPageLink::class)->editPageUrl($page)
                             : null, true)
                         ->visible(fn (SlideDeckSlide $record): bool => app(SlideAnnouncementPageLink::class)->matchingPage($record) !== null),
-                    Heroicon::OutlinedPencilSquare,
+                    Heroicon::OutlinedArrowTopRightOnSquare,
                     'Edit matching page',
                 ),
                 IconOnlyAction::make(
@@ -125,7 +126,7 @@ class SlidesRelationManager extends RelationManager
                         }),
                     Heroicon::OutlinedSparkles,
                 ),
-            ]);
+            ], position: RecordActionsPosition::BeforeColumns);
     }
 
     private function analysisStatus(SlideDeckSlide $record): string
