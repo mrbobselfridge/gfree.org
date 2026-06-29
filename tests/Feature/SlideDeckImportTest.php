@@ -216,8 +216,6 @@ class SlideDeckImportTest extends TestCase
                     'suggested_name' => 'Family Fire Night - July 19',
                     'extracted_text' => 'Family Fire Night July 19',
                     'summary' => 'Announcement for families.',
-                    'scripture_reference' => null,
-                    'scripture_text' => null,
                     'event_title' => 'Family Fire Night',
                     'event_date' => 'July 19',
                     'event_time' => '6:00 PM',

@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Storage;
     'suggested_name',
     'extracted_text',
     'summary',
-    'scripture_reference',
-    'scripture_text',
     'event_title',
     'event_date',
     'event_time',

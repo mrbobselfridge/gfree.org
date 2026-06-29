@@ -162,11 +162,6 @@ class SlidesRelationManager extends RelationManager
             Textarea::make('summary')
                 ->rows(3)
                 ->columnSpanFull(),
-            TextInput::make('scripture_reference')
-                ->maxLength(255),
-            Textarea::make('scripture_text')
-                ->rows(3)
-                ->columnSpanFull(),
             TextInput::make('event_title')
                 ->maxLength(255),
             TextInput::make('event_date')

@@ -93,8 +93,6 @@ Return only valid JSON with this exact shape:
   "suggested_name": "Short useful name",
   "extracted_text": "Visible text from the slide",
   "summary": "One or two sentence summary",
-  "scripture_reference": null,
-  "scripture_text": null,
   "event_title": null,
   "event_date": null,
   "event_time": null,

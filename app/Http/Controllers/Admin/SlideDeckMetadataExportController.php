@@ -24,8 +24,6 @@ class SlideDeckMetadataExportController extends Controller
             'suggested_name' => $slide->suggested_name,
             'extracted_text' => $slide->extracted_text,
             'summary' => $slide->summary,
-            'scripture_reference' => $slide->scripture_reference,
-            'scripture_text' => $slide->scripture_text,
             'event_title' => $slide->event_title,
             'event_date' => $slide->event_date,
             'event_time' => $slide->event_time,

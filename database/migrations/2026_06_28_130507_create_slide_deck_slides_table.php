@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('suggested_name')->nullable();
             $table->longText('extracted_text')->nullable();
             $table->longText('summary')->nullable();
-            $table->string('scripture_reference')->nullable();
-            $table->longText('scripture_text')->nullable();
             $table->string('event_title')->nullable();
             $table->string('event_date')->nullable();
             $table->string('event_time')->nullable();
