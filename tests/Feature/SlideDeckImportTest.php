@@ -111,6 +111,8 @@ class SlideDeckImportTest extends TestCase
             ->assertOk()
             ->assertHeader('content-type', 'application/json');
         $this->assertStringContainsString('Family Fire Night', $jsonResponse->getContent());
+        $this->assertStringContainsString('intro_text', $jsonResponse->getContent());
+        $this->assertStringNotContainsString('summary', $jsonResponse->getContent());
 
         $csvResponse = $this->actingAs($admin)
             ->get(route('admin.slide-decks.export', ['slideDeck' => $deck, 'format' => 'csv']));
@@ -215,7 +217,7 @@ class SlideDeckImportTest extends TestCase
                     'slide_type' => 'announcement',
                     'suggested_name' => 'Family Fire Night - July 19',
                     'extracted_text' => 'Family Fire Night July 19',
-                    'summary' => 'Announcement for families.',
+                    'intro_text' => 'Bring the family for dinner, games, and connection at Family Fire Night on July 19.',
                     'event_title' => 'Family Fire Night',
                     'event_date' => 'July 19',
                     'event_time' => '6:00 PM',
@@ -237,6 +239,7 @@ class SlideDeckImportTest extends TestCase
         $this->assertSame(SlideDeckSlide::TYPE_ANNOUNCEMENT, $slide->slide_type);
         $this->assertSame('Family Fire Night - July 19', $slide->suggested_name);
         $this->assertSame('Family Fire Night July 19', $slide->extracted_text);
+        $this->assertSame('Bring the family for dinner, games, and connection at Family Fire Night on July 19.', $slide->summary);
         $this->assertSame('Family Fire Night', $slide->event_title);
         $this->assertSame('July 19', $slide->event_date);
         $this->assertSame('6:00 PM', $slide->event_time);
@@ -253,6 +256,7 @@ class SlideDeckImportTest extends TestCase
             return $request->url() === 'https://api.openai.com/v1/responses'
                 && data_get($request->data(), 'model') === 'gpt-5-mini'
                 && str_contains($prompt, 'Classify the slide into exactly one slide_type')
+                && str_contains($prompt, 'intro_text must be no more than 300 total characters')
                 && str_contains($prompt, 'Return only valid JSON')
                 && data_get($content, '1.type') === 'input_image'
                 && data_get($content, '1.detail') === 'high'

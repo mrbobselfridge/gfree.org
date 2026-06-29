@@ -92,7 +92,7 @@ Return only valid JSON with this exact shape:
   "slide_type": "announcement",
   "suggested_name": "Short useful name",
   "extracted_text": "Visible text from the slide",
-  "summary": "One or two sentence summary",
+  "intro_text": "Webpage intro text",
   "event_title": null,
   "event_date": null,
   "event_time": null,
@@ -106,7 +106,9 @@ Return only valid JSON with this exact shape:
 Rules:
 - Use null for unknown fields.
 - confidence_score must be a number from 0 to 1.
-- For general slides, put useful purpose or usage notes in summary.
+- Use the extracted image and available extracted content to create intro_text for a webpage.
+- intro_text must be no more than 300 total characters, including spaces and punctuation.
+- For general slides, put the useful webpage intro or usage note in intro_text.
 - For announcement slides, put event details in announcement_details when there is more than the structured fields can hold.
 - Do not include Markdown fences, comments, or explanatory text outside the JSON.
 PROMPT;

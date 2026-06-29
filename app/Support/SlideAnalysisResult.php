@@ -38,7 +38,7 @@ class SlideAnalysisResult
             slideType: $slideType,
             suggestedName: self::stringOrNull($data['suggested_name'] ?? null),
             extractedText: self::stringOrNull($data['extracted_text'] ?? null),
-            summary: self::stringOrNull($data['summary'] ?? null),
+            summary: self::stringOrNull($data['intro_text'] ?? $data['summary'] ?? null),
             eventTitle: self::stringOrNull($data['event_title'] ?? null),
             eventDate: self::stringOrNull($data['event_date'] ?? null),
             eventTime: self::stringOrNull($data['event_time'] ?? null),

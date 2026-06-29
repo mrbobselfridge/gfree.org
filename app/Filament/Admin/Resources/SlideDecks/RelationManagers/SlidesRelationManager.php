@@ -160,6 +160,7 @@ class SlidesRelationManager extends RelationManager
                 ->rows(4)
                 ->columnSpanFull(),
             Textarea::make('summary')
+                ->label('Intro Text')
                 ->rows(3)
                 ->columnSpanFull(),
             TextInput::make('event_title')
