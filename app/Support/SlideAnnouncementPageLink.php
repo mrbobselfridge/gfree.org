@@ -79,13 +79,14 @@ class SlideAnnouncementPageLink
                 [
                     'type' => 'image_text',
                     'data' => [
-                        'eyebrow' => $slide->suggested_name,
                         'background' => 'white',
                         'content_width' => 'wide',
                         'image_position' => 'left',
                         'image_path' => $publicImagePath,
                         'image_alt' => $title,
-                        'body' => $this->visibleTextBullets($slide),
+                        'body' => null,
+                        'button_label' => $this->mentionsConnectionCard($slide) ? 'Connection Card' : null,
+                        'button_url' => $this->mentionsConnectionCard($slide) ? '/card' : null,
                     ],
                 ],
             ],
@@ -127,23 +128,15 @@ class SlideAnnouncementPageLink
         return SlideDeckSlide::types()[$slide->slide_type] ?? str((string) $slide->slide_type)->headline()->toString();
     }
 
-    private function visibleTextBullets(SlideDeckSlide $slide): string
+    private function mentionsConnectionCard(SlideDeckSlide $slide): bool
     {
-        $items = collect(preg_split('/\r\n|\r|\n|•|·| - /', (string) $slide->extracted_text) ?: [])
-            ->map(fn (string $line): string => trim($line))
-            ->filter()
-            ->unique()
-            ->take(12)
-            ->values();
-
-        if ($items->isEmpty()) {
-            $items = collect([$slide->announcement_details ?: $slide->summary ?: $this->pageTitle($slide)])
-                ->filter();
-        }
-
-        return '<ul>'.$items
-            ->map(fn (string $item): string => '<li>'.e($item).'</li>')
-            ->implode('').'</ul>';
+        return str(collect([
+            $slide->event_title,
+            $slide->suggested_name,
+            $slide->summary,
+            $slide->extracted_text,
+            $slide->announcement_details,
+        ])->filter()->implode(' '))->lower()->contains('connection card');
     }
 
     private function expiresAt(SlideDeckSlide $slide): ?Carbon

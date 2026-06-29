@@ -389,11 +389,13 @@ class SlideDeckImportTest extends TestCase
         $this->assertSame($parent->getKey(), $defaults['parent_page_id']);
         $this->assertSame('2026-07-20 22:00:00', $defaults['expires_at']?->format('Y-m-d H:i:s'));
         $this->assertSame('image_text', $defaults['content_blocks'][0]['type']);
-        $this->assertSame('Family Fire Night', $defaults['content_blocks'][0]['data']['eyebrow']);
+        $this->assertArrayNotHasKey('eyebrow', $defaults['content_blocks'][0]['data']);
         $this->assertSame('white', $defaults['content_blocks'][0]['data']['background']);
         $this->assertSame('wide', $defaults['content_blocks'][0]['data']['content_width']);
         $this->assertSame('left', $defaults['content_blocks'][0]['data']['image_position']);
-        $this->assertStringContainsString('<li>Family Fire Night</li>', $defaults['content_blocks'][0]['data']['body']);
+        $this->assertNull($defaults['content_blocks'][0]['data']['body']);
+        $this->assertNull($defaults['content_blocks'][0]['data']['button_label']);
+        $this->assertNull($defaults['content_blocks'][0]['data']['button_url']);
         $this->assertSame($defaults['card_image_path'], $defaults['content_blocks'][0]['data']['image_path']);
         Storage::disk('public')->assertExists($defaults['card_image_path']);
         $this->assertDatabaseHas(MediaImageMetadata::class, [
@@ -401,6 +403,38 @@ class SlideDeckImportTest extends TestCase
             'source' => 'slide_deck',
             'source_id' => (string) $slide->getKey(),
         ]);
+    }
+
+    public function test_slide_announcement_page_defaults_add_connection_card_button_when_mentioned(): void
+    {
+        Storage::fake(SlideDeck::DISK);
+        Storage::fake('public');
+
+        Page::query()->create([
+            'title' => 'Announcements',
+            'slug' => 'announcements',
+            'is_published' => true,
+        ]);
+        $deck = SlideDeck::query()->create([
+            'name' => 'Weekend Slides',
+            'original_filename' => 'weekend.pptx',
+            'stored_file_path' => 'slide-decks/1/original/weekend.pptx',
+        ]);
+        $slide = $deck->slides()->create([
+            'slide_number' => 1,
+            'image_path' => $deck->directory('images').'/slide-001.png',
+            'slide_type' => SlideDeckSlide::TYPE_GENERAL,
+            'suggested_name' => 'Connection Card Reminder',
+            'summary' => 'Please fill out a connection card.',
+            'extracted_text' => 'Scan the connection card to let us know you are here.',
+        ]);
+
+        Storage::disk(SlideDeck::DISK)->put($slide->image_path, 'png image');
+
+        $defaults = app(SlideAnnouncementPageLink::class)->createPageDefaults($slide);
+
+        $this->assertSame('Connection Card', $defaults['content_blocks'][0]['data']['button_label']);
+        $this->assertSame('/card', $defaults['content_blocks'][0]['data']['button_url']);
     }
 
     public function test_slide_review_table_shows_announcement_page_status_and_links(): void
@@ -469,6 +503,55 @@ class SlideDeckImportTest extends TestCase
             ->assertTableActionHasUrl('createAnnouncementPage', app(SlideAnnouncementPageLink::class)->createPageUrl($matchedSlide), $matchedSlide)
             ->assertTableActionHasUrl('createAnnouncementPage', app(SlideAnnouncementPageLink::class)->createPageUrl($missingSlide), $missingSlide)
             ->assertTableActionShouldOpenUrlInNewTab('createAnnouncementPage', $missingSlide);
+    }
+
+    public function test_individual_slide_delete_removes_generated_and_media_library_images(): void
+    {
+        Storage::fake(SlideDeck::DISK);
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+        $deck = SlideDeck::query()->create([
+            'name' => 'Announcements',
+            'original_filename' => 'announcements.pptx',
+            'stored_file_path' => 'slide-decks/1/original/announcements.pptx',
+            'status' => SlideDeck::STATUS_COMPLETED,
+        ]);
+        $slide = $deck->slides()->create([
+            'slide_number' => 1,
+            'image_path' => $deck->directory('images').'/slide-001.png',
+            'thumbnail_path' => $deck->directory('thumbnails').'/slide-001.png',
+            'public_image_path' => 'slide-decks/1/media/001-family-fire-night.png',
+            'slide_type' => SlideDeckSlide::TYPE_ANNOUNCEMENT,
+            'suggested_name' => 'Family Fire Night',
+        ]);
+
+        Storage::disk(SlideDeck::DISK)->put($slide->image_path, 'png image');
+        Storage::disk(SlideDeck::DISK)->put($slide->thumbnail_path, 'png thumbnail');
+        Storage::disk('public')->put($slide->public_image_path, 'public png image');
+        MediaImageMetadata::query()->create([
+            'path' => $slide->public_image_path,
+            'title' => 'Family Fire Night',
+            'source' => 'slide_deck',
+            'source_id' => (string) $slide->getKey(),
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(SlidesRelationManager::class, [
+                'ownerRecord' => $deck,
+                'pageClass' => EditSlideDeck::class,
+            ])
+            ->assertTableActionVisible('delete', $slide)
+            ->callTableAction('delete', $slide)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseMissing(SlideDeckSlide::class, ['id' => $slide->getKey()]);
+        $this->assertDatabaseMissing(MediaImageMetadata::class, ['path' => $slide->public_image_path]);
+        Storage::disk(SlideDeck::DISK)->assertMissing($slide->image_path);
+        Storage::disk(SlideDeck::DISK)->assertMissing($slide->thumbnail_path);
+        Storage::disk('public')->assertMissing($slide->public_image_path);
     }
 
     public function test_page_create_form_prefills_from_slide_query_parameter(): void

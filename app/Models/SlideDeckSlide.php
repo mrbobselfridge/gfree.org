@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaLibrary;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,24 @@ class SlideDeckSlide extends Model
             self::TYPE_GENERAL => 'General',
             self::TYPE_UNKNOWN => 'Unknown',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (self $slide): void {
+            Storage::disk(SlideDeck::DISK)->delete(array_filter([
+                $slide->image_path,
+                $slide->thumbnail_path,
+            ]));
+
+            if (filled($slide->public_image_path)) {
+                Storage::disk('public')->delete($slide->public_image_path);
+                MediaImageMetadata::query()
+                    ->where('path', $slide->public_image_path)
+                    ->delete();
+                MediaLibrary::clearImageIndexCache();
+            }
+        });
     }
 
     public function deck(): BelongsTo

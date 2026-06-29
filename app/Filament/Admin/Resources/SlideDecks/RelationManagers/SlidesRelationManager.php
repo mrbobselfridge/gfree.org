@@ -8,6 +8,7 @@ use App\Models\SlideDeck;
 use App\Models\SlideDeckSlide;
 use App\Support\SlideAnnouncementPageLink;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -125,6 +126,13 @@ class SlidesRelationManager extends RelationManager
                                 ->send();
                         }),
                     Heroicon::OutlinedSparkles,
+                ),
+                IconOnlyAction::make(
+                    DeleteAction::make()
+                        ->label('Delete slide')
+                        ->modalHeading('Delete this slide?')
+                        ->modalDescription('This removes the slide, generated slide image, thumbnail, and copied media library image.'),
+                    Heroicon::OutlinedTrash,
                 ),
             ], position: RecordActionsPosition::BeforeColumns);
     }
