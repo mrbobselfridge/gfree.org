@@ -5493,3 +5493,19 @@
         flex-direction: column;
     }
 }
+
+@media print {
+    [data-site-header],
+    .site-header,
+    .concept-header,
+    .concept-screens__header,
+    .site-footer,
+    .concept-footer {
+        display: none !important;
+    }
+
+    main,
+    .public-page__main {
+        margin-top: 0 !important;
+    }
+}
