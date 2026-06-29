@@ -10,6 +10,8 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\AdminAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -111,6 +113,10 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
             ->assertSee('Header navigation')
+            ->assertSee('AI Usage')
+            ->assertSee('Current-month OpenAI spend for the configured app API key.')
+            ->assertSee('OpenAI usage spend unavailable')
+            ->assertSee('Setup')
             ->assertSee('twyxtco-dashboard-widget-count--danger', false)
             ->assertSee('twyxtco-dashboard-widget-count--warning', false)
             ->assertSee('twyxtco-dashboard-widget-count--success', false)
@@ -159,6 +165,67 @@ class AdminDashboardWidgetsTest extends TestCase
 
             $this->assertStringNotContainsString('twyxtco-dashboard-widget-count', $widgetMarkup);
         }
+    }
+
+    public function test_admin_dashboard_ai_usage_widget_shows_current_month_app_key_spend(): void
+    {
+        Cache::flush();
+
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'openai_api_key_id' => 'key_app_123',
+            'openai_admin_api_key' => 'test-admin-key',
+        ]);
+
+        Http::fake([
+            'https://api.openai.com/v1/organization/costs*' => Http::response([
+                'data' => [
+                    [
+                        'results' => [
+                            [
+                                'api_key_id' => 'key_app_123',
+                                'amount' => [
+                                    'value' => 4.25,
+                                    'currency' => 'usd',
+                                ],
+                            ],
+                            [
+                                'api_key_id' => 'key_other_456',
+                                'amount' => [
+                                    'value' => 20.00,
+                                    'currency' => 'usd',
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'results' => [
+                            [
+                                'api_key_id' => 'key_app_123',
+                                'amount' => [
+                                    'value' => 1.75,
+                                    'currency' => 'usd',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('data-twyxtco-dashboard-widget="ai-usage-widget"', false)
+            ->assertSee('AI Usage')
+            ->assertSee('Current month usage spend')
+            ->assertSee('$6.00')
+            ->assertDontSee('$20.00')
+            ->assertSee('Billing top-ups and prepaid credit purchases are separate from usage spend.');
+
+        Http::assertSent(fn ($request): bool => str_starts_with($request->url(), 'https://api.openai.com/v1/organization/costs')
+            && $request->hasHeader('Authorization', 'Bearer test-admin-key')
+            && str_contains($request->url(), 'group_by%5B0%5D=api_key_id'));
     }
 
     public function test_admin_dashboard_shows_rich_dashboard_notes_widget_when_configured(): void

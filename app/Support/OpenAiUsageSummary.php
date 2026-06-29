@@ -10,7 +10,7 @@ use Throwable;
 class OpenAiUsageSummary
 {
     /**
-     * @return array{status: string, title: string, body: string}
+     * @return array{status: string, title: string, body: string, formatted_total?: string, currency?: string, period?: string}
      */
     public function currentMonth(): array
     {
@@ -85,6 +85,9 @@ class OpenAiUsageSummary
                 'status' => 'ok',
                 'title' => 'OpenAI API usage spend for this app key',
                 'body' => $this->formatCurrency($total, $currency).' from '.$startsAt->format('M j').' through '.$now->format('M j, Y').'. Cached for 15 minutes. Billing top-ups and prepaid credit purchases are separate from usage spend.',
+                'formatted_total' => $this->formatCurrency($total, $currency),
+                'currency' => $currency,
+                'period' => $startsAt->format('M j').' - '.$now->format('M j, Y'),
             ];
         });
     }

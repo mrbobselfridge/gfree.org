@@ -24,6 +24,19 @@ class CreateSlideDeck extends CreateRecord
 
     private ?string $pendingOriginalName = null;
 
+    public function canCreateAnother(): bool
+    {
+        return false;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            $this->getHeaderCancelAction(),
+            $this->getHeaderCreateAction(),
+        ];
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $this->pendingUpload = FileLibrary::normalizeUploadPath($data['deck_upload'] ?? null);

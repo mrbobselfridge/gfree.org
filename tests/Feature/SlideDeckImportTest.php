@@ -37,6 +37,17 @@ class SlideDeckImportTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_slide_deck_create_form_does_not_show_create_and_add_another_action(): void
+    {
+        Livewire::actingAs(User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]))
+            ->test(CreateSlideDeck::class)
+            ->assertSee('Create')
+            ->assertDontSee('Create &amp; add another', false)
+            ->assertDontSee('Create & add another');
+    }
+
     public function test_admin_can_create_slide_deck_import_and_original_file_library_record(): void
     {
         Storage::fake(SlideDeck::DISK);
