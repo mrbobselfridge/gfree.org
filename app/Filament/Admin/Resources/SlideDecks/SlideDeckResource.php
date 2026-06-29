@@ -11,6 +11,7 @@ use App\Filament\Admin\Resources\SlideDecks\RelationManagers\SlidesRelationManag
 use App\Filament\Admin\Resources\SlideDecks\Schemas\SlideDeckForm;
 use App\Filament\Admin\Resources\SlideDecks\Tables\SlideDecksTable;
 use App\Models\SlideDeck;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -27,6 +28,18 @@ class SlideDeckResource extends Resource
     protected static ?string $pluralModelLabel = 'Slide Deck Imports';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return collect(parent::getNavigationItems())
+            ->map(fn (NavigationItem $item): NavigationItem => $item->extraAttributes([
+                'class' => 'twyxtco-sidebar-site-tools-divider',
+            ], merge: true))
+            ->all();
+    }
 
     public static function form(Schema $schema): Schema
     {
