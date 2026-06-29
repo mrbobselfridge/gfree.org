@@ -445,7 +445,8 @@ class SlideDeckImportTest extends TestCase
 
         $defaults = app(SlideAnnouncementPageLink::class)->createPageDefaults($slide);
 
-        $this->assertSame('Connection Card', $defaults['content_blocks'][0]['data']['button_label']);
+        $this->assertSame('<h2 style="text-align: start;">If you have interest in and/or plan to attend, please let us know. </h2>', $defaults['content_blocks'][0]['data']['body']);
+        $this->assertSame('Fill out a connection card!', $defaults['content_blocks'][0]['data']['button_label']);
         $this->assertSame('/card', $defaults['content_blocks'][0]['data']['button_url']);
     }
 

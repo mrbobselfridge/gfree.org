@@ -63,6 +63,7 @@ class SlideAnnouncementPageLink
         $publicImagePath = app(SlideDeckPublicImage::class)->ensure($slide);
         $title = $this->pageTitle($slide);
         $parentSlug = trim((string) ($parent?->slug ?: 'announcements'), '/');
+        $mentionsConnectionCard = $this->mentionsConnectionCard($slide);
 
         return [
             'title' => $title,
@@ -84,9 +85,9 @@ class SlideAnnouncementPageLink
                         'image_position' => 'left',
                         'image_path' => $publicImagePath,
                         'image_alt' => $title,
-                        'body' => null,
-                        'button_label' => $this->mentionsConnectionCard($slide) ? 'Connection Card' : null,
-                        'button_url' => $this->mentionsConnectionCard($slide) ? '/card' : null,
+                        'body' => $mentionsConnectionCard ? '<h2 style="text-align: start;">If you have interest in and/or plan to attend, please let us know. </h2>' : null,
+                        'button_label' => $mentionsConnectionCard ? 'Fill out a connection card!' : null,
+                        'button_url' => $mentionsConnectionCard ? '/card' : null,
                     ],
                 ],
             ],
