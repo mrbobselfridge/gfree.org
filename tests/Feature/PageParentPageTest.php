@@ -560,6 +560,7 @@ class PageParentPageTest extends TestCase
             'hero_label' => 'What We Believe',
             'intro' => 'Core beliefs and doctrine.',
             'sort_order' => 20,
+            'expires_at' => '2026-06-30 17:00:00',
             'is_published' => true,
         ]);
 
@@ -606,6 +607,7 @@ class PageParentPageTest extends TestCase
         $this->assertStringContainsString('Connection Card', $content);
         $this->assertStringContainsString('Page:', $content);
         $this->assertStringContainsString('File:', $content);
+        $this->assertStringContainsString('Expires: Jun 30, 2026 5:00 PM', $content);
         $this->assertLessThan(
             strpos($content, 'Beliefs'),
             strpos($content, 'Draft Child'),

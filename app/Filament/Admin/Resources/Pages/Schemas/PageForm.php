@@ -486,7 +486,7 @@ class PageForm
         $children = $record->childPages()
             ->orderBy('sort_order')
             ->orderBy('title')
-            ->get(['id', 'title', 'slug', 'hero_label', 'intro', 'sort_order', 'is_published']);
+            ->get(['id', 'title', 'slug', 'hero_label', 'intro', 'sort_order', 'is_published', 'expires_at']);
 
         $files = $record->fileDocuments()
             ->orderBy('category')
@@ -506,13 +506,19 @@ return new HtmlString('<ul style="display: grid; gap: 0.5rem; margin: 0; padding
     private static function childPageListItem(Page $page): string
     {
         return sprintf(
-            '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">Page:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
+            '<li style="display: flex; align-items: center; gap: 0.5rem;">%s<span style="min-width: 0;"><span class="text-gray-500 dark:text-gray-400" style="font-weight: 700;">Page:</span> <strong title="%s">%s</strong> <span class="text-gray-500 dark:text-gray-400">%s</span> <span class="text-gray-500 dark:text-gray-400" title="%s">/%s</span></span></li>',
             self::pageActionLinks($page),
             e(self::pageDetailTooltip($page)),
             e($page->title),
+            e(self::pageExpirationLabel($page)),
             e(self::pageDetailTooltip($page)),
             e(ltrim((string) $page->slug, '/')),
         );
+    }
+
+    private static function pageExpirationLabel(Page $page): string
+    {
+        return 'Expires: '.($page->expires_at?->format('M j, Y g:i A') ?? 'Not set');
     }
 
     private static function childFileListItem(FileDocument $file): string
