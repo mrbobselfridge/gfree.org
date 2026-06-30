@@ -30,6 +30,11 @@ class NavigationLinksTable
                     ->label('Destination')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('location')
+                    ->label('Location')
+                    ->formatStateUsing(fn (string $state): string => NavigationLink::locationOptions()[$state] ?? str($state)->headline())
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('parent.label')
                     ->label('Parent link')
                     ->searchable()

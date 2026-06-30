@@ -25,6 +25,10 @@ use Illuminate\Support\Str;
 ])]
 class NavigationLink extends Model implements HasPublicUrl
 {
+    public const LOCATION_HEADER = 'header';
+
+    public const LOCATION_UTILITY = 'utility';
+
     private bool $matchingPageResolved = false;
 
     private ?Page $matchingPageCache = null;
@@ -44,6 +48,23 @@ class NavigationLink extends Model implements HasPublicUrl
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (NavigationLink $link): void {
+            if ($link->location === self::LOCATION_UTILITY) {
+                $link->parent_id = null;
+            }
+        });
+    }
+
+    public static function locationOptions(): array
+    {
+        return [
+            self::LOCATION_HEADER => 'Header',
+            self::LOCATION_UTILITY => 'Utility',
+        ];
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         $now = now();
@@ -58,11 +79,11 @@ class NavigationLink extends Model implements HasPublicUrl
     {
         return $query
             ->active()
-            ->where('location', 'header')
+            ->where('location', self::LOCATION_HEADER)
             ->whereNull('parent_id')
             ->with(['children' => fn (HasMany $query) => $query
                 ->active()
-                ->where('location', 'header')
+                ->where('location', self::LOCATION_HEADER)
                 ->orderBy('sort_order')
                 ->orderBy('label'),
             ])
@@ -93,6 +114,29 @@ class NavigationLink extends Model implements HasPublicUrl
                 return $link;
             })
             ->take($limit)
+            ->values();
+    }
+
+    public function scopeTopLevelUtility(Builder $query): Builder
+    {
+        return $query
+            ->active()
+            ->where('location', self::LOCATION_UTILITY)
+            ->whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->orderBy('label');
+    }
+
+    public static function topLevelUtilityLinks(): Collection
+    {
+        $links = self::query()
+            ->topLevelUtility()
+            ->get();
+
+        self::loadMatchingPages($links);
+
+        return $links
+            ->filter(fn (NavigationLink $link): bool => $link->targetPageAllowsNavigation())
             ->values();
     }
 

@@ -13,6 +13,7 @@ use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SlideDecks\SlideDeckResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
+use App\Filament\Admin\Resources\SiteAlerts\SiteAlertResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\FileCategory;
@@ -21,6 +22,7 @@ use App\Models\HomepageBanner;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\SlideDeck;
+use App\Models\SiteAlert;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Models\WorkflowNotificationRule;
@@ -37,6 +39,8 @@ class AdminAccess
     public const HOMEPAGE_CONTENT = 'homepage_content';
 
     public const HOMEPAGE_BANNERS = 'homepage_banners';
+
+    public const SITE_ALERTS = 'site_alerts';
 
     public const PAGES = 'pages';
 
@@ -73,6 +77,12 @@ class AdminAccess
                 'group' => 'Content',
                 'model' => HomepageBanner::class,
                 'resource' => HomepageBannerResource::class,
+            ],
+            self::SITE_ALERTS => [
+                'label' => 'Site Alerts',
+                'group' => 'Content',
+                'model' => SiteAlert::class,
+                'resource' => SiteAlertResource::class,
             ],
             self::PAGES => [
                 'label' => 'Pages',

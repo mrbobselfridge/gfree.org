@@ -30,6 +30,7 @@
     @include('partials.analytics-body')
 
     @if ($page->show_site_chrome)
+        @include('partials.site-top-chrome')
         @include('home.partials.header')
     @endif
 

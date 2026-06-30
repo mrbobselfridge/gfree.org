@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\NavigationLink;
 use App\Models\Page;
+use App\Models\SiteAlert;
 use App\Models\SiteSetting;
 
 class PublicPageViewData
@@ -13,6 +14,7 @@ class PublicPageViewData
         $settings = SiteSetting::query()->first();
         $defaults = config('twyxtco.homepage');
         $navigationLinks = NavigationLink::topLevelHeaderLinks();
+        $utilityLinks = NavigationLink::topLevelUtilityLinks();
 
         return [
             'settings' => $settings,
@@ -21,6 +23,12 @@ class PublicPageViewData
             'heroImageUrl' => ContentBlocks::imageUrl($page->hero_image_path)
                 ?: ContentBlocks::imageUrl($settings?->default_page_header_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
+            'utilityLinks' => $utilityLinks,
+            'utilitySocialLinks' => $settings?->managedSocialLinks() ?? collect(),
+            'siteAlerts' => SiteAlert::query()
+                ->active()
+                ->publicOrder()
+                ->get(),
             'socialLinks' => $settings?->socialLinks() ?? collect(),
             'childPageNavigation' => $this->childPageNavigation($page),
         ];

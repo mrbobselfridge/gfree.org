@@ -39,6 +39,39 @@ const setRenderedContent = (element, html, text) => {
 
 const heroBackgroundImage = (url) => `url(${JSON.stringify(url || '')})`;
 
+document.querySelectorAll('[data-site-alert]').forEach((alert) => {
+    const key = alert.dataset.siteAlertKey;
+    const dismiss = alert.querySelector('[data-site-alert-dismiss]');
+
+    if (! key) {
+        return;
+    }
+
+    const storageKey = `twyxtco:${key}:dismissed`;
+
+    try {
+        if (window.localStorage.getItem(storageKey) === 'true') {
+            alert.hidden = true;
+        }
+    } catch {
+        //
+    }
+
+    if (! dismiss) {
+        return;
+    }
+
+    dismiss.addEventListener('click', () => {
+        try {
+            window.localStorage.setItem(storageKey, 'true');
+        } catch {
+            //
+        }
+
+        alert.hidden = true;
+    });
+});
+
 document.querySelectorAll('[data-site-header]').forEach((header) => {
     const navToggle = header.querySelector('[data-nav-toggle]');
     const navMenu = header.querySelector('[data-nav-menu]');

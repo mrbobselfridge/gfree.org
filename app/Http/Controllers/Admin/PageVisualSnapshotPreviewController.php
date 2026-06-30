@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Models\HomepageContent;
 use App\Models\NavigationLink;
 use App\Models\Page;
+use App\Models\SiteAlert;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use Illuminate\Contracts\View\View;
@@ -54,6 +55,12 @@ class PageVisualSnapshotPreviewController extends Controller
 
         return [
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
+            'utilityLinks' => NavigationLink::topLevelUtilityLinks(),
+            'utilitySocialLinks' => $settings?->managedSocialLinks() ?? collect(),
+            'siteAlerts' => SiteAlert::query()
+                ->active()
+                ->publicOrder()
+                ->get(),
             'socialLinks' => $settings?->socialLinks() ?? collect(),
         ];
     }

@@ -14,6 +14,7 @@ use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
 use App\Filament\Admin\Resources\SlideDecks\SlideDeckResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
+use App\Filament\Admin\Resources\SiteAlerts\SiteAlertResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Resources\WorkflowNotificationRules\WorkflowNotificationRuleResource;
 use App\Models\SiteSetting;
@@ -1577,6 +1578,9 @@ class AdminPanelProvider extends PanelProvider
                 HTML),
             )
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
+            ->resources([
+                SiteAlertResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
             ->pages([
                 CmsDashboard::class,
@@ -1617,6 +1621,11 @@ class AdminPanelProvider extends PanelProvider
                 'label' => 'Banners',
                 'icon' => Heroicon::OutlinedPhoto,
                 'sort' => 1,
+            ],
+            SiteAlertResource::class => [
+                'label' => 'Site Alerts',
+                'icon' => Heroicon::OutlinedBell,
+                'sort' => 2,
             ],
             PageResource::class => [
                 'label' => 'Pages',

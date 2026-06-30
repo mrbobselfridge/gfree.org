@@ -7,6 +7,7 @@ use App\Filament\Admin\Pages\MediaLibrary;
 use App\Filament\Admin\Resources\HomepageBanners\HomepageBannerResource;
 use App\Filament\Admin\Resources\NavigationLinks\NavigationLinkResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
+use App\Filament\Admin\Resources\SiteAlerts\SiteAlertResource;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Models\FileDocument;
@@ -14,6 +15,7 @@ use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\NavigationLink;
 use App\Models\Page;
+use App\Models\SiteAlert;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Models\WorkflowNotificationRule;
@@ -26,6 +28,7 @@ class WorkflowNotificationAreas
         return [
             AdminAccess::HOMEPAGE_CONTENT => 'Homepage',
             AdminAccess::HOMEPAGE_BANNERS => 'Banners',
+            AdminAccess::SITE_ALERTS => 'Site Alerts',
             AdminAccess::PAGES => 'Pages',
             AdminAccess::NAVIGATION_LINKS => 'Navigation',
             AdminAccess::MEDIA_LIBRARY => 'Media Library',
@@ -62,6 +65,7 @@ class WorkflowNotificationAreas
         return match ($class) {
             HomepageContent::class => AdminAccess::HOMEPAGE_CONTENT,
             HomepageBanner::class => AdminAccess::HOMEPAGE_BANNERS,
+            SiteAlert::class => AdminAccess::SITE_ALERTS,
             Page::class => AdminAccess::PAGES,
             NavigationLink::class => AdminAccess::NAVIGATION_LINKS,
             FileDocument::class => AdminAccess::FILE_LIBRARY,
@@ -87,6 +91,7 @@ class WorkflowNotificationAreas
         return match ($record::class) {
             HomepageContent::class => HomepageContentPage::getUrl(),
             HomepageBanner::class => HomepageBannerResource::getUrl('edit', ['record' => $record]),
+            SiteAlert::class => SiteAlertResource::getUrl('edit', ['record' => $record]),
             Page::class => PageResource::getUrl('edit', ['record' => $record]),
             NavigationLink::class => NavigationLinkResource::getUrl('edit', ['record' => $record]),
             SiteSetting::class => SiteSettingResource::getUrl('edit', ['record' => $record]),

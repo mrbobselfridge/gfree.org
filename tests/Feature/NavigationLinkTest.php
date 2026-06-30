@@ -10,6 +10,7 @@ use App\Models\FileDocumentVersion;
 use App\Models\MediaImageMetadata;
 use App\Models\NavigationLink;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\NavigationDestinationSuggestions;
 use Filament\Forms\Components\TextInput;
@@ -107,6 +108,68 @@ class NavigationLinkTest extends TestCase
             ->assertSee('Resources')
             ->assertSee('Kids')
             ->assertDontSee('Future Students');
+    }
+
+    public function test_utility_navigation_renders_above_existing_header_navigation(): void
+    {
+        $parent = NavigationLink::query()->create([
+            'label' => 'Resources',
+            'url' => '/resources',
+            'location' => NavigationLink::LOCATION_HEADER,
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'parent_id' => $parent->id,
+            'label' => 'Kids',
+            'url' => '/resources/kids',
+            'location' => NavigationLink::LOCATION_HEADER,
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        NavigationLink::query()->create([
+            'label' => 'Contact',
+            'url' => '/contact',
+            'location' => NavigationLink::LOCATION_UTILITY,
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('site-utility-bar', false)
+            ->assertSeeInOrder(['site-utility-bar', 'Contact', 'concept-header'])
+            ->assertSee('data-subnav-toggle', false)
+            ->assertSee('Resources')
+            ->assertSee('Kids');
+    }
+
+    public function test_utility_bar_renders_managed_social_links_but_not_custom_social_links(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'facebook_url' => 'https://facebook.example/twyxtco',
+            'instagram_url' => 'https://instagram.example/twyxtco',
+            'youtube_url' => 'https://youtube.example/twyxtco',
+            'additional_social_links' => [
+                [
+                    'label' => 'Podcast',
+                    'url' => 'https://podcast.example/twyxtco',
+                    'image_path' => 'site-settings/additional-links/podcast.png',
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('site-utility-bar__social', false)
+            ->assertSeeInOrder(['aria-label="Facebook"', 'aria-label="Instagram"', 'aria-label="YouTube"'], false)
+            ->assertSee('site-utility-social-link--facebook', false)
+            ->assertSee('site-utility-social-link--instagram', false)
+            ->assertSee('site-utility-social-link--youtube', false)
+            ->assertDontSee('site-utility-social-link--custom', false);
     }
 
     public function test_header_navigation_hides_links_to_inactive_matching_pages(): void
@@ -400,7 +463,7 @@ class NavigationLinkTest extends TestCase
             ->tap(function ($component): void {
                 $columns = $component->instance()->getTable()->getColumns();
 
-                $this->assertSame(['label', 'url', 'parent.label'], array_slice(array_keys($columns), 0, 3));
+                $this->assertSame(['label', 'url', 'location', 'parent.label'], array_slice(array_keys($columns), 0, 4));
             });
     }
 

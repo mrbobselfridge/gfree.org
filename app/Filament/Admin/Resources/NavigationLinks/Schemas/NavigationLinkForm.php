@@ -3,12 +3,11 @@
 namespace App\Filament\Admin\Resources\NavigationLinks\Schemas;
 
 use App\Support\NavigationDestinationSuggestions;
+use App\Models\NavigationLink;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Placeholder;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -31,14 +30,26 @@ class NavigationLinkForm
                         'The text visitors see in the header or dropdown.'
                     )
                     ->hintColor('gray'),
+                Select::make('location')
+                    ->label('Location')
+                    ->options(NavigationLink::locationOptions())
+                    ->default(NavigationLink::LOCATION_HEADER)
+                    ->required()
+                    ->live()
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Header links appear in the main navigation. Utility links appear in the thin bar above the header.'
+                    )
+                    ->hintColor('gray'),
                 Select::make('parent_id')
                     ->label('Parent link')
                     ->relationship('parent', 'label')
                     ->searchable()
                     ->preload()
+                    ->visible(fn (Get $get): bool => $get('location') !== NavigationLink::LOCATION_UTILITY)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional. Choose a top-level link to make this link appear inside that link\'s dropdown.'
+                        'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
                     )
                     ->hintColor('gray'),
 
@@ -87,9 +98,6 @@ class NavigationLinkForm
                     ->hintColor('gray')
                     ->required(),
 
-                Hidden::make('location')
-                    ->default('header')
-                    ->dehydrateStateUsing(fn(): string => 'header'),
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
                     ->hintIcon(

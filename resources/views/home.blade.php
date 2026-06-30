@@ -26,6 +26,7 @@
     @include('partials.custom-body-top-scripts')
     @include('partials.analytics-body')
 
+    @include('partials.site-top-chrome')
     @include('home.partials.header')
 
     <main>

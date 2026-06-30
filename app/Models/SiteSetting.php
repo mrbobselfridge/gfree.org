@@ -63,7 +63,14 @@ class SiteSetting extends Model
 
     public function socialLinks()
     {
-        $builtInLinks = collect([
+        return $this->managedSocialLinks()
+            ->merge($this->additionalSocialLinks())
+            ->values();
+    }
+
+    public function managedSocialLinks()
+    {
+        return collect([
             ['label' => 'Facebook', 'url' => $this->facebook_url, 'icon' => 'facebook'],
             ['label' => 'Instagram', 'url' => $this->instagram_url, 'icon' => 'instagram'],
             ['label' => 'YouTube', 'url' => $this->youtube_url, 'icon' => 'youtube'],
@@ -79,10 +86,6 @@ class SiteSetting extends Model
                 ...$link,
                 'image_url' => null,
             ]);
-
-        return $builtInLinks
-            ->merge($this->additionalSocialLinks())
-            ->values();
     }
 
     public function additionalSocialLinks()

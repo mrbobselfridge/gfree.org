@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HomepageBanner;
 use App\Models\HomepageContent;
 use App\Models\NavigationLink;
+use App\Models\SiteAlert;
 use App\Models\SiteSetting;
 use App\Support\ContentBlocks;
 use App\Support\RichContent;
@@ -31,6 +32,11 @@ class HomeController extends Controller
             ->get();
 
         $navigationLinks = NavigationLink::topLevelHeaderLinks();
+        $utilityLinks = NavigationLink::topLevelUtilityLinks();
+        $siteAlerts = SiteAlert::query()
+            ->active()
+            ->publicOrder()
+            ->get();
 
         $hero = $this->renderHeroSlide($this->hero($defaults['hero'], $heroBanners->first()), $settings);
 
@@ -38,6 +44,9 @@ class HomeController extends Controller
             'settings' => $settings,
             'theme' => $defaults['theme'],
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
+            'utilityLinks' => $utilityLinks,
+            'utilitySocialLinks' => $settings?->managedSocialLinks() ?? collect(),
+            'siteAlerts' => $siteAlerts,
             'pageTitle' => $this->pageTitle($settings, $homepageContent),
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
             'hero' => $hero,
