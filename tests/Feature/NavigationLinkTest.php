@@ -170,6 +170,7 @@ class NavigationLinkTest extends TestCase
             ->assertSee('site-utility-social-link--facebook', false)
             ->assertSee('site-utility-social-link--instagram', false)
             ->assertSee('site-utility-social-link--youtube', false)
+            ->assertSee('viewBox="0 0 24 24"', false)
             ->assertDontSee('site-utility-social-link--custom', false);
     }
 

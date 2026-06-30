@@ -2285,6 +2285,48 @@
     outline: none;
 }
 
+.site-utility-social-link svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.site-utility-social-link svg path:first-child,
+.site-utility-social-link svg rect:first-child {
+    fill: currentColor;
+    stroke: none;
+}
+
+.site-utility-social-link svg circle,
+.site-utility-social-link svg path+path {
+    fill: none;
+    stroke: none;
+}
+
+.site-utility-social-link--instagram svg rect,
+.site-utility-social-link--instagram svg circle,
+.site-utility-social-link--google-business-profile svg path,
+.site-utility-social-link--threads svg path {
+    fill: none;
+    stroke: currentColor;
+}
+
+.site-utility-social-link--youtube svg path+path {
+    fill: #ff0033;
+}
+
+.site-utility-social-link--tiktok svg path,
+.site-utility-social-link--linkedin svg path,
+.site-utility-social-link--pinterest svg path,
+.site-utility-social-link--x svg path {
+    fill: currentColor;
+    stroke: none;
+}
+
 .site-utility-social-link__label {
     position: absolute;
     width: 1px;
