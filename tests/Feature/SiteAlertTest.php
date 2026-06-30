@@ -174,7 +174,7 @@ class SiteAlertTest extends TestCase
             ->assertSee('Important gold - high-priority reminders or events')
             ->assertSee('Information blue - general announcements')
             ->assertSee('Success green - good news or completed updates')
-            ->assertSee('Neutral black - simple site notices')
+            ->assertSee('Neutral light - simple site notices')
             ->assertDontSee('weather closures')
             ->assertDontSee('not emergencies');
     }

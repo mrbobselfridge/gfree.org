@@ -2149,8 +2149,8 @@
 }
 
 .site-alert--neutral {
-    color: white;
-    background: #111;
+    color: #1f2937;
+    background: #f3f4f6;
 }
 
 .site-alert__inner {

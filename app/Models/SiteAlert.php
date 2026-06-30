@@ -52,7 +52,7 @@ class SiteAlert extends Model
             self::TONE_IMPORTANT => 'Important gold - high-priority reminders or events',
             self::TONE_INFO => 'Information blue - general announcements',
             self::TONE_SUCCESS => 'Success green - good news or completed updates',
-            self::TONE_NEUTRAL => 'Neutral black - simple site notices',
+            self::TONE_NEUTRAL => 'Neutral light - simple site notices',
         ];
     }
 
@@ -63,7 +63,7 @@ class SiteAlert extends Model
             self::TONE_IMPORTANT => 'Important gold',
             self::TONE_INFO => 'Information blue',
             self::TONE_SUCCESS => 'Success green',
-            self::TONE_NEUTRAL => 'Neutral black',
+            self::TONE_NEUTRAL => 'Neutral light',
         ];
     }
 
