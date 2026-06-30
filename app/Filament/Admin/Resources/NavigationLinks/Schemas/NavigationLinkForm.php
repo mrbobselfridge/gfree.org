@@ -54,6 +54,17 @@ class NavigationLinkForm
                     ->hintColor('gray')
                     ->required(),
 
+                TextInput::make('url')
+                    ->label('Destination')
+                    ->required()
+                    ->maxLength(255)
+                    ->datalist(fn(): array => NavigationDestinationSuggestions::optionValues())
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Use a local path like /new-here, choose a suggested page, file, or media path after typing /, or enter a full https:// URL.'
+                    )
+                    ->hintColor('gray'),
+
                 Select::make('parent_id')
                     ->label('Parent link')
                     ->relationship('parent', 'label')
@@ -65,16 +76,6 @@ class NavigationLinkForm
                         'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
                     )
                     ->hintColor('gray'),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
-                    )
-                    ->hintColor('gray'),
-
 
                 ToggleButtons::make('opens_in_new_tab')
                     ->label('Open in new tab')
@@ -87,17 +88,6 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray')
                     ->required(),
-
-                TextInput::make('url')
-                    ->label('Destination')
-                    ->required()
-                    ->maxLength(255)
-                    ->datalist(fn(): array => NavigationDestinationSuggestions::optionValues())
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Use a local path like /new-here, choose a suggested page, file, or media path after typing /, or enter a full https:// URL.'
-                    )
-                    ->hintColor('gray'),
 
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
@@ -114,6 +104,16 @@ class NavigationLinkForm
                         'Optional. Use for seasonal links that should disappear automatically.'
                     )
                     ->hintColor('gray'),
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
+                    )
+                    ->hintColor('gray'),
+
             ]);
     }
 }
