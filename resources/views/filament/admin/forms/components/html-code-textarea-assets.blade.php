@@ -18,17 +18,19 @@
         overflow: auto;
         white-space: pre-wrap;
         word-break: normal;
-        overflow-wrap: anywhere;
+        overflow-wrap: break-word;
         tab-size: 4;
         font: inherit;
         line-height: inherit;
+        letter-spacing: 0;
+        font-variant-ligatures: none;
+        font-kerning: none;
     }
 
     .twyxtco-code-textarea-highlight {
         position: absolute;
         inset: 0;
         pointer-events: none;
-        padding: 0.625rem 0.75rem;
         color: rgb(55 65 81);
     }
 
@@ -61,13 +63,11 @@
 
     .twyxtco-code-token-comment {
         color: rgb(107 114 128);
-        font-style: italic;
     }
 
     .twyxtco-code-token-tag,
     .twyxtco-code-token-selector {
         color: rgb(180 83 9);
-        font-weight: 650;
     }
 
     .twyxtco-code-token-attr,
@@ -81,7 +81,6 @@
 
     .twyxtco-code-token-keyword {
         color: rgb(124 58 237);
-        font-weight: 650;
     }
 
     .twyxtco-code-token-number,
@@ -244,6 +243,12 @@
             return highlightHtml(value);
         };
 
+        const pixels = (value) => {
+            const number = Number.parseFloat(value);
+
+            return Number.isFinite(number) ? number : 0;
+        };
+
         const enhance = (textarea) => {
             if (textarea.dataset.twyxtcoCodeEnhanced === 'true') {
                 return;
@@ -263,7 +268,33 @@
             shell.appendChild(highlightElement);
             shell.appendChild(textarea);
 
+            const syncMetrics = () => {
+                const style = window.getComputedStyle(textarea);
+
+                shell.style.fontFamily = style.fontFamily;
+                shell.style.fontSize = style.fontSize;
+                shell.style.fontWeight = style.fontWeight;
+                shell.style.lineHeight = style.lineHeight;
+                shell.style.letterSpacing = style.letterSpacing;
+
+                highlightElement.style.top = style.borderTopWidth;
+                highlightElement.style.right = style.borderRightWidth;
+                highlightElement.style.bottom = style.borderBottomWidth;
+                highlightElement.style.left = style.borderLeftWidth;
+                highlightElement.style.paddingTop = style.paddingTop;
+                highlightElement.style.paddingRight = style.paddingRight;
+                highlightElement.style.paddingBottom = style.paddingBottom;
+                highlightElement.style.paddingLeft = style.paddingLeft;
+                highlightElement.style.fontFamily = style.fontFamily;
+                highlightElement.style.fontSize = style.fontSize;
+                highlightElement.style.fontWeight = style.fontWeight;
+                highlightElement.style.lineHeight = style.lineHeight;
+                highlightElement.style.letterSpacing = style.letterSpacing;
+                highlightElement.style.minHeight = `${Math.max(0, textarea.clientHeight - pixels(style.borderTopWidth) - pixels(style.borderBottomWidth))}px`;
+            };
+
             const sync = () => {
+                syncMetrics();
                 highlightElement.innerHTML = `${highlight(textarea.value, textarea.dataset.twyxtcoCodeLanguage || 'html')}\n`;
                 highlightElement.scrollTop = textarea.scrollTop;
                 highlightElement.scrollLeft = textarea.scrollLeft;
@@ -275,6 +306,7 @@
             textarea.addEventListener('paste', () => window.setTimeout(sync, 0));
             textarea.addEventListener('focus', sync);
             textarea.addEventListener('scroll', sync);
+            window.addEventListener('resize', sync);
 
             sync();
             window.setTimeout(sync, 100);
