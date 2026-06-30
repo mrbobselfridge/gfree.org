@@ -2281,8 +2281,9 @@
 
 .site-utility-social-link:hover,
 .site-utility-social-link:focus-visible {
-    background: var(--site-accent);
+    background: white;
     outline: none;
+    transform: translateY(-1px);
 }
 
 .site-utility-social-link svg {
@@ -2307,24 +2308,80 @@
     stroke: none;
 }
 
-.site-utility-social-link--instagram svg rect,
-.site-utility-social-link--instagram svg circle,
-.site-utility-social-link--google-business-profile svg path,
-.site-utility-social-link--threads svg path {
+.site-utility-social-link--facebook {
+    color: #1877f2;
+}
+
+.site-utility-social-link--instagram {
+    color: #e4405f;
+}
+
+.site-utility-social-link.site-utility-social-link--instagram svg rect,
+.site-utility-social-link.site-utility-social-link--instagram svg circle {
     fill: none;
     stroke: currentColor;
 }
 
-.site-utility-social-link--youtube svg path+path {
-    fill: #ff0033;
-}
-
-.site-utility-social-link--tiktok svg path,
-.site-utility-social-link--linkedin svg path,
-.site-utility-social-link--pinterest svg path,
-.site-utility-social-link--x svg path {
+.site-utility-social-link.site-utility-social-link--instagram svg circle:last-child {
     fill: currentColor;
     stroke: none;
+}
+
+.site-utility-social-link--youtube {
+    color: #ff0033;
+}
+
+.site-utility-social-link.site-utility-social-link--youtube svg rect {
+    fill: currentColor;
+    stroke: none;
+}
+
+.site-utility-social-link.site-utility-social-link--youtube svg path+path {
+    fill: white;
+    stroke: none;
+}
+
+.site-utility-social-link--tiktok {
+    color: #111;
+}
+
+.site-utility-social-link.site-utility-social-link--tiktok svg path {
+    fill: currentColor;
+    stroke: none;
+}
+
+.site-utility-social-link.site-utility-social-link--tiktok svg path+path {
+    fill: #25f4ee;
+}
+
+.site-utility-social-link--linkedin {
+    color: #0a66c2;
+}
+
+.site-utility-social-link--pinterest {
+    color: #e60023;
+}
+
+.site-utility-social-link--x,
+.site-utility-social-link--threads {
+    color: #111;
+}
+
+.site-utility-social-link.site-utility-social-link--linkedin svg path,
+.site-utility-social-link.site-utility-social-link--pinterest svg path,
+.site-utility-social-link.site-utility-social-link--x svg path {
+    fill: currentColor;
+    stroke: none;
+}
+
+.site-utility-social-link--google-business-profile {
+    color: #4285f4;
+}
+
+.site-utility-social-link.site-utility-social-link--google-business-profile svg path,
+.site-utility-social-link.site-utility-social-link--threads svg path {
+    fill: none;
+    stroke: currentColor;
 }
 
 .site-utility-social-link__label {
