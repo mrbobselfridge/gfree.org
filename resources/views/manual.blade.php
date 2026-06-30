@@ -678,7 +678,9 @@
                 <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="#homepage">Homepage</a></li>
                 <li><a href="#banners">Banners</a></li>
+                <li><a href="#site-alerts">Site Alerts</a></li>
                 <li><a href="#content-blocks">Content Blocks</a></li>
+                <li><a href="#slide-decks">Slide Deck Import</a></li>
                 <li><a href="#media-library">Media Library</a></li>
                 <li><a href="#file-library">File Library</a></li>
                 <li><a href="#pages">Pages</a></li>
@@ -764,9 +766,19 @@
                         <td>Homepage hero and content below the hero.</td>
                     </tr>
                     <tr>
+                        <td>Site Alerts</td>
+                        <td>Show short sitewide alert bars above the public header for urgent, seasonal, or important notices.</td>
+                        <td>Public top-of-site alert area, optional alert links, and dismissible visitor notices.</td>
+                    </tr>
+                    <tr>
                         <td>Pages and Navigation</td>
                         <td>Create public pages, redirects, parent-child page groups, and header menu links.</td>
                         <td>Standalone pages, dropdown navigation, page listings, and short links.</td>
+                    </tr>
+                    <tr>
+                        <td>Slide Deck Import</td>
+                        <td>Upload announcement PowerPoint decks, review slide images and AI metadata, and create missing announcement pages.</td>
+                        <td>Slide images, announcement-page drafts, Media Library images, and exportable slide metadata.</td>
                     </tr>
                     <tr>
                         <td>Media Library and File Library</td>
@@ -847,9 +859,60 @@
             </figure>
         </section>
 
+        <section class="manual-section" id="site-alerts">
+            <h2>Site Alerts</h2>
+            <p>Site Alerts manage short public alert bars shown above the website header. Use them for urgent announcements, weather changes, temporary service updates, registration reminders, or other notices that should be visible across the site.</p>
+
+            <h3>Common Tasks</h3>
+            <ol>
+                <li>Open <strong>Site Alerts</strong> from the admin sidebar.</li>
+                <li>Create a new alert or edit an existing one.</li>
+                <li>Choose the alert level, message, optional link, publish window, and whether visitors can dismiss it.</li>
+                <li>Turn on <strong>Alert is live</strong> when the alert should appear publicly.</li>
+                <li>Save, then open the public website and confirm the alert reads clearly on desktop and mobile.</li>
+            </ol>
+
+            <h3>Important Fields</h3>
+            <ul>
+                <li><strong>Alert notification level:</strong> Controls the visual tone or color of the alert. Use stronger levels only when the notice truly needs extra attention.</li>
+                <li><strong>Alert is live:</strong> Turns public display on or off, subject to Publish at and Expires at.</li>
+                <li><strong>Alert label:</strong> Optional short prefix before the message, such as News Alert, Weather Update, or Important.</li>
+                <li><strong>Visitors can dismiss:</strong> Lets a visitor hide the alert in their own browser until the alert is edited. Turn this off for notices that must remain visible.</li>
+                <li><strong>Alert message:</strong> Main alert text. Keep it brief because alerts can stack and must fit on phones.</li>
+                <li><strong>Link text and Link destination:</strong> Optional call-to-action. Use a local path like <code>/events</code> or a full <code>https://</code> URL.</li>
+                <li><strong>Publish at and Expires at:</strong> Optional scheduling. Use Expires at for temporary weather notices, deadlines, and event reminders.</li>
+                <li><strong>Sort order:</strong> Lower numbers appear first when multiple alerts are live.</li>
+            </ul>
+
+            <div class="manual-note">
+                <strong>Writing alert copy</strong>
+                <p>Write alerts as one direct sentence when possible. Put details on a linked page instead of trying to fit a whole announcement into the alert bar.</p>
+            </div>
+
+            <h3>What To Watch</h3>
+            <ul>
+                <li>Old alerts should be unpublished or expired so the site does not look stale.</li>
+                <li>If several alerts are live at once, confirm they still fit well on mobile.</li>
+                <li>Dismissible alerts are hidden per visitor/browser; editing the alert makes it eligible to appear again.</li>
+                <li>Use workflow notifications if another team should review new or changed alert copy.</li>
+            </ul>
+        </section>
+
         <section class="manual-section" id="content-blocks">
             <h2>Content Blocks</h2>
-            <p>Content blocks are reusable sections used on the homepage and pages. The available block types may vary by area, but the core behavior is the same.</p>
+            <p>Content blocks are reusable page sections used on the Homepage and Pages. They control the visible body content below the page header or homepage banner. Editors can add, copy, delete, collapse, reorder, and configure blocks without writing code.</p>
+
+            <h3>Shared Block Controls</h3>
+            <ul>
+                <li><strong>Block name:</strong> Optional admin-only label used to identify a block while editing. It is not shown publicly.</li>
+                <li><strong>Small label:</strong> Optional short text above a heading, such as New Here, Featured, or Resources.</li>
+                <li><strong>Heading:</strong> Optional public heading for the section.</li>
+                <li><strong>Background color:</strong> Uses the managed background color options from Site Settings.</li>
+                <li><strong>Content width:</strong> Controls how wide the public section content can be. Use narrower widths for reading and wider widths for card groups, image sections, and listings.</li>
+                <li><strong>Copy:</strong> Duplicates a block or nested entry so similar content can be created quickly.</li>
+                <li><strong>Collapse:</strong> Keeps long pages manageable while editing. Open one block at a time when reviewing details.</li>
+                <li><strong>Publish at and Expire at:</strong> Homepage blocks can be scheduled. Page blocks are usually controlled by the page itself, child-page feature dates, or the Child Cards block settings.</li>
+            </ul>
 
             <table class="manual-table">
                 <thead>
@@ -863,40 +926,92 @@
                     <tr>
                         <td>Text</td>
                         <td>Headings, paragraphs, rich text, simple page sections.</td>
-                        <td>Choose a background and content width. Width options include Small, Medium, and Wide.</td>
+                        <td>Use for normal written content. Choose a readable content width and avoid turning every short note into its own block.</td>
                     </tr>
                     <tr>
                         <td>Image + Text</td>
                         <td>A photo with supporting copy and optional button.</td>
-                        <td>Choose a layout. Full-screen image layouts work best with high-quality landscape photos.</td>
+                        <td>Choose layout, image, alt text, copy, and optional button. Full-width and screen-width image layouts need strong landscape images.</td>
                     </tr>
                     <tr>
                         <td>Process List</td>
                         <td>Step-by-step instructions such as visit, serve, join, or sign up.</td>
-                        <td>Use short step labels and practical step text. Use Affected background to choose whether the selected color applies to the step items or the full page band behind them.</td>
+                        <td>Use short step labels and practical step text. Affected background controls whether the chosen color applies to the step items or the full page band.</td>
                     </tr>
                     <tr>
-                        <td>CTA</td>
+                        <td>Button + Text</td>
                         <td>A clear action such as Contact Us, Give, Register, or Plan a Visit.</td>
-                        <td>Always test the button destination after saving.</td>
+                        <td>Requires button text and destination. Layout controls whether the button sits beside, above, or below the copy.</td>
                     </tr>
                     <tr>
                         <td>Cards</td>
                         <td>Groups of links to pages, forms, files, or next steps.</td>
-                        <td>Cards center by row. One, two, four, or five cards should balance visually. Use Affected background to choose whether the selected color applies to the cards or the full page band behind them.</td>
+                        <td>Supports display-only cards, same-tab links, new-tab links, flip cards with image backs, and advanced code-backed cards for users with Code Blocks access.</td>
                     </tr>
                     <tr>
                         <td>Strip</td>
                         <td>Service times, address, links, or short facts.</td>
-                        <td>Use custom values directly. Site variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Strip text field. Use Affected background to choose whether the selected color applies to the strip items or the full page band behind them.</td>
+                        <td>Use up to five compact entries. Site variables such as <code>[[address]]</code> and <code>[[service-times]]</code> can be typed into the Strip text field.</td>
                     </tr>
                     <tr>
                         <td>Embedded</td>
                         <td>Trusted third-party embed code such as calendar or forms.</td>
                         <td>Only paste embed code from trusted providers.</td>
                     </tr>
+                    <tr>
+                        <td>Code</td>
+                        <td>Trusted custom HTML, CSS, or JavaScript.</td>
+                        <td>Available only to users with Code Blocks access. Use sparingly because code renders directly on the public page.</td>
+                    </tr>
+                    <tr>
+                        <td>Child Cards</td>
+                        <td>Automatic listings of a parent page's child pages and attached files.</td>
+                        <td>Page-only block. Use it for Resources, Ministries, Forms, Announcements, or other structured page groups.</td>
+                    </tr>
+                    <tr>
+                        <td>YouTube Feed</td>
+                        <td>Recent videos from a YouTube channel.</td>
+                        <td>Page-only block. Paste the public channel URL; the RSS feed can fill automatically when possible.</td>
+                    </tr>
                 </tbody>
             </table>
+
+            <h3>Cards Block Details</h3>
+            <ul>
+                <li><strong>Card label:</strong> Short visible label. Keep it brief enough to scan.</li>
+                <li><strong>Layout:</strong> Choose Nothing / display only, Link opens in same tab, Link opens in new tab, or Flip card with image back. Advanced users may also see Flip card with HTML back and JavaScript widget.</li>
+                <li><strong>Card text:</strong> Optional supporting copy. Use one or two short sentences.</li>
+                <li><strong>Destination:</strong> Required for link card layouts. Use local paths such as <code>/give</code> or full external URLs.</li>
+                <li><strong>Flip card image controls:</strong> Image sizing can fill/crop or fit the full image. Horizontal position, vertical position, and zoom help crop the image back intentionally.</li>
+                <li><strong>Affected background:</strong> Choose whether the selected background applies to each card/item or to the full page band behind the cards.</li>
+            </ul>
+
+            <h3>Child Cards Block</h3>
+            <p>The Child Cards block is the main tool for turning a parent page into an automatic listing. It pulls from direct child pages and files attached to the selected parent page.</p>
+            <ul>
+                <li><strong>Associated parent page:</strong> Choose the page whose direct child pages and files should feed this block. The current page is selected by default when it already has children or attached files.</li>
+                <li><strong>Content type:</strong> Choose All Pages, All Files, or Both.</li>
+                <li><strong>File categories:</strong> Optional filter for file listings. Leave empty to include all file categories.</li>
+                <li><strong>Listing mode:</strong> Featured/active shows child pages within their Feature start and Feature end window. All live shows every live child page.</li>
+                <li><strong>Listing is live:</strong> Turns this block on or off without deleting the configuration.</li>
+                <li><strong>Enable search:</strong> Adds a public search box that filters page names, file names, tags, descriptions, and related content.</li>
+                <li><strong>Layout:</strong> Card grid, Card carousel, Card Carousel Auto, or Label list.</li>
+                <li><strong>Items shown:</strong> Number of items shown initially and added with each Load more click.</li>
+                <li><strong>Sort by:</strong> Options include announcements/events next up first, news/blog most recent first, sort order then random, publish date, title A-Z/Z-A, and created date.</li>
+                <li><strong>Auto-rotate delay:</strong> Used only for Card Carousel Auto.</li>
+            </ul>
+            <div class="manual-note">
+                <strong>Child Cards source rule</strong>
+                <p>The block only lists direct child pages and files for the selected parent. To change what appears, edit the child page or file and change its Parent page.</p>
+            </div>
+
+            <h3>YouTube Feed Block</h3>
+            <ul>
+                <li><strong>YouTube channel URL:</strong> Paste the public channel URL. The system tries to fill the RSS feed URL automatically.</li>
+                <li><strong>YouTube RSS feed URL:</strong> Optional fallback when the channel URL cannot be resolved.</li>
+                <li><strong>Items shown:</strong> Maximum number of recent videos to show.</li>
+                <li><strong>YouTube link text:</strong> Text for the link that opens more videos on YouTube.</li>
+            </ul>
 
             <h3>Block Editing Tips</h3>
             <ul>
@@ -905,6 +1020,9 @@
                 <li>Use backgrounds intentionally. Too many alternating colors can feel busy.</li>
                 <li>Keep button text short: "Register", "Learn More", "Contact Us", or "Plan a Visit".</li>
                 <li>Use local paths such as <code>/give</code> for pages on this site, or full <code>https://</code> links for external sites.</li>
+                <li>Use Site Variables such as <code>[[address]]</code> and <code>[[service-times]]</code> when sitewide details should stay synced.</li>
+                <li>Use Child Cards instead of manually rebuilding the same page or file list in several places.</li>
+                <li>After changing page structure, review any Child Cards blocks that depend on that parent page.</li>
             </ul>
             <figure class="manual-screenshot">
                 <img src="{{ asset('images/manual/content-block-editor.jpg') }}" alt="Content block editor with background color, affected background, heading, layout, and item fields.">
@@ -914,6 +1032,64 @@
                 <img src="{{ asset('images/manual/content-block-cards-preview.jpg') }}" alt="Public page showing a cards content block with teal card styling.">
                 <figcaption>Content blocks should read as complete public sections after saving. Use preview checks to confirm spacing, background choices, card colors, and button links.</figcaption>
             </figure>
+        </section>
+
+        <section class="manual-section" id="slide-decks">
+            <h2>Slide Deck Import</h2>
+            <p>Slide Deck Import turns a PowerPoint announcement deck into individual slide images and AI-assisted slide metadata. It is designed for weekly announcement workflows where slides may become public announcement pages.</p>
+
+            <h3>Create an Import</h3>
+            <ol>
+                <li>Open <strong>Slide Deck Import</strong>.</li>
+                <li>Create a new deck and enter a <strong>Deck name</strong>.</li>
+                <li>Upload a <code>.pptx</code> file in <strong>PowerPoint deck</strong>.</li>
+                <li>Save the record. Processing runs in the queue after the record is created.</li>
+                <li>Open the deck again to review status, processed slide count, original filename, and the created File Library record.</li>
+            </ol>
+
+            <h3>Deck-Level Actions</h3>
+            <ul>
+                <li><strong>Re-run import:</strong> Reconverts the original PowerPoint and replaces generated slide images and slide analysis records. Use this when the conversion failed or the original deck needs to be processed again.</li>
+                <li><strong>Re-run analysis:</strong> Queues AI analysis again for every slide in the deck without reconverting the PowerPoint.</li>
+                <li><strong>Download PNG ZIP:</strong> Downloads the generated slide images as a ZIP file.</li>
+                <li><strong>Export CSV / Export JSON:</strong> Downloads slide metadata for review, reporting, or reuse outside the CMS.</li>
+                <li><strong>Save / Save &amp; close:</strong> Save deck-level fields. Slide edits are handled separately in the Slide Review table.</li>
+            </ul>
+
+            <h3>Slide Review Columns</h3>
+            <ul>
+                <li><strong>Slide:</strong> Thumbnail preview of the generated image.</li>
+                <li><strong>#:</strong> Slide number from the deck.</li>
+                <li><strong>Suggested name:</strong> AI-suggested or manually edited name.</li>
+                <li><strong>Analysis:</strong> Shows Pending, Analyzed, Analysis failed, or OpenAI balance issue. Failure details appear as a short description when available.</li>
+                <li><strong>Page?:</strong> Shows whether a matching announcement page appears to exist. Missing matches display <strong>Missing!</strong>.</li>
+                <li><strong>Slide type:</strong> Announcement, General, or Unknown.</li>
+                <li><strong>Date, Time, Location, Visible text:</strong> Extracted slide details. Visible text can be toggled into view from the table controls.</li>
+            </ul>
+
+            <h3>Slide Row Actions</h3>
+            <ul>
+                <li><strong>Edit slide:</strong> Opens a modal with the slide image at the top and editable analysis fields such as suggested name, slide type, confidence score, visible text, intro text, event title, date, time, location, audience, contact person, and announcement details.</li>
+                <li><strong>Re-run slide analysis:</strong> Queues AI analysis for that one slide.</li>
+                <li><strong>Delete slide:</strong> Removes the slide record, generated images, thumbnail, and copied Media Library image.</li>
+                <li><strong>Edit existing page:</strong> Opens the matching page edit screen when a matching page exists. If the page is missing, the icon stays visible but inactive and greyed out.</li>
+                <li><strong>View existing page:</strong> Opens the matching public page in a new tab when a matching page exists. If the page is missing, the icon stays visible but inactive and greyed out.</li>
+                <li><strong>Create missing page:</strong> Opens the Page create screen with slide details prefilled when no matching page exists. If a matching page already exists, the icon stays visible but inactive and greyed out.</li>
+            </ul>
+
+            <h3>Creating Pages From Slides</h3>
+            <ul>
+                <li>The create-page action builds a new announcement page using the slide's event title or suggested name, intro text, event dates, and slide image.</li>
+                <li>The slide image is copied into the public Media Library so it can be used as the card image and in an Image + Text content block.</li>
+                <li>If there is an <strong>Announcements</strong> parent page, the new page is placed under it and uses a path such as <code>/announcements/family-fire-night</code>.</li>
+                <li>Pages created from slides should still be reviewed before relying on them publicly. Confirm title, path, dates, image crop, body copy, and publishing dates.</li>
+                <li>If the slide mentions a connection card, the created content can include a button pointing visitors to <code>/card</code>.</li>
+            </ul>
+
+            <div class="manual-note">
+                <strong>AI review caution</strong>
+                <p>Slide analysis is a starting point. Always review extracted dates, times, names, and locations before creating or publishing pages from a deck.</p>
+            </div>
         </section>
 
         <section class="manual-section" id="media-library">
@@ -962,7 +1138,7 @@
                 <li><strong>Tags:</strong> Optional tags shared with Media Library image tags. Uploading a new file or editing the title can add matching tags automatically.</li>
                 <li><strong>File is live:</strong> Turns the public file path on or off.</li>
                 <li><strong>Visibility:</strong> Public links work for anyone. Private published links require a user or admin login.</li>
-                <li><strong>Parent page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Selecting a category can fill this from the category default, and you can still change it.</li>
+                <li><strong>Parent page:</strong> Optional. Groups the file under a related page such as Resources, Forms, or Bulletins. Selecting a category can fill this from the category default, and you can still change it. Child Cards can list files attached to the selected parent page.</li>
                 <li><strong>Optional file content:</strong> Formatted notes or AI-extracted content for the file record.</li>
                 <li><strong>Publish at, Created date, Updated date:</strong> Publish at controls availability; created/updated dates are shown for reference.</li>
             </ul>
@@ -1001,15 +1177,23 @@
 
         <section class="manual-section" id="pages">
             <h2>Pages</h2>
-            <p>Pages are general website pages such as About, New Here, Give, Contact, or other standalone content.</p>
+            <p>Pages are general website pages such as About, New Here, Give, Contact, Resources, Announcements, Forms, or other standalone content. Pages can also act as parent pages that organize child pages and files.</p>
             <h3>Common Fields</h3>
             <ul>
                 <li><strong>Page title:</strong> The page name.</li>
                 <li><strong>Page path:</strong> The local site path. Example: a path of <code>new-here</code> creates <code>/new-here</code>. Nested paths such as <code>resources/forms</code> are allowed.</li>
+                <li><strong>Small label:</strong> Optional short label shown above the page title.</li>
+                <li><strong>Intro text:</strong> Optional intro shown near the top of the page when the page header is visible.</li>
                 <li><strong>Message:</strong> Optional rich text shown in the page header for short callouts, contact details, links, lists, or other header notes.</li>
-                <li><strong>Page content:</strong> Preferred flexible page layout.</li>
+                <li><strong>Header image:</strong> Optional image used in the page header. If empty, the default page header image from Site Settings can be used.</li>
+                <li><strong>Card image:</strong> Optional image used when this page appears in cards, Child Cards, or listing areas. If empty, the header image may be used.</li>
+                <li><strong>Page content:</strong> Flexible content block layout for the visible body of the page.</li>
                 <li><strong>Show navigation:</strong> Turn off only for special landing pages.</li>
+                <li><strong>Show page header:</strong> Controls whether the public page shows the title, intro, message, and header image area.</li>
                 <li><strong>Parent page:</strong> Optional grouping for child pages, useful for Resources, Forms, or other landing pages.</li>
+                <li><strong>Parent to the following pages and files:</strong> Read-only helper showing direct child pages and files attached to this page.</li>
+                <li><strong>Publish at and Expires at:</strong> Optional public availability window.</li>
+                <li><strong>Feature start and Feature end:</strong> Optional child-page feature window used by Child Cards when the page has a parent.</li>
                 <li><strong>SEO title, SEO description, and Hide from search engines:</strong> Optional search metadata shown only to admins and editors with Code Blocks access. Hide from search engines asks search engines not to index the page or follow links on it.</li>
                 <li><strong>Page is live:</strong> Must be enabled for public display or for a redirect to work.</li>
             </ul>
@@ -1026,11 +1210,29 @@
             </ul>
             <h3>Parent Pages and Child Pages</h3>
             <ul>
-                <li>A page can be a parent to other pages.</li>
-                <li>Set Parent Page on the child page, not on the parent.</li>
-                <li>Child pages can use Feature start and Feature end for parent-page listing or feature areas.</li>
-                <li>The edit screen shows direct child pages attached to the current page.</li>
+                <li>A page becomes a parent when another page chooses it in <strong>Parent page</strong>.</li>
+                <li>Set Parent page on the child page, not on the parent page.</li>
+                <li>Files can also attach to a parent page from File Library. This is how a Resources or Forms page can collect both child pages and downloadable files.</li>
+                <li>The parent page edit screen shows <strong>Parent to the following pages and files</strong>, including quick view/edit links for direct children.</li>
+                <li>Parent selection does not automatically change the page path. Choose a matching path intentionally, such as <code>resources/forms</code> for a child page under <code>/resources</code>.</li>
+                <li>A page cannot be its own parent or create a parent loop.</li>
+                <li>Use <strong>Sort order</strong> on child pages and files when a Child Cards block sorts by sort order.</li>
+                <li>Use <strong>Feature start</strong> and <strong>Feature end</strong> on child pages when a Child Cards block should show only currently featured or active children.</li>
+                <li>Use a parent page for structured groups such as Announcements, Ministries, Resources, Forms, Events, or Serving opportunities.</li>
             </ul>
+            <h3>Using Child Cards With Pages</h3>
+            <ol>
+                <li>Create or choose the parent page, such as <strong>Announcements</strong> or <strong>Resources</strong>.</li>
+                <li>Create child pages and set their <strong>Parent page</strong> to that parent.</li>
+                <li>Attach files to the same parent from File Library when files should appear in the same listing.</li>
+                <li>Add a <strong>Child Cards</strong> content block to the parent page or another page.</li>
+                <li>Choose the <strong>Associated parent page</strong> and decide whether to show pages, files, or both.</li>
+                <li>Choose Listing mode, Layout, Items shown, Sort by, and optional file category filters.</li>
+            </ol>
+            <div class="manual-note">
+                <strong>Structure tip</strong>
+                <p>Parent-child page structure controls automatic listings. Navigation controls menus. They often match, but they are separate settings.</p>
+            </div>
             <h3>Redirect Pages</h3>
             <p>A page can also be used as a simple redirect. This is useful for old links, printed QR codes, short campaign URLs, or pages that have moved.</p>
             <ul>
@@ -1044,15 +1246,50 @@
 
         <section class="manual-section" id="navigation">
             <h2>Navigation</h2>
-            <p>Navigation controls the public header navigation and dropdown structure.</p>
+            <p>Navigation controls the public header menu, dropdown links, and the utility bar above the header. It is separate from page parent-child structure: pages can be grouped for listings without appearing in the menu, and menu links can point anywhere allowed.</p>
             <ul>
-                <li><strong>Link text:</strong> Text visitors see in the header.</li>
-                <li><strong>Destination:</strong> Internal path, file link, or full external URL.</li>
-                <li><strong>Parent link:</strong> Use to place a link under another top-level link as a dropdown item.</li>
-                <li><strong>Sort order:</strong> Controls order in the header or dropdown.</li>
+                <li><strong>Link text:</strong> Text visitors see in the header, utility bar, or dropdown.</li>
+                <li><strong>Location:</strong> Header links appear in the main navigation. Utility links appear in the thin bar above the header.</li>
+                <li><strong>Destination:</strong> Internal path, file link, media path, or full external URL. Type <code>/</code> to use suggested page, file, or media paths.</li>
+                <li><strong>Parent link:</strong> Header links can be nested under another top-level header link to create a dropdown item. Utility links cannot have parent links.</li>
+                <li><strong>Sort order:</strong> Controls order within the header, utility bar, or selected parent dropdown. Lower numbers appear earlier.</li>
+                <li><strong>Open in new tab:</strong> Use mostly for external websites and documents. Internal pages usually stay in the same tab.</li>
                 <li><strong>Link is live, Publish at, Expires at:</strong> Control whether and when the link appears publicly.</li>
                 <li><strong>Page limits:</strong> The list can warn when a navigation link points to a page that is draft, scheduled, expired, or missing.</li>
             </ul>
+
+            <h3>Header vs Utility</h3>
+            <table class="manual-table">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Best use</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Header</td>
+                        <td>Main visitor navigation: New Here, Ministries, Events, Resources, Give, Contact.</td>
+                        <td>Supports top-level links and dropdown child links through Parent link.</td>
+                    </tr>
+                    <tr>
+                        <td>Utility</td>
+                        <td>Small secondary links: Login, Give, Watch, Contact, app links, or urgent shortcuts.</td>
+                        <td>Appears above the main header. No dropdown parent links.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Site Structure vs Navigation</h3>
+            <ul>
+                <li><strong>Parent pages</strong> organize content for Child Cards and page/file groupings.</li>
+                <li><strong>Navigation links</strong> control what appears in the public menu.</li>
+                <li>A child page is not automatically added to navigation. Add a navigation link when it should be menu-accessible.</li>
+                <li>A navigation dropdown does not automatically make those pages children of the parent page. Set Parent page separately when automatic listings should use that structure.</li>
+                <li>For clean sites, make page structure and navigation match when visitors expect the same grouping, but do not force every page into the header.</li>
+            </ul>
+
             <h3>Navigation Checklist</h3>
             <ul class="manual-checklist">
                 <li>Keep top-level navigation short.</li>
@@ -1060,6 +1297,8 @@
                 <li>Test every new or changed navigation link on desktop and mobile.</li>
                 <li>Use Open in new tab mostly for external websites or downloadable files.</li>
                 <li>When linking to a Page record, make sure both the navigation link and the page itself are live for visitors.</li>
+                <li>Use Publish at and Expires at for temporary campaign or seasonal navigation links.</li>
+                <li>Review Utility links together with social links from Site Settings so the top bar does not become crowded.</li>
             </ul>
             <figure class="manual-screenshot">
                 <img src="{{ asset('images/manual/navigation-header-preview.jpg') }}" alt="Public header navigation with top-level links above the homepage banner.">
@@ -1071,16 +1310,40 @@
             <h2>Site Settings</h2>
             <p>Site Settings control sitewide information and default public page settings.</p>
             <ul>
-                <li>Site name.</li>
-                <li>Default page header image used on pages that show a header but do not have their own Header Image selected.</li>
-                <li>Email, phone, and reusable Site Variables for sitewide text such as address and service times.</li>
-                <li>Site Variables use a pretty name, a lowercase variable key, and an HTML-capable value. Type them in content as <code>[[variable-name]]</code>.</li>
-                <li>Site Design elements, including managed background colors for content blocks.</li>
-                <li>Dashboard notes shown to users and admins on the admin dashboard.</li>
-                <li>Social and additional footer links, including optional custom link icons.</li>
-                <li>Default listing page titles, subtitles, images, and SEO information.</li>
-                <li>OpenAI API key used by rewrite, page review, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
-                <li>Google Tag Manager and Google Analytics tracking IDs.</li>
+                <li><strong>Organizational information:</strong> Site name, phone, email, tagline, and contact details used across the public site and admin tools.</li>
+                <li><strong>Dashboard notes:</strong> Optional rich text shown in a movable Dashboard notes widget for admins and users.</li>
+                <li><strong>Default page header image:</strong> Used on pages that show a header but do not have their own Header image selected.</li>
+                <li><strong>Site Variables:</strong> Reusable sitewide content for text such as address, service times, or ministry contact information.</li>
+                <li><strong>Site Design elements:</strong> Managed background colors for content blocks, accent colors, logo, and advanced customization for users with Code Blocks access.</li>
+                <li><strong>Social and additional links:</strong> Managed social links and custom-icon links that can appear in the Utility Nav, Footer, or both.</li>
+                <li><strong>OpenAI settings:</strong> API key and model settings used by rewrite, page review, slide analysis, and file extraction tools when enabled. File extraction uses its own app environment model and reasoning settings so document reading can be tuned separately.</li>
+                <li><strong>Google tracking:</strong> Google Tag Manager and Google Analytics tracking IDs.</li>
+            </ul>
+
+            <h3>Social and Custom Links</h3>
+            <ul>
+                <li>Managed social fields include Facebook, Instagram, YouTube, TikTok, LinkedIn, Google Business Profile, Pinterest, X, and Threads.</li>
+                <li>Each social link has a <strong>Show</strong> setting: Show in Utility Nav, Show in Footer, or Show in Both.</li>
+                <li><strong>Additional links</strong> support a custom label, destination, placement, and uploaded icon image.</li>
+                <li>Additional link labels are used for hover text and screen-reader text, so keep them clear even if the icon is recognizable.</li>
+                <li>Use Utility Nav placement for links that belong near the top of the site. Use Footer placement for links visitors may need but that should not compete with the main navigation.</li>
+                <li>When adding a custom icon, use a simple high-contrast image that remains readable at small sizes.</li>
+            </ul>
+
+            <h3>Site Variables</h3>
+            <ul>
+                <li>Each variable has a friendly name, a lowercase variable key, and an HTML-capable value.</li>
+                <li>Use variables in content as <code>[[variable-name]]</code>. Example: <code>[[address]]</code> or <code>[[service-times]]</code>.</li>
+                <li>Use variables for details that appear in multiple places. Updating the variable updates every public field where the token is used.</li>
+                <li>Only trusted users should edit variables because HTML is allowed in the value.</li>
+            </ul>
+
+            <h3>Design and Structure Defaults</h3>
+            <ul>
+                <li>The Site logo appears in the public header and footer when set.</li>
+                <li>The Default page header image keeps pages visually consistent when individual pages do not have their own image.</li>
+                <li>Managed background colors feed the Content Blocks background dropdown. Keep the palette limited and intentional so pages feel consistent.</li>
+                <li>Sitewide custom CSS and JavaScript affect many pages at once and should be changed only by trusted users with Code Blocks access.</li>
             </ul>
             <figure class="manual-screenshot">
                 <img src="{{ asset('images/manual/site-settings-overview.jpg') }}" alt="Site Settings form with logo and site design fields.">
@@ -1173,7 +1436,7 @@
             <h3>Where To Find Them</h3>
             <ul>
                 <li>Open <strong>Notifications</strong> in the admin sidebar.</li>
-                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Navigation, Homepage, or Banners.</li>
+                <li>Create a rule for one content area, such as Pages, Media Library, File Library, Site Settings, Users, Navigation, Site Alerts, Slide Deck Import, Homepage, or Banners.</li>
                 <li>Each rule can be enabled or disabled without deleting it.</li>
             </ul>
             <figure class="manual-screenshot">
@@ -1246,6 +1509,7 @@
             <ul>
                 <li>Notify communications when public pages need review.</li>
                 <li>Notify ministry leaders when their page or file listing changes.</li>
+                <li>Notify staff when Site Alerts, Navigation, or Slide Deck Imports change.</li>
                 <li>Notify admins when users, site settings, navigation, or homepage content changes.</li>
                 <li>Use manual notifications for review requests and automatic notifications for accountability or routine handoffs.</li>
             </ul>
