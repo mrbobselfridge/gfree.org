@@ -65,18 +65,15 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray'),
 
-                Select::make('parent_id')
-                    ->label('Parent link')
-                    ->relationship('parent', 'label')
-                    ->searchable()
-                    ->preload()
-                    ->visible(fn (Get $get): bool => $get('location') !== NavigationLink::LOCATION_UTILITY)
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
+                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
                     )
                     ->hintColor('gray'),
-
                 ToggleButtons::make('opens_in_new_tab')
                     ->label('Open in new tab')
                     ->boolean()
@@ -88,6 +85,18 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray')
                     ->required(),
+
+                Select::make('parent_id')
+                    ->label('Parent link')
+                    ->relationship('parent', 'label')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn (Get $get): bool => $get('location') !== NavigationLink::LOCATION_UTILITY)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
+                    )
+                    ->hintColor('gray'),
 
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
@@ -104,15 +113,7 @@ class NavigationLinkForm
                         'Optional. Use for seasonal links that should disappear automatically.'
                     )
                     ->hintColor('gray'),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
-                    )
-                    ->hintColor('gray'),
+
 
             ]);
     }
