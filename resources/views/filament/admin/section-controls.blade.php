@@ -1,7 +1,7 @@
 <x-dynamic-component :component="$getFieldWrapperView()" :field="$field">
     <div
         class="flex h-full min-h-10 w-full items-center justify-end gap-2 text-lg font-bold"
-        style="padding-top:32px; align-items: center; display: flex; font-size: 1rem; font-weight: 800; height: 100%; justify-content: flex-end; line-height: 1.5rem; min-height: 2.5rem; text-align: right; width: 100%;"
+        style="align-items: center; display: flex; font-size: 1rem; font-weight: 800; height: 100%; justify-content: flex-end; line-height: 1.5rem; min-height: 2.5rem; text-align: right; width: 100%;"
         x-data="{ sectionIds: @js($sectionIds) }"
     >
         <button

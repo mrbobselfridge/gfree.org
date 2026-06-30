@@ -45,20 +45,16 @@ class PageForm
             ->columns(3)
             ->components([
 
-                // Placeholder::make('spacer')
-                //     ->hiddenLabel()
-                //     ->content(new HtmlString('&nbsp;'))
-                //     ->columnSpan(1),
-
-                // Placeholder::make('spacer')
-                //     ->hiddenLabel()
-                //     ->content(new HtmlString('&nbsp;'))
-                //     ->columnSpan(1),
-
-                // Placeholder::make('spacer')
-                //     ->hiddenLabel()
-                //     ->content(new HtmlString('&nbsp;'))
-                //     ->columnSpan(1),
+                ViewField::make('section_controls')
+                    ->hiddenLabel()
+                    ->view('filament.admin.section-controls')
+                    ->viewData([
+                        'sectionIds' => self::SECTION_IDS,
+                    ])
+                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
+                    ->dehydrated(false)
+                    ->key('pages-section-controls')
+                    ->columnSpanFull(),
 
                 self::section('Page Basics', 'pages-basics')
                     ->description('Set the page name, public path, intro copy, live status, display order, and redirect mode.')
@@ -181,18 +177,6 @@ class PageForm
                             ->hintColor('gray'),
                     ])
                     ->columns(3)
-                    ->columnSpanFull(),
-
-                     
-                ViewField::make('section_controls')
-                    ->hiddenLabel()
-                    ->view('filament.admin.section-controls')
-                    ->viewData([
-                        'sectionIds' => self::SECTION_IDS,
-                    ])
-                    ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect'))
-                    ->dehydrated(false)
-                    ->key('pages-section-controls')
                     ->columnSpanFull(),
 
                 self::section('Page Settings', 'pages-settings', collapsedOnEdit: true)
