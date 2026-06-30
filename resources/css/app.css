@@ -231,15 +231,15 @@
     position: relative;
     display: flex;
     align-items: end;
-    min-height: 430px;
-    padding: 150px max(24px, calc((100vw - 1180px) / 2)) 72px;
+    min-height: 360px;
+    padding: 84px max(24px, calc((100vw - 1180px) / 2)) 64px;
     color: var(--site-ink);
     background: white;
     overflow: hidden;
 }
 
 .page-hero--image {
-    min-height: 540px;
+    min-height: 430px;
     color: white;
     background: #050505;
 }
@@ -1917,9 +1917,9 @@
 
     .page-hero,
     .page-hero--image {
-        min-height: 430px;
-        padding-top: 132px;
-        padding-bottom: 56px;
+        min-height: 360px;
+        padding-top: 72px;
+        padding-bottom: 48px;
     }
 
     .page-hero h1 {
