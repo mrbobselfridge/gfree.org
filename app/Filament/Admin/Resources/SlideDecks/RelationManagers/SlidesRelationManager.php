@@ -128,9 +128,13 @@ class SlidesRelationManager extends RelationManager
                         ->disabled(fn (SlideDeckSlide $record): bool => $this->matchingAnnouncementPage($record) === null),
                     Heroicon::OutlinedDocumentText,
                     'Edit existing page',
-                )->extraAttributes([
-                    'style' => 'margin-left: .75rem; padding-left: .75rem; border-left: 1px solid #d1d5db;',
-                ], merge: true),
+                )->extraAttributes(
+                    fn (SlideDeckSlide $record): array => $this->pageActionAttributes(
+                        isDisabled: $this->matchingAnnouncementPage($record) === null,
+                        startsPageGroup: true,
+                    ),
+                    merge: true,
+                ),
                 IconOnlyAction::make(
                     Action::make('viewAnnouncementPage')
                         ->label('View existing page')
@@ -138,6 +142,11 @@ class SlidesRelationManager extends RelationManager
                         ->disabled(fn (SlideDeckSlide $record): bool => $this->matchingAnnouncementPage($record) === null),
                     Heroicon::OutlinedArrowTopRightOnSquare,
                     'View existing page',
+                )->extraAttributes(
+                    fn (SlideDeckSlide $record): array => $this->pageActionAttributes(
+                        isDisabled: $this->matchingAnnouncementPage($record) === null,
+                    ),
+                    merge: true,
                 ),
                 IconOnlyAction::make(
                     Action::make('createAnnouncementPage')
@@ -146,6 +155,11 @@ class SlidesRelationManager extends RelationManager
                         ->disabled(fn (SlideDeckSlide $record): bool => $this->matchingAnnouncementPage($record) !== null),
                     Heroicon::OutlinedPlus,
                     'Create missing page',
+                )->extraAttributes(
+                    fn (SlideDeckSlide $record): array => $this->pageActionAttributes(
+                        isDisabled: $this->matchingAnnouncementPage($record) !== null,
+                    ),
+                    merge: true,
                 ),
             ], position: RecordActionsPosition::BeforeColumns);
     }
@@ -199,6 +213,19 @@ class SlidesRelationManager extends RelationManager
     private function matchingAnnouncementPage(SlideDeckSlide $record): ?Page
     {
         return app(SlideAnnouncementPageLink::class)->matchingPage($record);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function pageActionAttributes(bool $isDisabled, bool $startsPageGroup = false): array
+    {
+        return [
+            'class' => collect([
+                $startsPageGroup ? 'twyxtco-slide-page-action-start' : null,
+                $isDisabled ? 'twyxtco-slide-page-action-disabled' : null,
+            ])->filter()->implode(' '),
+        ];
     }
 
     private function slideFormSchema(): array

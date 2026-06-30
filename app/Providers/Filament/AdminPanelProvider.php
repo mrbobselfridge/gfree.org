@@ -145,6 +145,43 @@ class AdminPanelProvider extends PanelProvider
                             height: 1.875rem;
                         }
 
+                        .twyxtco-admin-icon-action.twyxtco-slide-page-action-start.fi-icon-btn {
+                            position: relative;
+                            margin-inline-start: -0.125rem;
+                        }
+
+                        .twyxtco-admin-icon-action.twyxtco-slide-page-action-start.fi-icon-btn::before {
+                            content: '|';
+                            position: absolute;
+                            inset-inline-start: -0.375rem;
+                            top: 50%;
+                            color: var(--gray-400);
+                            font-size: 1rem;
+                            font-weight: 600;
+                            line-height: 1;
+                            transform: translateY(-50%);
+                            pointer-events: none;
+                        }
+
+                        .dark .twyxtco-admin-icon-action.twyxtco-slide-page-action-start.fi-icon-btn::before {
+                            color: var(--gray-600);
+                        }
+
+                        .twyxtco-admin-icon-action.twyxtco-slide-page-action-disabled.fi-icon-btn,
+                        .twyxtco-admin-icon-action.twyxtco-slide-page-action-disabled.fi-icon-btn > .fi-icon {
+                            color: var(--gray-400) !important;
+                        }
+
+                        .twyxtco-admin-icon-action.twyxtco-slide-page-action-disabled.fi-icon-btn {
+                            opacity: 0.45;
+                            filter: grayscale(1);
+                        }
+
+                        .dark .twyxtco-admin-icon-action.twyxtco-slide-page-action-disabled.fi-icon-btn,
+                        .dark .twyxtco-admin-icon-action.twyxtco-slide-page-action-disabled.fi-icon-btn > .fi-icon {
+                            color: var(--gray-600) !important;
+                        }
+
                         .twyxtco-ai-rewrite-modal .fi-modal-heading {
                             font-size: 1.75rem;
                             line-height: 1.2;
