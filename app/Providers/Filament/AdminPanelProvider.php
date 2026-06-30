@@ -1244,6 +1244,117 @@ class AdminPanelProvider extends PanelProvider
                 fn(): HtmlString => new HtmlString(<<<'HTML'
                     <script>
                         (() => {
+                            if (window.twyxtcoAdminScrollPreserverLoaded) {
+                                return;
+                            }
+
+                            window.twyxtcoAdminScrollPreserverLoaded = true;
+
+                            let savedPosition = null;
+                            let restoreTimers = [];
+
+                            const isInsideEditableAdminForm = (element) => {
+                                const form = element?.closest?.('.fi-page form');
+
+                                return Boolean(form);
+                            };
+
+                            const clearRestoreTimers = () => {
+                                restoreTimers.forEach((timer) => window.clearTimeout(timer));
+                                restoreTimers = [];
+                            };
+
+                            const restore = () => {
+                                if (! savedPosition) {
+                                    return;
+                                }
+
+                                window.scrollTo({
+                                    left: savedPosition.x,
+                                    top: savedPosition.y,
+                                    behavior: 'auto',
+                                });
+                            };
+
+                            const scheduleRestore = () => {
+                                clearRestoreTimers();
+
+                                [0, 25, 75, 150, 300, 600, 1000].forEach((delay) => {
+                                    restoreTimers.push(window.setTimeout(restore, delay));
+                                });
+                            };
+
+                            const capture = () => {
+                                savedPosition = {
+                                    x: window.scrollX || window.pageXOffset || 0,
+                                    y: window.scrollY || window.pageYOffset || 0,
+                                };
+
+                                scheduleRestore();
+                            };
+
+                            document.addEventListener('keydown', (event) => {
+                                if (! isInsideEditableAdminForm(document.activeElement)) {
+                                    return;
+                                }
+
+                                const isSaveShortcut = (event.ctrlKey || event.metaKey)
+                                    && (event.key?.toLowerCase() === 's' || event.key === 'Enter');
+
+                                if (! isSaveShortcut) {
+                                    return;
+                                }
+
+                                capture();
+                            }, true);
+
+                            document.addEventListener('submit', (event) => {
+                                if (! event.target?.matches?.('.fi-page form')) {
+                                    return;
+                                }
+
+                                capture();
+                            }, true);
+
+                            document.addEventListener('click', (event) => {
+                                const action = event.target?.closest?.('button, a');
+
+                                if (! action || ! isInsideEditableAdminForm(action)) {
+                                    return;
+                                }
+
+                                const label = (action.textContent || action.getAttribute('aria-label') || '').trim().toLowerCase();
+
+                                if (! /^(save|save & close|create|create & add another)$/.test(label)) {
+                                    return;
+                                }
+
+                                capture();
+                            }, true);
+
+                            ['livewire:update', 'livewire:updated', 'livewire:navigated'].forEach((eventName) => {
+                                document.addEventListener(eventName, scheduleRestore);
+                            });
+
+                            document.addEventListener('livewire:initialized', () => {
+                                if (! window.Livewire?.hook) {
+                                    return;
+                                }
+
+                                window.Livewire.hook('morph.updated', scheduleRestore);
+                                window.Livewire.hook('commit', ({ succeed }) => {
+                                    succeed(scheduleRestore);
+                                });
+                            });
+                        })();
+                    </script>
+                HTML),
+            )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn(): HtmlString => new HtmlString(<<<'HTML'
+                    <script>
+                        (() => {
                             const storageKey = 'twyxtco.admin.dashboard.widgets.v1';
 
                             const dashboardContainer = () => document.querySelector('.twyxtco-cms-dashboard-widgets > .fi-sc');
