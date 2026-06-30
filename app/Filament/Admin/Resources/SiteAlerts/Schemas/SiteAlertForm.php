@@ -20,14 +20,17 @@ class SiteAlertForm
         return $schema
             ->columns(3)
             ->components([
-                TextInput::make('label')
-                    ->label('Alert label')
-                    ->maxLength(255)
+                Select::make('tone')
+                    ->label('Alert notification level')
+                    ->options(SiteAlert::toneOptions())
+                    ->default(SiteAlert::TONE_CRITICAL)
+                    ->required()
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional short label shown before the alert message, such as News Alert.'
+                        'Choose the visual importance level for this alert.'
                     )
-                    ->hintColor('gray'),
+                    ->hintColor('gray')
+                    ->columnSpan(2),
                 ToggleButtons::make('is_published')
                     ->label('Alert is live')
                     ->boolean()
@@ -39,14 +42,12 @@ class SiteAlertForm
                     )
                     ->hintColor('gray')
                     ->required(),
-                Select::make('tone')
-                    ->label('Alert notification level')
-                    ->options(SiteAlert::toneOptions())
-                    ->default(SiteAlert::TONE_CRITICAL)
-                    ->required()
+                TextInput::make('label')
+                    ->label('Alert label')
+                    ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Choose the visual importance level for this alert.'
+                        'Optional short label shown before the alert message, such as News Alert.'
                     )
                     ->hintColor('gray')
                     ->columnSpan(2),
@@ -64,13 +65,14 @@ class SiteAlertForm
                 HtmlCodeTextarea::html(Textarea::make('message'))
                     ->label('Alert message')
                     ->required()
-                    ->rows(3)
+                    ->rows(1)
                     ->columnSpan(3)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Main alert text. Keep this brief so stacked alerts remain compact on mobile.'
                     )
                     ->hintColor('gray'),
+
                 TextInput::make('link_label')
                     ->label('Link text')
                     ->maxLength(255)
@@ -89,6 +91,7 @@ class SiteAlertForm
                     )
                     ->hintColor('gray')
                     ->columnSpan(2),
+                    
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
                     ->hintIcon(
