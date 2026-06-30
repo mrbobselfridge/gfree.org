@@ -24,12 +24,12 @@ class PublicPageViewData
                 ?: ContentBlocks::imageUrl($settings?->default_page_header_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'utilityLinks' => $utilityLinks,
-            'utilitySocialLinks' => $settings?->socialLinks() ?? collect(),
+            'utilitySocialLinks' => $settings?->utilitySocialLinks() ?? collect(),
             'siteAlerts' => SiteAlert::query()
                 ->active()
                 ->publicOrder()
                 ->get(),
-            'socialLinks' => $settings?->socialLinks() ?? collect(),
+            'socialLinks' => $settings?->footerSocialLinks() ?? collect(),
             'childPageNavigation' => $this->childPageNavigation($page),
         ];
     }

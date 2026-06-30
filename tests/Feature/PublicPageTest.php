@@ -259,6 +259,56 @@ class PublicPageTest extends TestCase
             ->assertDontSee('This tagline should not be in the footer.');
     }
 
+    public function test_public_footer_renders_social_links_allowed_for_footer(): void
+    {
+        SiteSetting::query()->create([
+            'church_name' => 'TwyxtCo Church',
+            'facebook_url' => 'https://facebook.example/twyxtco',
+            'instagram_url' => 'https://instagram.example/twyxtco',
+            'youtube_url' => 'https://youtube.example/twyxtco',
+            'social_link_placements' => [
+                'facebook_url' => SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
+                'instagram_url' => SiteSetting::SOCIAL_LINK_PLACEMENT_FOOTER,
+                'youtube_url' => SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH,
+            ],
+            'additional_social_links' => [
+                [
+                    'label' => 'Podcast',
+                    'url' => 'https://podcast.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
+                    'image_path' => 'site-settings/additional-links/podcast.png',
+                ],
+                [
+                    'label' => 'Blog',
+                    'url' => 'https://blog.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_FOOTER,
+                    'image_path' => 'site-settings/additional-links/blog.png',
+                ],
+                [
+                    'label' => 'Store',
+                    'url' => 'https://store.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH,
+                    'image_path' => 'site-settings/additional-links/store.png',
+                ],
+            ],
+        ]);
+
+        Page::query()->create([
+            'title' => 'About',
+            'slug' => 'about',
+            'is_published' => true,
+        ]);
+
+        $this->get('/about')
+            ->assertOk()
+            ->assertDontSee('site-footer__social-link--facebook', false)
+            ->assertSee('site-footer__social-link--instagram', false)
+            ->assertSee('site-footer__social-link--youtube', false)
+            ->assertDontSee('class="site-footer__social-link site-footer__social-link--custom" href="https://podcast.example/twyxtco"', false)
+            ->assertSee('class="site-footer__social-link site-footer__social-link--custom" href="https://blog.example/twyxtco"', false)
+            ->assertSee('class="site-footer__social-link site-footer__social-link--custom" href="https://store.example/twyxtco"', false);
+    }
+
     public function test_page_can_hide_site_chrome_and_page_header_for_content_only_pages(): void
     {
         Page::query()->create([

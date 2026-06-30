@@ -102,42 +102,15 @@ class SiteSettingForm
                     ->columnSpanFull(),
                 self::section('Social and Additional Links', 'site-settings-social-and-additional-links')
                     ->schema([
-                        TextInput::make('facebook_url')
-                            ->label('Facebook URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('instagram_url')
-                            ->label('Instagram URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('youtube_url')
-                            ->label('YouTube URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('tiktok_url')
-                            ->label('TikTok URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('linkedin_url')
-                            ->label('LinkedIn URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('google_business_profile_url')
-                            ->label('Google Business Profile URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('pinterest_url')
-                            ->label('Pinterest URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('x_url')
-                            ->label('X URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
-                        TextInput::make('threads_url')
-                            ->label('Threads URL')
-                            ->rules([new HttpOrRelativeUrl])
-                            ->maxLength(255),
+                        ...self::managedSocialLinkFields('facebook_url', 'Facebook URL'),
+                        ...self::managedSocialLinkFields('instagram_url', 'Instagram URL'),
+                        ...self::managedSocialLinkFields('youtube_url', 'YouTube URL'),
+                        ...self::managedSocialLinkFields('tiktok_url', 'TikTok URL'),
+                        ...self::managedSocialLinkFields('linkedin_url', 'LinkedIn URL'),
+                        ...self::managedSocialLinkFields('google_business_profile_url', 'Google Business Profile URL'),
+                        ...self::managedSocialLinkFields('pinterest_url', 'Pinterest URL'),
+                        ...self::managedSocialLinkFields('x_url', 'X URL'),
+                        ...self::managedSocialLinkFields('threads_url', 'Threads URL'),
                         Repeater::make('additional_social_links')
                             ->label('Additional links')
                             ->schema([
@@ -150,17 +123,23 @@ class SiteSettingForm
                                     ->required()
                                     ->rules([new HttpOrRelativeUrl])
                                     ->maxLength(255),
+                                Select::make('placement')
+                                    ->label('Show')
+                                    ->options(SiteSetting::socialLinkPlacementOptions())
+                                    ->default(SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH)
+                                    ->native(false)
+                                    ->selectablePlaceholder(false),
                                 ...ImageUpload::make(
                                     'image_path',
                                     'site-settings/additional-links',
                                     'Image',
                                     fn (ViewField $upload): ViewField => $upload
                                         ->required()
-                                        ->helperText('Icon shown in the public footer for this link.')
+                                        ->helperText('Icon shown anywhere this link is displayed.')
                                         ->columnSpanFull(),
                                 ),
                             ])
-                            ->columns(2)
+                            ->columns(3)
                             ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
                             ->addActionLabel('Add additional link')
                             ->reorderable()
@@ -459,6 +438,23 @@ class SiteSettingForm
             ->persistCollapsed();
     }
 
+    private static function managedSocialLinkFields(string $field, string $label): array
+    {
+        return [
+            TextInput::make($field)
+                ->label($label)
+                ->rules([new HttpOrRelativeUrl])
+                ->maxLength(255)
+                ->columnSpan(2),
+            Select::make("social_link_placements.{$field}")
+                ->label('Show')
+                ->options(SiteSetting::socialLinkPlacementOptions())
+                ->default(SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH)
+                ->native(false)
+                ->selectablePlaceholder(false),
+        ];
+    }
+
     private static function normalizeAdditionalSocialLinks(mixed $links): array
     {
         return collect(is_array($links) ? $links : [])
@@ -475,6 +471,7 @@ class SiteSettingForm
                 return [
                     'label' => $label,
                     'url' => $url,
+                    'placement' => SiteSetting::normalizeSocialLinkPlacement($link['placement'] ?? null),
                     'image_path' => $imagePath,
                 ];
             })

@@ -45,7 +45,7 @@ class HomeController extends Controller
             'theme' => $defaults['theme'],
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'utilityLinks' => $utilityLinks,
-            'utilitySocialLinks' => $settings?->socialLinks() ?? collect(),
+            'utilitySocialLinks' => $settings?->utilitySocialLinks() ?? collect(),
             'siteAlerts' => $siteAlerts,
             'pageTitle' => $this->pageTitle($settings, $homepageContent),
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),
@@ -55,7 +55,7 @@ class HomeController extends Controller
             'heroBannersRotationDelayMilliseconds' => ($homepageContent?->heroBannersRotationDelaySeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_ROTATION_DELAY_SECONDS) * 1000,
             'heroBannersFadeDurationMilliseconds' => ($homepageContent?->heroBannersFadeDurationSeconds() ?? HomepageContent::DEFAULT_HERO_BANNERS_FADE_DURATION_SECONDS) * 1000,
             'contentBlocks' => $this->contentBlocks($homepageContent, $defaults, $settings, $now),
-            'socialLinks' => $settings?->socialLinks() ?? collect(),
+            'socialLinks' => $settings?->footerSocialLinks() ?? collect(),
         ]);
     }
 

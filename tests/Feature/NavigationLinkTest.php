@@ -147,18 +147,36 @@ class NavigationLinkTest extends TestCase
             ->assertSee('Kids');
     }
 
-    public function test_utility_bar_renders_managed_social_links_but_not_custom_social_links(): void
+    public function test_utility_bar_renders_social_links_allowed_for_utility_nav(): void
     {
         SiteSetting::query()->create([
             'church_name' => 'TwyxtCo Church',
             'facebook_url' => 'https://facebook.example/twyxtco',
             'instagram_url' => 'https://instagram.example/twyxtco',
             'youtube_url' => 'https://youtube.example/twyxtco',
+            'social_link_placements' => [
+                'facebook_url' => SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
+                'instagram_url' => SiteSetting::SOCIAL_LINK_PLACEMENT_FOOTER,
+                'youtube_url' => SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH,
+            ],
             'additional_social_links' => [
                 [
                     'label' => 'Podcast',
                     'url' => 'https://podcast.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
                     'image_path' => 'site-settings/additional-links/podcast.png',
+                ],
+                [
+                    'label' => 'Blog',
+                    'url' => 'https://blog.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_FOOTER,
+                    'image_path' => 'site-settings/additional-links/blog.png',
+                ],
+                [
+                    'label' => 'Store',
+                    'url' => 'https://store.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH,
+                    'image_path' => 'site-settings/additional-links/store.png',
                 ],
             ],
         ]);
@@ -166,14 +184,16 @@ class NavigationLinkTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('site-utility-bar__social', false)
-            ->assertSeeInOrder(['aria-label="Facebook"', 'aria-label="Instagram"', 'aria-label="YouTube"'], false)
+            ->assertSeeInOrder(['aria-label="Facebook"', 'aria-label="YouTube"', 'aria-label="Podcast"', 'aria-label="Store"'], false)
             ->assertSee('site-utility-social-link--facebook', false)
-            ->assertSee('site-utility-social-link--instagram', false)
+            ->assertDontSee('site-utility-social-link--instagram', false)
             ->assertSee('site-utility-social-link--youtube', false)
             ->assertSee('viewBox="0 0 24 24"', false)
             ->assertSee('site-utility-social-link--custom', false)
             ->assertSee('aria-label="Podcast"', false)
-            ->assertSee('/storage/site-settings/additional-links/podcast.png', false);
+            ->assertSee('/storage/site-settings/additional-links/podcast.png', false)
+            ->assertDontSee('class="site-utility-social-link site-utility-social-link--custom" href="https://blog.example/twyxtco"', false)
+            ->assertSee('class="site-utility-social-link site-utility-social-link--custom" href="https://store.example/twyxtco"', false);
     }
 
     public function test_header_navigation_hides_links_to_inactive_matching_pages(): void

@@ -470,15 +470,19 @@ class SiteSettingsAdminTest extends TestCase
             ->set('data.pinterest_url', 'https://pinterest.example/twyxtco')
             ->set('data.x_url', 'https://x.example/twyxtco')
             ->set('data.threads_url', 'https://threads.example/@twyxtco')
+            ->set('data.social_link_placements.facebook_url', SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY)
+            ->set('data.social_link_placements.instagram_url', SiteSetting::SOCIAL_LINK_PLACEMENT_FOOTER)
             ->set('data.additional_social_links', [
                 [
                     'label' => 'Podcast',
                     'url' => '/podcast',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
                     'image_path' => 'site-settings/additional-links/podcast.png',
                 ],
                 [
                     'label' => 'Newsletter',
                     'url' => 'https://newsletter.example/twyxtco',
+                    'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH,
                     'image_path' => ['site-settings/additional-links/newsletter.png'],
                 ],
             ])
@@ -498,18 +502,31 @@ class SiteSettingsAdminTest extends TestCase
             'threads_url' => 'https://threads.example/@twyxtco',
         ]);
 
+        $settings->refresh();
+
+        $this->assertSame(
+            SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
+            $settings->social_link_placements['facebook_url'] ?? null,
+        );
+        $this->assertSame(
+            SiteSetting::SOCIAL_LINK_PLACEMENT_FOOTER,
+            $settings->social_link_placements['instagram_url'] ?? null,
+        );
+
         $this->assertSame([
             [
                 'label' => 'Podcast',
                 'url' => '/podcast',
+                'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_UTILITY,
                 'image_path' => 'site-settings/additional-links/podcast.png',
             ],
             [
                 'label' => 'Newsletter',
                 'url' => 'https://newsletter.example/twyxtco',
+                'placement' => SiteSetting::SOCIAL_LINK_PLACEMENT_BOTH,
                 'image_path' => 'site-settings/additional-links/newsletter.png',
             ],
-        ], $settings->refresh()->additional_social_links);
+        ], $settings->additional_social_links);
     }
 
     public function test_site_design_background_colors_can_be_saved(): void

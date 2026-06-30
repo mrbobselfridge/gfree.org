@@ -43,17 +43,54 @@ use Illuminate\Support\Facades\Storage;
     'pinterest_url',
     'x_url',
     'threads_url',
+    'social_link_placements',
     'additional_social_links',
     'google_tag_manager_id',
     'google_analytics_measurement_id',
 ])]
 class SiteSetting extends Model
 {
+    public const SOCIAL_LINK_PLACEMENT_UTILITY = 'utility';
+
+    public const SOCIAL_LINK_PLACEMENT_FOOTER = 'footer';
+
+    public const SOCIAL_LINK_PLACEMENT_BOTH = 'both';
+
     public const DEFAULT_DESIGN_ACCENT_COLOR = '#17b8ad';
 
     public const DEFAULT_DESIGN_ACCENT_TEXT_COLOR = '#05756f';
 
     public const DEFAULT_DESIGN_ACCENT_SOFT_COLOR = '#ddf8f5';
+
+    private const MANAGED_SOCIAL_LINKS = [
+        ['field' => 'facebook_url', 'label' => 'Facebook', 'icon' => 'facebook'],
+        ['field' => 'instagram_url', 'label' => 'Instagram', 'icon' => 'instagram'],
+        ['field' => 'youtube_url', 'label' => 'YouTube', 'icon' => 'youtube'],
+        ['field' => 'tiktok_url', 'label' => 'TikTok', 'icon' => 'tiktok'],
+        ['field' => 'linkedin_url', 'label' => 'LinkedIn', 'icon' => 'linkedin'],
+        ['field' => 'google_business_profile_url', 'label' => 'Google Business Profile', 'icon' => 'google-business-profile'],
+        ['field' => 'pinterest_url', 'label' => 'Pinterest', 'icon' => 'pinterest'],
+        ['field' => 'x_url', 'label' => 'X', 'icon' => 'x'],
+        ['field' => 'threads_url', 'label' => 'Threads', 'icon' => 'threads'],
+    ];
+
+    public static function socialLinkPlacementOptions(): array
+    {
+        return [
+            self::SOCIAL_LINK_PLACEMENT_UTILITY => 'Show in Utility Nav',
+            self::SOCIAL_LINK_PLACEMENT_FOOTER => 'Show in Footer',
+            self::SOCIAL_LINK_PLACEMENT_BOTH => 'Show in Both',
+        ];
+    }
+
+    public static function normalizeSocialLinkPlacement(mixed $placement): string
+    {
+        $placement = trim((string) $placement);
+
+        return in_array($placement, array_keys(self::socialLinkPlacementOptions()), true)
+            ? $placement
+            : self::SOCIAL_LINK_PLACEMENT_BOTH;
+    }
 
     public function backgroundColors(): array
     {
@@ -63,41 +100,53 @@ class SiteSetting extends Model
 
     public function socialLinks()
     {
-        return $this->managedSocialLinks()
-            ->merge($this->additionalSocialLinks())
+        return $this->socialLinksFor();
+    }
+
+    public function utilitySocialLinks()
+    {
+        return $this->socialLinksFor(self::SOCIAL_LINK_PLACEMENT_UTILITY);
+    }
+
+    public function footerSocialLinks()
+    {
+        return $this->socialLinksFor(self::SOCIAL_LINK_PLACEMENT_FOOTER);
+    }
+
+    public function managedSocialLinks(?string $target = null)
+    {
+        return collect(self::MANAGED_SOCIAL_LINKS)
+            ->map(function (array $link) use ($target): ?array {
+                $placement = $this->managedSocialLinkPlacement($link['field']);
+
+                if (blank($this->{$link['field']}) || ! $this->socialLinkPlacementAllows($placement, $target)) {
+                    return null;
+                }
+
+                return [
+                    'label' => $link['label'],
+                    'url' => $this->{$link['field']},
+                    'icon' => $link['icon'],
+                    'placement' => $placement,
+                    'field' => $link['field'],
+                    'image_url' => null,
+                ];
+            })
+            ->filter()
             ->values();
     }
 
-    public function managedSocialLinks()
-    {
-        return collect([
-            ['label' => 'Facebook', 'url' => $this->facebook_url, 'icon' => 'facebook'],
-            ['label' => 'Instagram', 'url' => $this->instagram_url, 'icon' => 'instagram'],
-            ['label' => 'YouTube', 'url' => $this->youtube_url, 'icon' => 'youtube'],
-            ['label' => 'TikTok', 'url' => $this->tiktok_url, 'icon' => 'tiktok'],
-            ['label' => 'LinkedIn', 'url' => $this->linkedin_url, 'icon' => 'linkedin'],
-            ['label' => 'Google Business Profile', 'url' => $this->google_business_profile_url, 'icon' => 'google-business-profile'],
-            ['label' => 'Pinterest', 'url' => $this->pinterest_url, 'icon' => 'pinterest'],
-            ['label' => 'X', 'url' => $this->x_url, 'icon' => 'x'],
-            ['label' => 'Threads', 'url' => $this->threads_url, 'icon' => 'threads'],
-        ])
-            ->filter(fn (array $link): bool => filled($link['url']))
-            ->map(fn (array $link): array => [
-                ...$link,
-                'image_url' => null,
-            ]);
-    }
-
-    public function additionalSocialLinks()
+    public function additionalSocialLinks(?string $target = null)
     {
         return collect(is_array($this->additional_social_links) ? $this->additional_social_links : [])
             ->filter(fn (mixed $link): bool => is_array($link))
-            ->map(function (array $link): ?array {
+            ->map(function (array $link) use ($target): ?array {
                 $label = trim((string) ($link['label'] ?? ''));
                 $url = trim((string) ($link['url'] ?? ''));
                 $imagePath = $this->selectedImagePath($link['image_path'] ?? null);
+                $placement = self::normalizeSocialLinkPlacement($link['placement'] ?? null);
 
-                if ($label === '' || $url === '' || $imagePath === null) {
+                if ($label === '' || $url === '' || $imagePath === null || ! $this->socialLinkPlacementAllows($placement, $target)) {
                     return null;
                 }
 
@@ -105,11 +154,35 @@ class SiteSetting extends Model
                     'label' => $label,
                     'url' => $url,
                     'icon' => 'custom',
+                    'placement' => $placement,
                     'image_url' => $this->imageUrl($imagePath),
                 ];
             })
             ->filter()
             ->values();
+    }
+
+    private function socialLinksFor(?string $target = null)
+    {
+        return $this->managedSocialLinks($target)
+            ->merge($this->additionalSocialLinks($target))
+            ->values();
+    }
+
+    private function managedSocialLinkPlacement(string $field): string
+    {
+        $placements = is_array($this->social_link_placements) ? $this->social_link_placements : [];
+
+        return self::normalizeSocialLinkPlacement($placements[$field] ?? null);
+    }
+
+    private function socialLinkPlacementAllows(string $placement, ?string $target): bool
+    {
+        if ($target === null) {
+            return true;
+        }
+
+        return $placement === self::SOCIAL_LINK_PLACEMENT_BOTH || $placement === $target;
     }
 
     public function siteVariableValue(string $variable): ?string
@@ -228,6 +301,7 @@ class SiteSetting extends Model
     {
         return [
             'design_background_colors' => 'array',
+            'social_link_placements' => 'array',
             'additional_social_links' => 'array',
             'site_variables' => 'array',
         ];
