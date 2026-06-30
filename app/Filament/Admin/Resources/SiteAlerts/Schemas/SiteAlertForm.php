@@ -28,15 +28,6 @@ class SiteAlertForm
                         'Optional short label shown before the alert message, such as News Alert.'
                     )
                     ->hintColor('gray'),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear first when multiple alerts are live.'
-                    )
-                    ->hintColor('gray'),
                 ToggleButtons::make('is_published')
                     ->label('Alert is live')
                     ->boolean()
@@ -49,7 +40,7 @@ class SiteAlertForm
                     ->hintColor('gray')
                     ->required(),
                 Select::make('tone')
-                    ->label('Alert color')
+                    ->label('Alert notification level')
                     ->options(SiteAlert::toneOptions())
                     ->default(SiteAlert::TONE_CRITICAL)
                     ->required()
@@ -58,7 +49,18 @@ class SiteAlertForm
                         'Choose the visual importance level for this alert.'
                     )
                     ->hintColor('gray')
-                    ->columnSpan(3),
+                    ->columnSpan(2),
+                ToggleButtons::make('is_dismissible')
+                    ->label('Visitors can dismiss')
+                    ->boolean()
+                    ->inline()
+                    ->default(true)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'When enabled, visitors can hide this alert in their browser until it is edited.'
+                    )
+                    ->hintColor('gray')
+                    ->required(),
                 HtmlCodeTextarea::html(Textarea::make('message'))
                     ->label('Alert message')
                     ->required()
@@ -102,17 +104,16 @@ class SiteAlertForm
                         'Optional. Use when an alert should stop appearing automatically.'
                     )
                     ->hintColor('gray'),
-                ToggleButtons::make('is_dismissible')
-                    ->label('Visitors can dismiss')
-                    ->boolean()
-                    ->inline()
-                    ->default(true)
+
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'When enabled, visitors can hide this alert in their browser until it is edited.'
+                        'Lower numbers appear first when multiple alerts are live.'
                     )
-                    ->hintColor('gray')
-                    ->required(),
+                    ->hintColor('gray'),
             ]);
     }
 }
