@@ -86,18 +86,6 @@ class NavigationLinkForm
                     ->hintColor('gray')
                     ->required(),
 
-                Select::make('parent_id')
-                    ->label('Parent link')
-                    ->relationship('parent', 'label')
-                    ->searchable()
-                    ->preload()
-                    ->visible(fn (Get $get): bool => $get('location') !== NavigationLink::LOCATION_UTILITY)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
-                    )
-                    ->hintColor('gray'),
-
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')
                     ->hintIcon(
@@ -113,6 +101,18 @@ class NavigationLinkForm
                         'Optional. Use for seasonal links that should disappear automatically.'
                     )
                     ->hintColor('gray'),
+                Select::make('parent_id')
+                    ->label('Parent link')
+                    ->relationship('parent', 'label')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn (Get $get): bool => $get('location') !== NavigationLink::LOCATION_UTILITY)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
+                    )
+                    ->hintColor('gray'),
+
 
 
             ]);
