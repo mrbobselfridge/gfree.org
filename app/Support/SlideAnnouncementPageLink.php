@@ -106,13 +106,13 @@ class SlideAnnouncementPageLink
 
     public function statusLabel(SlideDeckSlide $slide): string
     {
-        return $this->matchingPage($slide) ? 'Exists?' : 'Missing';
+        return $this->matchingPage($slide) ? 'Exists?' : 'Missing!';
     }
 
     public function statusHtml(SlideDeckSlide $slide): HtmlString
     {
         $page = $this->matchingPage($slide);
-        $status = $page ? 'Exists?' : 'Missing';
+        $status = $page ? 'Exists?' : 'Missing!';
         $color = $page ? 'text-warning-700 dark:text-warning-300' : 'text-danger-700 dark:text-danger-300';
 
         return new HtmlString('<span class="font-medium '.$color.'">'.e($status).'</span>');

@@ -22,6 +22,7 @@ use App\Support\SlideAnalysisService;
 use App\Support\SlideAnalyzerInterface;
 use App\Support\SlideAnnouncementPageLink;
 use App\Support\SlideDeckImportService;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
@@ -508,11 +509,37 @@ class SlideDeckImportTest extends TestCase
                 'pageClass' => EditSlideDeck::class,
             ])
             ->assertSee('Exists?')
-            ->assertSee('Missing')
+            ->assertSee('Missing!')
+            ->assertTableActionsExistInOrder([
+                'edit',
+                'rerunSlideAnalysis',
+                'delete',
+                'editAnnouncementPage',
+                'viewAnnouncementPage',
+                'createAnnouncementPage',
+            ])
+            ->assertTableActionHasLabel('rerunSlideAnalysis', 'Re-run slide analysis')
+            ->assertTableActionHasLabel('editAnnouncementPage', 'Edit existing page')
+            ->assertTableActionHasLabel('viewAnnouncementPage', 'View existing page')
+            ->assertTableActionHasLabel('createAnnouncementPage', 'Create missing page')
+            ->assertTableActionHasIcon('editAnnouncementPage', Heroicon::OutlinedDocumentText)
+            ->assertTableActionHasIcon('viewAnnouncementPage', Heroicon::OutlinedArrowTopRightOnSquare)
             ->assertTableActionVisible('editAnnouncementPage', $matchedSlide)
-            ->assertTableActionHidden('editAnnouncementPage', $missingSlide)
+            ->assertTableActionVisible('editAnnouncementPage', $missingSlide)
+            ->assertTableActionEnabled('editAnnouncementPage', $matchedSlide)
+            ->assertTableActionDisabled('editAnnouncementPage', $missingSlide)
             ->assertTableActionHasUrl('editAnnouncementPage', app(SlideAnnouncementPageLink::class)->editPageUrl($matchedPage), $matchedSlide)
             ->assertTableActionShouldOpenUrlInNewTab('editAnnouncementPage', $matchedSlide)
+            ->assertTableActionVisible('viewAnnouncementPage', $matchedSlide)
+            ->assertTableActionVisible('viewAnnouncementPage', $missingSlide)
+            ->assertTableActionEnabled('viewAnnouncementPage', $matchedSlide)
+            ->assertTableActionDisabled('viewAnnouncementPage', $missingSlide)
+            ->assertTableActionHasUrl('viewAnnouncementPage', $matchedPage->publicUrl(), $matchedSlide)
+            ->assertTableActionShouldOpenUrlInNewTab('viewAnnouncementPage', $matchedSlide)
+            ->assertTableActionVisible('createAnnouncementPage', $matchedSlide)
+            ->assertTableActionVisible('createAnnouncementPage', $missingSlide)
+            ->assertTableActionDisabled('createAnnouncementPage', $matchedSlide)
+            ->assertTableActionEnabled('createAnnouncementPage', $missingSlide)
             ->assertTableActionHasUrl('createAnnouncementPage', app(SlideAnnouncementPageLink::class)->createPageUrl($matchedSlide), $matchedSlide)
             ->assertTableActionHasUrl('createAnnouncementPage', app(SlideAnnouncementPageLink::class)->createPageUrl($missingSlide), $missingSlide)
             ->assertTableActionShouldOpenUrlInNewTab('createAnnouncementPage', $missingSlide);

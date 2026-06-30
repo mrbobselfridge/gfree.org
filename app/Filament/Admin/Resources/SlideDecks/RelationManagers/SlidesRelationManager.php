@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\SlideDecks\RelationManagers;
 
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Jobs\AnalyzeSlideDeckSlideJob;
+use App\Models\Page;
 use App\Models\SlideDeck;
 use App\Models\SlideDeckSlide;
 use App\Support\SlideAnnouncementPageLink;
@@ -92,31 +93,15 @@ class SlidesRelationManager extends RelationManager
             ->defaultSort('slide_number')
             ->recordActions([
                 IconOnlyAction::make(
-                    Action::make('editAnnouncementPage')
-                        ->label('Edit announcement page')
-                        ->url(fn (SlideDeckSlide $record): ?string => ($page = app(SlideAnnouncementPageLink::class)->matchingPage($record))
-                            ? app(SlideAnnouncementPageLink::class)->editPageUrl($page)
-                            : null, true)
-                        ->visible(fn (SlideDeckSlide $record): bool => app(SlideAnnouncementPageLink::class)->matchingPage($record) !== null),
-                    Heroicon::OutlinedArrowTopRightOnSquare,
-                    'Edit matching page',
-                ),
-                IconOnlyAction::make(
-                    Action::make('createAnnouncementPage')
-                        ->label('Create new announcement page')
-                        ->url(fn (SlideDeckSlide $record): string => app(SlideAnnouncementPageLink::class)->createPageUrl($record), true),
-                    Heroicon::OutlinedPlus,
-                    'Add new page',
-                ),
-                IconOnlyAction::make(
                     EditAction::make()
                         ->label('Edit slide')
+                        ->modalContent(fn (SlideDeckSlide $record): ?HtmlString => $this->slideModalImage($record))
                         ->schema($this->slideFormSchema()),
                     Heroicon::OutlinedPencilSquare,
                 ),
                 IconOnlyAction::make(
                     Action::make('rerunSlideAnalysis')
-                        ->label('Re-run analysis')
+                        ->label('Re-run slide analysis')
                         ->action(function (SlideDeckSlide $record): void {
                             AnalyzeSlideDeckSlideJob::dispatch($record)->afterResponse();
 
@@ -133,6 +118,34 @@ class SlidesRelationManager extends RelationManager
                         ->modalHeading('Delete this slide?')
                         ->modalDescription('This removes the slide, generated slide image, thumbnail, and copied media library image.'),
                     Heroicon::OutlinedTrash,
+                ),
+                IconOnlyAction::make(
+                    Action::make('editAnnouncementPage')
+                        ->label('Edit existing page')
+                        ->url(fn (SlideDeckSlide $record): ?string => ($page = $this->matchingAnnouncementPage($record))
+                            ? app(SlideAnnouncementPageLink::class)->editPageUrl($page)
+                            : null, true)
+                        ->disabled(fn (SlideDeckSlide $record): bool => $this->matchingAnnouncementPage($record) === null),
+                    Heroicon::OutlinedDocumentText,
+                    'Edit existing page',
+                )->extraAttributes([
+                    'style' => 'margin-left: .75rem; padding-left: .75rem; border-left: 1px solid #d1d5db;',
+                ], merge: true),
+                IconOnlyAction::make(
+                    Action::make('viewAnnouncementPage')
+                        ->label('View existing page')
+                        ->url(fn (SlideDeckSlide $record): ?string => $this->matchingAnnouncementPage($record)?->publicUrl(), true)
+                        ->disabled(fn (SlideDeckSlide $record): bool => $this->matchingAnnouncementPage($record) === null),
+                    Heroicon::OutlinedArrowTopRightOnSquare,
+                    'View existing page',
+                ),
+                IconOnlyAction::make(
+                    Action::make('createAnnouncementPage')
+                        ->label('Create missing page')
+                        ->url(fn (SlideDeckSlide $record): string => app(SlideAnnouncementPageLink::class)->createPageUrl($record), true)
+                        ->disabled(fn (SlideDeckSlide $record): bool => $this->matchingAnnouncementPage($record) !== null),
+                    Heroicon::OutlinedPlus,
+                    'Create missing page',
                 ),
             ], position: RecordActionsPosition::BeforeColumns);
     }
@@ -168,6 +181,24 @@ class SlidesRelationManager extends RelationManager
             'Pending' => 'gray',
             default => 'danger',
         };
+    }
+
+    private function slideModalImage(SlideDeckSlide $record): ?HtmlString
+    {
+        $imageUrl = $record->imageUrl();
+
+        if (blank($imageUrl)) {
+            return null;
+        }
+
+        return new HtmlString(
+            '<img src="'.e($imageUrl).'" alt="Slide '.e((string) $record->slide_number).'" style="display: block; width: 100%; height: auto; max-height: 28rem; object-fit: contain; border-radius: 0.5rem; border: 1px solid #e5e7eb;">'
+        );
+    }
+
+    private function matchingAnnouncementPage(SlideDeckSlide $record): ?Page
+    {
+        return app(SlideAnnouncementPageLink::class)->matchingPage($record);
     }
 
     private function slideFormSchema(): array
