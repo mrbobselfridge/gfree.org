@@ -48,21 +48,23 @@ class SiteAlert extends Model
     public static function toneOptions(): array
     {
         return [
-            self::TONE_CRITICAL => 'Critical red',
-            self::TONE_IMPORTANT => 'Important gold',
-            self::TONE_INFO => 'Info blue',
-            self::TONE_SUCCESS => 'Success green',
-            self::TONE_NEUTRAL => 'Neutral black',
+            self::TONE_CRITICAL => 'Critical red - urgent closures, safety, deadlines',
+            self::TONE_IMPORTANT => 'Important gold - high-priority reminders or events',
+            self::TONE_INFO => 'Information blue - general announcements',
+            self::TONE_SUCCESS => 'Success green - good news or completed updates',
+            self::TONE_NEUTRAL => 'Neutral black - simple site notices',
         ];
     }
 
-    public static function toneGuidanceHtml(): string
+    public static function toneLabels(): array
     {
-        return '<strong>Critical red</strong>: use sparingly for urgent items that affect safety, access, or immediate plans, such as weather closures, emergency updates, last-minute service changes, or hard deadlines. '
-            .'<strong>Important gold</strong>: use for high-priority reminders that need extra attention but are not emergencies, such as registration deadlines, special events, schedule changes, or featured opportunities. '
-            .'<strong>Info blue</strong>: use for general announcements and helpful updates, such as office hours, new resources, ministry notes, or routine reminders. '
-            .'<strong>Success green</strong>: use for positive updates, confirmations, completed work, celebration notes, or good news visitors should notice. '
-            .'<strong>Neutral black</strong>: use for simple sitewide notices that should feel steady and informational, such as maintenance notes, policy updates, or low-urgency messages.';
+        return [
+            self::TONE_CRITICAL => 'Critical red',
+            self::TONE_IMPORTANT => 'Important gold',
+            self::TONE_INFO => 'Information blue',
+            self::TONE_SUCCESS => 'Success green',
+            self::TONE_NEUTRAL => 'Neutral black',
+        ];
     }
 
     public function toneClass(): string

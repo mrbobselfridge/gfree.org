@@ -12,7 +12,6 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\HtmlString;
 
 class SiteAlertForm
 {
@@ -54,7 +53,6 @@ class SiteAlertForm
                     ->options(SiteAlert::toneOptions())
                     ->default(SiteAlert::TONE_CRITICAL)
                     ->required()
-                    ->helperText(new HtmlString(SiteAlert::toneGuidanceHtml()))
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
                         'Choose the visual importance level for this alert.'

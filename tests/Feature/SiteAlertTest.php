@@ -170,12 +170,12 @@ class SiteAlertTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test(EditSiteAlert::class, ['record' => $alert->getKey()])
             ->assertFormFieldVisible('tone')
-            ->assertSee('Critical red')
-            ->assertSee('weather closures')
-            ->assertSee('not emergencies')
-            ->assertSee('Info blue')
-            ->assertSee('routine reminders')
-            ->assertSee('positive updates')
-            ->assertSee('low-urgency messages');
+            ->assertSee('Critical red - urgent closures, safety, deadlines')
+            ->assertSee('Important gold - high-priority reminders or events')
+            ->assertSee('Information blue - general announcements')
+            ->assertSee('Success green - good news or completed updates')
+            ->assertSee('Neutral black - simple site notices')
+            ->assertDontSee('weather closures')
+            ->assertDontSee('not emergencies');
     }
 }

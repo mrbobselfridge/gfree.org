@@ -41,7 +41,7 @@ class SiteAlertsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tone')
                     ->label('Color')
-                    ->formatStateUsing(fn (string $state): string => SiteAlert::toneOptions()[$state] ?? str($state)->headline())
+                    ->formatStateUsing(fn (string $state): string => SiteAlert::toneLabels()[$state] ?? str($state)->headline())
                     ->badge()
                     ->sortable(),
                 TextColumn::make('sort_order')
