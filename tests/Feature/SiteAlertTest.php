@@ -171,8 +171,11 @@ class SiteAlertTest extends TestCase
             ->test(EditSiteAlert::class, ['record' => $alert->getKey()])
             ->assertFormFieldVisible('tone')
             ->assertSee('Critical red')
-            ->assertSee('urgent closures')
+            ->assertSee('weather closures')
+            ->assertSee('not emergencies')
             ->assertSee('Info blue')
-            ->assertSee('general announcements');
+            ->assertSee('routine reminders')
+            ->assertSee('positive updates')
+            ->assertSee('low-urgency messages');
     }
 }

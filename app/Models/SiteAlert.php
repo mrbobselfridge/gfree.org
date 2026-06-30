@@ -58,11 +58,11 @@ class SiteAlert extends Model
 
     public static function toneGuidanceHtml(): string
     {
-        return '<strong>Critical red</strong>: urgent closures, safety, deadlines. '
-            .'<strong>Important gold</strong>: high-priority reminders or events. '
-            .'<strong>Info blue</strong>: general announcements. '
-            .'<strong>Success green</strong>: good news or completed updates. '
-            .'<strong>Neutral black</strong>: simple site notices.';
+        return '<strong>Critical red</strong>: use sparingly for urgent items that affect safety, access, or immediate plans, such as weather closures, emergency updates, last-minute service changes, or hard deadlines. '
+            .'<strong>Important gold</strong>: use for high-priority reminders that need extra attention but are not emergencies, such as registration deadlines, special events, schedule changes, or featured opportunities. '
+            .'<strong>Info blue</strong>: use for general announcements and helpful updates, such as office hours, new resources, ministry notes, or routine reminders. '
+            .'<strong>Success green</strong>: use for positive updates, confirmations, completed work, celebration notes, or good news visitors should notice. '
+            .'<strong>Neutral black</strong>: use for simple sitewide notices that should feel steady and informational, such as maintenance notes, policy updates, or low-urgency messages.';
     }
 
     public function toneClass(): string
