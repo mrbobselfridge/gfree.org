@@ -1863,6 +1863,42 @@ class PublicPageTest extends TestCase
             ->assertDontSee('style="color: teal"', false);
     }
 
+    public function test_file_child_card_optional_content_excerpt_keeps_block_spacing(): void
+    {
+        $parent = Page::query()->create([
+            'title' => 'Resources',
+            'slug' => 'resources',
+            'content_blocks' => [
+                [
+                    'type' => 'related_content',
+                    'data' => [
+                        'heading' => 'File Cards',
+                        'content_type' => 'files',
+                        'item_limit' => 4,
+                    ],
+                ],
+            ],
+            'is_published' => true,
+        ]);
+
+        $content = '<h2 style="text-align: start;">What’s Happening</h2><ul><li><p style="text-align: start;"><strong>Family Fire Night</strong> – Sunday, July 19, 6:00–9:00 PM on the lower field.</p></li><li><p style="text-align: start;"><strong>Women’s Game Night</strong> – Thursday, July 16 at 6:00 PM.</p></li></ul>';
+
+        $this->createLiveFileDocument(
+            parent: $parent,
+            title: 'Bulletin',
+            fileName: 'bulletin',
+            category: 'Bulletin',
+            description: '',
+            content: $content,
+        );
+
+        $this->get('/resources')
+            ->assertOk()
+            ->assertSee('<div class="concept-updates__card-summary">What’s Happening<br />', false)
+            ->assertSee('Family Fire Night')
+            ->assertDontSee('What’s HappeningFamily Fire Night');
+    }
+
     public function test_related_content_block_does_not_render_without_child_or_file_content(): void
     {
         Page::query()->create([

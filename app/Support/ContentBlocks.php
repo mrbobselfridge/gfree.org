@@ -424,7 +424,7 @@ class ContentBlocks
      */
     private static function relatedFileItem(FileDocument $document): array
     {
-        $optionalContentText = self::plainText($document->content);
+        $optionalContentText = self::plainTextWithBlockSpacing($document->content);
         $url = $document->publicUrl();
 
         return [
@@ -553,7 +553,7 @@ class ContentBlocks
 
     private static function excerpt(?string $value): ?string
     {
-        $text = self::plainText($value);
+        $text = self::plainTextWithBlockSpacing($value);
 
         return $text === '' ? null : Str::limit($text, self::RELATED_CONTENT_SUMMARY_LIMIT);
     }
@@ -561,6 +561,27 @@ class ContentBlocks
     private static function plainText(?string $value): string
     {
         return RichContent::plainText($value);
+    }
+
+    private static function plainTextWithBlockSpacing(?string $value): string
+    {
+        $html = (string) $value;
+
+        if ($html === '') {
+            return '';
+        }
+
+        $html = preg_replace('/<\s*br\s*\/?>/i', "\n", $html) ?? $html;
+        $html = preg_replace('/<\s*\/\s*(h[1-6]|p|div|li|tr|th|td)\s*>/i', "\n", $html) ?? $html;
+        $html = preg_replace('/<\s*(h[1-6]|p|div|ul|ol|li|tr|th|td)\b[^>]*>/i', "\n", $html) ?? $html;
+
+        $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = str_replace(["\u{00A0}", "\u{200B}", "\u{200C}", "\u{200D}", "\u{FEFF}"], ' ', $text);
+        $text = preg_replace('/[ \t]+/u', ' ', $text) ?? $text;
+        $text = preg_replace('/ *\n+ */u', "\n", $text) ?? $text;
+        $text = preg_replace('/\n{3,}/u', "\n\n", $text) ?? $text;
+
+        return trim($text);
     }
 
     private static function basicHtml(?string $value): string
