@@ -1251,6 +1251,7 @@ class AdminPanelProvider extends PanelProvider
                             window.twyxtcoAdminScrollPreserverLoaded = true;
 
                             let savedPosition = null;
+                            let preserveUntil = 0;
                             let restoreTimers = [];
 
                             const isInsideEditableAdminForm = (element) => {
@@ -1265,6 +1266,14 @@ class AdminPanelProvider extends PanelProvider
                             };
 
                             const restore = () => {
+                                if (preserveUntil > 0 && Date.now() > preserveUntil) {
+                                    savedPosition = null;
+                                    preserveUntil = 0;
+                                    clearRestoreTimers();
+
+                                    return;
+                                }
+
                                 if (! savedPosition) {
                                     return;
                                 }
@@ -1277,11 +1286,25 @@ class AdminPanelProvider extends PanelProvider
                             };
 
                             const scheduleRestore = () => {
+                                if (! savedPosition || Date.now() > preserveUntil) {
+                                    savedPosition = null;
+                                    preserveUntil = 0;
+                                    clearRestoreTimers();
+
+                                    return;
+                                }
+
                                 clearRestoreTimers();
 
                                 [0, 25, 75, 150, 300, 600, 1000].forEach((delay) => {
                                     restoreTimers.push(window.setTimeout(restore, delay));
                                 });
+
+                                restoreTimers.push(window.setTimeout(() => {
+                                    savedPosition = null;
+                                    preserveUntil = 0;
+                                    clearRestoreTimers();
+                                }, 1500));
                             };
 
                             const capture = () => {
@@ -1289,6 +1312,7 @@ class AdminPanelProvider extends PanelProvider
                                     x: window.scrollX || window.pageXOffset || 0,
                                     y: window.scrollY || window.pageYOffset || 0,
                                 };
+                                preserveUntil = Date.now() + 1500;
 
                                 scheduleRestore();
                             };
