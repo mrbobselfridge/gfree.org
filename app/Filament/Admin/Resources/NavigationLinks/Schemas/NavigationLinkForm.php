@@ -41,6 +41,19 @@ class NavigationLinkForm
                         'Header links appear in the main navigation. Utility links appear in the thin bar above the header.'
                     )
                     ->hintColor('gray'),
+
+                ToggleButtons::make('is_published')
+                    ->label('Link is live')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Controls whether this link can appear publicly, subject to publish and expiration dates.'
+                    )
+                    ->hintColor('gray')
+                    ->required(),
+
                 Select::make('parent_id')
                     ->label('Parent link')
                     ->relationship('parent', 'label')
@@ -52,16 +65,25 @@ class NavigationLinkForm
                         'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
                     )
                     ->hintColor('gray'),
+                TextInput::make('sort_order')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
+                    )
+                    ->hintColor('gray'),
 
 
-                ToggleButtons::make('is_published')
-                    ->label('Link is live')
+                ToggleButtons::make('opens_in_new_tab')
+                    ->label('Open in new tab')
                     ->boolean()
                     ->inline()
                     ->default(false)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Controls whether this link can appear publicly, subject to publish and expiration dates.'
+                        'Use mostly for external websites or documents. Internal site links usually stay in the same tab.'
                     )
                     ->hintColor('gray')
                     ->required(),
@@ -76,27 +98,6 @@ class NavigationLinkForm
                         'Use a local path like /new-here, choose a suggested page, file, or media path after typing /, or enter a full https:// URL.'
                     )
                     ->hintColor('gray'),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
-                    )
-                    ->hintColor('gray'),
-
-                ToggleButtons::make('opens_in_new_tab')
-                    ->label('Open in new tab')
-                    ->boolean()
-                    ->inline()
-                    ->default(false)
-                    ->hintIcon(
-                        Heroicon::OutlinedInformationCircle,
-                        'Use mostly for external websites or documents. Internal site links usually stay in the same tab.'
-                    )
-                    ->hintColor('gray')
-                    ->required(),
 
                 DateTimePicker::make('publish_at')
                     ->label('Publish at')

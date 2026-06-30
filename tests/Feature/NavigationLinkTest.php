@@ -139,6 +139,7 @@ class NavigationLinkTest extends TestCase
 
         $this->get('/')
             ->assertOk()
+            ->assertSee('site-sticky-chrome', false)
             ->assertSee('site-utility-bar', false)
             ->assertSeeInOrder(['site-utility-bar', 'Contact', 'concept-header'])
             ->assertSee('data-subnav-toggle', false)

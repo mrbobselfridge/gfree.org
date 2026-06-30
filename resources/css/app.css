@@ -2093,6 +2093,25 @@
     margin: 0 auto;
 }
 
+.site-sticky-chrome {
+    position: sticky;
+    top: 0;
+    z-index: 70;
+    width: 100%;
+}
+
+.site-sticky-chrome > .concept-header.concept-header {
+    position: relative;
+    top: auto;
+    z-index: 1;
+    margin-bottom: 0;
+}
+
+.concept-page--editorial .site-sticky-chrome > .concept-header.concept-header {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .site-top-chrome {
     position: relative;
     z-index: 60;

@@ -30,8 +30,10 @@
     @include('partials.analytics-body')
 
     @if ($page->show_site_chrome)
-        @include('partials.site-top-chrome')
-        @include('home.partials.header')
+        <div class="site-sticky-chrome">
+            @include('partials.site-top-chrome')
+            @include('home.partials.header')
+        </div>
     @endif
 
     <main class="public-page__main">

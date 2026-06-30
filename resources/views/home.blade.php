@@ -26,8 +26,10 @@
     @include('partials.custom-body-top-scripts')
     @include('partials.analytics-body')
 
-    @include('partials.site-top-chrome')
-    @include('home.partials.header')
+    <div class="site-sticky-chrome">
+        @include('partials.site-top-chrome')
+        @include('home.partials.header')
+    </div>
 
     <main>
         @include('home.partials.hero')
