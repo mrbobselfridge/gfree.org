@@ -56,7 +56,7 @@ class PageVisualSnapshotPreviewController extends Controller
         return [
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'utilityLinks' => NavigationLink::topLevelUtilityLinks(),
-            'utilitySocialLinks' => $settings?->managedSocialLinks() ?? collect(),
+            'utilitySocialLinks' => $settings?->socialLinks() ?? collect(),
             'siteAlerts' => SiteAlert::query()
                 ->active()
                 ->publicOrder()

@@ -2321,6 +2321,13 @@
     stroke-linejoin: round;
 }
 
+.site-utility-social-link img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
 .site-utility-social-link svg path:first-child,
 .site-utility-social-link svg rect:first-child {
     fill: currentColor;

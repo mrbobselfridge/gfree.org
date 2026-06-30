@@ -45,7 +45,7 @@ class HomeController extends Controller
             'theme' => $defaults['theme'],
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'utilityLinks' => $utilityLinks,
-            'utilitySocialLinks' => $settings?->managedSocialLinks() ?? collect(),
+            'utilitySocialLinks' => $settings?->socialLinks() ?? collect(),
             'siteAlerts' => $siteAlerts,
             'pageTitle' => $this->pageTitle($settings, $homepageContent),
             'pageDescription' => $this->pageDescription($settings, $homepageContent, $hero),

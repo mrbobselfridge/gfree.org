@@ -171,7 +171,9 @@ class NavigationLinkTest extends TestCase
             ->assertSee('site-utility-social-link--instagram', false)
             ->assertSee('site-utility-social-link--youtube', false)
             ->assertSee('viewBox="0 0 24 24"', false)
-            ->assertDontSee('site-utility-social-link--custom', false);
+            ->assertSee('site-utility-social-link--custom', false)
+            ->assertSee('aria-label="Podcast"', false)
+            ->assertSee('/storage/site-settings/additional-links/podcast.png', false);
     }
 
     public function test_header_navigation_hides_links_to_inactive_matching_pages(): void

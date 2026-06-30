@@ -67,7 +67,11 @@
                         @foreach ($utilitySocialLinks as $link)
                             @php($icon = $link['icon'] ?? str($link['label'])->lower()->slug()->toString())
                             <a class="site-utility-social-link site-utility-social-link--{{ str($icon)->slug() }}" href="{{ $link['url'] }}" aria-label="{{ $link['label'] }}" title="{{ $link['label'] }}" target="_blank" rel="noopener noreferrer">
-                                @include('partials.social-icon', ['icon' => $icon, 'label' => $link['label']])
+                                @if (filled($link['image_url'] ?? null))
+                                    <img src="{{ $link['image_url'] }}" alt="">
+                                @else
+                                    @include('partials.social-icon', ['icon' => $icon, 'label' => $link['label']])
+                                @endif
                                 <span class="site-utility-social-link__label">{!! \App\Support\SiteVariables::renderText($link['label'], $settings ?? null) !!}</span>
                             </a>
                         @endforeach

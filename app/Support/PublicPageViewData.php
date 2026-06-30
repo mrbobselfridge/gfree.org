@@ -24,7 +24,7 @@ class PublicPageViewData
                 ?: ContentBlocks::imageUrl($settings?->default_page_header_image_path),
             'headerLinks' => $navigationLinks->isNotEmpty() ? $navigationLinks : collect($defaults['navigation']),
             'utilityLinks' => $utilityLinks,
-            'utilitySocialLinks' => $settings?->managedSocialLinks() ?? collect(),
+            'utilitySocialLinks' => $settings?->socialLinks() ?? collect(),
             'siteAlerts' => SiteAlert::query()
                 ->active()
                 ->publicOrder()
