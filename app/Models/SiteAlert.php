@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
     'message',
     'link_label',
     'link_url',
+    'tone',
     'sort_order',
     'publish_at',
     'expires_at',
@@ -21,6 +22,16 @@ use Illuminate\Database\Eloquent\Model;
 ])]
 class SiteAlert extends Model
 {
+    public const TONE_CRITICAL = 'critical';
+
+    public const TONE_IMPORTANT = 'important';
+
+    public const TONE_INFO = 'info';
+
+    public const TONE_SUCCESS = 'success';
+
+    public const TONE_NEUTRAL = 'neutral';
+
     protected static function booted(): void
     {
         static::saving(function (SiteAlert $alert): void {
@@ -28,7 +39,35 @@ class SiteAlert extends Model
             $alert->message = trim((string) $alert->message);
             $alert->link_label = self::nullableTrim($alert->link_label);
             $alert->link_url = self::nullableTrim($alert->link_url);
+            $alert->tone = array_key_exists((string) $alert->tone, self::toneOptions())
+                ? (string) $alert->tone
+                : self::TONE_CRITICAL;
         });
+    }
+
+    public static function toneOptions(): array
+    {
+        return [
+            self::TONE_CRITICAL => 'Critical red',
+            self::TONE_IMPORTANT => 'Important gold',
+            self::TONE_INFO => 'Info blue',
+            self::TONE_SUCCESS => 'Success green',
+            self::TONE_NEUTRAL => 'Neutral black',
+        ];
+    }
+
+    public static function toneGuidanceHtml(): string
+    {
+        return '<strong>Critical red</strong>: urgent closures, safety, deadlines. '
+            .'<strong>Important gold</strong>: high-priority reminders or events. '
+            .'<strong>Info blue</strong>: general announcements. '
+            .'<strong>Success green</strong>: good news or completed updates. '
+            .'<strong>Neutral black</strong>: simple site notices.';
+    }
+
+    public function toneClass(): string
+    {
+        return 'site-alert--'.$this->tone;
     }
 
     public function scopeActive(Builder $query): Builder

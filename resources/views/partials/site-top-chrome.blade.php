@@ -12,7 +12,7 @@
                 @foreach ($siteAlerts as $alert)
                     @php($alertUrl = $alert->publicLinkUrl())
                     <section
-                        class="site-alert"
+                        @class(['site-alert', $alert->toneClass()])
                         data-site-alert
                         data-site-alert-key="{{ $alert->dismissalKey() }}"
                     >

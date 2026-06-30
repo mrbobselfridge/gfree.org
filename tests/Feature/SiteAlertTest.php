@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Resources\SiteAlerts\Pages\CreateSiteAlert;
 use App\Filament\Admin\Resources\SiteAlerts\Pages\ListSiteAlerts;
+use App\Filament\Admin\Resources\SiteAlerts\Pages\EditSiteAlert;
 use App\Models\SiteAlert;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -99,6 +100,21 @@ class SiteAlertTest extends TestCase
             ->assertSee('Do not dismiss me.');
     }
 
+    public function test_site_alert_color_tone_renders_public_class(): void
+    {
+        SiteAlert::query()->create([
+            'label' => 'Info',
+            'message' => 'Blue informational alert.',
+            'tone' => SiteAlert::TONE_INFO,
+            'is_published' => true,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('site-alert--info', false)
+            ->assertSee('Blue informational alert.');
+    }
+
     public function test_no_site_alert_markup_renders_when_no_alerts_are_active(): void
     {
         SiteAlert::query()->create([
@@ -120,6 +136,7 @@ class SiteAlertTest extends TestCase
             ->set('data.message', 'Job posting available.')
             ->set('data.link_label', 'View posting')
             ->set('data.link_url', '/jobs')
+            ->set('data.tone', SiteAlert::TONE_IMPORTANT)
             ->set('data.sort_order', 5)
             ->set('data.is_published', true)
             ->set('data.is_dismissible', true)
@@ -131,6 +148,7 @@ class SiteAlertTest extends TestCase
             'message' => 'Job posting available.',
             'link_label' => 'View posting',
             'link_url' => '/jobs',
+            'tone' => SiteAlert::TONE_IMPORTANT,
             'sort_order' => 5,
             'is_published' => true,
             'is_dismissible' => true,
@@ -140,5 +158,21 @@ class SiteAlertTest extends TestCase
             ->test(ListSiteAlerts::class)
             ->assertSee('News Alert')
             ->assertSee('Job posting available.');
+    }
+
+    public function test_site_alert_admin_shows_color_guidance(): void
+    {
+        $alert = SiteAlert::query()->create([
+            'message' => 'Guided alert.',
+            'is_published' => true,
+        ]);
+
+        Livewire::actingAs(User::factory()->create())
+            ->test(EditSiteAlert::class, ['record' => $alert->getKey()])
+            ->assertFormFieldVisible('tone')
+            ->assertSee('Critical red')
+            ->assertSee('urgent closures')
+            ->assertSee('Info blue')
+            ->assertSee('general announcements');
     }
 }

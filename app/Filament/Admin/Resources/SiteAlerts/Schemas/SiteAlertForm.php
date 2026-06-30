@@ -5,12 +5,14 @@ namespace App\Filament\Admin\Resources\SiteAlerts\Schemas;
 use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Models\SiteAlert;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 
 class SiteAlertForm
 {
@@ -47,6 +49,18 @@ class SiteAlertForm
                     )
                     ->hintColor('gray')
                     ->required(),
+                Select::make('tone')
+                    ->label('Alert color')
+                    ->options(SiteAlert::toneOptions())
+                    ->default(SiteAlert::TONE_CRITICAL)
+                    ->required()
+                    ->helperText(new HtmlString(SiteAlert::toneGuidanceHtml()))
+                    ->hintIcon(
+                        Heroicon::OutlinedInformationCircle,
+                        'Choose the visual importance level for this alert.'
+                    )
+                    ->hintColor('gray')
+                    ->columnSpan(3),
                 HtmlCodeTextarea::html(Textarea::make('message'))
                     ->label('Alert message')
                     ->required()

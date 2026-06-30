@@ -2128,8 +2128,29 @@
     background: #d91f1f;
 }
 
-.site-alert:nth-child(even) {
-    background: #b91515;
+.site-alert--critical {
+    color: white;
+    background: #d91f1f;
+}
+
+.site-alert--important {
+    color: #241a00;
+    background: #f6bf26;
+}
+
+.site-alert--info {
+    color: white;
+    background: #1d5fd1;
+}
+
+.site-alert--success {
+    color: white;
+    background: #168044;
+}
+
+.site-alert--neutral {
+    color: white;
+    background: #111;
 }
 
 .site-alert__inner {
