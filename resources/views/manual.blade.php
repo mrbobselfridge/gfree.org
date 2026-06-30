@@ -1246,19 +1246,19 @@
 
         <section class="manual-section" id="navigation">
             <h2>Navigation</h2>
-            <p>Navigation controls the public header menu, dropdown links, and the utility bar above the header. It is separate from page parent-child structure: pages can be grouped for listings without appearing in the menu, and menu links can point anywhere allowed.</p>
+            <p>Navigation controls the public main menu, dropdown links, and the utility bar above the main navigation. It is separate from page parent-child structure: pages can be grouped for listings without appearing in the menu, and menu links can point anywhere allowed.</p>
             <ul>
-                <li><strong>Link text:</strong> Text visitors see in the header, utility bar, or dropdown.</li>
-                <li><strong>Location:</strong> Header links appear in the main navigation. Utility links appear in the thin bar above the header.</li>
+                <li><strong>Link text:</strong> Text visitors see in the main navigation, utility bar, or dropdown.</li>
+                <li><strong>Location:</strong> Navigation links appear in the main menu. Utility links appear in the thin bar above the main navigation.</li>
                 <li><strong>Destination:</strong> Internal path, file link, media path, or full external URL. Type <code>/</code> to use suggested page, file, or media paths.</li>
-                <li><strong>Parent link:</strong> Header links can be nested under another top-level header link to create a dropdown item. Utility links cannot have parent links.</li>
-                <li><strong>Sort order:</strong> Controls order within the header, utility bar, or selected parent dropdown. Lower numbers appear earlier.</li>
+                <li><strong>Parent link:</strong> Navigation links can be nested under another top-level navigation link to create a dropdown item. Utility links cannot have parent links.</li>
+                <li><strong>Sort order:</strong> Controls order within the main navigation, utility bar, or selected parent dropdown. Lower numbers appear earlier.</li>
                 <li><strong>Open in new tab:</strong> Use mostly for external websites and documents. Internal pages usually stay in the same tab.</li>
                 <li><strong>Link is live, Publish at, Expires at:</strong> Control whether and when the link appears publicly.</li>
                 <li><strong>Page limits:</strong> The list can warn when a navigation link points to a page that is draft, scheduled, expired, or missing.</li>
             </ul>
 
-            <h3>Header vs Utility</h3>
+            <h3>Navigation vs Utility</h3>
             <table class="manual-table">
                 <thead>
                     <tr>
@@ -1269,14 +1269,14 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Header</td>
+                        <td>Navigation</td>
                         <td>Main visitor navigation: New Here, Ministries, Events, Resources, Give, Contact.</td>
                         <td>Supports top-level links and dropdown child links through Parent link.</td>
                     </tr>
                     <tr>
                         <td>Utility</td>
                         <td>Small secondary links: Login, Give, Watch, Contact, app links, or urgent shortcuts.</td>
-                        <td>Appears above the main header. No dropdown parent links.</td>
+                        <td>Appears above the main navigation. No dropdown parent links.</td>
                     </tr>
                 </tbody>
             </table>
@@ -1287,13 +1287,13 @@
                 <li><strong>Navigation links</strong> control what appears in the public menu.</li>
                 <li>A child page is not automatically added to navigation. Add a navigation link when it should be menu-accessible.</li>
                 <li>A navigation dropdown does not automatically make those pages children of the parent page. Set Parent page separately when automatic listings should use that structure.</li>
-                <li>For clean sites, make page structure and navigation match when visitors expect the same grouping, but do not force every page into the header.</li>
+                <li>For clean sites, make page structure and navigation match when visitors expect the same grouping, but do not force every page into the main navigation.</li>
             </ul>
 
             <h3>Navigation Checklist</h3>
             <ul class="manual-checklist">
                 <li>Keep top-level navigation short.</li>
-                <li>Use dropdowns for related pages instead of crowding the header.</li>
+                <li>Use dropdowns for related pages instead of crowding the main navigation.</li>
                 <li>Test every new or changed navigation link on desktop and mobile.</li>
                 <li>Use Open in new tab mostly for external websites or downloadable files.</li>
                 <li>When linking to a Page record, make sure both the navigation link and the page itself are live for visitors.</li>
@@ -1301,8 +1301,8 @@
                 <li>Review Utility links together with social links from Site Settings so the top bar does not become crowded.</li>
             </ul>
             <figure class="manual-screenshot">
-                <img src="{{ asset('images/manual/navigation-header-preview.jpg') }}" alt="Public header navigation with top-level links above the homepage banner.">
-                <figcaption>Navigation changes should be checked on the public site. Keep the header short, readable, and easy to scan.</figcaption>
+                <img src="{{ asset('images/manual/navigation-header-preview.jpg') }}" alt="Public main navigation with top-level links above the homepage banner.">
+                <figcaption>Navigation changes should be checked on the public site. Keep the main navigation short, readable, and easy to scan.</figcaption>
             </figure>
         </section>
 

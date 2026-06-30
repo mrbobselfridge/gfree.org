@@ -27,7 +27,7 @@ class NavigationLinkForm
                     ->maxLength(255)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'The text visitors see in the header or dropdown.'
+                        'The text visitors see in the navigation, utility bar, or dropdown.'
                     )
                     ->hintColor('gray'),
                 Select::make('location')
@@ -38,7 +38,7 @@ class NavigationLinkForm
                     ->live()
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Header links appear in the main navigation. Utility links appear in the thin bar above the header.'
+                        'Navigation links appear in the main menu. Utility links appear in the thin bar above the main navigation.'
                     )
                     ->hintColor('gray'),
 
@@ -71,7 +71,7 @@ class NavigationLinkForm
                     ->default(0)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Lower numbers appear earlier within the header or within the selected parent dropdown.'
+                        'Lower numbers appear earlier within the navigation, utility bar, or selected parent dropdown.'
                     )
                     ->hintColor('gray'),
                 ToggleButtons::make('opens_in_new_tab')
@@ -109,7 +109,7 @@ class NavigationLinkForm
                     ->visible(fn (Get $get): bool => $get('location') !== NavigationLink::LOCATION_UTILITY)
                     ->hintIcon(
                         Heroicon::OutlinedInformationCircle,
-                        'Optional for header links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
+                        'Optional for navigation links. Choose a top-level link to make this link appear inside that link\'s dropdown.'
                     )
                     ->hintColor('gray'),
 

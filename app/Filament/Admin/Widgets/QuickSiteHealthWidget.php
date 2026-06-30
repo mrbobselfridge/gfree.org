@@ -195,19 +195,19 @@ class QuickSiteHealthWidget extends CmsDashboardWidget
             return [];
         }
 
-        $activeHeaderLinks = $this->queryFor(NavigationLink::class)
+        $activeNavigationLinks = $this->queryFor(NavigationLink::class)
             ->active()
             ->where('location', 'header')
             ->count();
 
-        if ($activeHeaderLinks > 0) {
+        if ($activeNavigationLinks > 0) {
             return [
-                $this->row('Navigation', 'Header navigation', "{$activeHeaderLinks} active header links are available.", $this->resourceUrl(NavigationLinkResource::class), 'Good', 'success'),
+                $this->row('Navigation', 'Main navigation', "{$activeNavigationLinks} active navigation links are available.", $this->resourceUrl(NavigationLinkResource::class), 'Good', 'success'),
             ];
         }
 
         return [
-            $this->row('Navigation', 'Header navigation', 'No active header navigation links are currently available.', $this->resourceUrl(NavigationLinkResource::class), 'Missing', 'danger'),
+            $this->row('Navigation', 'Main navigation', 'No active navigation links are currently available.', $this->resourceUrl(NavigationLinkResource::class), 'Missing', 'danger'),
         ];
     }
 

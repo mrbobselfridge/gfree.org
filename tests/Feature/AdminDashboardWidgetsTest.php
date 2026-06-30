@@ -112,7 +112,7 @@ class AdminDashboardWidgetsTest extends TestCase
             ->assertDontSeeText('welcome.jpg')
             ->assertSee('Quick Site Health')
             ->assertSee('OpenAI API key')
-            ->assertSee('Header navigation')
+            ->assertSee('Main navigation')
             ->assertSee('AI Usage')
             ->assertSee('Current-month OpenAI spend for the configured app API key.')
             ->assertSee('OpenAI usage spend unavailable')

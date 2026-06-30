@@ -60,7 +60,7 @@ class NavigationLink extends Model implements HasPublicUrl
     public static function locationOptions(): array
     {
         return [
-            self::LOCATION_HEADER => 'Header',
+            self::LOCATION_HEADER => 'Navigation',
             self::LOCATION_UTILITY => 'Utility',
         ];
     }
