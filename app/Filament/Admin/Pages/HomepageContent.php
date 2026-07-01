@@ -209,7 +209,7 @@ class HomepageContent extends Page
                             ->label('Save')
                             ->submit('save')
                             ->color('success')
-                            ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                            ->keyBindings(['mod+s']),
                         Heroicon::OutlinedCheck,
                     ),
                     PublicPageActions::button('viewPublicPageFooter', route('home')),

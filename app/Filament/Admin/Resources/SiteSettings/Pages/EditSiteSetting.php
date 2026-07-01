@@ -47,7 +47,7 @@ class EditSiteSetting extends EditRecord
             parent::getSaveFormAction()
                 ->label('Save')
                 ->color('success')
-                ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                ->keyBindings(['mod+s']),
             Heroicon::OutlinedCheck,
         );
     }
@@ -58,7 +58,8 @@ class EditSiteSetting extends EditRecord
             Action::make('cancelHeader')
                 ->label('Cancel')
                 ->url(SiteSettingResource::getUrl('index'))
-                ->color('gray'),
+                ->color('gray')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
         );
     }
@@ -69,7 +70,8 @@ class EditSiteSetting extends EditRecord
             Action::make('cancelForm')
                 ->label('Cancel')
                 ->url(SiteSettingResource::getUrl('index'))
-                ->color('gray'),
+                ->color('gray')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
         );
     }

@@ -53,7 +53,7 @@ trait UsesStandardEditActions
             parent::getSaveFormAction()
                 ->label('Save')
                 ->color('success')
-                ->keyBindings(['mod+s', 'mod+enter', 'ctrl+enter']),
+                ->keyBindings(['mod+s']),
             Heroicon::OutlinedCheck,
         );
     }
@@ -64,7 +64,8 @@ trait UsesStandardEditActions
             Action::make('saveAndClose')
                 ->label('Save & close')
                 ->action('saveAndClose')
-                ->color('success'),
+                ->color('success')
+                ->keyBindings(['mod+enter', 'ctrl+enter']),
             Heroicon::OutlinedDocumentCheck,
         );
     }
@@ -89,7 +90,8 @@ trait UsesStandardEditActions
             Action::make('cancel')
                 ->label('Cancel')
                 ->url($this->getResourceUrl())
-                ->color('primary'),
+                ->color('primary')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
         );
     }
@@ -100,7 +102,8 @@ trait UsesStandardEditActions
             Action::make('headerCancel')
                 ->label('Cancel')
                 ->url($this->getResourceUrl())
-                ->color('primary'),
+                ->color('primary')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
         );
     }

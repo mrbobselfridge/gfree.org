@@ -1416,6 +1416,77 @@ class AdminPanelProvider extends PanelProvider
                 fn(): HtmlString => new HtmlString(<<<'HTML'
                     <script>
                         (() => {
+                            if (window.twyxtcoAdminKeyboardShortcutsLoaded) {
+                                return;
+                            }
+
+                            window.twyxtcoAdminKeyboardShortcutsLoaded = true;
+
+                            const isVisible = (element) => {
+                                if (! element) {
+                                    return false;
+                                }
+
+                                const style = window.getComputedStyle(element);
+
+                                return style.display !== 'none'
+                                    && style.visibility !== 'hidden'
+                                    && element.getClientRects().length > 0;
+                            };
+
+                            const hasOpenOverlay = () => {
+                                const selectors = [
+                                    '[role="dialog"]',
+                                    '[role="listbox"]',
+                                    '.fi-modal-window',
+                                    '.fi-dropdown-panel',
+                                    '.choices__list--dropdown',
+                                    '.ts-dropdown',
+                                ];
+
+                                return selectors.some((selector) => Array.from(document.querySelectorAll(selector)).some(isVisible));
+                            };
+
+                            const hasFocusedExpandedControl = () => {
+                                const activeElement = document.activeElement;
+
+                                return activeElement?.getAttribute?.('aria-expanded') === 'true'
+                                    || Boolean(activeElement?.closest?.('[aria-expanded="true"]'));
+                            };
+
+                            const cancelAction = () => Array.from(document.querySelectorAll('[data-twyxtco-admin-shortcut="cancel"]')).find(isVisible);
+
+                            document.addEventListener('keydown', (event) => {
+                                if (event.key !== 'Escape' || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+                                    return;
+                                }
+
+                                if (! document.querySelector('.fi-page form')) {
+                                    return;
+                                }
+
+                                if (hasOpenOverlay() || hasFocusedExpandedControl()) {
+                                    return;
+                                }
+
+                                const action = cancelAction();
+
+                                if (! action) {
+                                    return;
+                                }
+
+                                event.preventDefault();
+                                action.click();
+                            }, true);
+                        })();
+                    </script>
+                HTML),
+            )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn(): HtmlString => new HtmlString(<<<'HTML'
+                    <script>
+                        (() => {
                             const storageKey = 'twyxtco.admin.dashboard.widgets.v1';
 
                             const dashboardContainer = () => document.querySelector('.twyxtco-cms-dashboard-widgets > .fi-sc');

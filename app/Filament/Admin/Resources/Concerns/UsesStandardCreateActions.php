@@ -58,7 +58,8 @@ trait UsesStandardCreateActions
             Action::make('cancel')
                 ->label('Cancel')
                 ->url($this->getResourceUrl())
-                ->color('primary'),
+                ->color('primary')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
         );
     }
@@ -69,7 +70,8 @@ trait UsesStandardCreateActions
             Action::make('headerCancel')
                 ->label('Cancel')
                 ->url($this->getResourceUrl())
-                ->color('primary'),
+                ->color('primary')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
         );
     }
