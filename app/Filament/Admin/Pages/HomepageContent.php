@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\CmsDashboard;
 use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
@@ -74,6 +75,13 @@ class HomepageContent extends Page
         $this->persistRecord(sendWorkflowNotifications: false);
     }
 
+    public function saveAndClose(): void
+    {
+        $this->persistRecord();
+
+        $this->redirect(CmsDashboard::getUrl());
+    }
+
     private function persistRecord(bool $sendWorkflowNotifications = true): void
     {
         $data = $this->form->getState();
@@ -106,6 +114,13 @@ class HomepageContent extends Page
             PublicPageActions::button('viewPublicPage', route('home')),
             AiPageReviewActions::make($this->record, fn (): mixed => $this->saveForAiPageReview()),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
+            IconOnlyAction::make(
+                Action::make('headerSaveAndClose')
+                    ->label('Save & close')
+                    ->action('saveAndClose')
+                    ->color('success'),
+                Heroicon::OutlinedDocumentCheck,
+            ),
             IconOnlyAction::make(
                 Action::make('save')
                     ->label('Save')
@@ -211,6 +226,14 @@ class HomepageContent extends Page
                             ->color('success')
                             ->keyBindings(['mod+s']),
                         Heroicon::OutlinedCheck,
+                    ),
+                    IconOnlyAction::make(
+                        Action::make('saveAndClose')
+                            ->label('Save & close')
+                            ->action('saveAndClose')
+                            ->color('success')
+                            ->keyBindings(['mod+enter', 'ctrl+enter']),
+                        Heroicon::OutlinedDocumentCheck,
                     ),
                     PublicPageActions::button('viewPublicPageFooter', route('home')),
                     ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),

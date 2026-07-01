@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\SiteSettings\Pages;
 
+use App\Filament\Admin\CmsDashboard;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
@@ -24,6 +25,13 @@ class EditSiteSetting extends EditRecord
             $this->getCancelHeaderAction(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             IconOnlyAction::make(
+                Action::make('headerSaveAndClose')
+                    ->label('Save & close')
+                    ->action('saveAndClose')
+                    ->color('success'),
+                Heroicon::OutlinedDocumentCheck,
+            ),
+            IconOnlyAction::make(
                 Action::make('save')
                     ->label('Save')
                     ->action('save')
@@ -37,8 +45,16 @@ class EditSiteSetting extends EditRecord
     {
         return [
             $this->getSaveFormAction(),
+            $this->getSaveAndCloseFormAction(),
             $this->getCancelFormAction(),
         ];
+    }
+
+    public function saveAndClose(): void
+    {
+        $this->save(shouldRedirect: false);
+
+        $this->redirect(CmsDashboard::getUrl());
     }
 
     protected function getSaveFormAction(): Action
@@ -49,6 +65,18 @@ class EditSiteSetting extends EditRecord
                 ->color('success')
                 ->keyBindings(['mod+s']),
             Heroicon::OutlinedCheck,
+        );
+    }
+
+    protected function getSaveAndCloseFormAction(): Action
+    {
+        return IconOnlyAction::make(
+            Action::make('saveAndClose')
+                ->label('Save & close')
+                ->action('saveAndClose')
+                ->color('success')
+                ->keyBindings(['mod+enter', 'ctrl+enter']),
+            Heroicon::OutlinedDocumentCheck,
         );
     }
 
