@@ -58,6 +58,7 @@ class EditSlideDeck extends EditRecord
         return IconOnlyAction::make(
             Action::make('rerunDeckAnalysis')
                 ->label('Re-run analysis')
+                ->keyBindings(['alt+a'])
                 ->requiresConfirmation()
                 ->modalHeading('Re-run analysis for this deck?')
                 ->action(function (): void {
@@ -80,6 +81,7 @@ class EditSlideDeck extends EditRecord
         return IconOnlyAction::make(
             Action::make('downloadSlideImages')
                 ->label('Download PNG ZIP')
+                ->keyBindings(['alt+d'])
                 ->url(fn (): string => route('admin.slide-decks.download-images', ['slideDeck' => $this->getRecord()]), true),
             Heroicon::OutlinedArrowDownTray,
         );

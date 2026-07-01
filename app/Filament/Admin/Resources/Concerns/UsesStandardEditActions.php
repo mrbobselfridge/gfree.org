@@ -93,6 +93,7 @@ trait UsesStandardEditActions
                 ->color('primary')
                 ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
         );
     }
 
@@ -105,6 +106,7 @@ trait UsesStandardEditActions
                 ->color('primary')
                 ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
         );
     }
 
@@ -129,6 +131,7 @@ trait UsesStandardEditActions
                 ->action('saveAndClose')
                 ->color('success'),
             Heroicon::OutlinedDocumentCheck,
+            'Save & close (Ctrl/Cmd+Enter)',
         );
     }
 
@@ -140,6 +143,7 @@ trait UsesStandardEditActions
                 ->action('save')
                 ->color('success'),
             Heroicon::OutlinedCheck,
+            'Save (Ctrl/Cmd+S)',
         );
     }
 

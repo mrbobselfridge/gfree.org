@@ -61,6 +61,7 @@ trait UsesStandardCreateActions
                 ->color('primary')
                 ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
         );
     }
 
@@ -73,6 +74,7 @@ trait UsesStandardCreateActions
                 ->color('primary')
                 ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
         );
     }
 
@@ -84,6 +86,7 @@ trait UsesStandardCreateActions
                 ->action('createAnother')
                 ->color('success'),
             Heroicon::OutlinedSquaresPlus,
+            'Create & add another (Ctrl/Cmd+Shift+S)',
         );
     }
 
@@ -95,6 +98,7 @@ trait UsesStandardCreateActions
                 ->action('create')
                 ->color('success'),
             Heroicon::OutlinedPlus,
+            'Create (Ctrl/Cmd+S)',
         );
     }
 

@@ -1456,6 +1456,54 @@ class AdminPanelProvider extends PanelProvider
 
                             const cancelAction = () => Array.from(document.querySelectorAll('[data-twyxtco-admin-shortcut="cancel"]')).find(isVisible);
 
+                            const actionText = (element) => [
+                                element?.textContent,
+                                element?.getAttribute?.('aria-label'),
+                                element?.getAttribute?.('title'),
+                            ].filter(Boolean).join(' ').trim().toLowerCase();
+
+                            const pageRoot = () => document.querySelector('.fi-page') ?? document.body;
+
+                            const primaryCollapseExpandAction = (mode) => {
+                                const root = pageRoot();
+                                const actionPattern = mode === 'collapse' ? /collapse all/i : /expand all/i;
+                                const action = Array.from(root.querySelectorAll('button, a'))
+                                    .find((element) => isVisible(element) && actionPattern.test(actionText(element)));
+
+                                if (action) {
+                                    return action;
+                                }
+
+                                const sectionSelector = mode === 'collapse'
+                                    ? '.fi-section.fi-collapsible:not(.fi-collapsed) .fi-section-collapse-btn'
+                                    : '.fi-section.fi-collapsible.fi-collapsed .fi-section-collapse-btn';
+
+                                return Array.from(root.querySelectorAll(sectionSelector)).find(isVisible);
+                            };
+
+                            const decorateCollapseExpandActions = () => {
+                                const root = pageRoot();
+
+                                Array.from(root.querySelectorAll('button, a')).forEach((element) => {
+                                    const text = actionText(element);
+
+                                    if (/collapse all/i.test(text)) {
+                                        element.setAttribute('title', 'Collapse all (Alt+C)');
+                                    }
+
+                                    if (/expand all/i.test(text)) {
+                                        element.setAttribute('title', 'Expand all (Alt+E)');
+                                    }
+                                });
+
+                                Array.from(root.querySelectorAll('.fi-section.fi-collapsible .fi-section-collapse-btn')).forEach((button) => {
+                                    const section = button.closest('.fi-section');
+                                    const isCollapsed = section?.classList.contains('fi-collapsed');
+
+                                    button.setAttribute('title', isCollapsed ? 'Expand section (Alt+E)' : 'Collapse section (Alt+C)');
+                                });
+                            };
+
                             document.addEventListener('keydown', (event) => {
                                 if (event.key !== 'Escape' || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
                                     return;
@@ -1478,6 +1526,38 @@ class AdminPanelProvider extends PanelProvider
                                 event.preventDefault();
                                 action.click();
                             }, true);
+
+                            document.addEventListener('keydown', (event) => {
+                                if (! event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+                                    return;
+                                }
+
+                                const key = event.key?.toLowerCase();
+
+                                if (! ['c', 'e'].includes(key)) {
+                                    return;
+                                }
+
+                                if (hasOpenOverlay()) {
+                                    return;
+                                }
+
+                                const action = primaryCollapseExpandAction(key === 'c' ? 'collapse' : 'expand');
+
+                                if (! action) {
+                                    return;
+                                }
+
+                                event.preventDefault();
+                                action.click();
+
+                                window.setTimeout(decorateCollapseExpandActions, 50);
+                            }, true);
+
+                            document.addEventListener('DOMContentLoaded', decorateCollapseExpandActions);
+                            document.addEventListener('livewire:navigated', decorateCollapseExpandActions);
+                            document.addEventListener('livewire:updated', decorateCollapseExpandActions);
+                            window.setTimeout(decorateCollapseExpandActions, 150);
                         })();
                     </script>
                 HTML),

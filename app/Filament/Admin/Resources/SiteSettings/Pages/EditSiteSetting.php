@@ -30,6 +30,7 @@ class EditSiteSetting extends EditRecord
                     ->action('saveAndClose')
                     ->color('success'),
                 Heroicon::OutlinedDocumentCheck,
+                'Save & close (Ctrl/Cmd+Enter)',
             ),
             IconOnlyAction::make(
                 Action::make('save')
@@ -37,6 +38,7 @@ class EditSiteSetting extends EditRecord
                     ->action('save')
                     ->color('success'),
                 Heroicon::OutlinedCheck,
+                'Save (Ctrl/Cmd+S)',
             ),
         ];
     }
@@ -89,6 +91,7 @@ class EditSiteSetting extends EditRecord
                 ->color('gray')
                 ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
         );
     }
 
@@ -101,6 +104,7 @@ class EditSiteSetting extends EditRecord
                 ->color('gray')
                 ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
             Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
         );
     }
 

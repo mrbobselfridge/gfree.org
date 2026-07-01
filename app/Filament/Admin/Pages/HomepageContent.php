@@ -111,6 +111,7 @@ class HomepageContent extends Page
     protected function getHeaderActions(): array
     {
         return [
+            $this->getCancelAction('headerCancel'),
             PublicPageActions::button('viewPublicPage', route('home')),
             AiPageReviewActions::make($this->record, fn (): mixed => $this->saveForAiPageReview()),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
@@ -120,6 +121,7 @@ class HomepageContent extends Page
                     ->action('saveAndClose')
                     ->color('success'),
                 Heroicon::OutlinedDocumentCheck,
+                'Save & close (Ctrl/Cmd+Enter)',
             ),
             IconOnlyAction::make(
                 Action::make('save')
@@ -127,8 +129,22 @@ class HomepageContent extends Page
                     ->action('save')
                     ->color('success'),
                 Heroicon::OutlinedCheck,
+                'Save (Ctrl/Cmd+S)',
             ),
         ];
+    }
+
+    protected function getCancelAction(string $name = 'cancel'): Action
+    {
+        return IconOnlyAction::make(
+            Action::make($name)
+                ->label('Cancel')
+                ->url(CmsDashboard::getUrl())
+                ->color('primary')
+                ->extraAttributes(['data-twyxtco-admin-shortcut' => 'cancel'], merge: true),
+            Heroicon::OutlinedXMark,
+            'Cancel (Esc)',
+        );
     }
 
     public function form(Schema $schema): Schema
@@ -237,6 +253,7 @@ class HomepageContent extends Page
                     ),
                     PublicPageActions::button('viewPublicPageFooter', route('home'), withShortcut: false),
                     ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record, withShortcut: false),
+                    $this->getCancelAction(),
                 ])
                     ->alignment(Alignment::Start)
                     ->key('form-actions'),

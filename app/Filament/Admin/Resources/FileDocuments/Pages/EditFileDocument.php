@@ -54,6 +54,7 @@ class EditFileDocument extends EditRecord
                 Action::make('downloadCurrentFile')
                     ->label('Download')
                     ->url(fn (): string => route('admin.files.download', ['fileDocument' => $this->getRecord()]), true)
+                    ->keyBindings(['alt+d'])
                     ->color('gray'),
                 Heroicon::OutlinedArrowDownTray,
             ),

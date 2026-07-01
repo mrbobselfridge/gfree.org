@@ -19,6 +19,7 @@ class ViewFileDocument extends ViewRecord
                 Action::make('downloadCurrentFile')
                     ->label('View')
                     ->url(fn (): string => $this->getRecord()->downloadUrl(), true)
+                    ->keyBindings(['alt+d'])
                     ->color('gray'),
                 Heroicon::OutlinedArrowDownTray,
             ),

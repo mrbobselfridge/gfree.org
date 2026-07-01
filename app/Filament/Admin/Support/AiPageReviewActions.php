@@ -41,6 +41,7 @@ class AiPageReviewActions
             Action::make('aiPageReview')
                 ->label('AI Page Review')
                 ->color('info')
+                ->keyBindings(['alt+a'])
                 ->modalHeading('AI page review')
                 ->modalDescription('This saves the current form, builds a draft-safe CMS snapshot of the page, and asks AI for page-level review notes.')
                 ->modalWidth(Width::Screen)
