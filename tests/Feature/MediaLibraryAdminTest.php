@@ -59,8 +59,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get('/admin/media-library')
             ->assertOk()
-            ->assertSee('Images')
-            ->assertSee('Uploaded images')
+            ->assertDontSee('Uploaded images')
             ->assertSee('picnic.jpg')
             ->assertSee('pages/header-images/picnic.jpg')
             ->assertSee('Page: Church Picnic | Header image', false)
@@ -70,6 +69,7 @@ class MediaLibraryAdminTest extends TestCase
             ->assertSee("mountAction('importUnsplashImage')", false)
             ->assertDontSee("mountAction('createFile')", false)
             ->assertSee('title="Upload File"', false)
+            ->assertSee('Upload')
             ->assertSee('title="Copyright free images"', false)
             ->assertSee('Unsplash')
             ->assertSee('wire:partial="action-modals"', false)
@@ -1195,7 +1195,7 @@ class MediaLibraryAdminTest extends TestCase
         $this->assertFalse($component->instance()->hasMoreImages());
 
         $component
-            ->assertSee('30 of 30 images shown')
+            ->assertSee('30 of 30 Images')
             ->assertDontSee('Load more');
 
         $component->set('search', 'image-29');

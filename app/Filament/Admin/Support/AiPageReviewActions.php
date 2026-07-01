@@ -29,7 +29,7 @@ use Throwable;
 
 class AiPageReviewActions
 {
-    public static function make(Model $record, Closure $save): ?Action
+    public static function make(Model $record, Closure $save, bool $withShortcut = true): ?Action
     {
         $snapshotBuilder = app(PageReviewSnapshot::class);
 
@@ -37,21 +37,19 @@ class AiPageReviewActions
             return null;
         }
 
-        return IconOnlyAction::make(
-            Action::make('aiPageReview')
-                ->label('AI Page Review')
-                ->color('info')
-                ->keyBindings(['alt+a'])
-                ->modalHeading('AI page review')
-                ->modalDescription('This saves the current form, builds a draft-safe CMS snapshot of the page, and asks AI for page-level review notes.')
-                ->modalWidth(Width::Screen)
-                ->modalSubmitAction(false)
-                ->modalCancelAction(false)
-                ->stickyModalHeader()
-                ->extraModalWindowAttributes(['class' => 'twyxtco-ai-page-review-modal'], merge: true)
-                ->closeModalByClickingAway(false)
-                ->fillForm(fn (): array => self::initialFormData($record, $snapshotBuilder))
-                ->schema([
+        $action = Action::make('aiPageReview')
+            ->label('AI Page Review')
+            ->color('info')
+            ->modalHeading('AI page review')
+            ->modalDescription('This saves the current form, builds a draft-safe CMS snapshot of the page, and asks AI for page-level review notes.')
+            ->modalWidth(Width::Screen)
+            ->modalSubmitAction(false)
+            ->modalCancelAction(false)
+            ->stickyModalHeader()
+            ->extraModalWindowAttributes(['class' => 'twyxtco-ai-page-review-modal'], merge: true)
+            ->closeModalByClickingAway(false)
+            ->fillForm(fn (): array => self::initialFormData($record, $snapshotBuilder))
+            ->schema([
                     Textarea::make('prompt')
                         ->label('AI content prompt')
                         ->helperText('Defaults from Site Settings. Adjust it here for this page review only.')
@@ -87,16 +85,16 @@ class AiPageReviewActions
                         ])
                         ->visible(fn (Get $get): bool => (bool) $get('review_completed'))
                         ->columnSpanFull(),
-                ])
-                ->action(function (
-                    Action $action,
-                    array $arguments,
-                    array $data,
-                    OpenAiPageReviewer $reviewer,
-                    PageReviewSnapshot $snapshotBuilder,
-                    PageVisualSnapshot $visualSnapshot,
-                    Schema $schema,
-                ) use ($record, $save): void {
+            ])
+            ->action(function (
+                Action $action,
+                array $arguments,
+                array $data,
+                OpenAiPageReviewer $reviewer,
+                PageReviewSnapshot $snapshotBuilder,
+                PageVisualSnapshot $visualSnapshot,
+                Schema $schema,
+            ) use ($record, $save): void {
                     if ($arguments['email'] ?? false) {
                         self::emailReview((string) ($data['review'] ?? ''), $record, $data['visual_snapshot_url'] ?? null);
                         $action->halt();
@@ -143,7 +141,14 @@ class AiPageReviewActions
                         ->send();
 
                     $action->halt();
-                }),
+                });
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+a']);
+        }
+
+        return IconOnlyAction::make(
+            $action,
             Heroicon::OutlinedSparkles,
         );
     }

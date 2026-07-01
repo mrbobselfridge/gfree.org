@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\FileDocuments\Pages;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Filament\Admin\Resources\Concerns\UsesStandardEditActions;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
+use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\FileDocument;
@@ -62,6 +63,17 @@ class EditFileDocument extends EditRecord
         ];
     }
 
+    protected function getHeaderAiPageReviewActions(): array
+    {
+        $action = AiPageReviewActions::make(
+            $this->getRecord(),
+            fn (): mixed => $this->save(shouldRedirect: false, shouldSendSavedNotification: false),
+            withShortcut: false,
+        );
+
+        return $action ? [$action] : [];
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $this->replacementUpload = FileLibrary::normalizeUploadPath($data['replacement_upload'] ?? null);
@@ -92,6 +104,7 @@ class EditFileDocument extends EditRecord
             Action::make('extractFileContent')
                 ->label('Extract File Content')
                 ->color('warning')
+                ->keyBindings(['alt+a'])
                 ->modalHeading('Extract file content')
                 ->modalDescription('Review the exact prompt before sending this file to OpenAI. Continuing will start the extraction request and may take a moment.')
                 ->modalSubmitActionLabel('Continue')

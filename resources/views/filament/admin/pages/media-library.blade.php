@@ -49,6 +49,7 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 0.4rem;
+            margin-left: auto;
         }
 
         .twyxtco-media-toolbar__select,
@@ -109,11 +110,18 @@
             font-weight: 700;
         }
 
+        .twyxtco-media-toolbar__upload {
+            width: auto;
+            gap: 0.375rem;
+            padding: 0 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
         .twyxtco-media-toolbar__actions {
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            margin-left: auto;
         }
 
         .twyxtco-media-toolbar__delete {
@@ -146,12 +154,24 @@
             border: 1px solid rgb(229 231 235);
             border-radius: 0.75rem;
             background: white;
-            padding: 1rem;
+            margin-top: 0.625rem;
+            padding: 0.375rem 0.75rem;
+            text-align: center;
+        }
+
+        .twyxtco-media-summary__count {
+            color: rgb(75 85 99);
+            font-size: 0.875rem;
+            font-weight: 700;
         }
 
         .dark .twyxtco-media-summary {
             border-color: rgb(31 41 55);
             background: rgb(17 24 39);
+        }
+
+        .dark .twyxtco-media-summary__count {
+            color: rgb(209 213 219);
         }
 
         .twyxtco-media-controls {
@@ -453,9 +473,36 @@
         }
     </style>
 
-    <div class="space-y-6">
+    <div>
         <div class="twyxtco-media-toolbar" aria-label="Media Library actions">
-            <span class="twyxtco-media-toolbar__label">Images</span>
+            @if ($addAction)
+                <div class="twyxtco-media-toolbar__actions">
+                    <button
+                        type="button"
+                        class="twyxtco-media-toolbar__add twyxtco-media-toolbar__unsplash"
+                        wire:click="mountAction('importUnsplashImage')"
+                        title="Copyright free images"
+                        aria-label="Copyright free images"
+                    >
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                        </svg>
+                        <span>Unsplash</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="twyxtco-media-toolbar__add twyxtco-media-toolbar__upload"
+                        wire:click="mountAction('{{ $addAction }}')"
+                        title="Upload File"
+                        aria-label="Upload File"
+                    >
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 7.5 12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <span>Upload</span>
+                    </button>
+                </div>
+            @endif
 
             @if ($images->isNotEmpty())
                 <div class="twyxtco-media-toolbar__bulk" aria-label="Bulk image actions">
@@ -485,50 +532,17 @@
                     </button>
                 </div>
             @endif
-
-            @if ($addAction)
-                <div class="twyxtco-media-toolbar__actions">
-                    <button
-                        type="button"
-                        class="twyxtco-media-toolbar__add twyxtco-media-toolbar__unsplash"
-                        wire:click="mountAction('importUnsplashImage')"
-                        title="Copyright free images"
-                        aria-label="Copyright free images"
-                    >
-                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
-                        </svg>
-                        <span>Unsplash</span>
-                    </button>
-                    <button
-                        type="button"
-                        class="twyxtco-media-toolbar__add"
-                        wire:click="mountAction('{{ $addAction }}')"
-                        title="Upload File"
-                        aria-label="Upload File"
-                    >
-                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.9" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 7.5 12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </svg>
-                    </button>
-                </div>
-            @endif
         </div>
 
         @if ($this->canAccessImages())
             <div class="twyxtco-media-summary">
-                <div>
-                    <div>
-                        <h2 class="text-base font-semibold text-gray-950 dark:text-white">Uploaded images</h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            @if (filled($this->search))
-                                {{ $images->count() }} of {{ $filteredImages }} matching {{ \Illuminate\Support\Str::plural('image', $filteredImages) }} shown ({{ $totalImages }} total).
-                            @else
-                                {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('image', $totalImages) }} shown.
-                            @endif
-                        </p>
-                    </div>
-                </div>
+                <p class="twyxtco-media-summary__count">
+                    @if (filled($this->search))
+                        {{ $images->count() }} of {{ $filteredImages }} {{ \Illuminate\Support\Str::plural('Image', $filteredImages) }}
+                    @else
+                        {{ $images->count() }} of {{ $totalImages }} {{ \Illuminate\Support\Str::plural('Image', $totalImages) }}
+                    @endif
+                </p>
             </div>
 
             <div class="twyxtco-media-controls">

@@ -175,7 +175,7 @@ class FileLibraryTest extends TestCase
         ]))
             ->get('/admin/media-library')
             ->assertOk()
-            ->assertSee('Uploaded images')
+            ->assertDontSee('Uploaded images')
             ->assertSee("mountAction('uploadImages')", false)
             ->assertDontSee('Connection Card')
             ->assertDontSee("mountAction('createFile')", false);
