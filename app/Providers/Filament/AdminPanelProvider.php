@@ -80,6 +80,75 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::STYLES_AFTER,
                 fn(): HtmlString => new HtmlString(<<<'HTML'
                     <style>
+                        .fi-global-search-field .fi-input-wrp {
+                            border-color: rgba(245, 158, 11, 0.65);
+                            background: rgba(255, 251, 235, 0.94);
+                            box-shadow:
+                                0 0 0 1px rgba(245, 158, 11, 0.3),
+                                0 10px 24px rgba(15, 23, 42, 0.14);
+                            transition:
+                                background-color 150ms ease,
+                                border-color 150ms ease,
+                                box-shadow 150ms ease;
+                        }
+
+                        .fi-global-search-field .fi-input-wrp:hover {
+                            border-color: rgba(245, 158, 11, 0.9);
+                            box-shadow:
+                                0 0 0 1px rgba(245, 158, 11, 0.45),
+                                0 12px 28px rgba(15, 23, 42, 0.18);
+                        }
+
+                        .fi-global-search-field .fi-input-wrp:focus-within {
+                            border-color: rgb(245, 158, 11);
+                            background: white;
+                            box-shadow:
+                                0 0 0 2px rgba(245, 158, 11, 0.38),
+                                0 14px 32px rgba(15, 23, 42, 0.22);
+                        }
+
+                        .fi-global-search-field .fi-input,
+                        .fi-global-search-field .fi-input::placeholder {
+                            color: var(--gray-950);
+                        }
+
+                        .fi-global-search-field .fi-input::placeholder {
+                            opacity: 0.72;
+                        }
+
+                        .dark .fi-global-search-field .fi-input-wrp {
+                            border-color: rgba(251, 191, 36, 0.78);
+                            background: rgba(39, 33, 20, 0.96);
+                            box-shadow:
+                                0 0 0 1px rgba(251, 191, 36, 0.34),
+                                0 10px 24px rgba(0, 0, 0, 0.38);
+                        }
+
+                        .dark .fi-global-search-field .fi-input-wrp:hover {
+                            border-color: rgba(251, 191, 36, 0.95);
+                            box-shadow:
+                                0 0 0 1px rgba(251, 191, 36, 0.5),
+                                0 12px 28px rgba(0, 0, 0, 0.44);
+                        }
+
+                        .dark .fi-global-search-field .fi-input-wrp:focus-within {
+                            border-color: rgb(251, 191, 36);
+                            background: rgba(31, 25, 13, 0.98);
+                            box-shadow:
+                                0 0 0 2px rgba(251, 191, 36, 0.44),
+                                0 14px 32px rgba(0, 0, 0, 0.5);
+                        }
+
+                        .dark .fi-global-search-field .fi-input,
+                        .dark .fi-global-search-field .fi-input::placeholder {
+                            color: white;
+                        }
+
+                        .fi-global-search-result-link,
+                        .fi-global-search-result-actions {
+                            padding-inline-start: 1.75rem;
+                        }
+
                         .twyxtco-content-block-builder-field {
                             position: relative;
                         }
