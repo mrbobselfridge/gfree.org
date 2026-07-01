@@ -674,6 +674,7 @@
             <ol class="manual-toc" id="manual-contents-links" hidden>
                 <li><a href="#roles">Roles and Permissions</a></li>
                 <li><a href="#daily-workflow">Daily Workflow</a></li>
+                <li><a href="#admin-search-shortcuts">Admin Search and Shortcuts</a></li>
                 <li><a href="#system-overview">System Overview</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="#homepage">Homepage</a></li>
@@ -734,6 +735,92 @@
                 <strong>Admin buttons</strong>
                 <p>Many admin buttons are icon-only to save space. Hover over an icon to see its label and shortcut, such as Save, Save &amp; close, View, Notify, Delete, Create, or Cancel.</p>
                 <p>Common shortcuts include Ctrl/Cmd+S for Save, Ctrl/Cmd+Enter for Save &amp; close, Ctrl/Cmd+Shift+S for Create &amp; add another, Ctrl/Cmd+D for Delete, Escape for Cancel, Alt+V for View, Alt++ for New, Alt+N for Notify, Alt+A for the primary AI action, Alt+D for Download, Alt+C for Collapse, and Alt+E for Expand when those actions are available.</p>
+            </div>
+        </section>
+
+        <section class="manual-section" id="admin-search-shortcuts">
+            <h2>Admin Search and Shortcuts</h2>
+            <p>The highlighted <strong>Search Full System</strong> box in the top admin bar is the fastest way to jump to records across the CMS. Search results are grouped by area, such as Navigation Links or Pages, with individual results indented under each group.</p>
+
+            <h3>Global Search</h3>
+            <ul>
+                <li>Use <strong>Search Full System</strong> to find CMS records without first opening that content area.</li>
+                <li>Results are grouped by type. Click a result to open the matching edit or view screen, depending on the record and your permissions.</li>
+                <li>The search box is intentionally larger and visually highlighted so it is easy to find from any admin screen.</li>
+                <li>Current global search focuses on key record fields such as titles and names. Deeper body-content and block-content search can be added later as a separate indexed search enhancement.</li>
+            </ul>
+
+            <h3>Keyboard Shortcuts</h3>
+            <table class="manual-table">
+                <thead>
+                    <tr>
+                        <th>Shortcut</th>
+                        <th>Action</th>
+                        <th>Where it applies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ctrl/Cmd+S</td>
+                        <td>Save</td>
+                        <td>Edit and create forms.</td>
+                    </tr>
+                    <tr>
+                        <td>Ctrl/Cmd+Enter</td>
+                        <td>Save &amp; close</td>
+                        <td>Edit forms that return to the list, Dashboard, or previous area after saving.</td>
+                    </tr>
+                    <tr>
+                        <td>Ctrl/Cmd+Shift+S</td>
+                        <td>Create &amp; add another</td>
+                        <td>Create forms that support adding multiple records.</td>
+                    </tr>
+                    <tr>
+                        <td>Ctrl/Cmd+D</td>
+                        <td>Delete</td>
+                        <td>Records with a delete action and permission to delete.</td>
+                    </tr>
+                    <tr>
+                        <td>Escape</td>
+                        <td>Cancel</td>
+                        <td>Forms and modals with a Cancel action.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+V</td>
+                        <td>View</td>
+                        <td>Pages, Homepage, File Library, and other screens with a public or view action.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt++</td>
+                        <td>Create new</td>
+                        <td>Listing pages with a New or Create action.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+N</td>
+                        <td>Notify users</td>
+                        <td>Areas with workflow notification support.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+A</td>
+                        <td>Primary AI action</td>
+                        <td>Pages, Files, Slide Decks, and other screens with a top primary AI action.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+D</td>
+                        <td>Download</td>
+                        <td>File Library and Slide Deck screens with a download action.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+C / Alt+E</td>
+                        <td>Collapse / Expand</td>
+                        <td>Primary page-level or section-level collapse controls.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="manual-note">
+                <strong>Shortcut hints</strong>
+                <p>Hover over admin buttons to see the action name and any keyboard shortcut attached to that button.</p>
             </div>
         </section>
 
@@ -1108,6 +1195,13 @@
                 <img src="{{ asset('images/manual/media-library-picker.jpg') }}" alt="Media Library image picker showing reusable image thumbnails and search controls.">
                 <figcaption>The image picker lets editors choose existing media instead of uploading duplicates. Search by title, path, tag, or other tracked details when available.</figcaption>
             </figure>
+            <h3>Toolbar Layout</h3>
+            <ul>
+                <li><strong>Unsplash</strong> and <strong>Upload</strong> appear together at the top of the Media Library for adding new images.</li>
+                <li>The selected-image controls sit separately from the add-image buttons. Use Select All when bulk cleanup is needed, then use the selected delete action carefully.</li>
+                <li>The image count appears in its own compact summary area, centered as a count such as <strong>30 of 30 Images</strong>.</li>
+                <li>The toolbar and summary area are separated visually so adding images, selecting images, and reading the current count are easier to scan.</li>
+            </ul>
             <h3>Image Details</h3>
             <ul>
                 <li>Upload image starts with the image field, then shows image title, image path, and tags after a file is selected. Edit image keeps details and optional replacement together.</li>
@@ -1159,7 +1253,7 @@
             <h3>AI File Extraction</h3>
             <ul>
                 <li>Open an existing file record with a saved current file.</li>
-                <li>Choose <strong>Extract File Content</strong>.</li>
+                <li>Choose <strong>Extract File Content</strong>, or press <strong>Alt+A</strong> when the edit screen's primary AI action is available.</li>
                 <li>The tool saves the current file record and shows the exact prompt that will be sent with the saved file.</li>
                 <li>Choose <strong>Continue</strong> to send the saved file and prompt to OpenAI.</li>
                 <li>Review and edit the extracted HTML when it returns, then choose <strong>Use extracted content</strong>.</li>

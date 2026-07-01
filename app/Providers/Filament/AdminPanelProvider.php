@@ -90,7 +90,8 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .fi-global-search-field .fi-input-wrp {
-                            min-height: 3rem;
+                            align-items: center;
+                            min-height: 2.75rem;
                             border-color: rgba(245, 158, 11, 0.65);
                             background: rgba(255, 251, 235, 0.94);
                             box-shadow:
@@ -122,6 +123,17 @@ class AdminPanelProvider extends PanelProvider
                             color: var(--gray-950);
                             font-size: 1rem;
                             line-height: 1.5rem;
+                        }
+
+                        .fi-global-search-field .fi-input {
+                            min-height: 2.75rem;
+                            padding-block: 0.5rem;
+                        }
+
+                        .fi-global-search-field .fi-input-wrp-prefix,
+                        .fi-global-search-field .fi-input-wrp-content-ctn,
+                        .fi-global-search-field .fi-input-wrp-suffix {
+                            align-items: center;
                         }
 
                         .fi-global-search-field .fi-input::placeholder {
