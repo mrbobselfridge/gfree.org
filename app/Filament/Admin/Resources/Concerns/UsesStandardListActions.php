@@ -16,8 +16,10 @@ trait UsesStandardListActions
             IconOnlyAction::make(
                 CreateAction::make()
                     ->label('New '.$resource::getTitleCaseModelLabel())
-                    ->color('success'),
+                    ->color('success')
+                    ->keyBindings(['alt+plus']),
                 Heroicon::OutlinedPlus,
+                'New '.$resource::getTitleCaseModelLabel().' (Alt++)',
             ),
         ];
     }

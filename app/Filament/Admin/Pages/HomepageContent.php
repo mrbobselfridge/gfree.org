@@ -235,8 +235,8 @@ class HomepageContent extends Page
                             ->keyBindings(['mod+enter', 'ctrl+enter']),
                         Heroicon::OutlinedDocumentCheck,
                     ),
-                    PublicPageActions::button('viewPublicPageFooter', route('home')),
-                    ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
+                    PublicPageActions::button('viewPublicPageFooter', route('home'), withShortcut: false),
+                    ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record, withShortcut: false),
                 ])
                     ->alignment(Alignment::Start)
                     ->key('form-actions'),

@@ -22,18 +22,25 @@ class PublicPageActions
         );
     }
 
-    public static function button(string $name, ?string $url, string $label = 'View'): ?Action
+    public static function button(string $name, ?string $url, string $label = 'View', bool $withShortcut = true): ?Action
     {
         if (blank($url)) {
             return null;
         }
 
+        $action = Action::make($name)
+            ->label($label)
+            ->url($url, true)
+            ->color('gray');
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+v']);
+        }
+
         return IconOnlyAction::make(
-            Action::make($name)
-                ->label($label)
-                ->url($url, true)
-                ->color('gray'),
+            $action,
             Heroicon::OutlinedArrowTopRightOnSquare,
+            $withShortcut ? "{$label} (Alt+V)" : $label,
         );
     }
 

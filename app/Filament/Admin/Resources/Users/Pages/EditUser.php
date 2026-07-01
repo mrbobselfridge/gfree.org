@@ -43,6 +43,7 @@ class EditUser extends EditRecord
             Action::make('notifyUserAccount')
                 ->label('Notify')
                 ->color('gray')
+                ->keyBindings(['alt+n'])
                 ->modalHeading('Notify user')
                 ->modalSubmitActionLabel('Send email')
                 ->fillForm(fn (): array => [
@@ -100,6 +101,7 @@ class EditUser extends EditRecord
                         ->send();
                 }),
             Heroicon::OutlinedBell,
+            'Notify (Alt+N)',
         );
     }
 
