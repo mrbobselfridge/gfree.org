@@ -80,7 +80,17 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::STYLES_AFTER,
                 fn(): HtmlString => new HtmlString(<<<'HTML'
                     <style>
+                        .fi-topbar .fi-global-search-ctn {
+                            width: clamp(20rem, 30vw, 26rem);
+                        }
+
+                        .fi-topbar .fi-global-search-results-ctn {
+                            width: 100%;
+                            max-width: none;
+                        }
+
                         .fi-global-search-field .fi-input-wrp {
+                            min-height: 3rem;
                             border-color: rgba(245, 158, 11, 0.65);
                             background: rgba(255, 251, 235, 0.94);
                             box-shadow:
@@ -110,6 +120,8 @@ class AdminPanelProvider extends PanelProvider
                         .fi-global-search-field .fi-input,
                         .fi-global-search-field .fi-input::placeholder {
                             color: var(--gray-950);
+                            font-size: 1rem;
+                            line-height: 1.5rem;
                         }
 
                         .fi-global-search-field .fi-input::placeholder {
