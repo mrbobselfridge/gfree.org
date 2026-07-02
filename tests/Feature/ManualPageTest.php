@@ -13,7 +13,7 @@ class ManualPageTest extends TestCase
     {
         $this->get('/manual')
             ->assertOk()
-            ->assertSee('Last updated: June 10, 2026')
+            ->assertSee('Last updated: July 2, 2026')
             ->assertSee('Backups')
             ->assertSee('data-manual-contents-toggle', false)
             ->assertSee('href="#top"', false)
@@ -22,6 +22,18 @@ class ManualPageTest extends TestCase
             ->assertSee('Archive Backup')
             ->assertSee('Use <strong>Run now</strong> before a major content cleanup, launch, or sitewide change.', false)
             ->assertSee('Restore caution');
+    }
+
+    public function test_manual_describes_public_page_structure(): void
+    {
+        $this->get('/manual')
+            ->assertOk()
+            ->assertSee('Public Page Structure')
+            ->assertSee('href="#public-page-structure"', false)
+            ->assertSee('images/manual/public-page-header-alert.png', false)
+            ->assertSee('images/manual/public-page-homepage-hero.png', false)
+            ->assertSee('images/manual/public-page-connection-card.png', false)
+            ->assertSee('The repeated frame reduces confusion.');
     }
 
     public function test_manual_describes_redirect_pages(): void

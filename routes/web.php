@@ -60,7 +60,7 @@ Route::get('/admin/page-visual-snapshots/image', PageVisualSnapshotImageControll
 Route::get('/manual', function () {
     return view('manual', [
         'settings' => SiteSetting::query()->first(),
-        'updatedAt' => 'June 10, 2026',
+        'updatedAt' => 'July 2, 2026',
     ]);
 })->name('manual');
 

@@ -676,6 +676,7 @@
                 <li><a href="#daily-workflow">Daily Workflow</a></li>
                 <li><a href="#admin-search-shortcuts">Admin Search and Shortcuts</a></li>
                 <li><a href="#system-overview">System Overview</a></li>
+                <li><a href="#public-page-structure">Public Page Structure</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="#homepage">Homepage</a></li>
                 <li><a href="#banners">Banners</a></li>
@@ -885,6 +886,81 @@
                     </tr>
                 </tbody>
             </table>
+        </section>
+
+        <section class="manual-section" id="public-page-structure">
+            <h2>Public Page Structure</h2>
+            <p>Public pages use a consistent structure so visitors always know where they are, how to move around the site, and what action to take next. The exact content changes from page to page, but the frame is intentionally familiar: sitewide notices first, navigation second, page context third, then the page body and footer.</p>
+
+            <h3>Top of the Page</h3>
+            <p>The top of a public page can include a site alert, a utility bar, the main logo/navigation row, and then the page hero. This order keeps urgent information visible before visitors start reading the page.</p>
+            <ul>
+                <li><strong>Site alert:</strong> Used for temporary notices, schedule changes, reminders, or urgent messages. Alerts appear above navigation so they are hard to miss.</li>
+                <li><strong>Utility bar:</strong> Holds smaller links and social icons that are useful but should not compete with the main menu.</li>
+                <li><strong>Main navigation:</strong> Keeps the primary visitor paths available on every normal public page.</li>
+                <li><strong>Page hero:</strong> Introduces the page with a small label, title, intro text, and optional image. The hero is meant to orient the visitor before they reach detailed content.</li>
+            </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/public-page-header-alert.png') }}" alt="Public page showing a gold site alert, utility links, main navigation, and New Here page hero.">
+                <figcaption>The public page frame starts with alert and navigation areas, then moves into a large page hero that explains the purpose of the page.</figcaption>
+            </figure>
+
+            <h3>Page Hero and Message Area</h3>
+            <p>Standard pages can show a header image behind the title and intro. Some pages also use a message card in the hero area for short supporting copy, a key detail, or a callout that should be visible before the main page sections.</p>
+            <ul>
+                <li>Use the page title for the main visitor-facing label.</li>
+                <li>Use the small label for a short category or orientation phrase.</li>
+                <li>Use intro text for the one-paragraph summary of the page.</li>
+                <li>Use the message field only when the hero needs a compact callout beside the main text.</li>
+            </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/public-page-about-header-message.png') }}" alt="About page hero with small label, page title, intro text, background image, and a message card.">
+                <figcaption>The About page shows how a page hero can combine orientation text on the left with a short message card on the right.</figcaption>
+            </figure>
+
+            <h3>Homepage Hero</h3>
+            <p>The homepage uses the same overall public frame, but the hero is managed through Banners and Homepage settings instead of a normal Page record. It is designed to be more action-oriented than a standard page hero.</p>
+            <ul>
+                <li>The headline should identify the site and welcome the visitor quickly.</li>
+                <li>Buttons should point to the highest-value next steps.</li>
+                <li>The supporting message card should be short enough to scan.</li>
+                <li>Rotating banners should feel related to each other so the page does not change personality between slides.</li>
+            </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/public-page-homepage-hero.png') }}" alt="Homepage hero with dark background image, headline, action buttons, and a short message card.">
+                <figcaption>The homepage hero is the main front-door section. It uses stronger calls to action than ordinary pages because many visitors start here.</figcaption>
+            </figure>
+
+            <h3>Body Sections and Footer</h3>
+            <p>Below the hero, content blocks carry the page details. These sections can use text, image/text layouts, cards, process lists, embeds, and related content. The footer repeats contact details and social links so visitors can still find basic information after reading or scrolling.</p>
+            <ul>
+                <li>Use body sections for the information visitors came to read, not for sitewide details that belong in the header or footer.</li>
+                <li>Use background color changes to separate major sections, but keep copy readable.</li>
+                <li>Keep contact details in Site Settings when they should be reused across the site.</li>
+                <li>Review the bottom of each important page, not only the first screen, because many visitors scroll before deciding what to do next.</li>
+            </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/public-page-footer-contact.png') }}" alt="Public page lower content section followed by footer with logo, address, phone, email, and social links.">
+                <figcaption>The footer provides a dependable final stop for address, phone, email, and social links after the page content.</figcaption>
+            </figure>
+
+            <h3>Special-Purpose Pages</h3>
+            <p>Some public pages are built for a single task, such as a connection card, form, campaign, or next-step page. These pages can still use the same header, hero, and footer structure, but their body should stay focused on the task.</p>
+            <ul>
+                <li>Keep the page title and intro direct so visitors know what the page is for.</li>
+                <li>Use one clear primary action or form instead of several competing choices.</li>
+                <li>Use a button in the hero only when it helps visitors jump to the next section or related page.</li>
+                <li>Turn off the normal page header or navigation only for special cases where the public frame would distract from the task.</li>
+            </ul>
+            <figure class="manual-screenshot">
+                <img src="{{ asset('images/manual/public-page-connection-card.png') }}" alt="Connection Card page with page hero, action button, intro copy, and beginning of a form.">
+                <figcaption>A special-purpose page can keep the same visual system while narrowing the body content around one visitor action.</figcaption>
+            </figure>
+
+            <div class="manual-note">
+                <strong>Why pages are built this way</strong>
+                <p>The repeated frame reduces confusion. Alerts handle urgent sitewide information, navigation handles movement, heroes explain context, content blocks carry page-specific information, and the footer keeps contact details available everywhere.</p>
+            </div>
         </section>
 
         <section class="manual-section" id="dashboard">
