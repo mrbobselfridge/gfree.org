@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Storage;
     'additional_social_links',
     'google_tag_manager_id',
     'google_analytics_measurement_id',
+    'notes',
 ])]
 class SiteSetting extends Model
 {

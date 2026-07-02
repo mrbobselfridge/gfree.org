@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\NavigationLinks\Schemas;
 
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Support\NavigationDestinationSuggestions;
 use App\Models\NavigationLink;
 use Filament\Forms\Components\DateTimePicker;
@@ -113,7 +114,7 @@ class NavigationLinkForm
                     )
                     ->hintColor('gray'),
 
-
+                InternalNotes::field(),
 
             ]);
     }

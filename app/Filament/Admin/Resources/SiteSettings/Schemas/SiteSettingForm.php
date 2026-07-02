@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\SiteSettings\Schemas;
 
 use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Models\SiteSetting;
 use App\Rules\HttpOrRelativeUrl;
@@ -424,6 +425,7 @@ class SiteSettingForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
+                InternalNotes::field(),
 
             ]);
     }

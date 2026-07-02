@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
     'processed_slides',
     'error_message',
     'created_by_user_id',
+    'notes',
 ])]
 class SlideDeck extends Model
 {

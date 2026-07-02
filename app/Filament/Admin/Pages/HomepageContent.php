@@ -5,9 +5,11 @@ namespace App\Filament\Admin\Pages;
 use App\Filament\Admin\CmsDashboard;
 use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Filament\Admin\Support\NotesAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\HomepageContent as HomepageContentModel;
@@ -112,6 +114,7 @@ class HomepageContent extends Page
     {
         return [
             $this->getCancelAction('headerCancel'),
+            NotesAction::make(),
             PublicPageActions::button('viewPublicPage', route('home')),
             AiPageReviewActions::make($this->record, fn (): mixed => $this->saveForAiPageReview()),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
@@ -217,6 +220,7 @@ class HomepageContent extends Page
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
+                InternalNotes::field(),
             ]);
     }
 

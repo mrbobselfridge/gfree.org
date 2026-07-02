@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
     'starts_at',
     'ends_at',
     'is_published',
+    'notes',
 ])]
 class HomepageBanner extends Model implements HasPublicUrl
 {

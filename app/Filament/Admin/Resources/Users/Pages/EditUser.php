@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Users\Pages;
 use App\Filament\Admin\Resources\Concerns\UsesStandardEditActions;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Filament\Admin\Support\NotesAction;
 use App\Mail\UserAccountNotificationMail;
 use App\Models\User;
 use App\Support\AdminAccess;
@@ -30,6 +31,7 @@ class EditUser extends EditRecord
     {
         return [
             $this->getHeaderCancelAction(),
+            NotesAction::make(),
             $this->getHeaderDeleteAction(),
             $this->getHeaderNotifyUserAccountAction(),
             $this->getHeaderSaveAndCloseAction(),
@@ -43,7 +45,7 @@ class EditUser extends EditRecord
             Action::make('notifyUserAccount')
                 ->label('Notify')
                 ->color('gray')
-                ->keyBindings(['alt+n'])
+                ->keyBindings(['alt+b'])
                 ->modalHeading('Notify user')
                 ->modalSubmitActionLabel('Send email')
                 ->fillForm(fn (): array => [
@@ -101,7 +103,7 @@ class EditUser extends EditRecord
                         ->send();
                 }),
             Heroicon::OutlinedBell,
-            'Notify (Alt+N)',
+            'Notify (Alt+B)',
         );
     }
 

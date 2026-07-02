@@ -735,7 +735,7 @@
             <div class="manual-note">
                 <strong>Admin buttons</strong>
                 <p>Many admin buttons are icon-only to save space. Hover over an icon to see its label and shortcut, such as Save, Save &amp; close, View, Notify, Delete, Create, or Cancel.</p>
-                <p>Common shortcuts include Ctrl/Cmd+S for Save, Ctrl/Cmd+Enter for Save &amp; close, Ctrl/Cmd+Shift+S for Create &amp; add another, Ctrl/Cmd+D for Delete, Escape for Cancel, Alt+V for View, Alt++ for New, Alt+N for Notify, Alt+A for the primary AI action, Alt+D for Download, Alt+C for Collapse, and Alt+E for Expand when those actions are available.</p>
+                <p>Common shortcuts include Ctrl/Cmd+S for Save, Ctrl/Cmd+Enter for Save &amp; close, Ctrl/Cmd+Shift+S for Create &amp; add another, Ctrl/Cmd+D for Delete, Escape for Cancel, Alt+V for View, Alt++ for New, Alt+N for Notes, Alt+B for Notify, Alt+A for the primary AI action, Alt+D for Download, Alt+C for Collapse, and Alt+E for Expand when those actions are available.</p>
             </div>
         </section>
 
@@ -798,6 +798,11 @@
                     </tr>
                     <tr>
                         <td>Alt+N</td>
+                        <td>Notes</td>
+                        <td>Edit screens with an internal Notes field.</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+B</td>
                         <td>Notify users</td>
                         <td>Areas with workflow notification support.</td>
                     </tr>

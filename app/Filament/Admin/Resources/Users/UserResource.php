@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Users;
 
 use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Filament\Admin\Resources\Concerns\AppliesAdminAccess;
 use App\Filament\Admin\Resources\Users\Pages\CreateUser;
 use App\Filament\Admin\Resources\Users\Pages\EditUser;
@@ -141,6 +142,7 @@ class UserResource extends Resource
                             ->columns(2),
                     ])
                     ->columnSpanFull(),
+                InternalNotes::field(),
             ]);
     }
 

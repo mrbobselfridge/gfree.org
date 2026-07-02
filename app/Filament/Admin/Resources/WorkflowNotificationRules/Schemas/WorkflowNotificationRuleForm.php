@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\WorkflowNotificationRules\Schemas;
 
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Models\User;
 use App\Support\WorkflowNotificationAreas;
 use Filament\Forms\Components\CheckboxList;
@@ -109,6 +110,7 @@ class WorkflowNotificationRuleForm
                     ])
                     ->columns(1)
                     ->columnSpanFull(),
+                InternalNotes::field(),
             ]);
     }
 }

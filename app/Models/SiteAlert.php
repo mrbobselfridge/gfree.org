@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
     'expires_at',
     'is_published',
     'is_dismissible',
+    'notes',
 ])]
 class SiteAlert extends Model
 {

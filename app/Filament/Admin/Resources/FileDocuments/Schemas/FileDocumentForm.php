@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\FileDocuments\Schemas;
 
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Filament\Admin\Forms\RichEditorDefaults;
 use App\Filament\Admin\Resources\Pages\Schemas\PageForm;
 use App\Models\FileCategory;
@@ -369,6 +370,7 @@ class FileDocumentForm
                                 'Set automatically each time the file record is saved.'
                             )
                             ->hintColor('gray'),
+                        InternalNotes::field(),
 
                     ])
                     ->columns(3)

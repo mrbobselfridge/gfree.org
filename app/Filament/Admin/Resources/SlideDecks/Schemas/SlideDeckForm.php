@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\SlideDecks\Schemas;
 
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Models\SlideDeck;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -62,6 +63,7 @@ class SlideDeckForm
                     ->content(fn (?SlideDeck $record): string => $record?->error_message ?: 'None')
                     ->visible(fn (?SlideDeck $record): bool => filled($record?->error_message))
                     ->columnSpanFull(),
+                InternalNotes::field(),
             ]);
     }
 

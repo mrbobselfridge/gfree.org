@@ -52,6 +52,7 @@ class IconOnlyAction
             'mod+shift+s' => 'Ctrl/Cmd+Shift+S',
             'mod+d' => 'Ctrl/Cmd+D',
             'alt+a' => 'Alt+A',
+            'alt+b' => 'Alt+B',
             'alt+c' => 'Alt+C',
             'alt+d' => 'Alt+D',
             'alt+e' => 'Alt+E',

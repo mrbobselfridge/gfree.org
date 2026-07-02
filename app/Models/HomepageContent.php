@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
     'feature_label',
     'feature_url',
     'content_blocks',
+    'notes',
 ])]
 class HomepageContent extends Model
 {

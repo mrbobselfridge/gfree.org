@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
     'source_url',
     'source_author_name',
     'source_author_url',
+    'notes',
 ])]
 class MediaImageMetadata extends Model
 {

@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
     'current_version_id',
     'uploaded_by_id',
     'updated_by_id',
+    'notes',
 ])]
 class FileDocument extends Model implements HasPublicUrl
 {

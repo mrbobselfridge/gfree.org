@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\SiteAlerts\Schemas;
 
 use App\Filament\Admin\Forms\HtmlCodeTextarea;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Models\SiteAlert;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -117,6 +118,7 @@ class SiteAlertForm
                         'Lower numbers appear first when multiple alerts are live.'
                     )
                     ->hintColor('gray'),
+                InternalNotes::field(),
             ]);
     }
 }

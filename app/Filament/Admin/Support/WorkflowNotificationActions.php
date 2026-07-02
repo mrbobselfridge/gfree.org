@@ -62,13 +62,13 @@ class WorkflowNotificationActions
             });
 
         if ($withShortcut) {
-            $action->keyBindings(['alt+n']);
+            $action->keyBindings(['alt+b']);
         }
 
         return IconOnlyAction::make(
             $action,
             Heroicon::OutlinedBell,
-            $withShortcut ? 'Notify (Alt+N)' : 'Notify',
+            $withShortcut ? 'Notify (Alt+B)' : 'Notify',
         );
     }
 
@@ -140,13 +140,13 @@ class WorkflowNotificationActions
             });
 
         if ($withShortcut) {
-            $action->keyBindings(['alt+n']);
+            $action->keyBindings(['alt+b']);
         }
 
         return IconOnlyAction::make(
             $action,
             Heroicon::OutlinedBell,
-            $withShortcut ? 'Notify (Alt+N)' : 'Notify',
+            $withShortcut ? 'Notify (Alt+B)' : 'Notify',
         );
     }
 

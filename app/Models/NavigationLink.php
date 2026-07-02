@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
     'expires_at',
     'opens_in_new_tab',
     'is_published',
+    'notes',
 ])]
 class NavigationLink extends Model implements HasPublicUrl
 {

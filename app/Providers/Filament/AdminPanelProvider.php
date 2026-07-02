@@ -1574,6 +1574,32 @@ class AdminPanelProvider extends PanelProvider
                                 return Array.from(root.querySelectorAll(sectionSelector)).find(isVisible);
                             };
 
+                            const hasOpenTransientOverlay = () => {
+                                const selectors = [
+                                    '[role="listbox"]',
+                                    '.fi-dropdown-panel',
+                                    '.choices__list--dropdown',
+                                    '.ts-dropdown',
+                                ];
+
+                                return selectors.some((selector) => Array.from(document.querySelectorAll(selector)).some(isVisible));
+                            };
+
+                            const visibleNotesTarget = () => Array.from(document.querySelectorAll('#notes')).find(isVisible);
+
+                            const focusNotesTarget = (target) => {
+                                target.scrollIntoView({
+                                    block: 'start',
+                                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                                });
+
+                                window.setTimeout(() => {
+                                    const focusTarget = target.querySelector('[contenteditable="true"], textarea, input, [tabindex]:not([tabindex="-1"])');
+
+                                    focusTarget?.focus?.({ preventScroll: true });
+                                }, 150);
+                            };
+
                             const decorateCollapseExpandActions = () => {
                                 const root = pageRoot();
 
@@ -1618,6 +1644,25 @@ class AdminPanelProvider extends PanelProvider
 
                                 event.preventDefault();
                                 action.click();
+                            }, true);
+
+                            document.addEventListener('keydown', (event) => {
+                                if (! event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.key?.toLowerCase() !== 'n') {
+                                    return;
+                                }
+
+                                if (hasOpenTransientOverlay()) {
+                                    return;
+                                }
+
+                                const target = visibleNotesTarget();
+
+                                if (! target) {
+                                    return;
+                                }
+
+                                event.preventDefault();
+                                focusNotesTarget(target);
                             }, true);
 
                             document.addEventListener('keydown', (event) => {

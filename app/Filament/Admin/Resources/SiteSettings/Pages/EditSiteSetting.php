@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\SiteSettings\Pages;
 use App\Filament\Admin\CmsDashboard;
 use App\Filament\Admin\Resources\SiteSettings\SiteSettingResource;
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Filament\Admin\Support\NotesAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
 use App\Support\CodeBlockAccess;
@@ -23,6 +24,7 @@ class EditSiteSetting extends EditRecord
     {
         return [
             $this->getCancelHeaderAction(),
+            NotesAction::make(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             IconOnlyAction::make(
                 Action::make('headerSaveAndClose')

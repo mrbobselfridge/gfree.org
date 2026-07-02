@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
     'message',
     'delay_minutes',
     'is_enabled',
+    'notes',
 ])]
 class WorkflowNotificationRule extends Model
 {

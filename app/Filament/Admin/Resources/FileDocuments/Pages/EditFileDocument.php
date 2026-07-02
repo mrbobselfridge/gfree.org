@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\Concerns\UsesStandardEditActions;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Filament\Admin\Support\NotesAction;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
@@ -38,6 +39,7 @@ class EditFileDocument extends EditRecord
     {
         return [
             $this->getHeaderCancelAction(),
+            NotesAction::make(),
             ...$this->getHeaderViewPublicPageActions(),
             ...$this->getHeaderAiPageReviewActions(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),

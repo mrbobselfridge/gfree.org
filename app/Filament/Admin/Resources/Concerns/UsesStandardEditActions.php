@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Concerns;
 
 use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
+use App\Filament\Admin\Support\NotesAction;
 use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\WorkflowNotificationRule;
@@ -21,6 +22,7 @@ trait UsesStandardEditActions
     {
         return [
             $this->getHeaderCancelAction(),
+            ...NotesAction::forRecordActions($this->getRecord()),
             ...$this->getHeaderViewPublicPageActions(),
             ...$this->getHeaderAiPageReviewActions(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),

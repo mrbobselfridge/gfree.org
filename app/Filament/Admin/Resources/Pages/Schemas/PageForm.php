@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Pages\Schemas;
 use App\Filament\Admin\Forms\ContentBlockBuilder;
 use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Filament\Admin\Forms\SlugRebuildAction;
 use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Resources\Pages\PageResource;
@@ -417,6 +418,8 @@ class PageForm
                     ->columns(3)
                     ->columnSpanFull()
                     ->visible(fn (Get $get): bool => ! (bool) $get('is_redirect')),
+
+                InternalNotes::field(),
 
                 /********************************
                 self::section('Page Display', 'pages-display', collapsedOnEdit: true)

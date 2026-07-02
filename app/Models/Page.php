@@ -38,6 +38,7 @@ use Illuminate\Validation\ValidationException;
     'redirect_status_code',
     'show_site_chrome',
     'show_page_header',
+    'notes',
 ])]
 class Page extends Model implements HasPublicUrl
 {

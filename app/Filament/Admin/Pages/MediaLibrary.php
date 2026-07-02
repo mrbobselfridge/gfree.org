@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Concerns\HasCentralizedAdminNavigation;
 use App\Filament\Admin\Forms\Components\UnsplashImagePicker;
+use App\Filament\Admin\Forms\InternalNotes;
 use App\Filament\Admin\Pages\Concerns\RequiresAdminPageAccess;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Models\MediaImageMetadata;
@@ -293,6 +294,7 @@ class MediaLibrary extends Page
                     ...$this->imageMetadataFields(),
                     ...$this->currentImagePreviewFields(),
                     ...$this->imageUploadFields('replacement_image', 'Replacement image', required: false),
+                    InternalNotes::field(visibleOnEditOnly: false),
                 ])
                 ->action(function (array $arguments, array $data): void {
                     $path = (string) ($arguments['path'] ?? '');
@@ -411,6 +413,7 @@ class MediaLibrary extends Page
             'existing_slug' => $metadata?->slug,
             'existing_path' => $metadata?->path,
             'tags' => $metadata?->tags ?? [],
+            'notes' => $metadata?->notes,
         ];
     }
 
@@ -578,7 +581,7 @@ class MediaLibrary extends Page
     }
 
     /**
-     * @return array{title: ?string, slug: ?string, tags: array<int, string>}
+     * @return array{title: ?string, slug: ?string, tags: array<int, string>, notes: ?string}
      */
     private function normalizedImageMetadataData(
         array $data,
@@ -612,6 +615,7 @@ class MediaLibrary extends Page
             'title' => $title,
             'slug' => $slug,
             'tags' => MediaImageMetadata::mergeAutoTags($data['tags'] ?? [], $title),
+            'notes' => $data['notes'] ?? null,
         ];
     }
 

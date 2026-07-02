@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\HomepageBanners\Schemas;
 
 use App\Filament\Admin\Forms\HtmlCodeTextarea;
 use App\Filament\Admin\Forms\ImageUpload;
+use App\Filament\Admin\Forms\InternalNotes;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -119,6 +120,7 @@ class HomepageBannerForm
                         'Optional. Use when a seasonal or event banner should stop appearing automatically.'
                     )
                     ->hintColor('gray'),
+                InternalNotes::field(),
 
             ]);
     }
