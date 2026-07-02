@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WorkflowNotificationActions
 {
-    public static function notifyTeamForRecord(Model $record, bool $withShortcut = true): ?Action
+    public static function notifyTeamForRecord(Model $record, bool $withShortcut = true, string $name = 'notifyTeam'): ?Action
     {
         $service = app(WorkflowNotificationService::class);
         $options = $service->manualRuleOptionsForRecord($record);
@@ -22,7 +22,7 @@ class WorkflowNotificationActions
             return null;
         }
 
-        $action = Action::make('notifyTeam')
+        $action = Action::make($name)
             ->label('Notify')
             ->color('gray')
             ->modalHeading('Notify team')
@@ -72,9 +72,9 @@ class WorkflowNotificationActions
         );
     }
 
-    public static function notifyTeamForRecordActions(Model $record, bool $withShortcut = true): array
+    public static function notifyTeamForRecordActions(Model $record, bool $withShortcut = true, string $name = 'notifyTeam'): array
     {
-        $action = self::notifyTeamForRecord($record, $withShortcut);
+        $action = self::notifyTeamForRecord($record, $withShortcut, $name);
 
         return $action ? [$action] : [];
     }
@@ -86,6 +86,7 @@ class WorkflowNotificationActions
         ?string $adminUrl = null,
         ?string $publicUrl = null,
         bool $withShortcut = true,
+        string $name = 'notifyTeam',
     ): ?Action {
         $service = app(WorkflowNotificationService::class);
         $options = $service->rulesFor($area, WorkflowNotificationRule::TRIGGER_MANUAL)
@@ -96,7 +97,7 @@ class WorkflowNotificationActions
             return null;
         }
 
-        $action = Action::make('notifyTeam')
+        $action = Action::make($name)
             ->label('Notify')
             ->color('gray')
             ->modalHeading('Notify team')
@@ -157,8 +158,9 @@ class WorkflowNotificationActions
         ?string $adminUrl = null,
         ?string $publicUrl = null,
         bool $withShortcut = true,
+        string $name = 'notifyTeam',
     ): array {
-        $action = self::notifyTeamForArea($area, $recordKey, $recordLabel, $adminUrl, $publicUrl, $withShortcut);
+        $action = self::notifyTeamForArea($area, $recordKey, $recordLabel, $adminUrl, $publicUrl, $withShortcut, $name);
 
         return $action ? [$action] : [];
     }

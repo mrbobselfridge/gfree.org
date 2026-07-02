@@ -22,11 +22,11 @@ trait UsesStandardEditActions
     {
         return [
             $this->getHeaderCancelAction(),
-            ...NotesAction::forRecordActions($this->getRecord()),
             ...$this->getHeaderViewPublicPageActions(),
             ...$this->getHeaderAiPageReviewActions(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             $this->getHeaderDeleteAction(),
+            ...NotesAction::forRecordActions($this->getRecord()),
             $this->getHeaderSaveAndCloseAction(),
             $this->getHeaderSaveAction(),
         ];
@@ -44,7 +44,11 @@ trait UsesStandardEditActions
         return [
             $this->getSaveFormAction(),
             $this->getSaveAndCloseFormAction(),
+            ...$this->getFooterNotesActions(),
             $this->getDeleteFormAction(),
+            ...$this->getFooterWorkflowNotificationActions(),
+            ...$this->getFooterAiPageReviewActions(),
+            ...$this->getFooterViewPublicPageActions(),
             $this->getCancelFormAction(),
         ];
     }
@@ -172,6 +176,13 @@ trait UsesStandardEditActions
         return $action ? [$action] : [];
     }
 
+    protected function getFooterViewPublicPageActions(): array
+    {
+        $action = PublicPageActions::button('footerViewPublicPage', $this->getPublicPageUrl(), withShortcut: false);
+
+        return $action ? [$action] : [];
+    }
+
     protected function getHeaderAiPageReviewActions(): array
     {
         $action = AiPageReviewActions::make(
@@ -180,6 +191,36 @@ trait UsesStandardEditActions
         );
 
         return $action ? [$action] : [];
+    }
+
+    protected function getFooterAiPageReviewActions(): array
+    {
+        $action = AiPageReviewActions::make(
+            $this->getRecord(),
+            fn (): mixed => $this->save(shouldRedirect: false, shouldSendSavedNotification: false),
+            withShortcut: false,
+            name: 'footerAiPageReview',
+        );
+
+        return $action ? [$action] : [];
+    }
+
+    protected function getFooterWorkflowNotificationActions(): array
+    {
+        return WorkflowNotificationActions::notifyTeamForRecordActions(
+            $this->getRecord(),
+            withShortcut: false,
+            name: 'footerNotifyTeam',
+        );
+    }
+
+    protected function getFooterNotesActions(): array
+    {
+        return NotesAction::forRecordActions(
+            $this->getRecord(),
+            name: 'footerJumpToNotes',
+            withShortcut: false,
+        );
     }
 
     protected function getPublicPageUrl(): ?string

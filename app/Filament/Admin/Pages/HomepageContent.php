@@ -114,10 +114,10 @@ class HomepageContent extends Page
     {
         return [
             $this->getCancelAction('headerCancel'),
-            NotesAction::make(),
             PublicPageActions::button('viewPublicPage', route('home')),
             AiPageReviewActions::make($this->record, fn (): mixed => $this->saveForAiPageReview()),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record),
+            NotesAction::make(),
             IconOnlyAction::make(
                 Action::make('headerSaveAndClose')
                     ->label('Save & close')
@@ -255,8 +255,15 @@ class HomepageContent extends Page
                             ->keyBindings(['mod+enter', 'ctrl+enter']),
                         Heroicon::OutlinedDocumentCheck,
                     ),
+                    NotesAction::make('footerJumpToNotes', withShortcut: false),
+                    ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record, withShortcut: false, name: 'footerNotifyTeam'),
+                    AiPageReviewActions::make(
+                        $this->record,
+                        fn (): mixed => $this->saveForAiPageReview(),
+                        withShortcut: false,
+                        name: 'footerAiPageReview',
+                    ),
                     PublicPageActions::button('viewPublicPageFooter', route('home'), withShortcut: false),
-                    ...WorkflowNotificationActions::notifyTeamForRecordActions($this->record, withShortcut: false),
                     $this->getCancelAction(),
                 ])
                     ->alignment(Alignment::Start)

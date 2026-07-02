@@ -29,7 +29,7 @@ use Throwable;
 
 class AiPageReviewActions
 {
-    public static function make(Model $record, Closure $save, bool $withShortcut = true): ?Action
+    public static function make(Model $record, Closure $save, bool $withShortcut = true, string $name = 'aiPageReview'): ?Action
     {
         $snapshotBuilder = app(PageReviewSnapshot::class);
 
@@ -37,7 +37,7 @@ class AiPageReviewActions
             return null;
         }
 
-        $action = Action::make('aiPageReview')
+        $action = Action::make($name)
             ->label('AI Page Review')
             ->color('info')
             ->modalHeading('AI page review')

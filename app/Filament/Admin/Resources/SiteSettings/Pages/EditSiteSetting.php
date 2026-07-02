@@ -24,8 +24,8 @@ class EditSiteSetting extends EditRecord
     {
         return [
             $this->getCancelHeaderAction(),
-            NotesAction::make(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
+            NotesAction::make(),
             IconOnlyAction::make(
                 Action::make('headerSaveAndClose')
                     ->label('Save & close')
@@ -50,6 +50,8 @@ class EditSiteSetting extends EditRecord
         return [
             $this->getSaveFormAction(),
             $this->getSaveAndCloseFormAction(),
+            NotesAction::make('footerJumpToNotes', withShortcut: false),
+            ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord(), withShortcut: false, name: 'footerNotifyTeam'),
             $this->getCancelFormAction(),
         ];
     }

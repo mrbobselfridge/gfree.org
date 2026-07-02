@@ -17,6 +17,7 @@ class EditSlideDeck extends EditRecord
 {
     use UsesStandardEditActions {
         getHeaderActions as getStandardHeaderActions;
+        getFormActions as getStandardFormActions;
     }
 
     protected static string $resource = SlideDeckResource::class;
@@ -33,10 +34,22 @@ class EditSlideDeck extends EditRecord
         ];
     }
 
-    private function rerunDeckImportAction(): Action
+    protected function getFormActions(): array
+    {
+        return [
+            ...$this->getStandardFormActions(),
+            $this->exportJsonAction('footerExportSlideJson'),
+            $this->exportCsvAction('footerExportSlideCsv'),
+            $this->downloadImagesZipAction('footerDownloadSlideImages', withShortcut: false),
+            $this->rerunDeckAnalysisAction('footerRerunDeckAnalysis', withShortcut: false),
+            $this->rerunDeckImportAction('footerRerunDeckImport'),
+        ];
+    }
+
+    private function rerunDeckImportAction(string $name = 'rerunDeckImport'): Action
     {
         return IconOnlyAction::make(
-            Action::make('rerunDeckImport')
+            Action::make($name)
                 ->label('Re-run import')
                 ->requiresConfirmation()
                 ->modalHeading('Re-run slide deck import?')
@@ -53,54 +66,64 @@ class EditSlideDeck extends EditRecord
         );
     }
 
-    private function rerunDeckAnalysisAction(): Action
+    private function rerunDeckAnalysisAction(string $name = 'rerunDeckAnalysis', bool $withShortcut = true): Action
     {
-        return IconOnlyAction::make(
-            Action::make('rerunDeckAnalysis')
-                ->label('Re-run analysis')
-                ->keyBindings(['alt+a'])
-                ->requiresConfirmation()
-                ->modalHeading('Re-run analysis for this deck?')
-                ->action(function (): void {
-                    $this->getRecord()
-                        ->slides()
-                        ->get()
-                        ->each(fn (SlideDeckSlide $slide): mixed => AnalyzeSlideDeckSlideJob::dispatch($slide)->afterResponse());
+        $action = Action::make($name)
+            ->label('Re-run analysis')
+            ->requiresConfirmation()
+            ->modalHeading('Re-run analysis for this deck?')
+            ->action(function (): void {
+                $this->getRecord()
+                    ->slides()
+                    ->get()
+                    ->each(fn (SlideDeckSlide $slide): mixed => AnalyzeSlideDeckSlideJob::dispatch($slide)->afterResponse());
 
-                    Notification::make()
-                        ->title('Slide analysis queued')
-                        ->success()
-                        ->send();
-                }),
+                Notification::make()
+                    ->title('Slide analysis queued')
+                    ->success()
+                    ->send();
+            });
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+a']);
+        }
+
+        return IconOnlyAction::make(
+            $action,
             Heroicon::OutlinedSparkles,
         );
     }
 
-    private function downloadImagesZipAction(): Action
+    private function downloadImagesZipAction(string $name = 'downloadSlideImages', bool $withShortcut = true): Action
     {
+        $action = Action::make($name)
+            ->label('Download PNG ZIP')
+            ->url(fn (): string => route('admin.slide-decks.download-images', ['slideDeck' => $this->getRecord()]), true);
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+d']);
+        }
+
         return IconOnlyAction::make(
-            Action::make('downloadSlideImages')
-                ->label('Download PNG ZIP')
-                ->keyBindings(['alt+d'])
-                ->url(fn (): string => route('admin.slide-decks.download-images', ['slideDeck' => $this->getRecord()]), true),
+            $action,
             Heroicon::OutlinedArrowDownTray,
         );
     }
 
-    private function exportCsvAction(): Action
+    private function exportCsvAction(string $name = 'exportSlideCsv'): Action
     {
         return IconOnlyAction::make(
-            Action::make('exportSlideCsv')
+            Action::make($name)
                 ->label('Export CSV')
                 ->url(fn (): string => route('admin.slide-decks.export', ['slideDeck' => $this->getRecord(), 'format' => 'csv']), true),
             Heroicon::OutlinedDocumentArrowDown,
         );
     }
 
-    private function exportJsonAction(): Action
+    private function exportJsonAction(string $name = 'exportSlideJson'): Action
     {
         return IconOnlyAction::make(
-            Action::make('exportSlideJson')
+            Action::make($name)
                 ->label('Export JSON')
                 ->url(fn (): string => route('admin.slide-decks.export', ['slideDeck' => $this->getRecord(), 'format' => 'json']), true),
             Heroicon::OutlinedClipboardDocumentList,

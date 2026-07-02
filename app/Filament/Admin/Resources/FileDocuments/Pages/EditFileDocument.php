@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\FileDocuments\FileDocumentResource;
 use App\Filament\Admin\Support\AiPageReviewActions;
 use App\Filament\Admin\Support\IconOnlyAction;
 use App\Filament\Admin\Support\NotesAction;
+use App\Filament\Admin\Support\PublicPageActions;
 use App\Filament\Admin\Support\WorkflowNotificationActions;
 use App\Models\FileDocument;
 use App\Support\FileLibrary;
@@ -39,14 +40,29 @@ class EditFileDocument extends EditRecord
     {
         return [
             $this->getHeaderCancelAction(),
-            NotesAction::make(),
             ...$this->getHeaderViewPublicPageActions(),
             ...$this->getHeaderAiPageReviewActions(),
             ...WorkflowNotificationActions::notifyTeamForRecordActions($this->getRecord()),
             $this->getExtractFileContentAction(),
             $this->getHeaderDeleteAction(),
+            NotesAction::make(),
             $this->getHeaderSaveAndCloseAction(),
             $this->getHeaderSaveAction(),
+        ];
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getSaveFormAction(),
+            $this->getSaveAndCloseFormAction(),
+            NotesAction::make('footerJumpToNotes', withShortcut: false),
+            $this->getDeleteFormAction(),
+            $this->getExtractFileContentAction('footerExtractFileContent', withShortcut: false),
+            ...$this->getFooterWorkflowNotificationActions(),
+            ...$this->getFooterAiPageReviewActions(),
+            ...$this->getFooterViewPublicPageActions(),
+            $this->getCancelFormAction(),
         ];
     }
 
@@ -62,6 +78,22 @@ class EditFileDocument extends EditRecord
                 Heroicon::OutlinedArrowDownTray,
             ),
             ...$this->standardHeaderViewPublicPageActions(),
+        ];
+    }
+
+    protected function getFooterViewPublicPageActions(): array
+    {
+        $publicPageAction = PublicPageActions::button('footerViewPublicPage', $this->getPublicPageUrl(), withShortcut: false);
+
+        return [
+            ...($publicPageAction ? [$publicPageAction] : []),
+            IconOnlyAction::make(
+                Action::make('footerDownloadCurrentFile')
+                    ->label('Download')
+                    ->url(fn (): string => route('admin.files.download', ['fileDocument' => $this->getRecord()]), true)
+                    ->color('gray'),
+                Heroicon::OutlinedArrowDownTray,
+            ),
         ];
     }
 
@@ -100,32 +132,37 @@ class EditFileDocument extends EditRecord
         return $data;
     }
 
-    protected function getExtractFileContentAction(): Action
+    protected function getExtractFileContentAction(string $name = 'extractFileContent', bool $withShortcut = true): Action
     {
+        $action = Action::make($name)
+            ->label('Extract File Content')
+            ->color('warning')
+            ->modalHeading('Extract file content')
+            ->modalDescription('Review the exact prompt before sending this file to OpenAI. Continuing will start the extraction request and may take a moment.')
+            ->modalSubmitActionLabel('Continue')
+            ->modalWidth(Width::Screen)
+            ->extraModalWindowAttributes(['class' => 'twyxtco-file-extraction-modal'], merge: true)
+            ->closeModalByClickingAway(false)
+            ->disabled(fn (): bool => $this->getRecord()->currentVersion === null)
+            ->fillForm(fn (): array => $this->fileExtractionPromptPreview())
+            ->schema([
+                Textarea::make('extraction_prompt')
+                    ->label('Prompt to be used')
+                    ->helperText('This is the exact prompt that will be sent with the saved file if you continue.')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->rows(8)
+                    ->extraFieldWrapperAttributes(['class' => 'twyxtco-file-extraction-prompt-field'])
+                    ->columnSpanFull(),
+            ])
+            ->action(fn (): mixed => $this->replaceMountedAction('reviewExtractedFileContent'));
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+a']);
+        }
+
         return IconOnlyAction::make(
-            Action::make('extractFileContent')
-                ->label('Extract File Content')
-                ->color('warning')
-                ->keyBindings(['alt+a'])
-                ->modalHeading('Extract file content')
-                ->modalDescription('Review the exact prompt before sending this file to OpenAI. Continuing will start the extraction request and may take a moment.')
-                ->modalSubmitActionLabel('Continue')
-                ->modalWidth(Width::Screen)
-                ->extraModalWindowAttributes(['class' => 'twyxtco-file-extraction-modal'], merge: true)
-                ->closeModalByClickingAway(false)
-                ->disabled(fn (): bool => $this->getRecord()->currentVersion === null)
-                ->fillForm(fn (): array => $this->fileExtractionPromptPreview())
-                ->schema([
-                    Textarea::make('extraction_prompt')
-                        ->label('Prompt to be used')
-                        ->helperText('This is the exact prompt that will be sent with the saved file if you continue.')
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->rows(8)
-                        ->extraFieldWrapperAttributes(['class' => 'twyxtco-file-extraction-prompt-field'])
-                        ->columnSpanFull(),
-                ])
-                ->action(fn (): mixed => $this->replaceMountedAction('reviewExtractedFileContent')),
+            $action,
             Heroicon::OutlinedSparkles,
         );
     }

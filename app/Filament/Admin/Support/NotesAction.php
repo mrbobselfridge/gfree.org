@@ -9,31 +9,36 @@ use Illuminate\Support\Facades\Schema;
 
 class NotesAction
 {
-    public static function make(): Action
+    public static function make(string $name = 'jumpToNotes', bool $withShortcut = true): Action
     {
+        $action = Action::make($name)
+            ->label('Notes')
+            ->url('#notes')
+            ->color('warning');
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+n']);
+        }
+
         return IconOnlyAction::make(
-            Action::make('jumpToNotes')
-                ->label('Notes')
-                ->url('#notes')
-                ->color('gray')
-                ->keyBindings(['alt+n']),
+            $action,
             Heroicon::OutlinedDocumentText,
-            'Notes (Alt+N)',
+            $withShortcut ? 'Notes (Alt+N)' : 'Notes',
         );
     }
 
-    public static function forRecord(?Model $record): ?Action
+    public static function forRecord(?Model $record, string $name = 'jumpToNotes', bool $withShortcut = true): ?Action
     {
         if (! $record || ! Schema::hasColumn($record->getTable(), 'notes')) {
             return null;
         }
 
-        return self::make();
+        return self::make($name, $withShortcut);
     }
 
-    public static function forRecordActions(?Model $record): array
+    public static function forRecordActions(?Model $record, string $name = 'jumpToNotes', bool $withShortcut = true): array
     {
-        $action = self::forRecord($record);
+        $action = self::forRecord($record, $name, $withShortcut);
 
         return $action ? [$action] : [];
     }

@@ -31,79 +31,96 @@ class EditUser extends EditRecord
     {
         return [
             $this->getHeaderCancelAction(),
-            NotesAction::make(),
-            $this->getHeaderDeleteAction(),
             $this->getHeaderNotifyUserAccountAction(),
+            $this->getHeaderDeleteAction(),
+            NotesAction::make(),
             $this->getHeaderSaveAndCloseAction(),
             $this->getHeaderSaveAction(),
         ];
     }
 
-    protected function getHeaderNotifyUserAccountAction(): Action
+    protected function getFormActions(): array
     {
+        return [
+            $this->getSaveFormAction(),
+            $this->getSaveAndCloseFormAction(),
+            NotesAction::make('footerJumpToNotes', withShortcut: false),
+            $this->getDeleteFormAction(),
+            $this->getHeaderNotifyUserAccountAction('footerNotifyUserAccount', withShortcut: false),
+            $this->getCancelFormAction(),
+        ];
+    }
+
+    protected function getHeaderNotifyUserAccountAction(string $name = 'notifyUserAccount', bool $withShortcut = true): Action
+    {
+        $action = Action::make($name)
+            ->label('Notify')
+            ->color('gray')
+            ->modalHeading('Notify user')
+            ->modalSubmitActionLabel('Send email')
+            ->fillForm(fn (): array => [
+                'recipient_email' => $this->getRecord()->email,
+                'cc_sender' => false,
+                'subject' => $this->defaultNotificationSubject(),
+                'message' => $this->defaultNotificationMessage(),
+            ])
+            ->schema([
+                TextInput::make('recipient_email')
+                    ->label('Recipient')
+                    ->disabled()
+                    ->dehydrated(false),
+                Checkbox::make('cc_sender')
+                    ->label(fn (): string => sprintf(
+                        'Cc me%s',
+                        auth()->user() instanceof User && filled(auth()->user()->email)
+                            ? ' ('.auth()->user()->email.')'
+                            : '',
+                    ))
+                    ->helperText('Send a copy to your signed-in admin email.'),
+                TextInput::make('subject')
+                    ->required()
+                    ->maxLength(255)
+                    ->helperText(UserAccountNotificationTemplate::supportedTokenHelp()),
+                Textarea::make('message')
+                    ->required()
+                    ->rows(10)
+                    ->columnSpanFull()
+                    ->helperText(UserAccountNotificationTemplate::supportedTokenHelp()),
+            ])
+            ->action(function (array $data): void {
+                /** @var User $record */
+                $record = $this->getRecord();
+                $actor = auth()->user() instanceof User ? auth()->user() : null;
+                $resetPasswordUrl = Filament::getResetPasswordUrl(
+                    Password::broker()->createToken($record),
+                    $record,
+                );
+
+                $mail = Mail::to($record->email);
+
+                if (($data['cc_sender'] ?? false) && $actor?->email && $actor->email !== $record->email) {
+                    $mail->cc($actor->email);
+                }
+
+                $mail->send(new UserAccountNotificationMail(
+                    subjectLine: UserAccountNotificationTemplate::renderSubject($data['subject'] ?? '', $record, $actor, $resetPasswordUrl),
+                    bodyText: UserAccountNotificationTemplate::render($data['message'] ?? '', $record, $actor, $resetPasswordUrl),
+                ));
+
+                Notification::make()
+                    ->title('User notification sent')
+                    ->success()
+                    ->send();
+            });
+
+        if ($withShortcut) {
+            $action->keyBindings(['alt+b']);
+        }
+
         return IconOnlyAction::make(
-            Action::make('notifyUserAccount')
-                ->label('Notify')
-                ->color('gray')
-                ->keyBindings(['alt+b'])
-                ->modalHeading('Notify user')
-                ->modalSubmitActionLabel('Send email')
-                ->fillForm(fn (): array => [
-                    'recipient_email' => $this->getRecord()->email,
-                    'cc_sender' => false,
-                    'subject' => $this->defaultNotificationSubject(),
-                    'message' => $this->defaultNotificationMessage(),
-                ])
-                ->schema([
-                    TextInput::make('recipient_email')
-                        ->label('Recipient')
-                        ->disabled()
-                        ->dehydrated(false),
-                    Checkbox::make('cc_sender')
-                        ->label(fn (): string => sprintf(
-                            'Cc me%s',
-                            auth()->user() instanceof User && filled(auth()->user()->email)
-                                ? ' ('.auth()->user()->email.')'
-                                : '',
-                        ))
-                        ->helperText('Send a copy to your signed-in admin email.'),
-                    TextInput::make('subject')
-                        ->required()
-                        ->maxLength(255)
-                        ->helperText(UserAccountNotificationTemplate::supportedTokenHelp()),
-                    Textarea::make('message')
-                        ->required()
-                        ->rows(10)
-                        ->columnSpanFull()
-                        ->helperText(UserAccountNotificationTemplate::supportedTokenHelp()),
-                ])
-                ->action(function (array $data): void {
-                    /** @var User $record */
-                    $record = $this->getRecord();
-                    $actor = auth()->user() instanceof User ? auth()->user() : null;
-                    $resetPasswordUrl = Filament::getResetPasswordUrl(
-                        Password::broker()->createToken($record),
-                        $record,
-                    );
-
-                    $mail = Mail::to($record->email);
-
-                    if (($data['cc_sender'] ?? false) && $actor?->email && $actor->email !== $record->email) {
-                        $mail->cc($actor->email);
-                    }
-
-                    $mail->send(new UserAccountNotificationMail(
-                        subjectLine: UserAccountNotificationTemplate::renderSubject($data['subject'] ?? '', $record, $actor, $resetPasswordUrl),
-                        bodyText: UserAccountNotificationTemplate::render($data['message'] ?? '', $record, $actor, $resetPasswordUrl),
-                    ));
-
-                    Notification::make()
-                        ->title('User notification sent')
-                        ->success()
-                        ->send();
-                }),
+            $action,
             Heroicon::OutlinedBell,
-            'Notify (Alt+B)',
+            $withShortcut ? 'Notify (Alt+B)' : 'Notify',
         );
     }
 
