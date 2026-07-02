@@ -1,302 +1,275 @@
-# TwyxtCo Site Structure Recommendations
+# Site Structure and Content Architecture
 
-This document captures the suggested public site structure for the new TwyxtCo site, based on the current Laravel/Filament build and the content areas already being modeled.
+This document replaces the early site-structure proposal. The original version described removed or superseded features such as dedicated ministry and announcement models. The current application is a flexible page-and-file CMS with homepage tools, public page blocks, related content, file-library publishing, site alerts, navigation management, analytics, backups, and workflow notifications.
 
-## Primary Navigation
+## Current Public Routes
 
-Recommended top-level navigation:
+The public route surface is intentionally small:
 
-1. New Here
-2. About
-3. Ministries
-4. Connect
+- `/`: homepage rendered by `HomeController`.
+- `/manual`: admin/user manual page.
+- `/files/{fileName}`: stable file-library document links.
+- `/{slug}`: published CMS pages and redirects.
 
-Keep Give out of the hard-coded/default navigation. Manage it manually as a normal navigation link when needed.
+Removed from the public route surface:
 
-## Suggested Navigation Shape
+- `/concepts`
+- `/concept-screens`
+- `/concepts/{concept}`
 
-### New Here
+Those concept routes were design/demo tools and should stay out of production routing. If design previews are needed later, put them behind admin auth, a local-only route group, or static internal documentation.
 
-Purpose: help first-time guests know what to expect and take one clear next step.
+## Current Content Model
 
-Suggested pages or sections:
+### Homepage
 
-- Plan a Visit
-- What to Expect
-- Sunday Service Times
-- Kids and Students note
-- Location and parking
-- Contact or connection CTA
+The homepage is configured through:
 
-Suggested route:
+- Homepage banners for the hero/rotating hero.
+- Homepage content blocks for flexible sections.
+- Site settings for global identity, design variables, social links, contact details, tracking IDs, and custom code.
+- Navigation links for public header and utility navigation.
+- Site alerts for temporary public notices.
 
-- `/new-here`
+The homepage should stay focused on:
 
-### About
-
-Purpose: explain who TwyxtCo is and build trust.
-
-Suggested pages or sections:
-
-- Our Story
-- What We Believe
-- Leadership
-- Mission and values
-
-Suggested routes:
-
-- `/about`
-- `/leadership`
-
-### Ministries
-
-Purpose: help people find a next place to participate.
-
-Current build supports:
-
-- Ministry index page
-- Ministry detail pages
-- Card image
-- Hero image
-- Category
-- Meeting time
-- Location
-- Leader name/email
-- One Church URL
-- Rich description
-- Embed code
-
-Suggested route structure:
-
-- `/ministry`
-- `/ministry/kids`
-- `/ministry/students`
-- `/ministry/groups`
-- `/ministry/outreach`
-
-### Connect
-
-Purpose: combine practical next steps, connection form, and current-week bulletin content.
-
-Suggested route:
-
-- `/connect`
-
-Suggested page sections:
-
-- Hero: "Connect"
-- Short intro text
-- Connection form
-- This week's bulletin
-- Prayer request or pastoral care CTA
-- Optional upcoming announcements/events preview
-
-Suggested connection form fields:
-
-- Name
-- Email
-- Phone
-- I am new / regular attender / member
-- I would like to learn about
-- Prayer request
-- Message
-
-Suggested bulletin fields:
-
-- Week/date label
-- Rich text bulletin content
-- Optional PDF upload
-- Optional service order
-- Optional announcements list
-- Optional notes or scripture
-
-Future admin model idea:
-
-- `Bulletin`
-- Fields: title, service_date, summary, body, pdf_path, is_published
-- Public page can show the latest published bulletin.
-
-## Homepage Structure
-
-Recommended homepage order:
-
-1. Hero banner
-2. Sunday service information
-3. New Here / Plan a Visit CTA
-4. Ministries preview
-5. Announcements preview
-6. Connect / bulletin CTA
-7. Location and footer
-
-Current build already supports:
-
-- Homepage banners
-- Homepage content blocks
-- Announcements bar
-- Ministry previews
-- Site settings powered contact/service info
-- Navigation managed in Filament
-
-Suggested homepage emphasis:
-
-- Keep the first screen focused on welcome, service info, and one clear guest action.
-- Use content blocks for flexible ordering, but keep recurring content like announcements and ministries powered by their structured admin sections.
-
-## Public Page Types
-
-### Standard Editable Pages
-
-Use for durable content that does not need its own custom model.
-
-Examples:
-
-- New Here
-- About
-- Beliefs
-- Serve
-- Baptism
-- Membership
-
-Current build supports:
-
-- Page title
-- Optional small hero label
-- Hero image
-- Rich content blocks
-- Published/unpublished state
-
-### Structured Listing Pages
-
-Use for content that benefits from admin records and repeatable cards.
-
-Current or recommended:
-
-- Announcements
-- Ministries
-- Leadership
-- Future bulletins
-
-## Admin Content Map
-
-### Site Settings
-
-Use for global and listing-page settings:
-
-- Church name
-- Contact info
-- Service times
-- Address
-- Social links
-- Livestream URL
-- One Church URL
-- Giving URL
-- Listing hero settings for Announcements, Ministries, Leadership, and Bulletins
-
-### Homepage Banners
-
-Use for the homepage hero:
-
-- Small label/eyebrow
-- Title
-- Subtitle
-- Primary CTA
-- Secondary CTA
-- Background image
-- Publish window
-
-### Homepage Content
-
-Use for ordering homepage sections:
-
-- Text blocks
-- Image/text blocks
-- CTA blocks
-- Info strips
-- Link cards
-- Process blocks
-- Announcements bar
+- Clear first-screen identity.
+- One or two primary visitor actions.
+- Current information that can be maintained without code changes.
+- A short path into the most important page groups or file-library resources.
 
 ### Pages
 
-Use for normal public pages:
+Pages are the primary public content type. Use pages for:
 
-- New Here
-- About
-- Beliefs
-- Serve
-- Other evergreen content
+- Evergreen public content.
+- Landing pages.
+- Parent pages that group child pages and files.
+- Temporary campaign pages.
+- Redirects from old or short paths.
 
-### Announcements
+Page records support:
 
-Use for current updates and featured items:
+- Page title and page path.
+- Small label.
+- Intro text and header message.
+- Header image and card image.
+- Content blocks.
+- Parent page relationship.
+- Publish and expiration windows.
+- Featured windows for child-page listings.
+- SEO title/description.
+- Noindex/nofollow.
+- Show/hide site chrome and page header.
+- Redirect destination and redirect status.
 
-- Title
-- Summary
-- Body
-- Image
-- CTA
-- Publish/expiration windows
-- Featured windows
+### Content Blocks
 
-### Ministries
+Current page and homepage blocks are flexible enough to replace the older dedicated announcement/ministry/content-section ideas:
 
-Use for ministry index and detail pages:
+- Text
+- Image + text
+- Button + text
+- Process list
+- Link cards
+- Info strip
+- Related content
+- YouTube feed
+- Embed
+- Code block, limited to trusted users
 
-- Name
-- Slug
-- Category
-- Summary
-- Description
-- Images
-- Meeting time
-- Location
-- Leader info
-- One Church URL
-- Embed code
+Use a dedicated model only when records need their own lifecycle, permissions, reporting, or workflows. Otherwise, start with pages, child pages, file-library records, and related-content blocks.
 
-### Navigation
+### File Library
 
-Use for all public header links:
+The file library is the right place for durable downloadable or viewable resources:
 
-- Label
-- URL
-- Location
-- Parent navigation
-- Sort order
-- Publish/expiration windows
+- Forms
+- Policies
+- PDFs
+- Bulletins or weekly documents
+- Public packets
+- Internal/private documents for logged-in users
 
-## Recommended Build Priority
+Files support:
 
-1. Add Connect page.
-2. Add connection form handling.
-3. Add bulletin content management.
-4. Refine homepage content blocks around guest and next-step paths.
+- Stable public path under `/files/{fileName}`.
+- Category.
+- Parent page.
+- Sort order.
+- Card image.
+- Public/private visibility.
+- Publish and expiration windows.
+- Current version history.
+- Optional extracted or AI-assisted content.
+- Tags.
 
-## Suggested URL Map
+Private file-library documents currently mean "requires any logged-in user account." They do not currently require file-library admin permission.
 
-- `/`
-- `/new-here`
-- `/about`
-- `/leadership`
-- `/ministry`
-- `/ministry/{slug}`
-- `/connect`
-- `/announcements`
-- `/announcements/{slug}`
+### Related Content
 
-Optional later:
+Use related-content blocks on parent pages to display attached child pages and/or file-library documents. This is the current replacement for many older listing-page ideas.
 
-- `/beliefs`
-- `/serve`
-- `/baptism`
-- `/membership`
-- `/bulletins`
-- `/bulletins/{date-or-slug}`
+Recommended parent-page pattern:
 
-## Notes
+1. Create a parent page such as `/resources`, `/forms`, `/events`, or `/news`.
+2. Attach child pages and/or file documents to that parent.
+3. Add a related-content block to the parent page.
+4. Choose the display mode, sort preset, layout, item limit, and optional search.
 
-- Keep navigation editable through Filament instead of hard-coding special links.
-- Keep Give as a manually managed navigation item.
-- Use structured admin resources for repeatable content.
-- Use normal Pages for evergreen content.
-- Use Site Settings for listing-page hero copy and global URLs.
+This keeps most structured public sections editable without custom route/controller/model work.
+
+## Recommended Navigation Shape
+
+Navigation should be managed in Filament, not hard-coded. Recommended top-level structure should follow current content, not the older proposal:
+
+1. Home
+2. New Here or Visit
+3. About
+4. Resources
+5. Connect or Contact
+
+Optional top-level items, depending on actual content:
+
+- Events
+- Sermons or Messages, if represented by pages, files, or embeds.
+- Give, if needed, as a manually managed navigation or utility link.
+
+Keep navigation shallow. Prefer parent pages with related-content blocks over large dropdown structures.
+
+## Suggested Page Groups
+
+These are content architecture suggestions, not required code work.
+
+### Visit / New Here
+
+Purpose: first-time visitor clarity.
+
+Likely content:
+
+- What to expect.
+- Service times.
+- Location and parking.
+- Kids/students note if relevant.
+- Contact or next-step CTA.
+
+Implementation:
+
+- Normal page at `/new-here` or `/visit`.
+- Text, info strip, image + text, and button + text blocks.
+- Site variables for repeated service-time/address details.
+
+### About
+
+Purpose: identity, trust, and durable background.
+
+Likely content:
+
+- Mission and values.
+- Story.
+- Beliefs.
+- Leadership overview or linked child pages.
+
+Implementation:
+
+- Parent page at `/about`.
+- Child pages for deeper evergreen content if needed.
+- Related-content block if there are child pages.
+
+### Resources
+
+Purpose: a maintainable public library.
+
+Likely content:
+
+- Forms.
+- Policies.
+- PDFs.
+- Guides.
+- Bulletins if they remain document-based.
+
+Implementation:
+
+- Parent page at `/resources`.
+- File-library documents attached to the parent page.
+- Categories such as Form, Policy, Bulletin, Guide, or Packet.
+- Related-content block with search enabled.
+
+### Connect / Contact
+
+Purpose: help visitors take action or ask for help.
+
+Likely content:
+
+- Contact details.
+- Staff or office contact info.
+- Next-step links.
+- External form embed if form handling stays outside this app.
+
+Implementation:
+
+- Normal page at `/connect` or `/contact`.
+- Info strip, text, button + text, embed, and link-card blocks.
+- If native form handling is needed later, build it deliberately as a new feature with storage, spam protection, notification routing, and admin review behavior.
+
+### Events / Current Updates
+
+Purpose: current or time-bound content.
+
+Current best implementation:
+
+- Use pages with publish/expiration/featured windows for event-style items.
+- Group them under a parent page.
+- Use related-content sorting for "next up" or recent ordering.
+
+Only add a dedicated Event model if the site needs date-specific filtering, recurring event logic, calendars, registration, or event-specific admin workflows.
+
+## Site Settings Responsibilities
+
+Site Settings should own global values:
+
+- Church/site name.
+- Logo and default page header image.
+- Tagline.
+- Contact details.
+- Design palette variables and custom CSS.
+- Header/body custom scripts.
+- Site variables.
+- Social links and placements.
+- Google Tag Manager and Google Analytics IDs.
+- AI model/key settings.
+
+Use site variables for content repeated across pages:
+
+- Address.
+- Service times.
+- Contact email or phone.
+- Office hours.
+- Standard call-to-action text.
+
+## Admin Documentation Cleanup
+
+The in-app manual is still useful, but its `updatedAt` value in `routes/web.php` should be kept current when manual content changes. Consider moving that date into a config value or deriving it from source control in the future.
+
+The old design concept files still exist under `public/concept-screens` and `resources/views/concepts`. With routes removed, they are no longer public entry points through Laravel, but the static files under `public` are still directly addressable if someone knows the path. Remove or move those assets later if they should not be web-accessible.
+
+## Current Backlog Recommendations
+
+High-value cleanup:
+
+- Replace placeholder defaults in `config/twyxtco.php` with project-appropriate fallback copy.
+- Refresh `/manual` after major admin UX changes.
+- Decide whether to remove public concept screenshot assets from `public/concept-screens`.
+- Decide whether OpenAI keys should be encrypted in the database.
+- Keep the committed MaxMind database for now, but document how it is updated.
+
+Potential feature work:
+
+- Native contact/connection form handling.
+- Better indexed search across body/content-block text if global search becomes important.
+- Dedicated event model only if page-based event listings become limiting.
+- Dedicated bulletin model only if file-library bulletins become limiting.
+
+No longer recommended as immediate work:
+
+- Rebuilding the removed ministry/announcement/bulletin feature set as separate models simply because the early proposal mentioned them. The current page, file, and related-content system should be the default until a clear workflow gap appears.

@@ -9,7 +9,6 @@ class PageSlugs
         'api',
         'build',
         'concept-screens',
-        'concepts',
         'css',
         'files',
         'fonts',
